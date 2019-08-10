@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Sunrise">
 <meta property="og:description" content="继上一篇博客python正则表达式后，此篇文章主要是重点记录”(?=)”(前向肯定界定符)、”(?!)”(前向否定界定符)、”(?&amp;lt;=)”(后项肯定界定符)以及”(?&amp;lt;!)”(后项否定界定符)的用法。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-07-08T14:31:28.921Z">
+<meta property="og:updated_time" content="2019-07-09T04:55:55.399Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="python正则表达式">
 <meta name="twitter:description" content="继上一篇博客python正则表达式后，此篇文章主要是重点记录”(?=)”(前向肯定界定符)、”(?!)”(前向否定界定符)、”(?&amp;lt;=)”(后项肯定界定符)以及”(?&amp;lt;!)”(后项否定界定符)的用法。">
@@ -364,10 +364,11 @@
 <h2 id="例三"><a href="#例三" class="headerlink" title="例三"></a>例三</h2><p>若想分割一个字符串，分隔符为：”,”，但是要求当”,”前面为字母，后面为数字时才生效。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line">s = <span class="string">"abc,123,cde,45,fg,123,456,cba,xyz,5jk"</span></span><br><span class="line">res = re.split(<span class="string">r'(?&lt;=[a-zA-Z]),(?=\d)'</span>, s)</span><br><span class="line">print(res)</span><br><span class="line"></span><br><span class="line">[<span class="string">'abc'</span>, <span class="string">'123,cde'</span>, <span class="string">'45,fg'</span>, <span class="string">'123,456,cba,xyz'</span>, <span class="string">'5jk'</span>]</span><br></pre></td></tr></table></figure>
 <p>解析：将例二顺序调过来即可。</p>
-<h2 id="例四"><a href="#例四" class="headerlink" title="例四"></a>例四</h2><p>若想分割一个字符串，分隔符为：”,”,但是要求当”,”前面不能为$,后面不能为&amp;时才生效。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line">s = <span class="string">"abc,123$,cde,45,&amp;fg,123,456,cba,xyz,5jk"</span></span><br><span class="line">res = re.split(<span class="string">'(?&lt;!$),(?!&amp;)'</span>, s)</span><br><span class="line">print(res)</span><br><span class="line"></span><br><span class="line">[<span class="string">'abc'</span>, <span class="string">'123$'</span>, <span class="string">'cde'</span>, <span class="string">'45,&amp;fg'</span>, <span class="string">'123'</span>, <span class="string">'456'</span>, <span class="string">'cba'</span>, <span class="string">'xyz'</span>, <span class="string">'5jk'</span>]</span><br></pre></td></tr></table></figure>
-<p>解析：”(?&lt;!$),”表示逗号前面不能有$，”,(?!&amp;)”表示逗号后面不能有&amp;。</p>
-<p><strong>注意</strong>：这里容易混淆前向界定符和后向界定符的含义，要对逗号之前做一些条件限定，应使用后向界定符；要对逗号之后做一些条件限定，应使用前向界定符。</p>
+<h2 id="例四"><a href="#例四" class="headerlink" title="例四"></a>例四</h2><p>若想分割一个字符串，分隔符为：”,”,但是要求当”,”前面不能为$并且后面不能为&amp;时才生效。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line">s = <span class="string">"abc,123$,cde,45,&amp;fg,123,456,cba$,&amp;xyz,5jk"</span></span><br><span class="line">res = re.split(<span class="string">r'(?&lt;!\$),(?!&amp;)'</span>, s)</span><br><span class="line">print(res)</span><br><span class="line"></span><br><span class="line">[<span class="string">'abc'</span>, <span class="string">'123$,cde'</span>, <span class="string">'45,&amp;fg'</span>, <span class="string">'123'</span>, <span class="string">'456'</span>, <span class="string">'cba$,&amp;xyz'</span>, <span class="string">'5jk'</span>]</span><br></pre></td></tr></table></figure>
+<p>解析：”(?&lt;!\$),”表示逗号前面不能有$(因为$是特殊字符，所以加了转义)，”,(?!&amp;)”表示逗号后面不能有&amp;，但是写在一起得到的结果却并不是我们想要的，要求逗号前为”$”且后为”&amp;”时不分割，所以我们想要得到的结果是：<code>[&#39;abc&#39;, &#39;123$&#39;, &#39;cde&#39;, &#39;45&#39;, &#39;&amp;fg&#39;, &#39;123&#39;, &#39;456&#39;, &#39;cba$,&amp;xyz&#39;, &#39;5jk&#39;]</code></p>
+<p>正确的正则分割写法为：<code>re.split(r&#39;(?&lt;!\$),|,(?!&amp;)&#39;, s)</code>，这里面有点绕，需要仔细思考。</p>
+<p><strong>注意</strong>：这里容易混淆前向界定符和后向界定符的含义，要对逗号之前做一些条件限定，应使用后向界定符；要对逗号之后做一些条件限定，应使用前向界定符。此外，当同时使用前向否定和后向否定做一些条件限定时，注意逻辑上的转变。</p>
 
       
     </div>
@@ -409,6 +410,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/09/python-spider/" rel="prev" title="python爬虫">
+                python爬虫 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -487,7 +492,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -498,7 +503,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-count">2</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -509,7 +514,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">9</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
