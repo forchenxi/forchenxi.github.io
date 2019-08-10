@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Sunrise">
 <meta property="og:description" content="前段时间，对ELK做了一定的研习，中间踩了许多坑，全都是自己一个人一点点查阅资料解决的，在此做个记录，对logstash方面的记录比较多，其他关于elasticserarch或者kibana以后有了更深入的学习后，再来扩展。 Logstash logstash 如何安装详细参考官网。在centos系统上，一般logstash配置文件目录为：/etc/logstash，执行文件目录为：/usr/sh">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-08-10T09:29:59.869Z">
+<meta property="og:updated_time" content="2019-08-10T09:41:13.062Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ELK日志分析平台">
 <meta name="twitter:description" content="前段时间，对ELK做了一定的研习，中间踩了许多坑，全都是自己一个人一点点查阅资料解决的，在此做个记录，对logstash方面的记录比较多，其他关于elasticserarch或者kibana以后有了更深入的学习后，再来扩展。 Logstash logstash 如何安装详细参考官网。在centos系统上，一般logstash配置文件目录为：/etc/logstash，执行文件目录为：/usr/sh">
@@ -354,10 +354,11 @@
       
         <p>前段时间，对ELK做了一定的研习，中间踩了许多坑，全都是自己一个人一点点查阅资料解决的，在此做个记录，对logstash方面的记录比较多，其他关于elasticserarch或者kibana以后有了更深入的学习后，再来扩展。</p>
 <h3 id="Logstash"><a href="#Logstash" class="headerlink" title="Logstash"></a>Logstash</h3><ul>
-<li><p>logstash 如何安装详细参考<a href="elastic.io">官网</a>。在centos系统上，一般logstash配置文件目录为：/etc/logstash，<br>执行文件目录为：/usr/share/logstash，logstash运行的日志目录：/var/log/messages；</p>
+<li><p>logstash 如何安装详细参考<a href="https://www.elastic.co/cn" target="_blank" rel="noopener">官网</a>。在centos系统上，一般logstash配置文件目录为：/etc/logstash，<br>执行文件目录为：/usr/share/logstash，logstash运行的日志目录：/var/log/messages；</p>
 </li>
 <li><p>logstash的运行依赖JVM，所以需要先安装jdk，安装好jdk后需要配置环境变量；</p>
 <p>在测试阶段，我们使用logstash命令启动程序，只要环境变量配置正确一般是没什么问题的，但是应用阶段我们一般是以服务形式来启动程序，如<code>systemctl start logstash</code>，这时可能会遇到报错的情况，找不到JAVA_HOME，使用以下命令可以解决：<code>ln  -s /usr/local/jdk1.8.0_181/bin/java /bin/java</code>，意为：为/bin/java 建立一个软连接，需要的源文件在/usr/local/jdk1.8.0_181/bin/java 中，因为以服务方式启动logstash时，默认去/bin/java路径中寻找java源文件（JAVA_HOME供java命令使用，系统并不关心）。</p>
+<a id="more"></a>
 <p>输入 <code>which java</code>可以看到返回<code>/bin/java</code>，表示系统认为的java执行路径为/bin/java；</p>
 <p>输入<code>echo &amp;PATH</code>可以查看系统对你输入的命令进行的搜索路径。</p>
 </li>
