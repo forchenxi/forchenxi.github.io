@@ -88,10 +88,10 @@
 <meta property="og:description" content="中国人民银行行政处罚反爬破解在Chrome中请求列表页时，刷新网页观察网络请求发现，先是跳转到一个中转链接：http://www.pbc.gov.cn/WZWSREL3poZW5nd3Vnb25na2FpLzEyNzkyNC8xMjgwNDEvMjE2MTQyMS9pbmRleC5odG1s?wzwschallenge=V1pXU19DT05GSVJNX1BSRUZJWF9MQUJFTDUxODU">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yoursite.com/2019/09/20/bankofchina/picture.PNG">
-<meta property="og:image" content="http://yoursite.com/2019/09/20/bankofchina/picture1.png">
-<meta property="og:image" content="http://yoursite.com/2019/09/20/bankofchina/picture2.png">
-<meta property="og:image" content="http://yoursite.com/2019/09/20/bankofchina/picture3.png">
-<meta property="og:updated_time" content="2019-09-20T02:23:53.154Z">
+<meta property="og:image" content="http://yoursite.com/2019/09/20/bankofchina/picture1.PNG">
+<meta property="og:image" content="http://yoursite.com/2019/09/20/bankofchina/picture2.PNG">
+<meta property="og:image" content="http://yoursite.com/2019/09/20/bankofchina/picture3.PNG">
+<meta property="og:updated_time" content="2019-09-20T02:28:52.495Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="反爬（四）">
 <meta name="twitter:description" content="中国人民银行行政处罚反爬破解在Chrome中请求列表页时，刷新网页观察网络请求发现，先是跳转到一个中转链接：http://www.pbc.gov.cn/WZWSREL3poZW5nd3Vnb25na2FpLzEyNzkyNC8xMjgwNDEvMjE2MTQyMS9pbmRleC5odG1s?wzwschallenge=V1pXU19DT05GSVJNX1BSRUZJWF9MQUJFTDUxODU">
@@ -397,16 +397,16 @@
 <p>经过漫长的三秒钟的冷静，开始研究这段一丢丢也看不懂的<code>js</code>代码。</p>
 <p>首先要找函数入口，从上到下看过来发现，先是执行了<code>eval(function(p, a, c, k, e, r)...</code>，再就是从函数<code>_0x33f22a()</code>开始执行。</p>
 <p>我们在<code>_0x33f22a()</code>函数内部打断点，查看变量值的情况，如下图所示：</p>
-<p><img src="/2019/09/20/bankofchina/picture1.png" alt></p>
+<p><img src="/2019/09/20/bankofchina/picture1.PNG" alt></p>
 <p>我们发现变量<code>_0xb14971</code>的值为<code>WZWS_CONFIRM_PREFIX_LABEL4914759</code>，这个值看起来好像很熟悉，没错正是我们前面<code>base64</code>解码后的值，将该值进行<code>base64</code>编码就是<code>wzwschalleng</code>的值。</p>
 <p>那么我们看<code>_0xb14971</code>的值是怎么算出来的，发现他后面调用了<code>_0x344cd4</code>方法，我们进入该方法，打上断点查看变量值的的情况：</p>
-<p><img src="/2019/09/20/bankofchina/picture2.png" alt></p>
+<p><img src="/2019/09/20/bankofchina/picture2.PNG" alt></p>
 <p>我们发现<code>_0x3c9135</code>变量的值是一个<strong>七位的数字</strong>，后面<code>return _0x53d9fc[_0x56ae(&#39;0x20&#39;, &#39;d2rH&#39;)](_0x56ae(&#39;0x21&#39;, &#39;Rau%&#39;), _0x3c9135)</code>，我们用鼠标把这一串选中，发现其值为<code>WZWS_CONFIRM_PREFIX_LABEL8455744</code>，因为我们上面得到的结论是，只要更改最后面这七位数字的值就可以得到每次变化的<code>wzwschalleng</code>的值。所以我们只需要把这个最核心的函数抠出来就可以：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">_0x344cd4</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> _0x53d9fc = &#123;</span><br><span class="line">        <span class="string">'GjCbS'</span>: <span class="function"><span class="keyword">function</span> <span class="title">_0x1a0314</span>(<span class="params">_0x33da81, _0xe25eb5</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> _0x33da81 &lt; _0xe25eb5;</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">'JBFUL'</span>: <span class="function"><span class="keyword">function</span> <span class="title">_0x1af799</span>(<span class="params">_0x51aa2f, _0x2e4887</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> _0x51aa2f + _0x2e4887;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="keyword">var</span> _0x3c9135 = <span class="number">0x0</span>;</span><br><span class="line">    <span class="keyword">var</span> _0x43beea = <span class="number">0x0</span>;</span><br><span class="line">    <span class="keyword">for</span> (_0x43beea = <span class="number">0x0</span>; _0x53d9fc[_0x56ae(<span class="string">'0x1d'</span>, <span class="string">'uGC9'</span>)](_0x43beea, wzwsquestion[_0x56ae(<span class="string">'0x1e'</span>, <span class="string">'V2r4'</span>)]); _0x43beea++) &#123;</span><br><span class="line">        _0x3c9135 += wzwsquestion[_0x56ae(<span class="string">'0x1f'</span>, <span class="string">'!2cw'</span>)](_0x43beea);</span><br><span class="line">    &#125;</span><br><span class="line">    _0x3c9135 *= wzwsfactor;</span><br><span class="line">    _0x3c9135 += <span class="number">0x1b207</span>;</span><br><span class="line">    <span class="keyword">return</span> _0x53d9fc[_0x56ae(<span class="string">'0x20'</span>, <span class="string">'d2rH'</span>)](_0x56ae(<span class="string">'0x21'</span>, <span class="string">'Rau%'</span>), _0x3c9135);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>我们的目标是能够独立运行该函数，所以需要去修改这段代码，在for循环之前都是定义变量，无需修改，for循环的终止条件中<code>_0x56ae(&#39;0x1d&#39;, &#39;uGC9&#39;)</code>其实是<code>&quot;GjCbS&quot;</code>,<code>_0x56ae(&#39;0x1e&#39;, &#39;V2r4&#39;)</code>是<code>length</code>。</p>
 <p><em>小技巧：我们将这两个字符串，复制到chrome的console中，按回车看输出就知道了；在console中执行<code>copy(_0x56ae(&#39;0x1e&#39;, &#39;V2r4&#39;))</code>还可以直接复制出其值。</em></p>
 <p>这里还有两个重要的变量，<code>wzwsquestion</code>和<code>wzwsfactor</code>，去哪找呢？这时候想起来，一开始不是执行了一段<code>eval()</code>代码嘛，我们执行一下看看：</p>
-<p><img src="/2019/09/20/bankofchina/picture3.png" alt></p>
+<p><img src="/2019/09/20/bankofchina/picture3.PNG" alt></p>
 <p>太巧了！这段代码，执行完之后，正好初始化了<code>wzwsquestion</code>和<code>wzwsfactor</code>这两个变量。</p>
 <p>其实，我们仔细观察<code>eval</code>执行时的默认参数值，可以发现这两个值隐藏其中，该函数做的工作只是将原始字符串做了分割之类的工作。</p>
 <p><code>&#39;var|dynamicurl|/WZWSREL2Z6aHNoYW5naGFpLzExMzU3Ny8xMTQ4MzIvMTE0OTE4L2luZGV4Lmh0bWw=|wzwsquestion|GT#rs1mW}J{x,GghI6|wzwsfactor|1574|wzwsmethod|WZWS_METHOD|wzwsparams|WZWS_PARAMS&#39;</code></p>
@@ -549,7 +549,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
