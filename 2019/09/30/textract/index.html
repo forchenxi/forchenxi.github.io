@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Sunrise">
 <meta property="og:description" content="手上有一些.xls、.doc、 .docx以及.wps后缀的格式文件需要解析，知道python-docx和xlrd可以分别读取.doc和.xls，但是.docpython却无法读取，通过上网查找到了textract。下面我对其可行性进行了测试： textract 这是一个号称可以解析任何形式文件的库，实际上就是利用了特定的库来解析，下面是其可以解析的文件类型，以及其凭借的包：  .csv via">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-10-09T08:57:28.511Z">
+<meta property="og:updated_time" content="2019-10-16T10:05:20.539Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="python 处理doc、docx以及xls">
 <meta name="twitter:description" content="手上有一些.xls、.doc、 .docx以及.wps后缀的格式文件需要解析，知道python-docx和xlrd可以分别读取.doc和.xls，但是.docpython却无法读取，通过上网查找到了textract。下面我对其可行性进行了测试： textract 这是一个号称可以解析任何形式文件的库，实际上就是利用了特定的库来解析，下面是其可以解析的文件类型，以及其凭借的包：  .csv via">
@@ -395,7 +395,7 @@
 <p>这里算个问题，先记下。</p>
 <p>后来得知，对于<code>\x</code>编码，python可以直接进行decode得到原来的值</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">b'\x5f\x63\x68\x61\x6e\x67\x65\x49\x74\x65\x6d\x43\x72\x6f\x73\x73\x4c\x61\x79\x65\x72'</span>.decode()</span><br><span class="line">&lt;&lt;&lt; <span class="string">'_changeItemCrossLayer'</span></span><br><span class="line"><span class="string">b'\xe8\xa1\x8c\xe6\x94\xbf\xe5\xa4\x84\xe7\xbd\x9a\xe4\xbf\xa1\xe6\x81\xaf\xe5\x85\xac\xe7\xa4\xba\xe8\xa1\xa8'</span>.decode()</span><br><span class="line">&lt;&lt;&lt; <span class="string">'行政处罚信息公示表'</span></span><br></pre></td></tr></table></figure>
-<p>其解析<code>.docx</code>文件时直接利用<code>docx2txt</code>提取文件中的所有的文字，缺少可以按照一定格式提取的方法，不利用后续按字段提取，到这里基本可以告别这个库了。</p>
+<p>其解析<code>.docx</code>文件时直接利用<code>docx2txt</code>提取文件中的所有的文字，缺少可以按照一定格式提取的方法，不利用后续按字段提取（除非就是写正则匹配），到这里基本可以告别这个库了。</p>
 <p><code>python-docx</code>库可以根据word文档中的表格，按单元格来提取。</p>
 <p>安装<code>pip install python-docx</code></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> docx <span class="keyword">import</span> Document</span><br><span class="line"></span><br><span class="line">document = Document(path)</span><br><span class="line">tables = document.tables</span><br><span class="line">table = tables[<span class="number">0</span>]</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(table.rows)):</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> range(len(table.columns)):</span><br><span class="line">        print(table.cell(i, j).text.replace(<span class="string">'\n'</span>, <span class="string">''</span>))</span><br><span class="line">        </span><br><span class="line"><span class="comment"># 若想直接对文件的二进制流进行操作，可以用如下方法：</span></span><br><span class="line"><span class="keyword">from</span> io <span class="keyword">import</span> BytesIO</span><br><span class="line">document = Document(BytesIO(binary_content))</span><br></pre></td></tr></table></figure>
@@ -459,6 +459,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/10/16/开庭公告清洗过程/" rel="prev" title="某次清洗项目笔记">
+                某次清洗项目笔记 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -528,7 +532,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -550,7 +554,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-count">35</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
