@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Sunrise">
 <meta property="og:description" content="MongoDB小技能MongoDB导入导出 数据导出 MongoDB中的mongoexport工具可以把一个collection导出成JSON格式或CSV格式的文件。可以通过参数指定导出的数据项，也可以根据指定的条件导出数据。 命令： mongoexport -d dbname -c collectionname -o file --type json/csv -f field 参数说明：   ​">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-08-22T02:01:36.650Z">
+<meta property="og:updated_time" content="2019-11-19T07:28:12.535Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="mongodb小技能">
 <meta name="twitter:description" content="MongoDB小技能MongoDB导入导出 数据导出 MongoDB中的mongoexport工具可以把一个collection导出成JSON格式或CSV格式的文件。可以通过参数指定导出的数据项，也可以根据指定的条件导出数据。 命令： mongoexport -d dbname -c collectionname -o file --type json/csv -f field 参数说明：   ​">
@@ -416,12 +416,20 @@
 </ul>
 <p>命令为：</p>
 <p><code>db.collectionName.distinct(&quot;字段名&quot;)</code></p>
+<p><em>注：<code>db.getCollection(collection_name).distinct(&quot;字段名&quot;)也是可以的</code></em></p>
 <p>等价于sql语句：</p>
 <p><code>select distinct 字段名 from collectionName</code></p>
 <p>如果想直接查询不同值总共的条数：</p>
 <p><code>db.collectionName.distinct(&quot;字段名&quot;).length</code></p>
 <p>以上面的集合companies为例，查询”enter_name”字段所有不同值的记录总条数</p>
 <p><code>db.companies.distinct(&quot;enter_name&quot;).length</code></p>
+<ul>
+<li><p>MongoDB排序</p>
+<p>命令为：</p>
+<p><code>db.getCollection(collection_name).find({}).sort({key: 1})</code></p>
+<p>key表示指定的排序字段，1表示升序排序，-1表示降序排序。</p>
+</li>
+</ul>
 
       
     </div>
@@ -545,7 +553,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">19</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -567,7 +575,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">35</span>
+                  <span class="site-state-item-count">37</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
