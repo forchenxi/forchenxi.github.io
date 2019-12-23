@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Sunrise">
 <meta property="og:description" content="这篇文章的目的不是为了一步步教新手如何写python爬虫，只是记录自己在学习python爬虫过程中的使用的技术点和遇到的问题，做一个技术沉淀。 常用的工具与技术Requests库，主要用来做HTTP请求，支持通过参数添加headers、cookie、proxy等，并且支持HTTP请求的许多类型如：PUT，DELETE，HEAD 以及 OPTIONS 等。简单易上手，功能也很强大。当然也可以使用py">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-07-25T01:47:38.217Z">
+<meta property="og:updated_time" content="2019-12-19T08:22:48.429Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="python爬虫">
 <meta name="twitter:description" content="这篇文章的目的不是为了一步步教新手如何写python爬虫，只是记录自己在学习python爬虫过程中的使用的技术点和遇到的问题，做一个技术沉淀。 常用的工具与技术Requests库，主要用来做HTTP请求，支持通过参数添加headers、cookie、proxy等，并且支持HTTP请求的许多类型如：PUT，DELETE，HEAD 以及 OPTIONS 等。简单易上手，功能也很强大。当然也可以使用py">
@@ -391,7 +391,7 @@
 <h3 id="一些经验"><a href="#一些经验" class="headerlink" title="一些经验"></a>一些经验</h3><ul>
 <li><p>同一代理多次重试 ：我曾经遇到过一个网站，当挂代理访问时，总是请求不到数据，排除代理质量问题后，发现一个规律：绝大多数情况下，任一IP第一次访问该网站时，会出现访问失败，再次访问就会成功。所以，当我们在编写爬虫时，如果遇到挂代理无法获取数据的情况，排除一些cookie之外的因素，不妨使用同一个代理多次访问试一试。</p>
 </li>
-<li><p>下载验证码要携带cookie：在我们爬取需要验证码的网站时，一般需要先将验证码识别正确，然后将验证码作为参数或者其他形式发送给服务器，如果下载验证码时携带的cookie与本次请求的cookie不一致，服务器则无法进行匹配，我们将无法请求成功。</p>
+<li><p>下载验证码要携带cookie：在我们爬取需要验证码的网站时，一般需要先将验证码识别正确，然后将验证码作为参数或者其他形式发送给服务器，如果下载验证码时携带的cookie与本次请求的cookie不一致，服务器则无法进行匹配，我们将无法请求成功。此外：我们在携带cookie下载验证码时，服务器极有可能还会返回给我们重要cookie用作验证，所以我们这时一般需要合并cookie的操作；更有一些情况（针对具体网站而定），在我们下次请求验证码时需要将上一次请求验证码时服务器给我们的那部分cookie清掉，否则服务器不会返回新的给我们，会导致一些错乱。</p>
 </li>
 <li><p>多次请求获取cookie：有些网站想要请求到数据，要求我们每次请求时携带cookie，我们可以先请求一次该网站，从返回的响应头中提取cookie值，但是往往要求我们携带的cookie并不会全部包含在响应头中，有可能会隐藏在页面的源代码中或是别的什么位置（这就需要认真观察了），我曾遇到过隐藏在另一个请求的返回值中，也就是我需要请求两个地址各一次，才能获取完整的cookie，从而进行接下来的爬取工作。</p>
 </li>
