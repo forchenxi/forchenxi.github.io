@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Sunrise">
 <meta property="og:description" content="urlparse123456789from urllib.parse import urlparse, urlunparseresult = urlparse(&apos;http://www.baidu.com/index.html;user?id=5#comment&apos;)print(result)ParseResult(scheme=&apos;http&apos;, netloc=&apos;www.baidu.com&apos;, pat">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-06T07:40:04.804Z">
+<meta property="og:updated_time" content="2020-03-31T06:46:55.484Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="urllib库的使用">
 <meta name="twitter:description" content="urlparse123456789from urllib.parse import urlparse, urlunparseresult = urlparse(&apos;http://www.baidu.com/index.html;user?id=5#comment&apos;)print(result)ParseResult(scheme=&apos;http&apos;, netloc=&apos;www.baidu.com&apos;, pat">
@@ -378,11 +378,24 @@
 </li>
 <li><p><code>data</code>为<code>str</code>时，如果不指定<code>content-type</code>，默认为<code>application/json</code></p>
 <ol start="4">
-<li>用data参数提交数据时，<code>request.body</code>的内容则为<code>a=1&amp;b=2</code>的这种形式，用json参数提交数据时，<code>request.body</code>的内容则为’{“<code>a&quot;: 1, &quot;b&quot;: 2}&#39;</code>的这种形式</li>
+<li><p>用data参数提交数据时，<code>request.body</code>的内容则为<code>a=1&amp;b=2</code>的这种形式，用json参数提交数据时，<code>request.body</code>的内容则为’{“<code>a&quot;: 1, &quot;b&quot;: 2}&#39;</code>的这种形式（对应Post_man中的raw形式）;</p>
+<p>使用data参数也可以实现body内容为’{“<code>a&quot;: 1, &quot;b&quot;: 2}&#39;</code>的形式，方式为<code>data=json.dumps(post_data)</code>。</p>
+</li>
 </ol>
 </li>
 </ol>
 <p><em>在Chrome浏览器中，查看post请求下面的Form Data时，选择view soure可以看到post的数据的形式，若为a=1&amp;b=2的形式，一般使用data参数；若为{“a”: 1, “b”: 2}的形式，一般使用json参数。</em></p>
+<p>当然浏览器中显示的形式也有可能是“假的”，当我们采用常规的方式请求不成功时，可以把以上几种形式都尝试下。</p>
+<ul>
+<li><h3 id="html-parser"><a href="#html-parser" class="headerlink" title="html.parser"></a>html.parser</h3><p>当我们对某url进行请求返回的数据带有类似<code>&amp;#24191;&amp;#24030;&amp;#24066;&amp;#22825;&amp;#27827</code>这样形式的数据时，这是进行了相应的HTML编码，我们可以使用python自带的<code>html.parser</code>库来进行HTML解码：</p>
+<p>方法一（于Python3.5版本以上已失效）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">  <span class="keyword">from</span> html.parser <span class="keyword">import</span> HTMLParser</span><br><span class="line">  </span><br><span class="line">  a = <span class="string">'&amp;#24191;&amp;#24030;&amp;#24066;&amp;#22825;&amp;#27827'</span></span><br><span class="line">  h = HTMLParser()</span><br><span class="line">  print(h.unescape(a))</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>广州市天河</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>  方法二（Python3.5以上版本推荐使用）：</p>
+  <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> html</span><br><span class="line"></span><br><span class="line">a = <span class="string">'&amp;#24191;&amp;#24030;&amp;#24066;&amp;#22825;&amp;#27827'</span></span><br><span class="line">text = html.unescape(a)</span><br><span class="line">print(text)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>广州市天河</span><br></pre></td></tr></table></figure>
+<p>  方法三：直接利用BeautifulSoup的<code>html.parser</code>解析库</p>
+  <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"></span><br><span class="line"><span class="comment"># response_text一般是获取的html代码，包含的文字被HTML编码了，可以使用此种方式</span></span><br><span class="line">soup = BeautifulSoup(response_text, <span class="string">'html.parser'</span>)</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -508,7 +521,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-count">30</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -519,7 +532,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -530,7 +543,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-count">59</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -577,7 +590,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#urlparse"><span class="nav-text">urlparse</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#urlsplit"><span class="nav-text">urlsplit</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#urlencode"><span class="nav-text">urlencode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#quote-amp-unquote"><span class="nav-text">quote &amp; unquote</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#unicode"><span class="nav-text">unicode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#requests-post"><span class="nav-text">requests.post()</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#urlparse"><span class="nav-text">urlparse</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#urlsplit"><span class="nav-text">urlsplit</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#urlencode"><span class="nav-text">urlencode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#quote-amp-unquote"><span class="nav-text">quote &amp; unquote</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#unicode"><span class="nav-text">unicode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#requests-post"><span class="nav-text">requests.post()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#html-parser"><span class="nav-text">html.parser</span></a></li></ol></div>
             
 
           </div>
