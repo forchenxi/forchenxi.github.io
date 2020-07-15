@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Sunrise">
 <meta property="og:description" content="Python的re模块（Regular Expression正则表达式）提供各种正则表达式的匹配操作，和 Perl 脚本的正则表达式功能类似，使用这一内嵌于 Python 的语言工具，尽管不能满足所有复杂的匹配情况，但足够在绝大多数情况下能够有效地实现对复杂字符串的分析并提取出相关信息。 re模块正则表达式使用反斜杠”\“来代表特殊形式或用作转义字符，这里跟python的语法冲突，因此用”\\“表">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-07-05T01:30:19.975Z">
+<meta property="og:updated_time" content="2020-07-07T11:42:03.265Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="python正则表达式">
 <meta name="twitter:description" content="Python的re模块（Regular Expression正则表达式）提供各种正则表达式的匹配操作，和 Perl 脚本的正则表达式功能类似，使用这一内嵌于 Python 的语言工具，尽管不能满足所有复杂的匹配情况，但足够在绝大多数情况下能够有效地实现对复杂字符串的分析并提取出相关信息。 re模块正则表达式使用反斜杠”\“来代表特殊形式或用作转义字符，这里跟python的语法冲突，因此用”\\“表">
@@ -378,6 +378,11 @@
 <p>要注意的是python正则匹配时默认不匹配换行符的（.*?不会匹配换行符），如果字符串中存在换行符往往会匹配失败，所以在匹配前要先把换行符删掉，可以使用<code>replace(&#39;\n&#39;, &#39;&#39;)</code>或<code>strip()</code>，前者可以去除所有位置的换行符，后者只能删除位于字符串两端的换行符以及各种空格。</p>
 <p>但是如果确实需要匹配换行符时，可以采取<code>re.findall(r&#39;(.*?)&#39;, content, re.DOTALL)</code>或”[\s\S]*?”代替”.*?”。</p>
 <p>此外，python正则还有诸如：匹配字符串的开头(^)、匹配字符串的结尾($)、匹配不在[]中的字符([^…])等功能以及\w,\s,\d(\W,\S,\D)等的巧妙用法。</p>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><ol>
+<li>?除了非贪婪匹配，还有匹配0次或者1次的用法，当其前面是单个字符时；</li>
+<li>如例一和例二所讲，当匹配单个字符有多种情况时可以使用<code>[我本]</code>，当匹配多个字符有多种情况时可以使用<code>(?:上诉人|原告|申诉人|申请人)</code>，若在原来的逻辑上加上可为空的条件，后者可以直接写为<code>(?:上诉人|原告|申诉人|申请人|)</code>，而前者不能写为<code>[我本 ]</code>,可以使用后者的形式，如<code>(?:我|本|)</code>,但是最优的方式应为：<code>[我本]?</code>。</li>
+<li>匹配中文:<code>[\u4e00-\u9fa5]</code></li>
+</ol>
 <h2 id="2、re-match和re-search"><a href="#2、re-match和re-search" class="headerlink" title="2、re.match和re.search"></a>2、re.match和re.search</h2><h3 id="re-match-pattern-string-flags-0"><a href="#re-match-pattern-string-flags-0" class="headerlink" title="re.match(pattern, string, flags=0)"></a><code>re.match(pattern, string, flags=0)</code></h3><p>re.match尝试从字符串的起始位置开始匹配，若匹配成功返回一个匹配对象，否则返回None</p>
 <p>re.match对象拥有以下方法：</p>
 <p>start()：返回匹配开始的位置</p>
@@ -520,7 +525,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">31</span>
+                  <span class="site-state-item-count">32</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -542,7 +547,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">59</span>
+                  <span class="site-state-item-count">60</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -589,7 +594,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#re模块"><span class="nav-text">re模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1、re-findall-pattern-string-flags"><span class="nav-text">1、re.findall(pattern, string[, flags])</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#例一"><span class="nav-text">例一</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#例二"><span class="nav-text">例二</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#例三"><span class="nav-text">例三</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2、re-match和re-search"><span class="nav-text">2、re.match和re.search</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#re-match-pattern-string-flags-0"><span class="nav-text">re.match(pattern, string, flags=0)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#re-search-pattern-string-flags-0"><span class="nav-text">re.search(pattern, string, flags=0)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3、re-finditer-pattern-string-flags"><span class="nav-text">3、re.finditer(pattern, string[. flags])</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4、re-sub和re-subn"><span class="nav-text">4、re.sub和re.subn</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#re-sub-pattern-repl-string-count-0-flags-0"><span class="nav-text">re.sub(pattern, repl, string, count=0, flags=0)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#re-subn-pattern-repl-string-count-0-flags-0"><span class="nav-text">re.subn(pattern, repl, string, count=0, flags=0)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5、re-split-pattern-string-maxsplit-0"><span class="nav-text">5、re.split(pattern, string, maxsplit=0)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6、re-compile-strPattern-flag"><span class="nav-text">6、re.compile(strPattern[, flag])</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#re模块"><span class="nav-text">re模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1、re-findall-pattern-string-flags"><span class="nav-text">1、re.findall(pattern, string[, flags])</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#例一"><span class="nav-text">例一</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#例二"><span class="nav-text">例二</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#例三"><span class="nav-text">例三</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其他"><span class="nav-text">其他</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2、re-match和re-search"><span class="nav-text">2、re.match和re.search</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#re-match-pattern-string-flags-0"><span class="nav-text">re.match(pattern, string, flags=0)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#re-search-pattern-string-flags-0"><span class="nav-text">re.search(pattern, string, flags=0)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3、re-finditer-pattern-string-flags"><span class="nav-text">3、re.finditer(pattern, string[. flags])</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4、re-sub和re-subn"><span class="nav-text">4、re.sub和re.subn</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#re-sub-pattern-repl-string-count-0-flags-0"><span class="nav-text">re.sub(pattern, repl, string, count=0, flags=0)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#re-subn-pattern-repl-string-count-0-flags-0"><span class="nav-text">re.subn(pattern, repl, string, count=0, flags=0)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5、re-split-pattern-string-maxsplit-0"><span class="nav-text">5、re.split(pattern, string, maxsplit=0)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6、re-compile-strPattern-flag"><span class="nav-text">6、re.compile(strPattern[, flag])</span></a></li></ol></div>
             
 
           </div>
