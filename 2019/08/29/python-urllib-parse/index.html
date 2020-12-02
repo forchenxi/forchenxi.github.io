@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Sunrise">
 <meta property="og:description" content="urlparse123456789from urllib.parse import urlparse, urlunparseresult = urlparse(&apos;http://www.baidu.com/index.html;user?id=5#comment&apos;)print(result)ParseResult(scheme=&apos;http&apos;, netloc=&apos;www.baidu.com&apos;, pat">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-09-16T02:42:10.844Z">
+<meta property="og:updated_time" content="2020-11-16T04:54:10.136Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="urllib库的使用">
 <meta name="twitter:description" content="urlparse123456789from urllib.parse import urlparse, urlunparseresult = urlparse(&apos;http://www.baidu.com/index.html;user?id=5#comment&apos;)print(result)ParseResult(scheme=&apos;http&apos;, netloc=&apos;www.baidu.com&apos;, pat">
@@ -364,6 +364,7 @@
 </li>
 <li><h3 id="quote-amp-unquote"><a href="#quote-amp-unquote" class="headerlink" title="quote &amp; unquote"></a>quote &amp; unquote</h3><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 该方法可以将内容转变成url编码的格式</span></span><br><span class="line"><span class="comment"># 多数情况用于对中文字符进行编码</span></span><br><span class="line"><span class="keyword">from</span> urllib.parse <span class="keyword">import</span> quote  </span><br><span class="line">  </span><br><span class="line">keyword = <span class="string">'壁纸'</span>  </span><br><span class="line">url = <span class="string">'http://www.baidu.coms?wd='</span>+quote(keyword)  </span><br><span class="line">print(url)  </span><br><span class="line"></span><br><span class="line">http://www.baidu.coms?wd=%E5%A3%81%E7%BA%B8</span><br><span class="line">    </span><br><span class="line"><span class="comment"># 相对应的unquote可以进行url解码</span></span><br><span class="line">print(unquote(url))</span><br><span class="line"></span><br><span class="line">http://www.baidu.coms?wd=壁纸</span><br></pre></td></tr></table></figure>
 <p><em>quote方法有个参数encoding,不同的encoding值，获取的url编码有一些不同</em></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> urllib.parse <span class="keyword">import</span> quote</span><br><span class="line">quote(<span class="string">"fu/fei/f34"</span>)</span><br><span class="line"><span class="string">'fu/fei/f34'</span></span><br><span class="line"><span class="comment"># 第二个参数设置为空，可以将斜杠也转换</span></span><br><span class="line">quote(<span class="string">"fu/fei/f34"</span>, <span class="string">""</span>)</span><br><span class="line"><span class="string">'fu%2Ffei%2Ff34'</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><h3 id="unicode"><a href="#unicode" class="headerlink" title="unicode"></a>unicode</h3><p>有一些字符串的形式包含大量’\u’字符如（”2019\u5e74\u5e74\u62a5\u8868”），可以这样来转换成中文</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 前面的r很重要，将反斜杠的转义功能去除掉（或者使用双反斜杠）</span></span><br><span class="line">text = <span class="string">r'2019\u5e74\u5e74\u62a5\u8868'</span></span><br><span class="line">print(text.encode().decode(<span class="string">'unicode_escape'</span>))</span><br><span class="line"></span><br><span class="line"><span class="string">'2019年年报表'</span></span><br></pre></td></tr></table></figure>
@@ -529,7 +530,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-count">37</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -551,7 +552,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">60</span>
+                  <span class="site-state-item-count">70</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
