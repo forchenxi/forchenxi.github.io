@@ -92,9 +92,11 @@
 <meta property="og:image" content="http://yoursite.com/2020/01/20/dl-concept/p3.png">
 <meta property="og:image" content="http://yoursite.com/2020/01/20/dl-concept/p4.png">
 <meta property="og:image" content="http://yoursite.com/2020/01/20/dl-concept/p5.png">
+<meta property="og:image" content="http://yoursite.com/2020/01/20/dl-concept/p8.png">
+<meta property="og:image" content="http://yoursite.com/2020/01/20/dl-concept/p9.png">
 <meta property="og:image" content="http://yoursite.com/2020/01/20/dl-concept/p6.png">
 <meta property="og:image" content="http://yoursite.com/2020/01/20/dl-concept/p7.png">
-<meta property="og:updated_time" content="2021-01-05T11:56:44.052Z">
+<meta property="og:updated_time" content="2021-01-14T11:26:15.691Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深度学习概念">
 <meta name="twitter:description" content="Python深度学习注：本文章摘自《Python深度学习》书籍 第一部分：深度学习基础第一章：什么是深度学习人工智能、机器学习与深度学习的关系 符号主义人工智能(symbolic AI)： 人们输入的是规则（即程序）和需要根据这些规则进行处理的数据，系统输出的是答案。  机器学习： 人们输入的是数据和从这些数据中预期得到的答案，系统输出的是 规则。这些规则随后可应用于新的数据，并使计算机自主生成答">
@@ -387,11 +389,22 @@
 <p><img src="/2020/01/20/dl-concept/p5.png" alt></p>
 <p><strong>深度学习的特点</strong></p>
 <ol>
-<li><p><strong>特征工程自动化</strong>：对于机器学习，人们必须竭尽全力让初始输入数据更适合处理，所以必须手动为数据设计好的表示层，这叫做<strong>特征工程</strong>。而深度学习完全将这个步骤自动化，利用深度学习，可以一次性学习所有特征，无须手动设计，这极大地简化了机器学习工作流程。</p>
-</li>
-<li><p><strong>贪婪学习</strong>：深度学习模型可以在同一时间学习所有表示层，而不是依次连续学习。</p>
-</li>
+<li><strong>特征工程自动化</strong>：对于机器学习，人们必须竭尽全力让初始输入数据更适合处理，所以必须手动为数据设计好的表示层，这叫做<strong>特征工程</strong>。而深度学习完全将这个步骤自动化，利用深度学习，可以一次性学习所有特征，无须手动设计，这极大地简化了机器学习工作流程。</li>
+<li><strong>贪婪学习</strong>：深度学习模型可以在同一时间学习所有表示层，而不是依次连续学习。</li>
 </ol>
+<h5 id="机器学习简史"><a href="#机器学习简史" class="headerlink" title="机器学习简史"></a>机器学习简史</h5><h6 id="概率建模"><a href="#概率建模" class="headerlink" title="概率建模"></a>概率建模</h6><ol>
+<li>朴素贝叶斯算法：基于应用贝叶斯定理的机器学习分类器；</li>
+<li>logistic回归：分类算法</li>
+</ol>
+<h6 id="早期神经网络"><a href="#早期神经网络" class="headerlink" title="早期神经网络"></a>早期神经网络</h6><p>反向传播算法——利用梯度下降优化来训练一系列参数化运算链的方法；贝尔实验室将神经网络的早期思想与反向传播算法相结合，应用于手写数字分类，得到名为<strong><code>LeNet</code></strong>网络。</p>
+<h6 id="核方法-kernel-method"><a href="#核方法-kernel-method" class="headerlink" title="核方法  kernel method"></a>核方法  kernel method</h6><p>核方法是一组分类算法，其中最有名的是支持向量机（<code>SVM</code>，support vector machine）,<code>SVM</code>的目标是通过在属于两个不同类别的两组数据点之间找到良好的<strong>决策边界</strong>（decision boundary）来解决分类问题。</p>
+<p><img src="/2020/01/20/dl-concept/p8.png" alt></p>
+<p><code>SVM</code>很难扩展到大型数据集，并且在图像分类等感知问题上的效果也不好。</p>
+<h6 id="决策树、随机森林与梯度提升机"><a href="#决策树、随机森林与梯度提升机" class="headerlink" title="决策树、随机森林与梯度提升机"></a>决策树、随机森林与梯度提升机</h6><p><strong>决策树</strong>是类似于流程图的结构，可以对输入数据点进行分类或根据给定输入来预测输出值。</p>
+<p><img src="/2020/01/20/dl-concept/p9.png" alt></p>
+<p><strong>随机森林</strong>算法即构建许多决策树，然后将他们的输出集成到一起，对任何<strong>浅层</strong>机器学习任务来说，它几乎总是<strong>第二好</strong>的算法。</p>
+<p><strong>梯度提升机</strong>（gradient boosting machine）也是将弱预测模型（通常是决策树）集成的机器学习技术。它使用了梯度提升方法，通过迭代地训练新模型来专门解决 之前模型的弱点，从而改进任何机器学习模型的效果。将梯度提升技术应用于决策树时，得到的模型与随机森林具有相似的性质，但在绝大多数情况下效果都比随机森林要好。</p>
+<h6 id="回到神经网络"><a href="#回到神经网络" class="headerlink" title="回到神经网络"></a>回到神经网络</h6><p>自2012年以来，深度卷积神经网络<code>convnet</code>已成为所有计算机视觉任务的首选算法，与此同时，在自然语言处理领域也得到应用，它已经在大量应用中完全取代了<code>SVM</code>与决策树。</p>
 <p><strong>机器学习现状</strong></p>
 <ol>
 <li><strong>梯度提升机</strong>：用于处理结构化数据的问题，用于浅层学习问题，使用<code>XGBoost</code>库；</li>
@@ -455,6 +468,7 @@
 <p><strong>图像数据</strong>：图像通常具有三个维度：高度、宽度和颜色深度。虽然灰度图像（比如<code>MNIST</code> 数字图像） 只有一个颜色通道，因此可以保存在<code>2D</code> 张量中，但按照惯例，图像张量始终都是<code>3D</code> 张量，灰度图像的彩色通道只有一维。因此，如果图像大小为256×256，那么128 张灰度图像组成的批 量可以保存在一个形状为 (128, 256, 256, 1) 的张量中，而128 张彩色图像组成的批量则可以保存在一个形状为(128, 256, 256, 3)的张量中。</p>
 <p><img src="/2020/01/20/dl-concept/p7.png" alt></p>
 <p><strong>视频数据</strong>：视频可以看作一系列帧， 每一帧都是一张彩色图像。由于每一帧都可以保存在一个形状为 (height, width, color_ depth) 的 <code>3D</code> 张量中，因此一系列帧可以保存在一个形状为(frames, height, width, color_depth) 的<code>4D</code>张量中，而不同视频组成的批量则可以保存在一个<code>5D</code>张量中，其形状为 (samples, frames, height, width, color_depth)。</p>
+<p>这里省略的比较复杂的张量运算，包括逐元素运算、广播、点积和变形。</p>
 <h4 id="第三章-神经网络入门"><a href="#第三章-神经网络入门" class="headerlink" title="第三章 神经网络入门"></a>第三章 神经网络入门</h4><p><strong>训练神经网络主要围绕以下方面</strong></p>
 <ul>
 <li>层，多个层组合成网络（或模型）；</li>
@@ -693,7 +707,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Python深度学习"><span class="nav-text">Python深度学习</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#第一部分：深度学习基础"><span class="nav-text">第一部分：深度学习基础</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#第一章：什么是深度学习"><span class="nav-text">第一章：什么是深度学习</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#人工智能、机器学习与深度学习的关系"><span class="nav-text">人工智能、机器学习与深度学习的关系</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第二章-神经网络的数学基础"><span class="nav-text">第二章 神经网络的数学基础</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第三章-神经网络入门"><span class="nav-text">第三章 神经网络入门</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Python深度学习"><span class="nav-text">Python深度学习</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#第一部分：深度学习基础"><span class="nav-text">第一部分：深度学习基础</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#第一章：什么是深度学习"><span class="nav-text">第一章：什么是深度学习</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#人工智能、机器学习与深度学习的关系"><span class="nav-text">人工智能、机器学习与深度学习的关系</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#机器学习简史"><span class="nav-text">机器学习简史</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#概率建模"><span class="nav-text">概率建模</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#早期神经网络"><span class="nav-text">早期神经网络</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#核方法-kernel-method"><span class="nav-text">核方法  kernel method</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#决策树、随机森林与梯度提升机"><span class="nav-text">决策树、随机森林与梯度提升机</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#回到神经网络"><span class="nav-text">回到神经网络</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第二章-神经网络的数学基础"><span class="nav-text">第二章 神经网络的数学基础</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第三章-神经网络入门"><span class="nav-text">第三章 神经网络入门</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
