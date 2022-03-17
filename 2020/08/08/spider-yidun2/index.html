@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="python,js加密,逆向,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="网易易盾滑动验证码破解（下篇）接着上篇文章，我们在这篇文章中将会介绍，如何获取验证码和token,然后计算验证码缺口距离以及模拟轨迹生成等操作。 获取验证码先看下获取验证码的请求（get请求）： url=https://c.dun.163.com/api/v2/get?,参数如下： 12345678910111213141516id: 07e2387ab53a4d6f930b8d9a9be71bd">
+<meta name="keywords" content="python,js加密,逆向">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网易易盾滑动验证码破解（下篇）">
+<meta property="og:url" content="http://yoursite.com/2020/08/08/spider-yidun2/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="网易易盾滑动验证码破解（下篇）接着上篇文章，我们在这篇文章中将会介绍，如何获取验证码和token,然后计算验证码缺口距离以及模拟轨迹生成等操作。 获取验证码先看下获取验证码的请求（get请求）： url=https://c.dun.163.com/api/v2/get?,参数如下： 12345678910111213141516id: 07e2387ab53a4d6f930b8d9a9be71bd">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2020/08/08/spider-yidun2/p1.png">
+<meta property="og:image" content="http://yoursite.com/2020/08/08/spider-yidun2/p2.png">
+<meta property="og:image" content="http://yoursite.com/2020/08/08/spider-yidun2/p3.png">
+<meta property="og:image" content="http://yoursite.com/2020/08/08/spider-yidun2/p4.png">
+<meta property="og:image" content="http://yoursite.com/2020/08/08/spider-yidun2/p5.png">
+<meta property="og:image" content="http://yoursite.com/2020/08/08/spider-yidun2/p7.png">
+<meta property="og:image" content="http://yoursite.com/2020/08/08/spider-yidun2/p6.png">
+<meta property="og:updated_time" content="2021-01-30T06:23:14.429Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="网易易盾滑动验证码破解（下篇）">
+<meta name="twitter:description" content="网易易盾滑动验证码破解（下篇）接着上篇文章，我们在这篇文章中将会介绍，如何获取验证码和token,然后计算验证码缺口距离以及模拟轨迹生成等操作。 获取验证码先看下获取验证码的请求（get请求）： url=https://c.dun.163.com/api/v2/get?,参数如下： 12345678910111213141516id: 07e2387ab53a4d6f930b8d9a9be71bd">
+<meta name="twitter:image" content="http://yoursite.com/2020/08/08/spider-yidun2/p1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/08/08/spider-yidun2/">
+
+
+
+
+
+  <title>网易易盾滑动验证码破解（下篇） | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/08/spider-yidun2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">网易易盾滑动验证码破解（下篇）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-08T19:33:54+08:00">
+                2020-08-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/爬虫/" itemprop="url" rel="index">
+                    <span itemprop="name">爬虫</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="网易易盾滑动验证码破解（下篇）"><a href="#网易易盾滑动验证码破解（下篇）" class="headerlink" title="网易易盾滑动验证码破解（下篇）"></a>网易易盾滑动验证码破解（下篇）</h3><p>接着上篇文章，我们在这篇文章中将会介绍，如何获取验证码和<code>token</code>,然后计算验证码缺口距离以及模拟轨迹生成等操作。</p>
+<h4 id="获取验证码"><a href="#获取验证码" class="headerlink" title="获取验证码"></a>获取验证码</h4><p>先看下获取验证码的请求（get请求）：</p>
+<p><code>url=https://c.dun.163.com/api/v2/get?</code>,参数如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">id: <span class="number">07e2387</span>ab53a4d6f930b8d9a9be71bdf</span><br><span class="line">fp: hiXxMilwZwpb4+sPEBt7K4oMVlNDs1S7S/gSM+<span class="number">3</span>CXwzXT61XEHUGWJ+KRpmQIBeAAaIce9YQE4koUZTctLkYBUU8TKdailKmA4yQBLqLOX/kBhCCeWYo4n6f3hVt91ql4g\<span class="number">52</span>gzqt/<span class="number">95L</span>LSwJLciW6C8pXVTxGxc0HmqhNP/pqrGca+<span class="number">6</span>:<span class="number">1597838263871</span></span><br><span class="line">https: true</span><br><span class="line">type: <span class="number">2</span></span><br><span class="line">version: <span class="number">2.14</span><span class="number">.0</span></span><br><span class="line">dpr: <span class="number">1</span></span><br><span class="line">dev: <span class="number">1</span></span><br><span class="line">cb: CZU+qZFVc/pqC0dVRuPJJAvHF6vHAvfOaReW7FqVZrpR4cdM9avS/c\qJlBrAeKA</span><br><span class="line">ipv6: false</span><br><span class="line">runEnv: <span class="number">10</span></span><br><span class="line">group: </span><br><span class="line">scene: </span><br><span class="line">width: <span class="number">320</span></span><br><span class="line">token: </span><br><span class="line">referer: https://dun<span class="number">.163</span>.com/trial/jigsaw</span><br><span class="line">callback: __JSONP_bzmv2ur_0</span><br></pre></td></tr></table></figure>
+<p>需要动态变化的参数只有<code>fp</code>参数和<code>cb</code>参数，这里<code>cb</code>参数生成方式其实与我们上篇中的<code>cb</code>是一样的，所以重点是<code>fp</code>参数，也就是fingerprint(指纹)。</p>
+<a id="more"></a>
+<h5 id="fingerprint指纹"><a href="#fingerprint指纹" class="headerlink" title="fingerprint指纹"></a>fingerprint指纹</h5><p>在寻找<code>fp</code>参数的时候，我是定位到了这个位置(当然也不是一下就找到了，当时还在利用<code>fp</code>参数一直调试找调用栈，至今利用那种方法也没弄清怎么定位到这里，也是一些碰巧的发现让我定位到这里，对于新手你顶多多花点时间反正总是可以找到)：</p>
+<p><img src="/2020/08/08/spider-yidun2/p1.png" alt></p>
+<p><code>fingerprint</code>就是<code>window.gdxidpyhxde</code>的值，我在代码里找了很久没找到在哪里给<code>window.gdxidpyhxde</code>进行的赋值，身边的大佬告诉我这种window对象要用<strong><code>Hook</code></strong>(钩子)来获取，并且要借助一个名叫<strong>油猴插件</strong>的工具来完成，这里有一篇介绍这个的<a href="https://www.jianshu.com/p/3086c9ae896f" target="_blank" rel="noopener">文章</a>，大家可以参考下。</p>
+<p>安装完插件，按照教程上的操作，添加脚本，编译以下内容：</p>
+<p><img src="/2020/08/08/spider-yidun2/p2.png" alt></p>
+<p>保存并启用脚本后，然后刷新网页，就能够捕获到<code>window.gdxidpyhxde</code>赋值的地方：</p>
+<p><img src="/2020/08/08/spider-yidun2/p3.png" alt></p>
+<p>这里有一个有意思的地方需要絮叨絮叨，顺着调用栈可以找到P方法，P方法的参数传进来就是<code>fp</code>,继续查看调用栈发现是Y()方法生成了<code>fp</code>,Y里面又调用了X,X方法时这样的：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">X</span>(<span class="params">e</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> n = (G[u[<span class="number">160</span>]] || l[<span class="number">0</span>]).split(s[<span class="number">78</span>]), i = t[<span class="number">9</span>]; i &lt; n.length; i++) &#123;</span><br><span class="line">        <span class="keyword">var</span> r = n[i].indexOf(u[<span class="number">10</span>]);</span><br><span class="line">        <span class="keyword">if</span> (r &gt;= t[<span class="number">9</span>]) &#123;</span><br><span class="line">            <span class="keyword">var</span> o = n[i].substring(r + t[<span class="number">535</span>], n[i].length);</span><br><span class="line">            <span class="keyword">if</span> (n[i].substring(t[<span class="number">9</span>], r) == e)</span><br><span class="line">                <span class="keyword">return</span> <span class="built_in">window</span>.decodeURIComponent(o)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果仔细观察，会发现G[u[160]]实际上是这样的值：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__snaker__captcha=oRtq9nvAm0QouuvG; _qddac=<span class="number">3</span><span class="number">-3</span><span class="number">-1.1</span><span class="number">.5</span>i4x48.kd9xulyf; _9755xjdesxxd_=<span class="number">32</span>; __root_domain_v=<span class="number">.163</span>.com; _qddaz=QD.jdy8os.x4rgyl.kd5r5e86; YD20160637306799%<span class="number">3</span>AWM_NI=OI%<span class="number">2</span>B1pcpJjmLWcaLwLFnU7l6Alay87tDl4%<span class="number">2</span>B6%<span class="number">2</span>F4pS4A0beBJoX90bwRdW8WMIzxsaQQDfRrXvTbwsEBjnY7hYtxa1sFTgrCD0ytgx5kixGZsS3rL%<span class="number">2</span>BBjh0sLh5NsKYTSsgAVkw%<span class="number">3</span>D; YD20160637306799%<span class="number">3</span>AWM_TID=y1dRdZ6v4M5FBBVEBEY%<span class="number">2</span>BGoL66uK9h7Y1; YD20160637306799%<span class="number">3</span>AWM_NIKE=<span class="number">9</span>ca17ae2e6ffcda170e2e6eed7ed3ba5ae9cd8fc33ad9e8fa2d45e879a8bbbf144b891fa97b55cfcb4babbef2af0fea7c3b92a8d97e5d2f369b496a68ecf5da1bf8498cf4eae8bf98db54bb0bfb7d9b68088b4fcccb525f8b09dd5c43ca2bb8eabee54fbf0ae98d17095e899aecc72bcadafb2d450a68ebeb9f560a2a9bda6c162ae87f989dc80bcbfff94c560a5ae8da5b373b8b9b8d6ea63bc999694d239b294e5a3e964f4ad8489b846b19597b5d279a59f9a8cf637e2a3; Hm_lvt_4671c5d502135636b837050ec6d716ce=<span class="number">1595489168</span>,<span class="number">1596182503</span>; _qdda=<span class="number">3</span><span class="number">-1.1</span>; _qddab=<span class="number">3</span><span class="number">-5</span>i4x48.kd9xulyf; _qddamta_2852175932=<span class="number">3</span><span class="number">-0</span>; gdxidpyhxdE=<span class="number">0</span>Mvsl573PzyW0pM%<span class="number">2</span>BnVVaI7IjUXbqquQxvm6KroZg4tRV%<span class="number">2</span>B70uYeaA1Q5E0wwZhn0%<span class="number">2</span>FDy%<span class="number">5</span>CuDA2Zte8Mm%<span class="number">2</span>FvlnuKOi%<span class="number">2</span>B%<span class="number">5</span>CzTwEDaqsydVaPNLhAJR17o0vNtHQlCvCf87C5dJ1RlKuOebbgKIWVTVJORAIaQQtrbzdDp62IePWDwDSB%<span class="number">2</span>B%<span class="number">2</span>F88CE7Q%<span class="number">3</span>A1596184305983; Hm_lpvt_4671c5d502135636b837050ec6d716ce=<span class="number">1596184180</span></span><br></pre></td></tr></table></figure>
+<p>其实就是cookie，这样就有一个问题，我们本身是获取不到cookie的，这里生成<code>fp</code>居然需要cookie，有点不对劲，其实这里面的逻辑是这样的：因为我们现在操作的页面（在浏览器中）是有<code>cookie</code>的（并且cookie在有效期内），所以生成<code>fp</code>参数的直接利用cookie就可以了，如果我们尝试着清掉cookie以及缓存,再刷新页面，会得到这样的结果：</p>
+<p><img src="/2020/08/08/spider-yidun2/p4.png" alt></p>
+<p>发现调用栈这边比刚才多了一个W，实际上这才是我们要找的<code>fp</code>参数生成的地方。</p>
+<p>有大佬是把W方法更外层一整个方法扣出来，然后自己找了一些DOM对象（这个操作做不来，我选择放弃）。</p>
+<p>继续在W()内部研究一会可以发现，<code>h = h + u[7] + p</code>这是fp最后生成的代码</p>
+<p><img src="/2020/08/08/spider-yidun2/p5.png" alt></p>
+<p><code>u[7]</code>是冒号，p是一个时间戳，所以fp得格式是这样的：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">60</span>G6u4NNUxBAYgIk2G3wXUckAQ8GEBbbS+U4acoYQs+<span class="number">4</span>ggT3XQRUYRmQQKMdcBvMjM6rrsw8ofKOp7BN3V0nLJjSt5ngLhQ3bkJ38ahyUvzM9R2M+Jbb8IHeUeWjBR3StpJBowR8kbcSs/od47bPIzD+klY46HTmNlm1/yLDqjiLZ+Jv:<span class="number">1611914097232</span></span><br></pre></td></tr></table></figure>
+<p>这里把W()方法抠出来，并做一定的调整，在运行的时候缺啥补啥就好了，我这里没细扣，用的同事的</p>
+<p>fingerprint的生成方法：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> host = <span class="string">"dun.163.com"</span></span><br><span class="line"><span class="keyword">var</span> u = [<span class="string">"5"</span>,<span class="string">"6"</span>,<span class="string">"InactiveCaptionText"</span>,<span class="string">"7"</span>,<span class="string">"WEBZEN Browser Extension"</span>,<span class="string">"8"</span>,<span class="string">"9"</span>,<span class="string">":"</span>,<span class="string">"DivX Browser Plug-In"</span>,<span class="string">";"</span>,<span class="string">"="</span>,<span class="string">"Uplay PC"</span>,<span class="string">"canvas exception"</span>,<span class="string">"A"</span>,<span class="string">"B"</span>,<span class="string">"C"</span>,<span class="string">"D"</span>,<span class="string">"E"</span>,<span class="string">"微软雅黑"</span>,<span class="string">"F"</span>,<span class="string">"Harrington"</span>,<span class="string">"G"</span>,<span class="string">"H"</span>,<span class="string">"I"</span>,<span class="string">"J"</span>,<span class="string">"Gnome Shell Integration"</span>,<span class="string">"K"</span>,<span class="string">"L"</span>,<span class="string">"M"</span>,<span class="string">"N"</span>,<span class="string">"O"</span>,<span class="string">"P"</span>,<span class="string">"Q"</span>,<span class="string">"R"</span>,<span class="string">"S"</span>,<span class="string">"Niagara Solid"</span>,<span class="string">"T"</span>,<span class="string">"SefClient Plugin"</span>,<span class="string">"U"</span>,<span class="string">"V"</span>,<span class="string">"1111"</span>,<span class="string">"W"</span>,<span class="string">"X"</span>,<span class="string">"Y"</span>,<span class="string">"Z"</span>,<span class="string">"Goudy Old Style"</span>,<span class="string">"\\"</span>,<span class="string">"Roblox Launcher Plugin"</span>,<span class="string">"Microsoft Office 2013"</span>,<span class="string">"QQMusic"</span>,<span class="string">"a"</span>,<span class="string">"Eurostile"</span>,<span class="string">"b"</span>,<span class="string">"rmocx.RealPlayer G2 Control.1"</span>,<span class="string">"c"</span>,<span class="string">"Scripting.Dictionary"</span>,<span class="string">"d"</span>,<span class="string">"仿宋"</span>,<span class="string">"e"</span>,<span class="string">"f"</span>,<span class="string">"g"</span>,<span class="string">"h"</span>,<span class="string">"Ma-Config.com plugin"</span>,<span class="string">"i"</span>,<span class="string">"1010"</span>,<span class="string">"Casual"</span>,<span class="string">"j"</span>,<span class="string">"k"</span>,<span class="string">"l"</span>,<span class="string">"m"</span>,<span class="string">"n"</span>,<span class="string">"o"</span>,<span class="string">"p"</span>,<span class="string">"1008"</span>,<span class="string">"ct"</span>,<span class="string">"doNotTrack"</span>,<span class="string">"q"</span>,<span class="string">"setTimeout"</span>,<span class="string">"丽宋 Pro"</span>,<span class="string">"r"</span>,<span class="string">"Gisha"</span>,<span class="string">"getTimezoneOffset"</span>,<span class="string">"s"</span>,<span class="string">"1005"</span>,<span class="string">"1004"</span>,<span class="string">"t"</span>,<span class="string">"u"</span>,<span class="string">"1003"</span>,<span class="string">"v"</span>,<span class="string">"1001"</span>,<span class="string">"w"</span>,<span class="string">"x"</span>,<span class="string">"drawArrays"</span>,<span class="string">"y"</span>,<span class="string">"z"</span>,<span class="string">"&#123;"</span>,<span class="string">"&#125;"</span>,<span class="string">"~"</span>,<span class="string">"font"</span>,<span class="string">"1009"</span>,<span class="string">"=null; path=/; expires="</span>,<span class="string">"Shell.UIHelper"</span>,<span class="string">"toDataURL"</span>,<span class="string">"WindowText"</span>,<span class="string">"language"</span>,<span class="string">"do"</span>,<span class="string">"丽黑 Pro"</span>,<span class="string">"HighlightText"</span>,<span class="string">"div"</span>,<span class="string">"MenuText"</span>,<span class="string">"AOL Media Playback Plugin"</span>,<span class="string">"Citrix online plug-in"</span>,<span class="string">"ec"</span>,<span class="string">"Desdemona"</span>,<span class="string">"InactiveBorder"</span>,<span class="string">"RealPlayer"</span>,<span class="string">"HELLO"</span>,<span class="string">", 'code':"</span>,<span class="string">"em"</span>,<span class="string">"npTongbuAddin"</span>,<span class="string">"createElement"</span>,<span class="string">"phantom"</span>,<span class="string">"MS PMincho"</span>,<span class="string">"楷体"</span>,<span class="string">"eval"</span>,<span class="string">"ex"</span>,<span class="string">"DivX VOD Helper Plug-in"</span>,<span class="string">"新细明体"</span>,<span class="string">"QuickTimeCheckObject.QuickTimeCheck.1"</span>,<span class="string">"FlyOrDie Games Plugin"</span>,<span class="string">"attachShader"</span>,<span class="string">"PlayOn Plug-in"</span>,<span class="string">"getTime"</span>,<span class="string">"1.01"</span>,<span class="string">"Broadway"</span>,<span class="string">"fp"</span>,<span class="string">"Alawar NPAPI utils"</span>,<span class="string">"Forte"</span>,<span class="string">"hashCode"</span>,<span class="string">"方正姚体"</span>,<span class="string">"ESN Sonar API"</span>,<span class="string">"HPDetect"</span>,<span class="string">"Bitdefender QuickScan"</span>,<span class="string">"IE Tab plugin"</span>,<span class="string">"',"</span>,<span class="string">"ButtonFace"</span>,<span class="string">"cpuClass"</span>,<span class="string">"Century Gothic"</span>,<span class="string">"Online Storage plug-in"</span>,<span class="string">"Safer Update"</span>,<span class="string">"Msxml2.DOMDocument"</span>,<span class="string">"Engravers MT"</span>,<span class="string">"Silverlight Plug-In"</span>,<span class="string">"Google Gears 0.5.33.0"</span>,<span class="string">"Citrix ICA Client"</span>,<span class="string">"alphabetic"</span>,<span class="string">"VDownloader"</span>,<span class="string">"华文楷体"</span>,<span class="string">"attrVertex"</span>,<span class="string">"宋体"</span>,<span class="string">"cookie"</span>,<span class="string">"%22"</span>,<span class="string">"%26"</span>,<span class="string">"Centaur"</span>,<span class="string">"4game"</span>,<span class="string">"Rockwell"</span>,<span class="string">"LogMeIn Plugin 1.0.0.961"</span>,<span class="string">"Octoshape Streaming Services"</span>,<span class="string">"toGMTString"</span>,<span class="string">"th=/"</span>,<span class="string">"SumatraPDF Browser Plugin"</span>,<span class="string">"PDF.PdfCtrl"</span>,<span class="string">"fillStyle"</span>,<span class="string">"je"</span>,<span class="string">"Adobe Ming Std"</span>,<span class="string">"TorchHelper"</span>,<span class="string">"Franklin Gothic Heavy"</span>,<span class="string">"华文仿宋"</span>,<span class="string">"Harmony Plug-In"</span>,<span class="string">"Gigi"</span>,<span class="string">"v1.1"</span>,<span class="string">"Kino MT"</span>,<span class="string">"SimHei"</span>,<span class="string">"AliSSOLogin plugin"</span>,<span class="string">"RealPlayer.RealPlayer(tm) ActiveX Control (32-bit)"</span>,<span class="string">"Yandex PDF Viewer"</span>,<span class="string">"Citrix Receiver Plug-in"</span>,<span class="string">"mai"</span>,<span class="string">"top"</span>,<span class="string">"AcroPDF.PDF"</span>,<span class="string">"canvas api exception"</span>,<span class="string">"InactiveCaption"</span>,<span class="string">"Menu"</span>,<span class="string">"precision mediump float; varying vec2 varyinTexCoordinate; void main() &#123;   gl_FragColor = vec4(varyinTexCoordinate, 0, 1); &#125;"</span>,<span class="string">"QQ2013 Firefox Plugin"</span>,<span class="string">"Google Update"</span>,<span class="string">"华文彩云"</span>,<span class="string">"eMusicPlugin DLM6"</span>,<span class="string">"Web Components"</span>,<span class="string">"Babylon ToolBar"</span>,<span class="string">"Coowon Update"</span>]</span><br><span class="line"><span class="keyword">var</span> t = [<span class="number">66</span>,<span class="number">60</span>,<span class="number">79</span>,<span class="number">60</span>,<span class="number">7</span>,<span class="number">17</span>,<span class="number">33</span>,<span class="number">96</span>,<span class="number">68</span>,<span class="number">0</span>,<span class="number">2</span>,<span class="number">1423857449</span>,<span class="number">-2</span>,<span class="number">3</span>,<span class="number">-3</span>,<span class="number">3432918353</span>,<span class="number">1555261956</span>,<span class="number">4</span>,<span class="number">2847714899</span>,<span class="number">-4</span>,<span class="number">5</span>,<span class="number">-5</span>,<span class="number">2714866558</span>,<span class="number">1281953886</span>,<span class="number">6</span>,<span class="number">-6</span>,<span class="number">198958881</span>,<span class="number">1141124467</span>,<span class="number">2970347812</span>,<span class="number">-7</span>,<span class="number">7</span>,<span class="number">3110523913</span>,<span class="number">8</span>,<span class="number">-8</span>,<span class="number">2428444049</span>,<span class="number">-9</span>,<span class="number">9</span>,<span class="number">10</span>,<span class="number">-10</span>,<span class="number">-11</span>,<span class="number">11</span>,<span class="number">2563907772</span>,<span class="number">-12</span>,<span class="number">12</span>,<span class="number">13</span>,<span class="number">2282248934</span>,<span class="number">-13</span>,<span class="number">2154129355</span>,<span class="number">-14</span>,<span class="number">14</span>,<span class="number">15</span>,<span class="number">-15</span>,<span class="number">16</span>,<span class="number">-16</span>,<span class="number">17</span>,<span class="number">-17</span>,<span class="number">-18</span>,<span class="number">18</span>,<span class="number">19</span>,<span class="number">-19</span>,<span class="number">20</span>,<span class="number">-20</span>,<span class="number">21</span>,<span class="number">-21</span>,<span class="number">-22</span>,<span class="number">22</span>,<span class="number">-23</span>,<span class="number">23</span>,<span class="number">24</span>,<span class="number">-24</span>,<span class="number">25</span>,<span class="number">-25</span>,<span class="number">-26</span>,<span class="number">26</span>,<span class="number">27</span>,<span class="number">-27</span>,<span class="number">28</span>,<span class="number">-28</span>,<span class="number">29</span>,<span class="number">-29</span>,<span class="number">30</span>,<span class="number">-30</span>,<span class="number">31</span>,<span class="number">-31</span>,<span class="number">33</span>,<span class="number">-33</span>,<span class="number">-32</span>,<span class="number">32</span>,<span class="number">-34</span>,<span class="number">-35</span>,<span class="number">34</span>,<span class="number">35</span>,<span class="number">37</span>,<span class="number">-37</span>,<span class="number">36</span>,<span class="number">-36</span>,<span class="number">38</span>,<span class="number">39</span>,<span class="number">-39</span>,<span class="number">-38</span>,<span class="number">40</span>,<span class="number">41</span>,<span class="number">-41</span>,<span class="number">-40</span>,<span class="number">42</span>,<span class="number">-43</span>,<span class="number">-42</span>,<span class="number">43</span>,<span class="number">45</span>,<span class="number">-45</span>,<span class="number">-44</span>,<span class="number">44</span>,<span class="number">47</span>,<span class="number">-46</span>,<span class="number">-47</span>,<span class="number">46</span>,<span class="number">48</span>,<span class="number">-49</span>,<span class="number">-48</span>,<span class="number">49</span>,<span class="number">-50</span>,<span class="number">51</span>,<span class="number">-51</span>,<span class="number">50</span>,<span class="number">570562233</span>,<span class="number">53</span>,<span class="number">-52</span>,<span class="number">52</span>,<span class="number">-53</span>,<span class="number">-54</span>,<span class="number">-55</span>,<span class="number">55</span>,<span class="number">54</span>,<span class="number">503444072</span>,<span class="number">57</span>,<span class="number">-56</span>,<span class="number">-57</span>,<span class="number">56</span>,<span class="number">59</span>,<span class="number">58</span>,<span class="number">-59</span>,<span class="number">-58</span>,<span class="number">60</span>,<span class="number">61</span>,<span class="number">-61</span>,<span class="number">-60</span>,<span class="number">62</span>,<span class="number">63</span>,<span class="number">-63</span>,<span class="number">-62</span>,<span class="number">-64</span>,<span class="number">711928724</span>,<span class="number">-66</span>,<span class="number">67</span>,<span class="number">-65</span>,<span class="number">65</span>,<span class="number">-67</span>,<span class="number">66</span>,<span class="number">64</span>,<span class="number">-71</span>,<span class="number">-69</span>,<span class="number">69</span>,<span class="number">68</span>,<span class="number">70</span>,<span class="number">-68</span>,<span class="number">-70</span>,<span class="number">71</span>,<span class="number">-72</span>,<span class="number">3686517206</span>,<span class="number">-74</span>,<span class="number">-73</span>,<span class="number">73</span>,<span class="number">75</span>,<span class="number">74</span>,<span class="number">-75</span>,<span class="number">72</span>,<span class="number">-79</span>,<span class="number">76</span>,<span class="number">79</span>,<span class="number">78</span>,<span class="number">-78</span>,<span class="number">-76</span>,<span class="number">77</span>,<span class="number">-77</span>,<span class="number">3554079995</span>,<span class="number">-81</span>,<span class="number">81</span>,<span class="number">-82</span>,<span class="number">-83</span>,<span class="number">80</span>,<span class="number">-80</span>,<span class="number">82</span>,<span class="number">83</span>,<span class="number">-84</span>,<span class="number">84</span>,<span class="number">85</span>,<span class="number">-86</span>,<span class="number">-87</span>,<span class="number">86</span>,<span class="number">-85</span>,<span class="number">87</span>,<span class="number">90</span>,<span class="number">-88</span>,<span class="number">-89</span>,<span class="number">-90</span>,<span class="number">88</span>,<span class="number">89</span>,<span class="number">91</span>,<span class="number">-91</span>,<span class="number">94</span>,<span class="number">92</span>,<span class="number">95</span>,<span class="number">-94</span>,<span class="number">93</span>,<span class="number">-93</span>,<span class="number">-95</span>,<span class="number">-92</span>,<span class="number">-98</span>,<span class="number">97</span>,<span class="number">98</span>,<span class="number">-97</span>,<span class="number">-99</span>,<span class="number">96</span>,<span class="number">99</span>,<span class="number">-96</span>,<span class="number">-100</span>,<span class="number">3272380065</span>,<span class="number">102</span>,<span class="number">-102</span>,<span class="number">-101</span>,<span class="number">-103</span>,<span class="number">103</span>,<span class="number">100</span>,<span class="number">101</span>,<span class="number">-107</span>,<span class="number">-104</span>,<span class="number">105</span>,<span class="number">104</span>,<span class="number">106</span>,<span class="number">-106</span>,<span class="number">-105</span>,<span class="number">107</span>,<span class="number">109</span>,<span class="number">-109</span>,<span class="number">-108</span>,<span class="number">-111</span>,<span class="number">110</span>,<span class="number">-110</span>,<span class="number">111</span>,<span class="number">108</span>,<span class="number">251722036</span>,<span class="number">115</span>,<span class="number">-115</span>,<span class="number">112</span>,<span class="number">-114</span>,<span class="number">-112</span>,<span class="number">113</span>,<span class="number">114</span>,<span class="number">-113</span>,<span class="number">-117</span>,<span class="number">119</span>,<span class="number">-116</span>,<span class="number">-119</span>,<span class="number">117</span>,<span class="number">-118</span>,<span class="number">118</span>,<span class="number">116</span>,<span class="number">123</span>,<span class="number">-120</span>,<span class="number">122</span>,<span class="number">-121</span>,<span class="number">120</span>,<span class="number">-122</span>,<span class="number">-123</span>,<span class="number">121</span>,<span class="number">125</span>,<span class="number">127</span>,<span class="number">3412177804</span>,<span class="number">-127</span>,<span class="number">126</span>,<span class="number">-126</span>,<span class="number">124</span>,<span class="number">-125</span>,<span class="number">-124</span>,<span class="number">-128</span>,<span class="number">128</span>,<span class="number">-129</span>,<span class="number">1843258603</span>,<span class="number">3803740692</span>,<span class="number">984961486</span>,<span class="number">3939845945</span>,<span class="number">4195302755</span>,<span class="number">4066508878</span>,<span class="number">255</span>,<span class="number">1706088902</span>,<span class="number">256</span>,<span class="number">1969922972</span>,<span class="number">365</span>,<span class="number">2097651377</span>,<span class="number">376229701</span>,<span class="number">853044451</span>,<span class="number">752459403</span>,<span class="number">1000</span>,<span class="number">426522225</span>,<span class="number">3772115230</span>,<span class="number">615818150</span>,<span class="number">3904427059</span>,<span class="number">4167216745</span>,<span class="number">4027552580</span>,<span class="number">3654703836</span>,<span class="number">1886057615</span>,<span class="number">879679996</span>,<span class="number">3518719985</span>,<span class="number">3244367275</span>,<span class="number">2013776290</span>,<span class="number">3373015174</span>,<span class="number">1759359992</span>,<span class="number">285281116</span>,<span class="number">1622183637</span>,<span class="number">1006888145</span>,<span class="number">10000</span>,<span class="number">1231636301</span>,<span class="number">83908371</span>,<span class="number">1090812512</span>,<span class="number">2463272603</span>,<span class="number">1373503546</span>,<span class="number">2596254646</span>,<span class="number">2321926636</span>,<span class="number">1504918807</span>,<span class="number">2181625025</span>,<span class="number">2882616665</span>,<span class="number">2747007092</span>,<span class="number">3009837614</span>,<span class="number">3138078467</span>,<span class="number">397917763</span>,<span class="number">81470997</span>,<span class="number">829329135</span>,<span class="number">2657392035</span>,<span class="number">956543938</span>,<span class="number">2517215374</span>,<span class="number">2262029012</span>,<span class="number">40735498</span>,<span class="number">2394877945</span>,<span class="number">3266489909</span>,<span class="number">702138776</span>,<span class="number">2808555105</span>,<span class="number">2936675148</span>,<span class="number">1258607687</span>,<span class="number">1131014506</span>,<span class="number">3218104598</span>,<span class="number">3082640443</span>,<span class="number">1404277552</span>,<span class="number">565507253</span>,<span class="number">534414190</span>,<span class="number">1541320221</span>,<span class="number">1913087877</span>,<span class="number">2053790376</span>,<span class="number">1789927666</span>,<span class="number">3965973030</span>,<span class="number">3826175755</span>,<span class="number">4107580753</span>,<span class="number">4240017532</span>,<span class="number">1658658271</span>,<span class="number">3579855332</span>,<span class="number">3708648649</span>,<span class="number">3453421203</span>,<span class="number">3317316542</span>,<span class="number">1873836001</span>,<span class="number">1742555852</span>,<span class="number">461845907</span>,<span class="number">3608007406</span>,<span class="number">1996959894</span>,<span class="number">3747672003</span>,<span class="number">3485111705</span>,<span class="number">2137656763</span>,<span class="number">3352799412</span>,<span class="number">213261112</span>,<span class="number">3993919788</span>,<span class="number">1.01</span>,<span class="number">3865271297</span>,<span class="number">4139329115</span>,<span class="number">4275313526</span>,<span class="number">282753626</span>,<span class="number">1068828381</span>,<span class="number">2768942443</span>,<span class="number">2909243462</span>,<span class="number">936918000</span>,<span class="number">3183342108</span>,<span class="number">27492</span>,<span class="number">141376813</span>,<span class="number">3050360625</span>,<span class="number">654459306</span>,<span class="number">2617837225</span>,<span class="number">1454621731</span>,<span class="number">2489596804</span>,<span class="number">2227061214</span>,<span class="number">1591671054</span>,<span class="number">2362670323</span>,<span class="number">4294967295</span>,<span class="number">1308918612</span>,<span class="number">2246822507</span>,<span class="number">795835527</span>,<span class="number">1181335161</span>,<span class="number">414664567</span>,<span class="number">4279200368</span>,<span class="number">1661365465</span>,<span class="number">1037604311</span>,<span class="number">4150417245</span>,<span class="number">3887607047</span>,<span class="number">1802195444</span>,<span class="number">4023717930</span>,<span class="number">2075208622</span>,<span class="number">1943803523</span>,<span class="number">901097722</span>,<span class="number">628085408</span>,<span class="number">755167117</span>,<span class="number">3322730930</span>,<span class="number">3462522015</span>,<span class="number">3736837829</span>,<span class="number">3604390888</span>,<span class="number">2366115317</span>,<span class="number">0.4</span>,<span class="number">2238001368</span>,<span class="number">2512341634</span>,<span class="number">2647816111</span>,<span class="number">-0.2</span>,<span class="number">314042704</span>,<span class="number">1510334235</span>,<span class="number">900000</span>,<span class="number">58964</span>,<span class="number">1382605366</span>,<span class="number">31158534</span>,<span class="number">450548861</span>,<span class="number">3020668471</span>,<span class="number">1119000684</span>,<span class="number">3160834842</span>,<span class="number">2898065728</span>,<span class="number">1256170817</span>,<span class="number">2765210733</span>,<span class="number">3060149565</span>,<span class="number">3188396048</span>,<span class="number">2932959818</span>,<span class="number">124634137</span>,<span class="number">2797360999</span>,<span class="number">366619977</span>,<span class="number">62317068</span>,<span class="number">-0.26</span>,<span class="number">1202900863</span>,<span class="number">498536548</span>,<span class="number">1340076626</span>,<span class="number">2405801727</span>,<span class="number">2265490386</span>,<span class="number">1594198024</span>,<span class="number">1466479909</span>,<span class="number">2547177864</span>,<span class="number">249268274</span>,<span class="number">2680153253</span>,<span class="number">2125561021</span>,<span class="number">3294710456</span>,<span class="number">855842277</span>,<span class="number">3423369109</span>,<span class="number">0.732134444</span>,<span class="number">3705015759</span>,<span class="number">3569037538</span>,<span class="number">1994146192</span>,<span class="number">1711684554</span>,<span class="number">1852507879</span>,<span class="number">997073096</span>,<span class="number">733239954</span>,<span class="number">4251122042</span>,<span class="number">601450431</span>,<span class="number">4111451223</span>,<span class="number">167816743</span>,<span class="number">3855990285</span>,<span class="number">3988292384</span>,<span class="number">3369554304</span>,<span class="number">3233442989</span>,<span class="number">3495958263</span>,<span class="number">3624741850</span>,<span class="number">65535</span>,<span class="number">453092731</span>,<span class="number">-0.9</span>,<span class="number">2094854071</span>,<span class="number">1957810842</span>,<span class="number">325883990</span>,<span class="number">4057260610</span>,<span class="number">1684777152</span>,<span class="number">4189708143</span>,<span class="number">3915621685</span>,<span class="number">162941995</span>,<span class="number">1812370925</span>,<span class="number">3775830040</span>,<span class="number">783551873</span>,<span class="number">3134207493</span>,<span class="number">1172266101</span>,<span class="number">2998733608</span>,<span class="number">2724688242</span>,<span class="number">1303535960</span>,<span class="number">2852801631</span>,<span class="number">112637215</span>,<span class="number">1567103746</span>,<span class="number">651767980</span>,<span class="number">1426400815</span>,<span class="number">906185462</span>,<span class="number">2211677639</span>,<span class="number">1047427035</span>,<span class="number">2344532202</span>,<span class="number">2607071920</span>,<span class="number">2466906013</span>,<span class="number">225274430</span>,<span class="number">544179635</span>,<span class="number">2176718541</span>,<span class="number">2312317920</span>,<span class="number">1483230225</span>,<span class="number">1342533948</span>,<span class="number">2567524794</span>,<span class="number">2439277719</span>,<span class="number">1088359270</span>,<span class="number">671266974</span>,<span class="number">1219638859</span>,<span class="number">840000</span>,<span class="number">953729732</span>,<span class="number">3099436303</span>,<span class="number">2966460450</span>,<span class="number">817233897</span>,<span class="number">2685067896</span>,<span class="number">2825379669</span>,<span class="number">4089016648</span>,<span class="number">4224994405</span>,<span class="number">3943577151</span>,<span class="number">3814918930</span>,<span class="number">476864866</span>,<span class="number">1634467795</span>,<span class="number">335633487</span>,<span class="number">1762050814</span>,<span class="number">1</span>,<span class="number">2044508324</span>,<span class="number">-1</span>,<span class="number">3401237130</span>,<span class="number">3268935591</span>,<span class="number">3524101629</span>,<span class="number">3663771856</span>,<span class="number">1907459465</span>]</span><br><span class="line"><span class="keyword">var</span> e = [<span class="string">"InfoText"</span>,<span class="string">"rmocx.RealPlayer G2 Control"</span>,<span class="string">"iMesh plugin"</span>,<span class="string">"RealDownloader Plugin"</span>,<span class="string">"Symantec PKI Client"</span>,<span class="string">"_phantom"</span>,<span class="string">"GDL Object Web Plug-in 16.00"</span>,<span class="string">"webgl"</span>,<span class="string">"华文宋体"</span>,<span class="string">"screen"</span>,<span class="string">"body"</span>,<span class="string">"TRIANGLE_STRIP"</span>,<span class="string">"n="</span>,<span class="string">"TlwgMono"</span>,<span class="string">"':'"</span>,<span class="string">"LogMeIn Plugin 1.0.0.935"</span>,<span class="string">"function"</span>,<span class="string">"context.hashCode"</span>,<span class="string">"ArchiCAD"</span>,<span class="string">"VERTEX_SHADER"</span>,<span class="string">"Ubuntu"</span>,<span class="string">"Facebook Plugin"</span>,<span class="string">"ActiveCaption"</span>,<span class="string">"细明体"</span>,<span class="string">"Malgun Gothic"</span>,<span class="string">"News Gothic MT"</span>,<span class="string">"CaptionText"</span>,<span class="string">"aZbY0cXdW1eVf2Ug3Th4SiR5jQk6PlO7mNn8MoL9pKqJrIsHtGuFvEwDxCyBzA"</span>,<span class="string">"DejaVu LGC Sans Mono"</span>,<span class="string">"Copperplate Gothic Light"</span>,<span class="string">"Segoe Print"</span>,<span class="string">"Sawasdee"</span>,<span class="string">"Bauhaus 93"</span>,<span class="string">"Chalkduster"</span>,<span class="string">"Abadi MT Condensed Light"</span>,<span class="string">"Lucida Bright"</span>,<span class="string">"Wide Latin"</span>,<span class="string">"font detect error"</span>,<span class="string">"Kozuka Gothic Pr6N"</span>,<span class="string">"Html5 location provider"</span>,<span class="string">"DivX Plus Web Player"</span>,<span class="string">"Vladimir Script"</span>,<span class="string">"File Downloader Plug-in"</span>,<span class="string">"ob"</span>,<span class="string">"Adodb.Stream"</span>,<span class="string">"Menlo"</span>,<span class="string">"callPhantom"</span>,<span class="string">"Wolfram Mathematica"</span>,<span class="string">"CatalinaGroup Update"</span>,<span class="string">"Eras Bold ITC"</span>,<span class="string">"DevalVRXCtrl.DevalVRXCtrl.1"</span>,<span class="string">"华文细黑"</span>,<span class="string">"addBehavior"</span>,<span class="string">"pa"</span>,<span class="string">"Bitstream Vera Serif"</span>,<span class="string">"(function()&#123;return 123;&#125;)();"</span>,<span class="string">"pi"</span>,<span class="string">"Tencent FTN plug-in"</span>,<span class="string">"removeChild"</span>,<span class="string">"Folx 3 Browser Plugin"</span>,<span class="string">"useProgram"</span>,<span class="string">"hostname"</span>,<span class="string">"phantom.injectJs"</span>,<span class="string">"ShockwaveFlash.ShockwaveFlash"</span>,<span class="string">"rgba(102, 204, 0, 0.7)"</span>,<span class="string">"AdblockPlugin"</span>,<span class="string">"Background"</span>,<span class="string">"AgControl.AgControl"</span>,<span class="string">"PhotoCenterPlugin1.1.2.2"</span>,<span class="string">"GungSeo"</span>,<span class="string">"s="</span>,<span class="string">"decodeURI"</span>,<span class="string">"方正舒体"</span>,<span class="string">"华文新魏"</span>,<span class="string">"123"</span>,<span class="string">"webgl exception"</span>,<span class="string">"re"</span>,<span class="string">"WMPlayer.OCX"</span>,<span class="string">"72px"</span>,<span class="string">"AppWorkspace"</span>,<span class="string">"Highlight"</span>,<span class="string">"document"</span>,<span class="string">"Yandex Media Plugin"</span>,<span class="string">"ESN Launch Mozilla Plugin"</span>,<span class="string">"70px 'Arial'"</span>,<span class="string">"injectJs"</span>,<span class="string">"Loma"</span>,<span class="string">"BitCometAgent"</span>,<span class="string">"Calibri"</span>,<span class="string">"Bookman Old Style"</span>,<span class="string">"sessionStorage"</span>,<span class="string">"Utopia"</span>,<span class="string">"compileShader"</span>,<span class="string">"escape"</span>,<span class="string">"Scrollbar"</span>,<span class="string">"Window"</span>,<span class="string">"隶书"</span>,<span class="string">"Kaspersky Password Manager"</span>,<span class="string">"MingLiU-ExtB"</span>,<span class="string">"get system colors exception"</span>,<span class="string">"Skype.Detection"</span>,<span class="string">"FileLab plugin"</span>,<span class="string">"npAPI Plugin"</span>,<span class="string">"not_exist_host"</span>,<span class="string">"2d"</span>,<span class="string">"ActiveXObject"</span>,<span class="string">"Dotum"</span>,<span class="string">"PDF-XChange Viewer"</span>,<span class="string">"PMingLiU"</span>,<span class="string">"colorDepth"</span>,<span class="string">"Nokia Suite Enabler Plugin"</span>,<span class="string">"RealVideo.RealVideo(tm) ActiveX Control (32-bit)"</span>,<span class="string">"Magneto"</span>,<span class="string">"AdobeExManCCDetect"</span>,<span class="string">"_9755xjdesxxd_"</span>,<span class="string">"Gabriola"</span>,<span class="string">"Playbill"</span>,<span class="string">"navigator"</span>,<span class="string">"Rachana"</span>,<span class="string">"Tw Cen MT Condensed Extra Bold"</span>,<span class="string">"QQMiniDL Plugin"</span>,<span class="string">"#f60"</span>,<span class="string">"fillRect"</span>]</span><br><span class="line"><span class="keyword">var</span> l = [<span class="string">""</span>,<span class="string">"GrayText"</span>,<span class="string">"parent"</span>,<span class="string">"幼圆"</span>,<span class="string">"plugins"</span>,<span class="string">"AdobeExManDetect"</span>,<span class="string">"0010"</span>,<span class="string">"Google Earth Plugin"</span>,<span class="string">"Veetle TV Core"</span>,<span class="string">"0007"</span>,<span class="string">"0004"</span>,<span class="string">"0002"</span>,<span class="string">"0003"</span>,<span class="string">"0000"</span>,<span class="string">"0001"</span>,<span class="string">"Unity Player"</span>,<span class="string">"Skype Web Plugin"</span>,<span class="string">"WebKit-integrierte PDF"</span>,<span class="string">"gdxidpyhxdE"</span>,<span class="string">"Bell MT"</span>,<span class="string">"0008"</span>,<span class="string">"getSupportedExtensions"</span>,<span class="string">"setTime"</span>,<span class="string">"0009"</span>,<span class="string">"SafeSearch"</span>,<span class="string">"\""</span>,<span class="string">"$"</span>,<span class="string">"Univers"</span>,<span class="string">"%"</span>,<span class="string">"&amp;"</span>,<span class="string">"'"</span>,<span class="string">"1110"</span>,<span class="string">"get plugin string exception"</span>,<span class="string">"ThreeDShadow"</span>,<span class="string">"+"</span>,<span class="string">","</span>,<span class="string">"-"</span>,<span class="string">"Arab"</span>,<span class="string">"苹果丽细宋"</span>,<span class="string">"."</span>,<span class="string">"FUZEShare"</span>,<span class="string">"/"</span>,<span class="string">"0"</span>,<span class="string">"1"</span>,<span class="string">"2"</span>,<span class="string">"3"</span>,<span class="string">"4"</span>,<span class="string">"仿宋_GB2312"</span>]</span><br><span class="line"><span class="keyword">var</span> s = [<span class="string">"=null; path=/; domain="</span>, <span class="string">"Default Browser Helper"</span>, <span class="string">"French Script MT"</span>, <span class="string">"标楷体"</span>, <span class="string">"encodeURI"</span>, <span class="string">"Umpush"</span>, <span class="string">"icp"</span>, <span class="string">"华文琥珀"</span>, <span class="string">"createProgram"</span>, <span class="string">"monospace"</span>, <span class="string">"ButtonShadow"</span>, <span class="string">"Bodoni MT"</span>, <span class="string">"STATIC_DRAW"</span>, <span class="string">"黑体"</span>, <span class="string">"downloadUpdater"</span>, <span class="string">"Aliedit Plug-In"</span>, <span class="string">"PDF integrado do WebKit"</span>, <span class="string">"uniformOffset"</span>, <span class="string">"encodeURIComponent"</span>, <span class="string">"Picasa"</span>, <span class="string">"Adobe Fangsong Std"</span>, <span class="string">"bindBuffer"</span>, <span class="string">"AVG SiteSafety plugin"</span>, <span class="string">"Orbit Downloader"</span>, <span class="string">"color"</span>, <span class="string">"hidden"</span>, <span class="string">"localStorage"</span>, <span class="string">"Google Talk Effects Plugin"</span>, <span class="string">"indexedDB"</span>, <span class="string">"Lucida Fax"</span>, <span class="string">"AmazonMP3DownloaderPlugin"</span>, <span class="string">"createBuffer"</span>, <span class="string">"Castellar"</span>, <span class="string">"linkProgram"</span>, <span class="string">"Californian FB"</span>, <span class="string">"ThreeDHighlight"</span>, <span class="string">"createShader"</span>, <span class="string">"Gulim"</span>, <span class="string">"NyxLauncher"</span>, <span class="string">"YouTube Plug-in"</span>, <span class="string">"楷体_GB2312"</span>, <span class="string">"SWCtl.SWCtl"</span>, <span class="string">"Google Earth Plug-in"</span>, <span class="string">"QQDownload Plugin"</span>, <span class="string">"Norton Identity Safe"</span>, <span class="string">"parseInt"</span>, <span class="string">"Simple Pass"</span>, <span class="string">"Colonna MT"</span>, <span class="string">"zako"</span>, <span class="string">"getUniformLocation"</span>, <span class="string">"shaderSource"</span>, <span class="string">"Downloaders plugin"</span>, <span class="string">"location"</span>, <span class="string">"Heroes &amp; Generals live"</span>, <span class="string">"window"</span>, <span class="string">"Showcard Gothic"</span>, <span class="string">"微软正黑体"</span>, <span class="string">"华文行楷"</span>, <span class="string">"Ginger"</span>, <span class="string">"RockMelt Update"</span>, <span class="string">"WindowFrame"</span>, <span class="string">"enableVertexAttribArray"</span>, <span class="string">"KacstOne"</span>, <span class="string">"attribute vec2 attrVertex; varying vec2 varyinTexCoordinate; uniform vec2 uniformOffset; void main() &#123;   varyinTexCoordinate = attrVertex + uniformOffset;   gl_Position = vec4(attrVertex, 0, 1); &#125;"</span>, <span class="string">"Perpetua"</span>, <span class="string">"openDatabase"</span>, <span class="string">"canvas"</span>, <span class="string">"iGetterScriptablePlugin"</span>, <span class="string">"Informal Roman"</span>, <span class="string">"Nitro PDF Plug-In"</span>, <span class="string">"Msxml2.XMLHTTP"</span>, <span class="string">"华文黑体"</span>, <span class="string">"NPLastPass"</span>, <span class="string">"ThreeDFace"</span>, <span class="string">"LastPass"</span>, <span class="string">"::"</span>, <span class="string">"parseFloat"</span>, <span class="string">"华文隶书"</span>, <span class="string">"; "</span>, <span class="string">"getAttribLocation"</span>, <span class="string">"&#123;'name':"</span>, <span class="string">"Nyala"</span>, <span class="string">"not_exist_hostname"</span>, <span class="string">"\\'"</span>, <span class="string">"GFACE Plugin"</span>, <span class="string">"undefined"</span>, <span class="string">"新宋体"</span>, <span class="string">"\\."</span>, <span class="string">"Matura MT Script Capitals"</span>, <span class="string">"Arial Black"</span>, <span class="string">"FangSong"</span>, <span class="string">"mwC nkbafjord phsgly exvt zqiu, ὠ tphst/:/uhbgtic.mo/levva"</span>, <span class="string">"Braggadocio"</span>, <span class="string">"Harmony Firefox Plugin"</span>, <span class="string">"Palace Script MT"</span>, <span class="string">"Native Client"</span>, <span class="string">"userAgent"</span>, <span class="string">"QuickTime.QuickTime"</span>, <span class="string">"experimental-webgl"</span>, <span class="string">"ARRAY_BUFFER"</span>, <span class="string">"苹果丽中黑"</span>, <span class="string">"Alipay Security Control 3"</span>, <span class="string">"Script MT Bold"</span>, <span class="string">", 'browserProp':"</span>, <span class="string">"TDCCtl.TDCCtl"</span>, <span class="string">"self"</span>, <span class="string">"InfoBackground"</span>, <span class="string">"Pando Web Plugin"</span>, <span class="string">"Haettenschweiler"</span>, <span class="string">"span"</span>, <span class="string">"ActiveBorder"</span>, <span class="string">"ThreeDLightShadow"</span>, <span class="string">"0202"</span>, <span class="string">"0203"</span>, <span class="string">"0200"</span>, <span class="string">"0201"</span>, <span class="string">"WPI Detector 1.4"</span>, <span class="string">"; expires="</span>, <span class="string">"ThreeDDarkShadow"</span>, <span class="string">"Exif Everywhere"</span>, <span class="string">"Battlelog Game Launcher"</span>, <span class="string">"Impact"</span>, <span class="string">"VLC Multimedia Plugin"</span>, <span class="string">"Adobe Hebrew"</span>, <span class="string">"BlueStacks Install Detector"</span>, <span class="string">"wwwmmmmmmmmmmlli"</span>, <span class="string">"history"</span>, <span class="string">"sans-serif"</span>, <span class="string">"14731255234d414cF91356d684E4E8F5F56c8f1bc"</span>, <span class="string">"Papyrus"</span>, <span class="string">"ButtonText"</span>, <span class="string">"0211"</span>, <span class="string">"AppUp"</span>, <span class="string">"Parom.TV player plugin"</span>, <span class="string">"DealPlyLive Update"</span>, <span class="string">"Lohit Gujarati"</span>, <span class="string">"FRAGMENT_SHADER"</span>, <span class="string">"Agency FB"</span>, <span class="string">"MacromediaFlashPaper.MacromediaFlashPaper"</span>, <span class="string">"###"</span>, <span class="string">"WordCaptureX"</span>, <span class="string">"getComputedStyle"</span>, <span class="string">"platform"</span>, <span class="string">"0105"</span>, <span class="string">"Arabic Typesetting"</span>, <span class="string">"0106"</span>, <span class="string">"0103"</span>, <span class="string">"华文中宋"</span>, <span class="string">"0104"</span>, <span class="string">"0101"</span>, <span class="string">"0102"</span>, <span class="string">"0100"</span>, <span class="string">"0107"</span>, <span class="string">"ButtonHighlight"</span>, <span class="string">"vertexAttribPointer"</span>, <span class="string">"0108"</span>, <span class="string">"textBaseline"</span>, <span class="string">"#069"</span>, <span class="string">"doubleTwist Web Plugin"</span>, <span class="string">"unescape"</span>, <span class="string">"Thunder DapCtrl NPAPI Plugin"</span>, <span class="string">"Batang"</span>, <span class="string">"DFKai-SB"</span>, <span class="string">"Snap ITC"</span>, <span class="string">"Date"</span>, <span class="string">"MinibarPlugin"</span>, <span class="string">"decodeURIComponent"</span>, <span class="string">"NPPlayerShell"</span>, <span class="string">"MS Reference Sans Serif"</span>, <span class="string">"Hiragino Sans GB"</span>, <span class="string">"serif"</span>, <span class="string">"getContext"</span>, <span class="string">"uniform2f"</span>, <span class="string">"MoolBoran"</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> Q = t[<span class="number">10</span>]</span><br><span class="line">    , Z = t[<span class="number">10</span>]</span><br><span class="line">    , ee = [l[<span class="number">42</span>], l[<span class="number">43</span>], l[<span class="number">44</span>], l[<span class="number">45</span>], l[<span class="number">46</span>], u[<span class="number">0</span>], u[<span class="number">1</span>], u[<span class="number">3</span>], u[<span class="number">5</span>], u[<span class="number">6</span>], u[<span class="number">50</span>], u[<span class="number">52</span>], u[<span class="number">54</span>], u[<span class="number">56</span>], u[<span class="number">58</span>], u[<span class="number">59</span>]]</span><br><span class="line">    , te = [t[<span class="number">9</span>], t[<span class="number">371</span>], t[<span class="number">377</span>], t[<span class="number">515</span>], t[<span class="number">442</span>], t[<span class="number">310</span>], t[<span class="number">488</span>], t[<span class="number">337</span>], t[<span class="number">455</span>], t[<span class="number">536</span>], t[<span class="number">304</span>], t[<span class="number">454</span>], t[<span class="number">489</span>], t[<span class="number">457</span>], t[<span class="number">408</span>], t[<span class="number">34</span>], t[<span class="number">448</span>], t[<span class="number">357</span>], t[<span class="number">527</span>], t[<span class="number">395</span>], t[<span class="number">432</span>], t[<span class="number">287</span>], t[<span class="number">360</span>], t[<span class="number">504</span>], t[<span class="number">484</span>], t[<span class="number">486</span>], t[<span class="number">469</span>], t[<span class="number">327</span>], t[<span class="number">533</span>], t[<span class="number">405</span>], t[<span class="number">291</span>], t[<span class="number">420</span>], t[<span class="number">467</span>], t[<span class="number">23</span>], t[<span class="number">363</span>], t[<span class="number">496</span>], t[<span class="number">319</span>], t[<span class="number">347</span>], t[<span class="number">540</span>], t[<span class="number">384</span>], t[<span class="number">413</span>], t[<span class="number">434</span>], t[<span class="number">168</span>], t[<span class="number">436</span>], t[<span class="number">300</span>], t[<span class="number">494</span>], t[<span class="number">462</span>], t[<span class="number">330</span>], t[<span class="number">501</span>], t[<span class="number">325</span>], t[<span class="number">475</span>], t[<span class="number">349</span>], t[<span class="number">352</span>], t[<span class="number">393</span>], t[<span class="number">373</span>], t[<span class="number">522</span>], t[<span class="number">518</span>], t[<span class="number">452</span>], t[<span class="number">416</span>], t[<span class="number">28</span>], t[<span class="number">401</span>], t[<span class="number">513</span>], t[<span class="number">313</span>], t[<span class="number">439</span>], t[<span class="number">464</span>], t[<span class="number">431</span>], t[<span class="number">41</span>], t[<span class="number">410</span>], t[<span class="number">542</span>], t[<span class="number">499</span>], t[<span class="number">456</span>], t[<span class="number">306</span>], t[<span class="number">314</span>], t[<span class="number">250</span>], t[<span class="number">339</span>], t[<span class="number">491</span>], t[<span class="number">374</span>], t[<span class="number">389</span>], t[<span class="number">516</span>], t[<span class="number">379</span>], t[<span class="number">409</span>], t[<span class="number">531</span>], t[<span class="number">422</span>], t[<span class="number">292</span>], t[<span class="number">490</span>], t[<span class="number">480</span>], t[<span class="number">329</span>], t[<span class="number">471</span>], t[<span class="number">294</span>], t[<span class="number">426</span>], t[<span class="number">506</span>], t[<span class="number">361</span>], t[<span class="number">362</span>], t[<span class="number">444</span>], t[<span class="number">397</span>], t[<span class="number">528</span>], t[<span class="number">497</span>], t[<span class="number">289</span>], t[<span class="number">331</span>], t[<span class="number">463</span>], t[<span class="number">437</span>], t[<span class="number">406</span>], t[<span class="number">438</span>], t[<span class="number">184</span>], t[<span class="number">348</span>], t[<span class="number">311</span>], t[<span class="number">385</span>], t[<span class="number">541</span>], t[<span class="number">27</span>], t[<span class="number">459</span>], t[<span class="number">498</span>], t[<span class="number">364</span>], t[<span class="number">514</span>], t[<span class="number">391</span>], t[<span class="number">440</span>], t[<span class="number">315</span>], t[<span class="number">453</span>], t[<span class="number">510</span>], t[<span class="number">31</span>], t[<span class="number">417</span>], t[<span class="number">396</span>], t[<span class="number">344</span>], t[<span class="number">523</span>], t[<span class="number">375</span>], t[<span class="number">328</span>], t[<span class="number">492</span>], t[<span class="number">350</span>], t[<span class="number">476</span>], t[<span class="number">474</span>], t[<span class="number">326</span>], t[<span class="number">445</span>], t[<span class="number">483</span>], t[<span class="number">290</span>], t[<span class="number">424</span>], t[<span class="number">335</span>], t[<span class="number">412</span>], t[<span class="number">530</span>], t[<span class="number">394</span>], t[<span class="number">509</span>], t[<span class="number">356</span>], t[<span class="number">359</span>], t[<span class="number">508</span>], t[<span class="number">472</span>], t[<span class="number">298</span>], t[<span class="number">308</span>], t[<span class="number">451</span>], t[<span class="number">133</span>], t[<span class="number">534</span>], t[<span class="number">407</span>], t[<span class="number">47</span>], t[<span class="number">303</span>], t[<span class="number">466</span>], t[<span class="number">381</span>], t[<span class="number">512</span>], t[<span class="number">382</span>], t[<span class="number">368</span>], t[<span class="number">487</span>], t[<span class="number">342</span>], t[<span class="number">334</span>], t[<span class="number">318</span>], t[<span class="number">419</span>], t[<span class="number">22</span>], t[<span class="number">521</span>], t[<span class="number">449</span>], t[<span class="number">312</span>], t[<span class="number">443</span>], t[<span class="number">383</span>], t[<span class="number">519</span>], t[<span class="number">478</span>], t[<span class="number">346</span>], t[<span class="number">503</span>], t[<span class="number">323</span>], t[<span class="number">372</span>], t[<span class="number">526</span>], t[<span class="number">336</span>], t[<span class="number">402</span>], t[<span class="number">277</span>], t[<span class="number">435</span>], t[<span class="number">414</span>], t[<span class="number">430</span>], t[<span class="number">460</span>], t[<span class="number">333</span>], t[<span class="number">124</span>], t[<span class="number">502</span>], t[<span class="number">366</span>], t[<span class="number">495</span>], t[<span class="number">468</span>], t[<span class="number">16</span>], t[<span class="number">539</span>], t[<span class="number">390</span>], t[<span class="number">301</span>], t[<span class="number">354</span>], t[<span class="number">507</span>], t[<span class="number">358</span>], t[<span class="number">296</span>], t[<span class="number">341</span>], t[<span class="number">392</span>], t[<span class="number">529</span>], t[<span class="number">355</span>], t[<span class="number">322</span>], t[<span class="number">423</span>], t[<span class="number">288</span>], t[<span class="number">411</span>], t[<span class="number">376</span>], t[<span class="number">324</span>], t[<span class="number">473</span>], t[<span class="number">482</span>], t[<span class="number">26</span>], t[<span class="number">340</span>], t[<span class="number">485</span>], t[<span class="number">316</span>], t[<span class="number">353</span>], t[<span class="number">511</span>], t[<span class="number">380</span>], t[<span class="number">367</span>], t[<span class="number">403</span>], t[<span class="number">45</span>], t[<span class="number">404</span>], t[<span class="number">465</span>], t[<span class="number">317</span>], t[<span class="number">450</span>], t[<span class="number">307</span>], t[<span class="number">532</span>], t[<span class="number">299</span>], t[<span class="number">525</span>], t[<span class="number">370</span>], t[<span class="number">399</span>], t[<span class="number">338</span>], t[<span class="number">345</span>], t[<span class="number">477</span>], t[<span class="number">321</span>], t[<span class="number">505</span>], t[<span class="number">441</span>], t[<span class="number">309</span>], t[<span class="number">517</span>], t[<span class="number">386</span>], t[<span class="number">18</span>], t[<span class="number">418</span>], t[<span class="number">447</span>], t[<span class="number">524</span>], t[<span class="number">387</span>], t[<span class="number">538</span>], t[<span class="number">351</span>], t[<span class="number">305</span>], t[<span class="number">493</span>], t[<span class="number">365</span>], t[<span class="number">11</span>], t[<span class="number">470</span>], t[<span class="number">332</span>], t[<span class="number">458</span>], t[<span class="number">500</span>], t[<span class="number">151</span>], t[<span class="number">433</span>], t[<span class="number">226</span>], t[<span class="number">427</span>], t[<span class="number">415</span>]]</span><br><span class="line">    , ne = [t[<span class="number">35</span>], t[<span class="number">193</span>], t[<span class="number">120</span>], t[<span class="number">138</span>], t[<span class="number">251</span>], t[<span class="number">227</span>], t[<span class="number">134</span>], t[<span class="number">275</span>], t[<span class="number">209</span>], t[<span class="number">51</span>], t[<span class="number">50</span>], t[<span class="number">10</span>], t[<span class="number">167</span>], t[<span class="number">217</span>], t[<span class="number">176</span>], t[<span class="number">96</span>], t[<span class="number">135</span>], t[<span class="number">117</span>], t[<span class="number">177</span>], t[<span class="number">72</span>], t[<span class="number">259</span>], t[<span class="number">142</span>], t[<span class="number">201</span>], t[<span class="number">36</span>], t[<span class="number">234</span>], t[<span class="number">42</span>], t[<span class="number">159</span>], t[<span class="number">225</span>], t[<span class="number">147</span>], t[<span class="number">104</span>], t[<span class="number">56</span>], t[<span class="number">76</span>], t[<span class="number">268</span>], t[<span class="number">39</span>], t[<span class="number">84</span>], t[<span class="number">108</span>], t[<span class="number">178</span>], t[<span class="number">210</span>], t[<span class="number">92</span>], t[<span class="number">218</span>], t[<span class="number">17</span>], t[<span class="number">139</span>], t[<span class="number">219</span>], t[<span class="number">194</span>], t[<span class="number">220</span>], t[<span class="number">202</span>], t[<span class="number">211</span>], t[<span class="number">235</span>], t[<span class="number">46</span>], t[<span class="number">203</span>], t[<span class="number">179</span>], t[<span class="number">204</span>], t[<span class="number">260</span>], t[<span class="number">152</span>], t[<span class="number">44</span>], t[<span class="number">21</span>], t[<span class="number">78</span>], t[<span class="number">261</span>], t[<span class="number">19</span>], t[<span class="number">185</span>], t[<span class="number">74</span>], t[<span class="number">100</span>], t[<span class="number">140</span>], t[<span class="number">105</span>], t[<span class="number">195</span>], t[<span class="number">116</span>], t[<span class="number">169</span>], t[<span class="number">242</span>], t[<span class="number">150</span>], t[<span class="number">73</span>], t[<span class="number">153</span>], t[<span class="number">85</span>], t[<span class="number">252</span>], t[<span class="number">9</span>], t[<span class="number">93</span>], t[<span class="number">228</span>], t[<span class="number">205</span>], t[<span class="number">118</span>], t[<span class="number">276</span>], t[<span class="number">196</span>], t[<span class="number">101</span>], t[<span class="number">236</span>], t[<span class="number">12</span>], t[<span class="number">269</span>], t[<span class="number">106</span>], t[<span class="number">253</span>], t[<span class="number">212</span>], t[<span class="number">186</span>], t[<span class="number">83</span>], t[<span class="number">154</span>], t[<span class="number">229</span>], t[<span class="number">48</span>], t[<span class="number">155</span>], t[<span class="number">119</span>], t[<span class="number">156</span>], t[<span class="number">254</span>], t[<span class="number">230</span>], t[<span class="number">197</span>], t[<span class="number">59</span>], t[<span class="number">237</span>], t[<span class="number">157</span>], t[<span class="number">170</span>], t[<span class="number">88</span>], t[<span class="number">180</span>], t[<span class="number">109</span>], t[<span class="number">75</span>], t[<span class="number">243</span>], t[<span class="number">244</span>], t[<span class="number">112</span>], t[<span class="number">143</span>], t[<span class="number">198</span>], t[<span class="number">107</span>], t[<span class="number">129</span>], t[<span class="number">70</span>], t[<span class="number">158</span>], t[<span class="number">89</span>], t[<span class="number">110</span>], t[<span class="number">125</span>], t[<span class="number">255</span>], t[<span class="number">94</span>], t[<span class="number">171</span>], t[<span class="number">206</span>], t[<span class="number">187</span>], t[<span class="number">121</span>], t[<span class="number">86</span>], t[<span class="number">97</span>], t[<span class="number">188</span>], t[<span class="number">189</span>], t[<span class="number">199</span>], t[<span class="number">245</span>], t[<span class="number">43</span>], t[<span class="number">141</span>], t[<span class="number">231</span>], t[<span class="number">181</span>], t[<span class="number">113</span>], t[<span class="number">278</span>], t[<span class="number">90</span>], t[<span class="number">535</span>], t[<span class="number">221</span>], t[<span class="number">49</span>], t[<span class="number">136</span>], t[<span class="number">246</span>], t[<span class="number">238</span>], t[<span class="number">213</span>], t[<span class="number">126</span>], t[<span class="number">40</span>], t[<span class="number">256</span>], t[<span class="number">60</span>], t[<span class="number">239</span>], t[<span class="number">172</span>], t[<span class="number">146</span>], t[<span class="number">160</span>], t[<span class="number">98</span>], t[<span class="number">130</span>], t[<span class="number">262</span>], t[<span class="number">279</span>], t[<span class="number">257</span>], t[<span class="number">267</span>], t[<span class="number">37</span>], t[<span class="number">182</span>], t[<span class="number">270</span>], t[<span class="number">33</span>], t[<span class="number">173</span>], t[<span class="number">62</span>], t[<span class="number">214</span>], t[<span class="number">54</span>], t[<span class="number">144</span>], t[<span class="number">63</span>], t[<span class="number">240</span>], t[<span class="number">280</span>], t[<span class="number">57</span>], t[<span class="number">281</span>], t[<span class="number">55</span>], t[<span class="number">127</span>], t[<span class="number">38</span>], t[<span class="number">183</span>], t[<span class="number">69</span>], t[<span class="number">64</span>], t[<span class="number">271</span>], t[<span class="number">215</span>], t[<span class="number">71</span>], t[<span class="number">222</span>], t[<span class="number">247</span>], t[<span class="number">65</span>], t[<span class="number">66</span>], t[<span class="number">161</span>], t[<span class="number">282</span>], t[<span class="number">284</span>], t[<span class="number">114</span>], t[<span class="number">99</span>], t[<span class="number">537</span>], t[<span class="number">13</span>], t[<span class="number">61</span>], t[<span class="number">232</span>], t[<span class="number">162</span>], t[<span class="number">233</span>], t[<span class="number">20</span>], t[<span class="number">263</span>], t[<span class="number">272</span>], t[<span class="number">111</span>], t[<span class="number">122</span>], t[<span class="number">95</span>], t[<span class="number">102</span>], t[<span class="number">68</span>], t[<span class="number">190</span>], t[<span class="number">80</span>], t[<span class="number">191</span>], t[<span class="number">148</span>], t[<span class="number">103</span>], t[<span class="number">216</span>], t[<span class="number">207</span>], t[<span class="number">25</span>], t[<span class="number">128</span>], t[<span class="number">283</span>], t[<span class="number">149</span>], t[<span class="number">77</span>], t[<span class="number">248</span>], t[<span class="number">58</span>], t[<span class="number">123</span>], t[<span class="number">249</span>], t[<span class="number">163</span>], t[<span class="number">164</span>], t[<span class="number">79</span>], t[<span class="number">174</span>], t[<span class="number">223</span>], t[<span class="number">208</span>], t[<span class="number">145</span>], t[<span class="number">165</span>], t[<span class="number">166</span>], t[<span class="number">264</span>], t[<span class="number">14</span>], t[<span class="number">192</span>], t[<span class="number">200</span>], t[<span class="number">29</span>], t[<span class="number">87</span>], t[<span class="number">131</span>], t[<span class="number">82</span>], t[<span class="number">273</span>], t[<span class="number">274</span>], t[<span class="number">241</span>], t[<span class="number">258</span>], t[<span class="number">115</span>], t[<span class="number">81</span>], t[<span class="number">265</span>], t[<span class="number">132</span>], t[<span class="number">67</span>], t[<span class="number">266</span>], t[<span class="number">53</span>], t[<span class="number">30</span>], t[<span class="number">24</span>], t[<span class="number">91</span>], t[<span class="number">52</span>], t[<span class="number">224</span>], t[<span class="number">137</span>], t[<span class="number">175</span>], t[<span class="number">32</span>]]</span><br><span class="line">    , ie = t[<span class="number">158</span>]</span><br><span class="line">    , re = t[<span class="number">158</span>]</span><br><span class="line">    , oe = t[<span class="number">17</span>]</span><br><span class="line">    , ae = t[<span class="number">17</span>]</span><br><span class="line">    , se = s[<span class="number">128</span>]</span><br><span class="line">    , le = l[<span class="number">18</span>]</span><br><span class="line">    , ue = e[<span class="number">114</span>]</span><br><span class="line">    , fe = t[<span class="number">87</span>]</span><br><span class="line">    , ce = e[<span class="number">27</span>]</span><br><span class="line">    , je = ce.length</span><br><span class="line">    , de = t[<span class="number">428</span>]</span><br><span class="line">    , he = t[<span class="number">520</span>]</span><br><span class="line">    , pe = !<span class="number">1</span></span><br><span class="line">    , ye = !<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">a</span>(<span class="params">e, n, i</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> r, o = [l[<span class="number">44</span>], l[<span class="number">46</span>], l[<span class="number">42</span>], u[<span class="number">50</span>], u[<span class="number">43</span>], u[<span class="number">22</span>], u[<span class="number">63</span>], u[<span class="number">32</span>], u[<span class="number">91</span>], u[<span class="number">27</span>], u[<span class="number">46</span>], u[<span class="number">44</span>], u[<span class="number">86</span>], u[<span class="number">59</span>], u[<span class="number">39</span>], u[<span class="number">68</span>], u[<span class="number">60</span>], u[<span class="number">5</span>], u[<span class="number">82</span>], u[<span class="number">31</span>], u[<span class="number">28</span>], u[<span class="number">33</span>], u[<span class="number">1</span>], u[<span class="number">56</span>], u[<span class="number">21</span>], u[<span class="number">67</span>], u[<span class="number">42</span>], u[<span class="number">88</span>], u[<span class="number">30</span>], l[<span class="number">41</span>], u[<span class="number">15</span>], u[<span class="number">52</span>], u[<span class="number">90</span>], u[<span class="number">6</span>], u[<span class="number">41</span>], u[<span class="number">16</span>], u[<span class="number">66</span>], l[<span class="number">43</span>], u[<span class="number">17</span>], u[<span class="number">36</span>], u[<span class="number">93</span>], u[<span class="number">23</span>], u[<span class="number">34</span>], u[<span class="number">54</span>], u[<span class="number">69</span>], u[<span class="number">58</span>], u[<span class="number">71</span>], u[<span class="number">24</span>], u[<span class="number">94</span>], l[<span class="number">45</span>], u[<span class="number">3</span>], u[<span class="number">76</span>], u[<span class="number">85</span>], u[<span class="number">61</span>], u[<span class="number">14</span>], u[<span class="number">79</span>], u[<span class="number">38</span>], l[<span class="number">34</span>], u[<span class="number">26</span>], u[<span class="number">29</span>], u[<span class="number">13</span>], u[<span class="number">0</span>], u[<span class="number">72</span>], u[<span class="number">70</span>]], a = u[<span class="number">19</span>], s = [];</span><br><span class="line">    <span class="keyword">if</span> (i == t[<span class="number">535</span>])</span><br><span class="line">        i = e[n],</span><br><span class="line">        r = t[<span class="number">9</span>],</span><br><span class="line">        s.push(o[i &gt;&gt;&gt; t[<span class="number">10</span>] &amp; t[<span class="number">147</span>]]),</span><br><span class="line">        s.push(o[(i &lt;&lt; t[<span class="number">17</span>] &amp; t[<span class="number">116</span>]) + (r &gt;&gt;&gt; t[<span class="number">17</span>] &amp; t[<span class="number">50</span>])]),</span><br><span class="line">        s.push(a),</span><br><span class="line">        s.push(a);</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (i == t[<span class="number">10</span>])</span><br><span class="line">        i = e[n],</span><br><span class="line">        r = e[n + t[<span class="number">535</span>]],</span><br><span class="line">        e = t[<span class="number">9</span>],</span><br><span class="line">        s.push(o[i &gt;&gt;&gt; t[<span class="number">10</span>] &amp; t[<span class="number">147</span>]]),</span><br><span class="line">        s.push(o[(i &lt;&lt; t[<span class="number">17</span>] &amp; t[<span class="number">116</span>]) + (r &gt;&gt;&gt; t[<span class="number">17</span>] &amp; t[<span class="number">50</span>])]),</span><br><span class="line">        s.push(o[(r &lt;&lt; t[<span class="number">10</span>] &amp; t[<span class="number">142</span>]) + (e &gt;&gt;&gt; t[<span class="number">24</span>] &amp; t[<span class="number">13</span>])]),</span><br><span class="line">        s.push(a);</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (i != t[<span class="number">13</span>])</span><br><span class="line">            <span class="keyword">throw</span> <span class="built_in">Error</span>(u[<span class="number">64</span>]);</span><br><span class="line">        i = e[n],</span><br><span class="line">        r = e[n + t[<span class="number">535</span>]],</span><br><span class="line">        e = e[n + t[<span class="number">10</span>]],</span><br><span class="line">        s.push(o[i &gt;&gt;&gt; t[<span class="number">10</span>] &amp; t[<span class="number">147</span>]]),</span><br><span class="line">        s.push(o[(i &lt;&lt; t[<span class="number">17</span>] &amp; t[<span class="number">116</span>]) + (r &gt;&gt;&gt; t[<span class="number">17</span>] &amp; t[<span class="number">50</span>])]),</span><br><span class="line">        s.push(o[(r &lt;&lt; t[<span class="number">10</span>] &amp; t[<span class="number">142</span>]) + (e &gt;&gt;&gt; t[<span class="number">24</span>] &amp; t[<span class="number">13</span>])]),</span><br><span class="line">        s.push(o[e &amp; t[<span class="number">147</span>]])</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> s.join(l[<span class="number">0</span>])</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">i</span>(<span class="params">e</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">null</span> == e)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> n = [], i = t[<span class="number">9</span>], r = e.length; i &lt; r; i++) &#123;</span><br><span class="line">        <span class="keyword">var</span> o = e[i];</span><br><span class="line">        n[i] = ne[(o &gt;&gt;&gt; t[<span class="number">17</span>] &amp; t[<span class="number">50</span>]) * t[<span class="number">52</span>] + (o &amp; t[<span class="number">50</span>])]</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> n</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">g</span>(<span class="params">e, t</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> b(e + t)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">c</span>(<span class="params">e, n, i, r, o</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">null</span> != e &amp;&amp; e.length != t[<span class="number">9</span>]) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="literal">null</span> == i)</span><br><span class="line">            <span class="keyword">throw</span> <span class="built_in">Error</span>(u[<span class="number">84</span>]);</span><br><span class="line">        <span class="keyword">if</span> (e.length &lt; o)</span><br><span class="line">            <span class="keyword">throw</span> <span class="built_in">Error</span>(u[<span class="number">87</span>]);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> a = t[<span class="number">9</span>]; a &lt; o; a++)</span><br><span class="line">            i[r + a] = e[n + a]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">v</span>(<span class="params">e, t</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> e = b(e),</span><br><span class="line">    t = b(t),</span><br><span class="line">    b(e ^ t)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">y</span>(<span class="params">e, n</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">null</span> == e || <span class="literal">null</span> == n || e.length != n.length)</span><br><span class="line">        <span class="keyword">return</span> e;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = [], r = t[<span class="number">9</span>], o = e.length; r &lt; o; r++)</span><br><span class="line">        i[r] = v(e[r], n[r]);</span><br><span class="line">    <span class="keyword">return</span> i</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">r</span>(<span class="params">e</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> n = [];</span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">null</span> == e || <span class="keyword">void</span> <span class="number">0</span> == e || e.length == t[<span class="number">9</span>])</span><br><span class="line">        <span class="keyword">return</span> f(re);</span><br><span class="line">    <span class="keyword">if</span> (e.length &gt;= re) &#123;</span><br><span class="line">        <span class="keyword">var</span> n = t[<span class="number">9</span>]</span><br><span class="line">            , i = [];</span><br><span class="line">        <span class="keyword">if</span> (<span class="literal">null</span> != e &amp;&amp; e.length != t[<span class="number">9</span>]) &#123;</span><br><span class="line">            <span class="keyword">if</span> (e.length &lt; re)</span><br><span class="line">                <span class="keyword">throw</span> <span class="built_in">Error</span>(u[<span class="number">87</span>]);</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">var</span> r = t[<span class="number">9</span>]; r &lt; re; r++)</span><br><span class="line">                i[r] = e[n + r]</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> i</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (i = t[<span class="number">9</span>]; i &lt; re; i++)</span><br><span class="line">        n[i] = e[i % e.length];</span><br><span class="line">    <span class="keyword">return</span> n</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">p</span>(<span class="params">e</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> n = [];</span><br><span class="line">    <span class="keyword">return</span> n.push(ee[e &gt;&gt;&gt; t[<span class="number">17</span>] &amp; t[<span class="number">50</span>]]),</span><br><span class="line">    n.push(ee[e &amp; t[<span class="number">50</span>]]),</span><br><span class="line">    n.join(l[<span class="number">0</span>])</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">j</span>(<span class="params">e</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> n = [];</span><br><span class="line">    <span class="keyword">return</span> n[<span class="number">0</span>] = e &gt;&gt;&gt; t[<span class="number">68</span>] &amp; t[<span class="number">293</span>],</span><br><span class="line">    n[<span class="number">1</span>] = e &gt;&gt;&gt; t[<span class="number">52</span>] &amp; t[<span class="number">293</span>],</span><br><span class="line">    n[<span class="number">2</span>] = e &gt;&gt;&gt; t[<span class="number">32</span>] &amp; t[<span class="number">293</span>],</span><br><span class="line">    n[<span class="number">3</span>] = e &amp; t[<span class="number">293</span>],</span><br><span class="line">    n</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">b</span>(<span class="params">e</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (e &lt; t[<span class="number">284</span>])</span><br><span class="line">        <span class="keyword">return</span> b(t[<span class="number">285</span>] - (t[<span class="number">284</span>] - e));</span><br><span class="line">    <span class="keyword">if</span> (e &gt;= t[<span class="number">284</span>] &amp;&amp; e &lt;= t[<span class="number">276</span>])</span><br><span class="line">        <span class="keyword">return</span> e;</span><br><span class="line">    <span class="keyword">if</span> (e &gt; t[<span class="number">276</span>])</span><br><span class="line">        <span class="keyword">return</span> b(t[<span class="number">286</span>] + e - t[<span class="number">276</span>]);</span><br><span class="line">    <span class="keyword">throw</span> <span class="built_in">Error</span>(u[<span class="number">89</span>])</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">h</span>(<span class="params">e</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">null</span> == e || e.length == t[<span class="number">9</span>])</span><br><span class="line">        <span class="keyword">return</span> [];</span><br><span class="line">    e = <span class="keyword">new</span> <span class="built_in">String</span>(e);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> n = [], i = e.length / t[<span class="number">10</span>], r = t[<span class="number">9</span>], o = t[<span class="number">9</span>]; o &lt; i; o++) &#123;</span><br><span class="line">        <span class="keyword">var</span> a = <span class="built_in">parseInt</span>(e.charAt(r++), t[<span class="number">52</span>]) &lt;&lt; t[<span class="number">17</span>]</span><br><span class="line">            , s = <span class="built_in">parseInt</span>(e.charAt(r++), t[<span class="number">52</span>]);</span><br><span class="line">        n[o] = b(a + s)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> n</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">d</span>(<span class="params">e</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">null</span> == e || <span class="keyword">void</span> <span class="number">0</span> == e)</span><br><span class="line">        <span class="keyword">return</span> e;</span><br><span class="line">    e = <span class="built_in">encodeURIComponent</span>(e);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> n = [], i = e.length, r = t[<span class="number">9</span>]; r &lt; i; r++)</span><br><span class="line">        <span class="keyword">if</span> (e.charAt(r) == l[<span class="number">28</span>]) &#123;</span><br><span class="line">            <span class="keyword">if</span> (!(r + t[<span class="number">10</span>] &lt; i))</span><br><span class="line">                <span class="keyword">throw</span> <span class="built_in">Error</span>(u[<span class="number">99</span>]);</span><br><span class="line">            n.push(h(e.charAt(++r) + l[<span class="number">0</span>] + e.charAt(++r))[<span class="number">0</span>])</span><br><span class="line">        &#125; <span class="keyword">else</span></span><br><span class="line">            n.push(e.charCodeAt(r));</span><br><span class="line">    <span class="keyword">return</span> n</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">o</span>(<span class="params">e</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> n = t[<span class="number">398</span>];</span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">null</span> != e)</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i = t[<span class="number">9</span>]; i &lt; e.length; i++)</span><br><span class="line">            n = n &gt;&gt;&gt; t[<span class="number">32</span>] ^ te[(n ^ e[i]) &amp; t[<span class="number">293</span>]];</span><br><span class="line">    <span class="keyword">if</span> (e = j(n ^ t[<span class="number">398</span>]),</span><br><span class="line">    n = e.length,</span><br><span class="line">    <span class="literal">null</span> == e || n &lt; t[<span class="number">9</span>])</span><br><span class="line">        e = <span class="keyword">new</span> <span class="built_in">String</span>(l[<span class="number">0</span>]);</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i = [], r = t[<span class="number">9</span>]; r &lt; n; r++)</span><br><span class="line">            i.push(p(e[r]));</span><br><span class="line">        e = i.join(l[<span class="number">0</span>])</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> e</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">x</span>(<span class="params">i</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> r = [u[<span class="number">88</span>], u[<span class="number">135</span>], u[<span class="number">86</span>], u[<span class="number">61</span>], u[<span class="number">112</span>], u[<span class="number">118</span>], s[<span class="number">6</span>]]</span><br><span class="line">        , o = l[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">null</span> == i || <span class="keyword">void</span> <span class="number">0</span> == i)</span><br><span class="line">        <span class="keyword">return</span> i;</span><br><span class="line">    <span class="keyword">if</span> ((<span class="string">"undefined"</span> == <span class="keyword">typeof</span> i ? <span class="string">"undefined"</span> : <span class="keyword">typeof</span> i) == [e[<span class="number">43</span>], u[<span class="number">173</span>], u[<span class="number">74</span>]].join(l[<span class="number">0</span>])) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> o = o + u[<span class="number">95</span>], a = t[<span class="number">9</span>]; a &lt; r.length; a++)</span><br><span class="line">            <span class="keyword">if</span> (i.hasOwnProperty(r[a])) &#123;</span><br><span class="line">                <span class="keyword">var</span> f, c = l[<span class="number">30</span>] + r[a] + e[<span class="number">14</span>];</span><br><span class="line">                f = l[<span class="number">0</span>] + i[r[a]],</span><br><span class="line">                f = <span class="literal">null</span> == f || <span class="keyword">void</span> <span class="number">0</span> == f ? f : f.replace(<span class="regexp">/'/g</span>, s[<span class="number">83</span>]).replace(<span class="regexp">/"/g</span>, l[<span class="number">25</span>]),</span><br><span class="line">                o += c + f + u[<span class="number">144</span>]</span><br><span class="line">            &#125;</span><br><span class="line">        <span class="keyword">return</span> o.charAt(o.length - t[<span class="number">535</span>]) == l[<span class="number">35</span>] &amp;&amp; (o = o.substring(t[<span class="number">9</span>], o.length - t[<span class="number">535</span>])),</span><br><span class="line">        o += u[<span class="number">96</span>]</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span></span><br><span class="line">&#125;</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">$</span>(<span class="params">e</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> n = [], i = t[<span class="number">9</span>]; i &lt; e; i++) &#123;</span><br><span class="line">        <span class="keyword">var</span> r = <span class="built_in">Math</span>.random() * je</span><br><span class="line">          , r = <span class="built_in">Math</span>.floor(r);</span><br><span class="line">        n.push(ce.charAt(r))</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> n.join(l[<span class="number">0</span>])</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">get_fp</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> e = <span class="literal">true</span>, n = &#123;<span class="string">'v'</span>: <span class="string">'v1.1'</span>&#125;, h = <span class="literal">null</span>;</span><br><span class="line">    n[<span class="string">'h'</span>] = host;</span><br><span class="line">    <span class="keyword">var</span> p = <span class="keyword">new</span> <span class="built_in">Date</span>().getTime() + <span class="number">900000</span>,</span><br><span class="line">        _ = p + <span class="number">1000</span> * <span class="number">60</span> * <span class="number">60</span> * <span class="number">24</span> * <span class="number">365</span> * <span class="number">5</span>;</span><br><span class="line">    n[<span class="string">'u'</span>] = $(<span class="number">3</span>) + p + $(<span class="number">3</span>);</span><br><span class="line">    <span class="comment">// 由于返回结果简单，此处我直接拿的结果，未进行进一步解析，有兴趣可以进一步解析</span></span><br><span class="line">    <span class="keyword">var</span> w = [<span class="string">"25662623634134"</span>, <span class="string">"38137900684561"</span>]    <span class="comment">// ["18746497805452", "42111766674147"]</span></span><br><span class="line">    <span class="literal">null</span> != w &amp;&amp; <span class="keyword">void</span> <span class="number">0</span> != w &amp;&amp; w.length &gt; t[<span class="number">9</span>] ? n[u[<span class="number">135</span>]] = w.join(l[<span class="number">35</span>]) : (n[u[<span class="number">135</span>]] = M(l[<span class="number">42</span>], t[<span class="number">37</span>]), n[u[<span class="number">112</span>]] = l[<span class="number">43</span>], e = !<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">var</span> S = h = x(n)</span><br><span class="line">        , n = se;</span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">null</span> == n || <span class="keyword">void</span> <span class="number">0</span> == n)</span><br><span class="line">        <span class="keyword">throw</span> <span class="built_in">Error</span>(u[<span class="number">73</span>]);</span><br><span class="line">    <span class="literal">null</span> != S &amp;&amp; <span class="keyword">void</span> <span class="number">0</span> != S || (S = l[<span class="number">0</span>]);</span><br><span class="line">    <span class="keyword">var</span> E, w = S;</span><br><span class="line">    E = o(<span class="literal">null</span> == S ? [] : d(S));</span><br><span class="line">    <span class="keyword">var</span> R = d(w + E)</span><br><span class="line">        , k = d(n);</span><br><span class="line">    <span class="literal">null</span> == R &amp;&amp; (R = []),</span><br><span class="line">    E = [];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> C = t[<span class="number">9</span>]; C &lt; ae; C++) &#123;</span><br><span class="line">        <span class="keyword">var</span> O = <span class="built_in">Math</span>.random() * t[<span class="number">295</span>]</span><br><span class="line">            , O = <span class="built_in">Math</span>.floor(O);</span><br><span class="line">        E[C] = b(O)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">var</span> X, k = r(k), k = y(k, r(E)), C = k = r(k);</span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">null</span> == R || <span class="keyword">void</span> <span class="number">0</span> == R || R.length == t[<span class="number">9</span>])</span><br><span class="line">        X = f(ie);</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">var</span> L = R.length</span><br><span class="line">            , V = t[<span class="number">9</span>]</span><br><span class="line">            , V = L % ie &lt;= ie - oe ? ie - L % ie - oe : ie * t[<span class="number">10</span>] - L % ie - oe</span><br><span class="line">            , O = [];</span><br><span class="line">        c(R, t[<span class="number">9</span>], O, t[<span class="number">9</span>], L);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> B = t[<span class="number">9</span>]; B &lt; V; B++)</span><br><span class="line">            O[L + B] = t[<span class="number">9</span>];</span><br><span class="line">        c(j(L), t[<span class="number">9</span>], O, L + V, oe),</span><br><span class="line">        X = O</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (L = X,</span><br><span class="line">    <span class="literal">null</span> == L || L.length % ie != t[<span class="number">9</span>])</span><br><span class="line">        <span class="keyword">throw</span> <span class="built_in">Error</span>(u[<span class="number">83</span>]);</span><br><span class="line">    X = [];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> Y = t[<span class="number">9</span>], F = L.length / ie, U = t[<span class="number">9</span>]; U &lt; F; U++) &#123;</span><br><span class="line">        X[U] = [];</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> z = t[<span class="number">9</span>]; z &lt; ie; z++)</span><br><span class="line">            X[U][z] = L[Y++]</span><br><span class="line">    &#125;</span><br><span class="line">    Y = [],</span><br><span class="line">    c(E, t[<span class="number">9</span>], Y, t[<span class="number">9</span>], ae);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> K = X.length, G = t[<span class="number">9</span>]; G &lt; K; G++) &#123;</span><br><span class="line">        <span class="keyword">var</span> J, Q, Z = X[G];</span><br><span class="line">        <span class="keyword">if</span> (<span class="literal">null</span> == Z)</span><br><span class="line">            Q = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">var</span> ee = b(t[<span class="number">92</span>]), F = [], te = Z.length, ne = t[<span class="number">9</span>]; ne &lt; te; ne++)</span><br><span class="line">                F.push(v(Z[ne], ee));</span><br><span class="line">            Q = F</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">var</span> re;</span><br><span class="line">        <span class="keyword">if</span> (F = Q,</span><br><span class="line">        <span class="literal">null</span> == F)</span><br><span class="line">            re = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">var</span> ce = b(t[<span class="number">91</span>]), U = [], je = F.length, ve = t[<span class="number">9</span>]; ve &lt; je; ve++)</span><br><span class="line">                U.push(v(F[ve], ce--));</span><br><span class="line">            re = U</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (F = re,</span><br><span class="line">        <span class="literal">null</span> == F)</span><br><span class="line">            J = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">var</span> ge = b(t[<span class="number">110</span>]), U = [], _e = F.length, we = t[<span class="number">9</span>]; we &lt; _e; we++)</span><br><span class="line">                U.push(g(F[we], ge++));</span><br><span class="line">            J = U</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">var</span> Te, Se = y(J, k);</span><br><span class="line">        <span class="keyword">if</span> (F = Se,</span><br><span class="line">        U = C,</span><br><span class="line">        <span class="literal">null</span> == F)</span><br><span class="line">            Te = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (<span class="literal">null</span> == U)</span><br><span class="line">            Te = F;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">var</span> z = [], Ee = U.length, Re = t[<span class="number">9</span>], ke = F.length; Re &lt; ke; Re++)</span><br><span class="line">                z[Re] = b(F[Re] + U[Re % Ee]);</span><br><span class="line">            Te = z</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">var</span> Se = y(Te, C)</span><br><span class="line">            , Ce = i(Se)</span><br><span class="line">            , Ce = i(Ce);</span><br><span class="line">        c(Ce, t[<span class="number">9</span>], Y, G * ie + ae, ie),</span><br><span class="line">        C = Ce</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">var</span> Oe;</span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">null</span> == Y || <span class="keyword">void</span> <span class="number">0</span> == Y)</span><br><span class="line">        Oe = <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (Y.length == t[<span class="number">9</span>])</span><br><span class="line">        Oe = l[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">var</span> Ie = t[<span class="number">13</span>];</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">var</span> K = [], $e = t[<span class="number">9</span>]; $e &lt; Y.length; ) &#123;</span><br><span class="line">                <span class="keyword">if</span> (!($e + Ie &lt;= Y.length)) &#123;</span><br><span class="line">                    K.push(a(Y, $e, Y.length - $e));</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">                &#125;</span><br><span class="line">                K.push(a(Y, $e, Ie)),</span><br><span class="line">                $e += Ie</span><br><span class="line">            &#125;</span><br><span class="line">            Oe = K.join(l[<span class="number">0</span>])</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Xe) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="built_in">Error</span>(u[<span class="number">64</span>])</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    h = Oe</span><br><span class="line">    h = h + u[<span class="number">7</span>] + p;</span><br><span class="line">    <span class="keyword">return</span> h;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// console.log(get_fp())</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">    Get_fp: get_fp,    <span class="comment">// 获取fp参数，无需传参</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个W函数检测了许多有关window属性即浏览器指纹；这里面的一个fp是navigator和canvas等浏览器属性生成的（根据你浏览器版本不同生成的值也不同，可以写死，也可以多生成几个不同的随机切换），另一个h是网站host地址，这里使用时针对不同的网站要更换。</p>
+<p>这里指纹的生成其实算比较核心的内容，一开始我以为指纹只影响get请求，实际上如果指纹有问题，还会影响最后的验证。</p>
+<p>多说一些这里的扣得过程，根据执行过程中提示的错误，逐个去解决，比如某些变量值(window对象，属性之类的)未定义，那就去浏览器中调试看当前环境下其值什么的，将其替换，一般也不确定是不是定值，但是可以先去尝试。</p>
+<h4 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h4><p>可以自己生成<code>fp</code>和<code>cb</code>后，我们就可以发送获取验证码的请求了，以此来验证自己生成的<code>fp</code>是否可用。这里发送请求很简单，不详细讲了，如果生成的指纹可用，那么请求将会得到下面这样的返回结果：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__JSONP_vky5mlp_0(&#123;<span class="string">"data"</span>:&#123;<span class="string">"bg"</span>:[<span class="string">"https://necaptcha.nosdn.127.net/35167cc10b58441bb714e5b46e2a58fb.jpg"</span>,<span class="string">"https://nos.netease.com/necaptcha/35167cc10b58441bb714e5b46e2a58fb.jpg"</span>],<span class="string">"front"</span>:[<span class="string">"https://necaptcha.nosdn.127.net/402fe7eb0c234117b6515f123213cef1.png"</span>,<span class="string">"https://nos.netease.com/necaptcha/402fe7eb0c234117b6515f123213cef1.png"</span>],<span class="string">"token"</span>:<span class="string">"8a5866b867134f8083c98daaad62bf62"</span>,<span class="string">"type"</span>:<span class="number">2</span>&#125;,<span class="string">"error"</span>:<span class="number">0</span>,<span class="string">"msg"</span>:<span class="string">"ok"</span>&#125;);</span><br></pre></td></tr></table></figure>
+<h4 id="缺口计算"><a href="#缺口计算" class="headerlink" title="缺口计算"></a>缺口计算</h4><p>缺口计算在我的另一篇图像处理相关的文章中，利用像素值写传统算法和模板匹配都没有取得比较好的效果。所以最后使用深度学习目标检测的方法，最后初步获得了一个准确率在70%左右的模型。</p>
+<h4 id="模拟轨迹算法"><a href="#模拟轨迹算法" class="headerlink" title="模拟轨迹算法"></a>模拟轨迹算法</h4><p>模拟轨迹这部分主要参考这篇文章：</p>
+<p><a href="https://www.jianshu.com/p/f12679a63b8d" target="_blank" rel="noopener">网易滑动验证码破解</a></p>
+<p>这里贴一下我写的模拟方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@staticmethod</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_x_list_new</span><span class="params">(dis)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    拿到移动轨迹，模仿人的滑动行为，先匀加速后匀减速</span></span><br><span class="line"><span class="string">    匀变速运动基本公式：</span></span><br><span class="line"><span class="string">    ①v=v0+at</span></span><br><span class="line"><span class="string">    ②s=v0t+½at²</span></span><br><span class="line"><span class="string">    ③v²-v0²=2as</span></span><br><span class="line"><span class="string">    :param dis: 需要移动的距离</span></span><br><span class="line"><span class="string">    :return: 存放每0.3秒移动的距离</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="comment"># 初速度</span></span><br><span class="line">    v = <span class="number">50</span></span><br><span class="line">    <span class="comment"># 单位时间为0.02s来统计轨迹，轨迹即0.02内的位移</span></span><br><span class="line">    t = <span class="number">0.02</span></span><br><span class="line">    <span class="comment"># 位移/轨迹列表，列表内的一个元素代表0.02s的位移</span></span><br><span class="line">    tracks = []</span><br><span class="line">    <span class="comment"># 当前的位移</span></span><br><span class="line">    current = <span class="number">0</span></span><br><span class="line">    <span class="comment"># 到达mid值开始减速</span></span><br><span class="line">    mid = dis * <span class="number">3</span> / <span class="number">5</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> current &lt; dis:</span><br><span class="line">        <span class="keyword">if</span> current &lt; mid:</span><br><span class="line">            <span class="comment"># 加速度越小，单位时间的位移越小,模拟的轨迹就越多越详细</span></span><br><span class="line">            a = <span class="number">50</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            a = <span class="number">-75</span></span><br><span class="line">            <span class="comment"># 初速度</span></span><br><span class="line">        v0 = v</span><br><span class="line">        <span class="comment"># 0.02秒时间内的位移</span></span><br><span class="line">        s = v0 * t + <span class="number">0.5</span> * a * (t ** <span class="number">2</span>)</span><br><span class="line">        <span class="comment"># 当前的位置</span></span><br><span class="line">        current += s</span><br><span class="line">        <span class="comment"># 添加到轨迹列表</span></span><br><span class="line">        tracks.append(round(current))</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 速度已经达到v,该速度作为下次的初速度</span></span><br><span class="line">        v = v0 + a * t</span><br><span class="line">    tracks[<span class="number">-1</span>] = dis</span><br><span class="line">    <span class="keyword">return</span> tracks</span><br><span class="line"></span><br><span class="line"><span class="meta">@staticmethod</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_y_list</span><span class="params">(num)</span>:</span></span><br><span class="line">    <span class="comment"># 上下浮动值，设置几个比较小的备选值</span></span><br><span class="line">    <span class="comment"># y_option = [0, 1, 2, 3, 4, 5, 6, 7, </span></span><br><span class="line">    <span class="comment"># -7, -6, -5, -4, -3, -2, -1]</span></span><br><span class="line">    change_point = num // <span class="number">5</span></span><br><span class="line">    y_list = []</span><br><span class="line">    <span class="comment"># 先不考虑负值</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(num):</span><br><span class="line">        <span class="keyword">if</span> i &lt;= change_point:</span><br><span class="line">            y_list.append(random.randint(<span class="number">0</span>, <span class="number">1</span>))</span><br><span class="line">        <span class="keyword">elif</span> change_point &lt; i &lt;= change_point*<span class="number">2</span>:</span><br><span class="line">            y_list.append(random.randint(<span class="number">1</span>, <span class="number">2</span>))</span><br><span class="line">        <span class="keyword">elif</span> change_point*<span class="number">2</span> &lt; i &lt;= change_point*<span class="number">3</span>:</span><br><span class="line">            y_list.append(random.randint(<span class="number">2</span>, <span class="number">3</span>))</span><br><span class="line">        <span class="keyword">elif</span> change_point*<span class="number">3</span> &lt; i &lt;= change_point*<span class="number">4</span>:</span><br><span class="line">            y_list.append(random.randint(<span class="number">3</span>, <span class="number">4</span>))</span><br><span class="line">        <span class="keyword">elif</span> i &gt; change_point*<span class="number">4</span>:</span><br><span class="line">            y_list.append(random.randint(<span class="number">4</span>, <span class="number">5</span>))</span><br><span class="line">    <span class="keyword">return</span> y_list</span><br><span class="line"></span><br><span class="line"><span class="meta">@staticmethod</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_time_list</span><span class="params">(num)</span>:</span></span><br><span class="line">    <span class="comment"># 开始滑动的时间，设置几个随机值(单位毫米)</span></span><br><span class="line">    init_times = [<span class="number">87</span>, <span class="number">75</span>, <span class="number">91</span>, <span class="number">103</span>, <span class="number">116</span>, <span class="number">121</span>, <span class="number">137</span>, <span class="number">140</span>, <span class="number">154</span>]</span><br><span class="line">    <span class="comment"># 预计滑动需要的时间，设置几个随机值(单位毫秒)</span></span><br><span class="line">    <span class="comment"># total_time = [1020, 1234, 1106, 988, 1356, 1407]</span></span><br><span class="line">    <span class="comment"># 随机每步增长的时间大小</span></span><br><span class="line">    stride_time = [<span class="number">11</span>, <span class="number">12</span>, <span class="number">13</span>, <span class="number">14</span>, <span class="number">15</span>, <span class="number">16</span>, <span class="number">17</span>, <span class="number">18</span>, <span class="number">19</span>, <span class="number">20</span>]</span><br><span class="line">    init_time = random.choice(init_times)</span><br><span class="line">    time_list = [init_time]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(num - <span class="number">1</span>):</span><br><span class="line">        init_time += random.choice(stride_time)</span><br><span class="line">        time_list.append(init_time)</span><br><span class="line">    <span class="keyword">return</span> time_list</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_tracks</span><span class="params">(self, dis)</span>:</span></span><br><span class="line">    dis = round(dis)+<span class="number">10</span>  <span class="comment"># 据观察，实际缺口的位置与滑动距离相差10</span></span><br><span class="line">    x_list = self.get_x_list_new(dis)</span><br><span class="line">    y_list = self.get_y_list(len(x_list))</span><br><span class="line">    time_list = self.get_time_list(len(x_list))</span><br><span class="line">    traces = []</span><br><span class="line">    <span class="keyword">for</span> x, y, t <span class="keyword">in</span> zip(x_list, y_list, time_list):</span><br><span class="line">        traces.append([x, y, t])</span><br><span class="line">    <span class="keyword">return</span> traces</span><br></pre></td></tr></table></figure>
+<p>实际上并不确定此轨迹生成方法是否可行（理论上再继续优化优化应该是可以的），因为后面易盾出现了<code>watchman</code>检测，因为我不咋想继续搞它了，所以没法完整验证，每次<code>check</code>请求都没有成功，所以就放着了，如果后面有继续对<code>watchman</code>破解，再来更新……</p>
+<p><em>后续补充：后来又搞了一下watchman,经过测试，这里的轨迹算法可用，周围有大佬是利用深度学习训练了一个轨迹生成模型，后面有机会可以尝试下</em></p>
+<h4 id="补充：干扰块的排除"><a href="#补充：干扰块的排除" class="headerlink" title="补充：干扰块的排除"></a>补充：干扰块的排除</h4><p>易盾在<code>2.14.1</code>版本中对滑动验证码进行了一个小升级，就是背景图会有两个滑块，类似这样：</p>
+<p><img src="/2020/08/08/spider-yidun2/p7.png" alt></p>
+<p>也就是增加了一个干扰块，恰巧可以利用小滑块来解决此问题,因为我们可以获取到小滑块的原始图片，小滑块是一个背景透明的<code>png</code>图片</p>
+<p><img src="/2020/08/08/spider-yidun2/p6.png" alt></p>
+<p>这里我故意采用截图的方式来展示，因为直接看原图很难直接意识到滑块实际的长和宽，因为背景是透明的；使用<code>PIL</code>打开时，模式为<code>RGBA</code>模式，获取像素值返回四个，前三个是<code>RGB</code>值，最后一个是透明度值(0~255),0表示完全透明，255表明完全不透明。易盾这里背景部分的透明度值为0，其他地方的透明度值为255。</p>
+<p>所以这里可以利用透明度值获取滑块左上角的坐标，从而排除不在同一水平线的干扰块。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_top</span><span class="params">(response_content)</span>:</span></span><br><span class="line">    image = Image.open(BytesIO(response_content))</span><br><span class="line">    width, height = image.size</span><br><span class="line">    <span class="comment"># 逐列扫描，找到第一列透明度不为0的最上面的行</span></span><br><span class="line">    <span class="keyword">for</span> col <span class="keyword">in</span> range(width):</span><br><span class="line">        <span class="keyword">for</span> row <span class="keyword">in</span> range(height<span class="number">-40</span>):</span><br><span class="line">            _, _, _, a = image.getpixel((col, row))</span><br><span class="line">            <span class="keyword">if</span> a:</span><br><span class="line">                print(row, col)</span><br><span class="line">                <span class="keyword">return</span> row, col</span><br></pre></td></tr></table></figure>
+<p>这里根据经验，一般都在第二列，所以这里或许可以直接从上到下扫描第二列。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/js加密/" rel="tag"># js加密</a>
+          
+            <a href="/tags/逆向/" rel="tag"># 逆向</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/08/01/spider-yidun1/" rel="next" title="网易易盾滑动验证码破解（上篇）">
+                <i class="fa fa-chevron-left"></i> 网易易盾滑动验证码破解（上篇）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/09/28/ip-slider-captcha/" rel="prev" title="Python图像处理识别滑动验证码缺口">
+                Python图像处理识别滑动验证码缺口 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">70</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">141</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#网易易盾滑动验证码破解（下篇）"><span class="nav-text">网易易盾滑动验证码破解（下篇）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#获取验证码"><span class="nav-text">获取验证码</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#fingerprint指纹"><span class="nav-text">fingerprint指纹</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#验证"><span class="nav-text">验证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#缺口计算"><span class="nav-text">缺口计算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#模拟轨迹算法"><span class="nav-text">模拟轨迹算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#补充：干扰块的排除"><span class="nav-text">补充：干扰块的排除</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

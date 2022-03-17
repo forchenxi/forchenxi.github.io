@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="deep learning,Keras,news_theme,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本文章参考《python深度学习》 新闻分类：多分类问题新闻主题有多个类别，所 这是多分类（multiclass classification）问题的一个例子。因为每个数据点只能划分到一个类别， 所以更具体地说，这是单标签、多分类（single-label, multiclass classification）问题的一个例 子。如果每个数据点可以划分到多个类别（主题），那它就是一个多标签、多分类（">
+<meta name="keywords" content="deep learning,Keras,news_theme">
+<meta property="og:type" content="article">
+<meta property="og:title" content="新闻分类：多分类问题">
+<meta property="og:url" content="http://yoursite.com/2020/02/20/dl-news-theme/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="本文章参考《python深度学习》 新闻分类：多分类问题新闻主题有多个类别，所 这是多分类（multiclass classification）问题的一个例子。因为每个数据点只能划分到一个类别， 所以更具体地说，这是单标签、多分类（single-label, multiclass classification）问题的一个例 子。如果每个数据点可以划分到多个类别（主题），那它就是一个多标签、多分类（">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2020/02/20/dl-news-theme/pic3.png">
+<meta property="og:image" content="http://yoursite.com/2020/02/20/dl-news-theme/pic4.png">
+<meta property="og:updated_time" content="2020-09-16T05:10:52.996Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="新闻分类：多分类问题">
+<meta name="twitter:description" content="本文章参考《python深度学习》 新闻分类：多分类问题新闻主题有多个类别，所 这是多分类（multiclass classification）问题的一个例子。因为每个数据点只能划分到一个类别， 所以更具体地说，这是单标签、多分类（single-label, multiclass classification）问题的一个例 子。如果每个数据点可以划分到多个类别（主题），那它就是一个多标签、多分类（">
+<meta name="twitter:image" content="http://yoursite.com/2020/02/20/dl-news-theme/pic3.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/02/20/dl-news-theme/">
+
+
+
+
+
+  <title>新闻分类：多分类问题 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/20/dl-news-theme/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">新闻分类：多分类问题</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-20T19:35:24+08:00">
+                2020-02-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><em>本文章参考《python深度学习》</em></p>
+<h3 id="新闻分类：多分类问题"><a href="#新闻分类：多分类问题" class="headerlink" title="新闻分类：多分类问题"></a>新闻分类：多分类问题</h3><p>新闻主题有多个类别，所 这是多分类（<code>multiclass classification</code>）问题的一个例子。因为每个数据点只能划分到一个类别， 所以更具体地说，这是单标签、多分类（<code>single-label, multiclass classification</code>）问题的一个例 子。如果每个数据点可以划分到多个类别（主题），那它就是一个多标签、多分类（<code>multilabel, multiclass classification</code>）问题。</p>
+<p>这篇文章会构建一个网络，将路透社新闻划分为46个互斥的主题。</p>
+<h4 id="路透社数据集"><a href="#路透社数据集" class="headerlink" title="路透社数据集"></a>路透社数据集</h4><p>它包含许多短新闻及其对应的主题，由路透社在1986 年发布。它是一个简单的、广泛使用的文本分类数据集。它包括46 个不同的主题：某些主题的样本更多， 但训练集中每个主题都有至少 10 个样本。 与 <code>IMDB</code>和<code>MNIST</code> 类似，路透社数据集也内置为<code>Keras</code> 的一部分。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.datasets <span class="keyword">import</span> reuters</span><br><span class="line"></span><br><span class="line">(train_data, train_labels), (test_data, test_labels) = reuters.load_data(num_words=<span class="number">10000</span>)</span><br><span class="line"></span><br><span class="line">print(train_data[<span class="number">10</span>])</span><br><span class="line">[<span class="number">1</span>, <span class="number">245</span>, <span class="number">273</span>, <span class="number">207</span>, <span class="number">156</span>, <span class="number">53</span>, <span class="number">74</span>, <span class="number">160</span>, <span class="number">26</span>, <span class="number">14</span>, <span class="number">46</span>, <span class="number">296</span>, <span class="number">26</span>, <span class="number">39</span>, <span class="number">74</span>, <span class="number">2979</span>, <span class="number">3554</span>, <span class="number">14</span>, <span class="number">46</span>, <span class="number">4689</span>, <span class="number">4329</span>, <span class="number">86</span>, <span class="number">61</span>, <span class="number">3499</span>, <span class="number">4795</span>, <span class="number">14</span>, <span class="number">61</span>, <span class="number">451</span>, <span class="number">4329</span>, <span class="number">17</span>, <span class="number">12</span>]</span><br></pre></td></tr></table></figure>
+<p>与<code>IMDB</code>评论一样，每个样本都是一个整数列表（表示单词索引）,甚至将索引解码为新闻文本的方式都一样，只不过要使用<code>reuters.get_word_index()</code>。</p>
+<p>我们有 8982 个训练样本和 2246 个测试样本。</p>
+<a id="more"></a>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>len(train_data) </span><br><span class="line"><span class="number">8982</span> </span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>len(test_data) </span><br><span class="line"><span class="number">2246</span></span><br></pre></td></tr></table></figure>
+<p>然后是将数据向量化，可以使用与电影评论中相同的<code>vectorize_sequences</code>函数；不过这里的标签向量化方式不同，需要使用<code>one_hot</code>编码，也叫分类编码（<code>categorical encoding</code>）。</p>
+<p>在这个例子中，标签的one-hot编码就是将每个标签表示为全零向量， 只有标签索引对应的元素为 1。</p>
+<p>可以使用以下代码自己实现这一过程：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">to_one_hot</span><span class="params">(labels, dimension=<span class="number">46</span>)</span>:</span></span><br><span class="line">    results = np.zeros((len(labels), dimension))</span><br><span class="line">    <span class="keyword">for</span> i, label <span class="keyword">in</span> enumerate(labels):</span><br><span class="line">        results[i, label] = <span class="number">1.</span></span><br><span class="line">    <span class="keyword">return</span> results</span><br><span class="line"></span><br><span class="line">one_hot_train_labels = to_one_hot(train_labels)</span><br><span class="line">one_hot_test_labels = to_one_hot(test_labels)</span><br></pre></td></tr></table></figure>
+<p>实际上，<code>to_one_hot</code>函数与<code>vectorize_sequences</code>函数完全一致（仅<code>dimension</code>的默认参数值不同），</p>
+<p>我在电影评论的文章中就有提及，<code>keras.utils.to_categorical()</code>方法具有类似<code>vectorize_sequences</code>的功能，但是其只能接受一个向量作为参数，无法接受二维数组（<code>2D</code>张量）。但是这里，标签就是一维张量，所以完全可以使用<code>Keras</code>的内置方法。</p>
+<h4 id="完整地数据处理过程"><a href="#完整地数据处理过程" class="headerlink" title="完整地数据处理过程"></a>完整地数据处理过程</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.datasets <span class="keyword">import</span> reuters</span><br><span class="line"><span class="keyword">from</span> keras.utils <span class="keyword">import</span> to_categorical</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line">(train_data, train_labels), (test_data, test_labels) = reuters.load_data(num_words=<span class="number">10000</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">vectorize_sequences</span><span class="params">(labels, dimension=<span class="number">10000</span>)</span>:</span></span><br><span class="line">    results = np.zeros((len(labels), dimension))</span><br><span class="line">    <span class="keyword">for</span> i, label <span class="keyword">in</span> enumerate(labels):</span><br><span class="line">        results[i, label] = <span class="number">1.</span></span><br><span class="line">    <span class="keyword">return</span> results</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 将训练数据向量化</span></span><br><span class="line">x_train = vectorize_sequences(train_data)</span><br><span class="line">x_test = vectorize_sequences(test_data)</span><br><span class="line"><span class="comment"># 将训练标签向量化</span></span><br><span class="line">one_hot_train_labels = to_categorical(train_labels)</span><br><span class="line">one_hot_test_labels = to_categorical(test_labels)</span><br></pre></td></tr></table></figure>
+<h4 id="构建网络"><a href="#构建网络" class="headerlink" title="构建网络"></a>构建网络</h4><p>​        这个主题分类问题与前面的电影评论分类问题类似，两个例子都是试图对简短的文本片段进行分类。但这个问题有一个新的约束条件：输出类别的数量从2 个变为46 个。输出空间的维 度要大得多。 </p>
+<p>​        对于前面用过的 Dense 层的堆叠，每层只能访问上一层输出的信息。如果某一层丢失了与 分类问题相关的一些信息，那么这些信息无法被后面的层找回，也就是说，每一层都可能成为 信息瓶颈。上一个例子使用了16 维的中间层，但对这个例子来说16 维空间可能太小了，无法 学会区分 46 个不同的类别。这种维度较小的层可能成为信息瓶颈，永久地丢失相关信息。 </p>
+<p>​        出于这个原因，下面将使用维度更大的层，包含 64 个单元。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> models</span><br><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> layers</span><br><span class="line"></span><br><span class="line"><span class="comment"># 模型定义</span></span><br><span class="line">model = models.Sequential()</span><br><span class="line">model.add(layers.Dense(<span class="number">64</span>, activation=<span class="string">'relu'</span>, input_shape=(<span class="number">10000</span>,)))</span><br><span class="line">model.add(layers.Dense(<span class="number">64</span>, activation=<span class="string">'relu'</span>))</span><br><span class="line">model.add(layers.Dense(<span class="number">46</span>, activation=<span class="string">'softmax'</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 编译模型</span></span><br><span class="line">model.compile(optimizer=<span class="string">'rmsprop'</span>,</span><br><span class="line">              loss=<span class="string">'categorical_crossentropy'</span>,</span><br><span class="line">              metrics=[<span class="string">'acc'</span>])</span><br></pre></td></tr></table></figure>
+<p>关于这个架构还应该注意另外两点。 </p>
+<ol>
+<li>网络的最后一层是大小为46 的 Dense 层。这意味着，对于每个输入样本，网络都会输出一个 46 维向量。这个向量的每个元素（即每个维度）代表不同的输出类别。 </li>
+<li>最后一层使用了<code>softmax</code> 激活。你在<code>MNIST</code>例子中见过这种用法。网络将输出在46 个不同输出类别上的概率分布——对于每一个输入样本，网络都会输出一个 46 维向量， 其中 output[i] 是样本属于第 i 个类别的概率。46 个概率的总和为 1。 </li>
+</ol>
+<p>对于这个例子，最好的损失函数是 <code>categorical_crossentropy</code>（分类交叉熵）。它用于衡量两个概率分布之间的距离，这里两个概率分布分别是网络输出的概率分布和标签的真实分布。通过将这两个分布的距离最小化，训练网络可使输出结果尽可能接近真实标签。 </p>
+<h4 id="验证方法"><a href="#验证方法" class="headerlink" title="验证方法"></a>验证方法</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pylab <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 留出验证集</span></span><br><span class="line">x_val = x_train[:<span class="number">1000</span>]</span><br><span class="line">partial_x_train = x_train[<span class="number">1000</span>:]</span><br><span class="line"></span><br><span class="line">y_val = one_hot_train_labels[:<span class="number">1000</span>]</span><br><span class="line">partial_y_train = one_hot_train_labels[<span class="number">1000</span>:]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练模型</span></span><br><span class="line">history = model.fit(partial_x_train,</span><br><span class="line">                    partial_y_train,</span><br><span class="line">                    epochs=<span class="number">20</span>,</span><br><span class="line">                    batch_size=<span class="number">512</span>,</span><br><span class="line">                    validation_data=(x_val, y_val))</span><br><span class="line">history_dict = history.history</span><br><span class="line">loss_values = history_dict[<span class="string">"loss"</span>]  <span class="comment"># 训练数据的损失</span></span><br><span class="line">acc_values = history_dict[<span class="string">"acc"</span>]  <span class="comment"># 训练数据的准确率</span></span><br><span class="line">val_loss_values = history_dict[<span class="string">"val_loss"</span>]  <span class="comment"># 验证数据的损失</span></span><br><span class="line">val_acc_values = history_dict[<span class="string">"val_acc"</span>]   <span class="comment"># 验证数据的准确率</span></span><br><span class="line"></span><br><span class="line">epochs = range(<span class="number">1</span>, len(loss_values) + <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 绘制训练损失和验证损失</span></span><br><span class="line">plt.plot(epochs, loss_values, <span class="string">'bo'</span>, label=<span class="string">"Training loss"</span>)</span><br><span class="line">plt.plot(epochs, val_loss_values, <span class="string">'b'</span>, label=<span class="string">"Validation loss"</span>)</span><br><span class="line">plt.title(<span class="string">'Training and validation loss'</span>)</span><br><span class="line">plt.xlabel(<span class="string">'Epochs'</span>)</span><br><span class="line">plt.ylabel(<span class="string">'Loss'</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 清空图像</span></span><br><span class="line">plt.clf()</span><br><span class="line"><span class="comment"># 绘制训练精度和验证精度</span></span><br><span class="line">plt.plot(epochs, acc_values, <span class="string">'bo'</span>, label=<span class="string">"Training acc"</span>)</span><br><span class="line">plt.plot(epochs, val_acc_values, <span class="string">'b'</span>, label=<span class="string">"Validation acc"</span>)</span><br><span class="line">plt.title(<span class="string">"Training and validation accuracy"</span>)</span><br><span class="line">plt.xlabel(<span class="string">"Epochs"</span>)</span><br><span class="line">plt.ylabel(<span class="string">"Accuracy"</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p>下面是训练过程中的训练损失和验证损失、训练精度和验证精度图：</p>
+<p><img src="/2020/02/20/dl-news-theme/pic3.png" alt></p>
+<p><img src="/2020/02/20/dl-news-theme/pic4.png" alt></p>
+<p>虽然在《Python深度学习》中的例子，网络在训练9轮后开始过拟合，但是这里我们的实际情况(可能因为不同的机器配置或什么原因会有一些微小的差别)大概是在7轮，所以如果我们训练7轮后就停止训练，可以简单地得到近似78%的准确率。</p>
+<h4 id="测试与预测"><a href="#测试与预测" class="headerlink" title="测试与预测"></a>测试与预测</h4><p>当训练好网络之后，我们可以先使用测试集来测试准确度</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">results = model.evaluate(x_test, one_hot_test_labels)</span><br><span class="line">print(results)</span><br><span class="line"></span><br><span class="line">[<span class="number">0.9962977889596832</span>, <span class="number">0.7849510312080383</span>]</span><br></pre></td></tr></table></figure>
+<p>第一个是测试集的损失值，第二个是测试集的准确率。</p>
+<p>当测试的准确率达到我们的需求时，我们可以用这一网络来预测新数据</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">predictions = model.predict(x_test)</span><br><span class="line"><span class="comment"># predictions 中的每个元素都是长度为 46 的向量</span></span><br><span class="line">print(predictions[<span class="number">0</span>].shape)</span><br><span class="line">(<span class="number">46</span>,)</span><br><span class="line"><span class="comment"># 这个向量的所有元素总和为 1（这里出现过不等于1的情况，例如0.9999994）</span></span><br><span class="line">print(np.sum(predictions[<span class="number">0</span>]))</span><br><span class="line"><span class="number">1.0</span></span><br><span class="line"><span class="comment"># 最大的元素就是预测类别，即概率最大的类别(书上的例子这里结果是4)</span></span><br><span class="line">print(np.argmax(predictions[<span class="number">0</span>]))</span><br><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
+<h4 id="处理标签和损失的另一种方法"><a href="#处理标签和损失的另一种方法" class="headerlink" title="处理标签和损失的另一种方法"></a>处理标签和损失的另一种方法</h4><p>除了将标签转化为<code>ont-hot</code>编码，还可以直接将其转化为整数张量（实际上就是变为<code>numpy</code>数组，本身还是一个”列表”）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">y_train = np.array(train_labels) </span><br><span class="line">y_test = np.array(test_labels)</span><br></pre></td></tr></table></figure>
+<p>对于这种编码方法，唯一需要改变的是损失函数的选择。对于上面使用的损失函数<code>categorical_crossentropy</code>，标签应该遵循分类编码。对于整数标签，你应该使用 <code>sparse_categorical_crossentropy</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">model.compile(optimizer=<span class="string">'rmsprop'</span>,               </span><br><span class="line">              loss=<span class="string">'sparse_categorical_crossentropy'</span>,               </span><br><span class="line">              metrics=[<span class="string">'acc'</span>])</span><br></pre></td></tr></table></figure>
+<p>这个新的损失函数在数学上与 <code>categorical_crossentropy</code> 完全相同，二者只是接口不同。</p>
+<h4 id="中间层维度足够大的重要性"><a href="#中间层维度足够大的重要性" class="headerlink" title="中间层维度足够大的重要性"></a>中间层维度足够大的重要性</h4><p>前面提到，最终输出是46 维的，因此中间层的隐藏单元个数不应该比46 小太多。现在来看一下，如果中间层的维度远远小于 46（比如 4 维），造成了信息瓶颈，那么会发生什么？ </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 具有信息瓶颈的模型</span></span><br><span class="line">model = models.Sequential() </span><br><span class="line">model.add(layers.Dense(<span class="number">64</span>, activation=<span class="string">'relu'</span>, input_shape=(<span class="number">10000</span>,))) model.add(layers.Dense(<span class="number">4</span>, activation=<span class="string">'relu'</span>)) </span><br><span class="line">model.add(layers.Dense(<span class="number">46</span>, activation=<span class="string">'softmax'</span>)) </span><br><span class="line"></span><br><span class="line">model.compile(optimizer=<span class="string">'rmsprop'</span>,               </span><br><span class="line">              loss=<span class="string">'categorical_crossentropy'</span>,               </span><br><span class="line">              metrics=[<span class="string">'accuracy'</span>]) </span><br><span class="line">model.fit(partial_x_train,           </span><br><span class="line">          partial_y_train,           </span><br><span class="line">          epochs=<span class="number">20</span>,           </span><br><span class="line">          batch_size=<span class="number">128</span>,           </span><br><span class="line">          validation_data=(x_val, y_val))</span><br></pre></td></tr></table></figure>
+<p>现在网络的验证精度最大约为 71%，比前面下降了一些。导致这一下降的主要原因在于，你试图将大量信息（这些信息足够恢复46 个类别的分割超平面）压缩到维度很小的中间空间。网络能够将大部分必要信息塞入这个四维表示中，但并不是全部信息。</p>
+<h4 id="改进与总结"><a href="#改进与总结" class="headerlink" title="改进与总结"></a>改进与总结</h4><p><strong>改进（应该说是试验）</strong></p>
+<ol>
+<li>尝试使用更多或更少的隐藏单元，比如 32 个、128 个等。 </li>
+<li>前面使用了两个隐藏层，现在尝试使用一个或三个隐藏层。</li>
+</ol>
+<p>只有不断试验才能改进。</p>
+<p><strong>总结</strong></p>
+<ol>
+<li><p>如果要对 N 个类别的数据点进行分类，网络的最后一层应该是大小为 N 的 Dense 层。 </p>
+</li>
+<li><p>对于单标签、多分类问题，网络的最后一层应该使用 <code>softmax</code> 激活，这样可以输出在 N 个输出类别上的概率分布。 </p>
+</li>
+<li><p>这种问题的损失函数几乎总是应该使用分类交叉熵。它将网络输出的概率分布与目标的真实分布之间的距离最小化。</p>
+</li>
+<li><p>处理多分类问题的标签有两种方法：</p>
+<p>（1）、通过分类编码（也叫one-hot 编码）对标签进行编码，然后使用<code>categorical_ crossentropy</code> 作为损失函数。 </p>
+<p>（2）、将标签编码为整数，然后使用 <code>sparse_categorical_crossentropy</code> 损失函数。</p>
+</li>
+<li><p>如果你需要将数据划分到许多类别中，应该避免使用太小的中间层，以免在网络中造成 信息瓶颈。 </p>
+</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/Keras/" rel="tag"># Keras</a>
+          
+            <a href="/tags/news-theme/" rel="tag"># news_theme</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/02/10/dl-movie-comment/" rel="next" title="电影评论分类：二分类问题">
+                <i class="fa fa-chevron-left"></i> 电影评论分类：二分类问题
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/03/09/dl-data-process/" rel="prev" title="字符验证码识别之数据处理">
+                字符验证码识别之数据处理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">70</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">141</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#新闻分类：多分类问题"><span class="nav-text">新闻分类：多分类问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#路透社数据集"><span class="nav-text">路透社数据集</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#完整地数据处理过程"><span class="nav-text">完整地数据处理过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#构建网络"><span class="nav-text">构建网络</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#验证方法"><span class="nav-text">验证方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试与预测"><span class="nav-text">测试与预测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#处理标签和损失的另一种方法"><span class="nav-text">处理标签和损失的另一种方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#中间层维度足够大的重要性"><span class="nav-text">中间层维度足够大的重要性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#改进与总结"><span class="nav-text">改进与总结</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

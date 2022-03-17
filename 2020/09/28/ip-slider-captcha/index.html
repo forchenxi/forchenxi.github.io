@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="模板匹配,cv2,PIL,易盾,极验,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Python图像处理识别滑动验证码缺口参考文章 OpenCV_Python模板匹配 网易易盾模板匹配近期在破解网易易盾的滑动验证码，涉及到缺口识别的问题时，由于没有经验，上网查了一些资料，发现一个比较火的方式是利用opencv的模板匹配。 模板匹配是一种在较大图像中搜索和查找模板图像位置的方法。OpenCV提供了一个函数cv2.matchTemplate()。它只是在输入图像上滑动模板图像（如在2">
+<meta name="keywords" content="模板匹配,cv2,PIL,易盾,极验">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python图像处理识别滑动验证码缺口">
+<meta property="og:url" content="http://yoursite.com/2020/09/28/ip-slider-captcha/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="Python图像处理识别滑动验证码缺口参考文章 OpenCV_Python模板匹配 网易易盾模板匹配近期在破解网易易盾的滑动验证码，涉及到缺口识别的问题时，由于没有经验，上网查了一些资料，发现一个比较火的方式是利用opencv的模板匹配。 模板匹配是一种在较大图像中搜索和查找模板图像位置的方法。OpenCV提供了一个函数cv2.matchTemplate()。它只是在输入图像上滑动模板图像（如在2">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2020/09/28/ip-slider-captcha/test1.png">
+<meta property="og:image" content="http://yoursite.com/2020/09/28/ip-slider-captcha/test2.png">
+<meta property="og:image" content="http://yoursite.com/2020/09/28/ip-slider-captcha/test3.png">
+<meta property="og:image" content="http://yoursite.com/2020/09/28/ip-slider-captcha/one_origin.png">
+<meta property="og:image" content="http://yoursite.com/2020/09/28/ip-slider-captcha/p1.png">
+<meta property="og:image" content="http://yoursite.com/2020/09/28/ip-slider-captcha/one.png">
+<meta property="og:image" content="http://yoursite.com/2020/09/28/ip-slider-captcha/two.png">
+<meta property="og:image" content="http://yoursite.com/2020/09/28/ip-slider-captcha/three.png">
+<meta property="og:image" content="http://yoursite.com/2020/09/28/ip-slider-captcha/four.png">
+<meta property="og:image" content="http://yoursite.com/2020/09/28/ip-slider-captcha/five.png">
+<meta property="og:updated_time" content="2022-03-11T11:57:11.455Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python图像处理识别滑动验证码缺口">
+<meta name="twitter:description" content="Python图像处理识别滑动验证码缺口参考文章 OpenCV_Python模板匹配 网易易盾模板匹配近期在破解网易易盾的滑动验证码，涉及到缺口识别的问题时，由于没有经验，上网查了一些资料，发现一个比较火的方式是利用opencv的模板匹配。 模板匹配是一种在较大图像中搜索和查找模板图像位置的方法。OpenCV提供了一个函数cv2.matchTemplate()。它只是在输入图像上滑动模板图像（如在2">
+<meta name="twitter:image" content="http://yoursite.com/2020/09/28/ip-slider-captcha/test1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/09/28/ip-slider-captcha/">
+
+
+
+
+
+  <title>Python图像处理识别滑动验证码缺口 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/28/ip-slider-captcha/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Python图像处理识别滑动验证码缺口</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-28T14:03:54+08:00">
+                2020-09-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/图像处理/" itemprop="url" rel="index">
+                    <span itemprop="name">图像处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="Python图像处理识别滑动验证码缺口"><a href="#Python图像处理识别滑动验证码缺口" class="headerlink" title="Python图像处理识别滑动验证码缺口"></a>Python图像处理识别滑动验证码缺口</h3><p>参考文章</p>
+<p><a href="https://www.jianshu.com/p/5f4bb5c78184" target="_blank" rel="noopener">OpenCV_Python模板匹配</a></p>
+<h4 id="网易易盾"><a href="#网易易盾" class="headerlink" title="网易易盾"></a>网易易盾</h4><h5 id="模板匹配"><a href="#模板匹配" class="headerlink" title="模板匹配"></a>模板匹配</h5><p>近期在破解网易易盾的滑动验证码，涉及到缺口识别的问题时，由于没有经验，上网查了一些资料，发现一个比较火的方式是利用<code>opencv</code>的模板匹配。</p>
+<p>模板匹配是一种在较大图像中搜索和查找模板图像位置的方法。<code>OpenCV</code>提供了一个函数<code>cv2.matchTemplate()</code>。它只是在输入图像上滑动模板图像（如在<code>2D</code>卷积中），并比较模板图像下的输入图像的模板和补丁。在<code>OpenCV</code>中实现了几种比较方法。它返回一个灰度图像，其中每个像素表示该像素的邻域与模板匹配的程度。</p>
+<p>假设输入图像的大小（<code>W*H</code>）且模板图像的大小（<code>w*h</code>），则输出图像的大小为（W-w + 1，H-h + 1）。获得结果后，可以使用<code>cv2.minMaxLoc()</code>函数查找最大/最小值的位置。将其作为矩形的左上角，并将（w，h）作为矩形的宽度和高度。那个矩形是你的模板区域匹配后得到的区域。</p>
+<a id="more"></a>
+<ul>
+<li>函数使用方式：</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line">cv2.matchTemplata(img_big,img_temp,cv2.method)</span><br><span class="line"></span><br><span class="line">img_big:在该图上查找图像</span><br><span class="line">img_temp:待查找的图像，模板图像</span><br><span class="line">method: 模板匹配的方法</span><br></pre></td></tr></table></figure>
+<ul>
+<li>参数method</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>method</th>
+<th>introduce</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cv2.TM_SQDIFF</code> 平方差匹配法</td>
+<td>该方法采用平方差来进行匹配；最好的匹配值为0；匹配越差，匹配值越大</td>
+</tr>
+<tr>
+<td><code>cv2.TM_CCORR</code> 相关匹配法</td>
+<td>该方法采用乘法操作；数值越大表明匹配程度越好。</td>
+</tr>
+<tr>
+<td><code>cv2.TM_CCOEFF</code> 相关系数匹配法</td>
+<td>1表示完美的匹配；-1表示最差的匹配。</td>
+</tr>
+<tr>
+<td><code>cv2.TM_SQDIFF_NORMED</code></td>
+<td>归一化平方差匹配法</td>
+</tr>
+<tr>
+<td><code>cv2.TM_CCORR_NORMED</code></td>
+<td>归一化相关匹配法</td>
+</tr>
+<tr>
+<td><code>cv2.TM_CCOEFF_NORMED</code></td>
+<td>归一化相关系数匹配法</td>
+</tr>
+</tbody>
+</table>
+<p>TM_SQDIFF，TM_SQDIFF_NORMED匹配数值越低表示匹配效果越好，其它四种反之。</p>
+<p>假设我们现有易盾验证码的背景图片和滑块图片，尝试去调用此方法来解决问题：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">template_match</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="comment"># 待检测的目标（也叫模板）</span></span><br><span class="line">    target = cv2.imread(<span class="string">'target.png'</span>, <span class="number">0</span>)  <span class="comment"># 1-彩色, 0-黑白</span></span><br><span class="line">    <span class="comment"># 读取背景图像</span></span><br><span class="line">    background = cv2.imread(<span class="string">'background.jpg'</span>, <span class="number">0</span>)  <span class="comment"># 彩色</span></span><br><span class="line">   </span><br><span class="line">    <span class="comment"># 得到目标图片的高和宽（如果是彩色，shape返回3个值）</span></span><br><span class="line">    h, w = target.shape</span><br><span class="line">    print(h, w)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 模板匹配操作</span></span><br><span class="line">    res = cv2.matchTemplate(background, target, cv2.TM_CCOEFF_NORMED)</span><br><span class="line">    <span class="comment"># 这里可以打印看一下模板匹配返回的结果</span></span><br><span class="line">    print(res)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 得到最大值和最小值的位置</span></span><br><span class="line">    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)</span><br><span class="line">    top_left = max_loc  <span class="comment"># 左上角的位置</span></span><br><span class="line">    print(top_left)</span><br><span class="line">    bottom_right = (top_left[<span class="number">0</span>]+w, top_left[<span class="number">1</span>]+h)  <span class="comment"># 右下角的位置</span></span><br><span class="line">    cv2.rectangle(background, top_left, bottom_right, <span class="number">255</span>, <span class="number">2</span>)</span><br><span class="line">    cv2.imshow(<span class="string">'img'</span>, background)</span><br><span class="line">    cv2.waitKey(<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+<p>这里最后是在背景图上做了矩形然后显示出来，这样我们一下就可以看出找的对不对。</p>
+<p>这里因为用的是<code>cv2.TM_CCOEFF_NORMED</code>,匹配的越好，匹配值越大，所以我们以最大值的位置作为矩阵的左上角，如果用<code>cv2.TM_SQDIFF</code>就要选最小值的位置作为矩阵的左上角。</p>
+<p>具体在检测的时候，method参数到底使用哪一种效果更好，要实际测试，在我遇到过的一些滑动验证码，貌似都是TM_CCOEFF_NORMED参数效果好一些。</p>
+<p><img src="/2020/09/28/ip-slider-captcha/test1.png" alt></p>
+<p>这里是直接使用黑白图片进行检测，效果还可以，但是针对具体不同的图片，有可能彩色的效果更好一些。</p>
+<p>后来有遇到过另一个网站的图片，发现用上面的方法无法正常检测到滑块的位置，检测结果是这样的：</p>
+<p><img src="/2020/09/28/ip-slider-captcha/test2.png" alt></p>
+<p>后来从大佬那里学习到，在模板匹配之前，将图片进行一个边缘检测处理，能够提高检测的效果</p>
+<p>edges = cv.Canny( image, threshold1, threshold2[, apertureSize[, L2gradient]])</p>
+<p>edges 为计算得到的边缘图像。</p>
+<ul>
+<li>image 为 8 位输入图像。</li>
+<li>threshold1 表示处理过程中的第一个阈值。</li>
+<li>threshold2 表示处理过程中的第二个阈值。</li>
+<li>apertureSize 表示 Sobel 算子的孔径大小。</li>
+<li>L2gradient 为计算图像梯度幅度（gradient magnitude）的标识。其默认值为 False。如果为 True，则使用更精确的 L2 范数进行计算（即两个方向的导数的平方和再开方），否则使用 L1 范数（直接将两个方向导数的绝对值相加）。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 边缘检测</span></span><br><span class="line">target = cv2.Canny(target, <span class="number">100</span>, <span class="number">200</span>)</span><br><span class="line">background = cv2.Canny(background, <span class="number">100</span>, <span class="number">200</span>)</span><br></pre></td></tr></table></figure>
+<p>两个阈值的设置要根据情况而定。</p>
+<p>检测效果：</p>
+<p><img src="/2020/09/28/ip-slider-captcha/test3.png" alt></p>
+<p>此外，因为网易易盾的滑块图片是有一个纯白色或者纯黑色底色的背景的，我有尝试过转换过背景底色再去匹配，但是没啥没效果，底色转换代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 白色底变为黑色底</span></span><br><span class="line">img_template[np.where((img_template == [<span class="number">255</span>, <span class="number">255</span>,<span class="number">255</span>]).all(axis=<span class="number">2</span>))] = [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line"><span class="comment"># 黑色底变为白色底</span></span><br><span class="line">img_template[np.where((img_template == [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]).all(axis=<span class="number">2</span>))] = [<span class="number">255</span>, <span class="number">255</span>, <span class="number">255</span>]</span><br></pre></td></tr></table></figure>
+<h5 id="传统算法"><a href="#传统算法" class="headerlink" title="传统算法"></a>传统算法</h5><p>因为网易易盾的验证码图片的内部色彩变化较大，而不像极验绿色、蓝色灯底色，图一张易盾的背景的色彩变化就很大，很难直接利用像素变化定位到缺口位置，我也写了一个尝试性的算法，但是并没有成功，边界如果定的宽松些，就会返回多个满足条件的位置，如果将边界定的严格些，又会无返回值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">judge_pixel</span><span class="params">(gray: Image, col: int, row: int, value: int)</span>:</span></span><br><span class="line">    <span class="comment"># 不可能在第一列</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> col:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">    start = <span class="number">0</span> <span class="keyword">if</span> col &lt; <span class="number">30</span> <span class="keyword">else</span> (col<span class="number">-30</span>)</span><br><span class="line">    <span class="comment"># 直接拿一整块区域来对比不太合适，考虑到图的像素会随着行或列进行变化,尝试计算满足的比例</span></span><br><span class="line">    count_i = <span class="number">0</span></span><br><span class="line">    count_j = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(start, col):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(row, row + <span class="number">30</span>):</span><br><span class="line">            <span class="comment"># 相差较大，不满足</span></span><br><span class="line">            <span class="keyword">if</span> abs(gray.getpixel((i, j)) - value) &lt; <span class="number">15</span>:</span><br><span class="line">                count_i += <span class="number">1</span></span><br><span class="line">    <span class="keyword">if</span> count_i/((col-start) * <span class="number">30</span>) &gt; <span class="number">0.5</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 根据像素变化的传统算法</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">conventional_algorithm</span><span class="params">()</span>:</span></span><br><span class="line">    image = Image.open(<span class="string">r'j_127.jpg'</span>)</span><br><span class="line">    gray = image.convert(<span class="string">"L"</span>)</span><br><span class="line">    <span class="comment"># gray.show()</span></span><br><span class="line">    width, height = gray.size</span><br><span class="line">    distance_list = list()</span><br><span class="line">    <span class="comment"># 滑块的大小大概是40*40的</span></span><br><span class="line">    <span class="keyword">for</span> row <span class="keyword">in</span> range(height<span class="number">-40</span>):</span><br><span class="line">        <span class="keyword">for</span> col <span class="keyword">in</span> range(width<span class="number">-40</span>):</span><br><span class="line">            pre_value = gray.getpixel((col, row))</span><br><span class="line">            next_value = gray.getpixel((col+<span class="number">1</span>, row))</span><br><span class="line">            <span class="comment"># 由黑变白并判断pre_value这一点</span></span><br><span class="line">            <span class="comment"># 与其左下方一块区域的像素值相差是否较大</span></span><br><span class="line">            <span class="keyword">if</span> next_value - pre_value &gt; <span class="number">15</span> <span class="keyword">and</span> judge_pixel(gray, col, row, pre_value):</span><br><span class="line">                count_i = <span class="number">0</span></span><br><span class="line">                <span class="keyword">for</span> i <span class="keyword">in</span> range(row+<span class="number">1</span>, row+<span class="number">40</span>):</span><br><span class="line">                    <span class="keyword">for</span> j <span class="keyword">in</span> range(col + <span class="number">1</span>, col + <span class="number">40</span>):</span><br><span class="line">                        <span class="keyword">if</span> gray.getpixel((j, i)) - pre_value &gt; <span class="number">10</span>:</span><br><span class="line">                            count_i += <span class="number">1</span></span><br><span class="line">                <span class="keyword">if</span> count_i &gt; <span class="number">1000</span>:</span><br><span class="line">                    distance_list.append((col, row))</span><br><span class="line">            <span class="comment"># 由白变黑</span></span><br><span class="line">            <span class="keyword">if</span> pre_value - next_value &gt; <span class="number">15</span> <span class="keyword">and</span> judge_pixel(gray, col, row, pre_value):</span><br><span class="line">                count_i = <span class="number">0</span></span><br><span class="line">                <span class="keyword">for</span> i <span class="keyword">in</span> range(row + <span class="number">1</span>, row + <span class="number">40</span>):</span><br><span class="line">                    <span class="keyword">for</span> j <span class="keyword">in</span> range(col + <span class="number">1</span>, col + <span class="number">40</span>):</span><br><span class="line">                        <span class="keyword">if</span> pre_value - gray.getpixel((j, i)) &gt; <span class="number">10</span>:</span><br><span class="line">                            count_i += <span class="number">1</span></span><br><span class="line">                <span class="keyword">if</span> count_i &gt; <span class="number">1000</span>:</span><br><span class="line">                    distance_list.append((col, row))</span><br><span class="line">    <span class="keyword">return</span> distance_list</span><br></pre></td></tr></table></figure>
+<p>因为这里直接利用图像处理的方法还无法破解极验滑块的缺口位置，我后面打算利用深度学习的目标检测方法来实现，感兴趣的可以关注后面的文章。</p>
+<h4 id="极验"><a href="#极验" class="headerlink" title="极验"></a>极验</h4><h5 id="图片还原"><a href="#图片还原" class="headerlink" title="图片还原"></a>图片还原</h5><p>对于极验需要先介绍下极验滑动验证码的图片还原的方式。</p>
+<p>直接从极验服务器获取的背景图是乱的，根本看不出来缺口在哪里，大概是这样的：</p>
+<p><img src="/2020/09/28/ip-slider-captcha/one_origin.png" alt></p>
+<p>想要将其还原为原来的样子，首先我们要知道完整的验证码图片由52个10*58像素的小图片组成，共2行26列，其次只要获取使用极验服务的相关网站上的<code>css</code>坐标，类似这样的：</p>
+<p><img src="/2020/09/28/ip-slider-captcha/p1.png" alt></p>
+<p>然后按照这里的坐标顺序，从乱序的图中将一个个的小图片扣出来，粘贴到一个空白的图片中重组就能复原，下面的我实现的Python代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 从css中获取</span></span><br><span class="line">offset_list = [</span><br><span class="line">    [<span class="number">157</span>, <span class="number">58</span>], [<span class="number">145</span>, <span class="number">58</span>], [<span class="number">265</span>, <span class="number">58</span>], [<span class="number">277</span>, <span class="number">58</span>], [<span class="number">181</span>, <span class="number">58</span>], 	         [<span class="number">169</span>, <span class="number">58</span>], [<span class="number">241</span>, <span class="number">58</span>], [<span class="number">253</span>, <span class="number">58</span>], [<span class="number">109</span>, <span class="number">58</span>], [<span class="number">97</span>, <span class="number">58</span>],           [<span class="number">289</span>, <span class="number">58</span>], [<span class="number">301</span>, <span class="number">58</span>], [<span class="number">85</span>, <span class="number">58</span>], [<span class="number">73</span>, <span class="number">58</span>], [<span class="number">25</span>, <span class="number">58</span>], </span><br><span class="line">    [<span class="number">37</span>, <span class="number">58</span>], [<span class="number">13</span>, <span class="number">58</span>], [<span class="number">1</span>, <span class="number">58</span>], [<span class="number">121</span>, <span class="number">58</span>], [<span class="number">133</span>, <span class="number">58</span>], </span><br><span class="line">    [<span class="number">61</span>, <span class="number">58</span>], [<span class="number">49</span>, <span class="number">58</span>], [<span class="number">217</span>, <span class="number">58</span>], [<span class="number">229</span>, <span class="number">58</span>],</span><br><span class="line">    [<span class="number">205</span>, <span class="number">58</span>], [<span class="number">193</span>, <span class="number">58</span>], [<span class="number">145</span>, <span class="number">0</span>], [<span class="number">157</span>, <span class="number">0</span>], [<span class="number">277</span>, <span class="number">0</span>],             [<span class="number">265</span>, <span class="number">0</span>], [<span class="number">169</span>, <span class="number">0</span>], [<span class="number">181</span>, <span class="number">0</span>], [<span class="number">253</span>, <span class="number">0</span>], [<span class="number">241</span>, <span class="number">0</span>], </span><br><span class="line">    [<span class="number">97</span>, <span class="number">0</span>], [<span class="number">109</span>, <span class="number">0</span>], [<span class="number">301</span>, <span class="number">0</span>], [<span class="number">289</span>, <span class="number">0</span>], [<span class="number">73</span>, <span class="number">0</span>], [<span class="number">85</span>, <span class="number">0</span>],</span><br><span class="line">    [<span class="number">37</span>, <span class="number">0</span>], [<span class="number">25</span>, <span class="number">0</span>], [<span class="number">1</span>, <span class="number">0</span>], [<span class="number">13</span>, <span class="number">0</span>], [<span class="number">133</span>, <span class="number">0</span>], [<span class="number">121</span>, <span class="number">0</span>],           [<span class="number">49</span>, <span class="number">0</span>], [<span class="number">61</span>, <span class="number">0</span>],[<span class="number">229</span>, <span class="number">0</span>], [<span class="number">217</span>, <span class="number">0</span>], [<span class="number">193</span>, <span class="number">0</span>], [<span class="number">205</span>, <span class="number">0</span>]</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">convert_css_to_offset</span><span class="params">(off)</span>:</span></span><br><span class="line">    <span class="comment"># 返回图片左上角和右下角的点坐标</span></span><br><span class="line">    <span class="comment"># (left, upper)o ------ o</span></span><br><span class="line">    <span class="comment">#              |        |</span></span><br><span class="line">    <span class="comment">#              o ------ o (right, lower)</span></span><br><span class="line">    <span class="keyword">return</span> off[<span class="number">0</span>], off[<span class="number">1</span>], off[<span class="number">0</span>]+<span class="number">10</span>, off[<span class="number">1</span>]+<span class="number">58</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">convert_index_to_offset</span><span class="params">(index)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> index &lt; <span class="number">26</span>:</span><br><span class="line">        <span class="keyword">return</span> index*<span class="number">10</span>, <span class="number">0</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        i = index - <span class="number">26</span></span><br><span class="line">        <span class="keyword">return</span> i*<span class="number">10</span>, <span class="number">58</span></span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">recombine_captcha</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="comment"># 完整的验证码图片由52个10*58像素的小图片组成，共2行26列</span></span><br><span class="line">    captcha = Image.new(<span class="string">'RGB'</span>, (<span class="number">10</span>*<span class="number">26</span>, <span class="number">58</span>*<span class="number">2</span>))  <span class="comment"># 空白图片</span></span><br><span class="line">    img = Image.open(<span class="string">'full_bg.jpg'</span>)</span><br><span class="line">    <span class="keyword">for</span> i, off <span class="keyword">in</span> enumerate(offset_list):</span><br><span class="line">        <span class="comment"># 根据css background-position </span></span><br><span class="line">        <span class="comment"># 按顺序获取每张小图在错乱的验证码图片中的坐标</span></span><br><span class="line">        box = convert_css_to_offset(off)</span><br><span class="line">        region = img.crop(box)   <span class="comment"># 抠图</span></span><br><span class="line">        offset = self.convert_index_to_offset(i)</span><br><span class="line">        <span class="comment"># 根据当前坐标将小图粘贴到空白图片</span></span><br><span class="line">        captcha.paste(region, offset)  </span><br><span class="line">        captcha.save(<span class="string">'full_bg_fact.jpg'</span>)</span><br></pre></td></tr></table></figure>
+<p>这里的<code>css</code>左边一般各个使用极验服务的网站不一样，不是通用的，根据你要破解的网站寻找其<code>css</code>坐标即可，而且据我观察一般是固定不变的，若动态变化，只要每次将获取到的<code>html</code>代码中的这部分解析一下就可以了。</p>
+<h5 id="模板匹配-1"><a href="#模板匹配-1" class="headerlink" title="模板匹配"></a>模板匹配</h5><p>按照我实际实践的顺序，我是先破解的极验验证码，用的是传统算法（下面会介绍），没有用过模板匹配，然后又去破解的网易易盾的，但是利用模板匹配和传统算法都没有解决。后来我想了下是不是因为网易易盾的背景图片只有带缺口的，没有完整的原图，所以匹配不上，正好极验的滑动验证码是可以获取原图的，所以我对极验的也尝试了一下，但是发现依然不行，这里就不详细展示叙述了。</p>
+<h5 id="传统算法-1"><a href="#传统算法-1" class="headerlink" title="传统算法"></a>传统算法</h5><ul>
+<li><p>方法一：仅根据带缺口图片的像素变化</p>
+<p>因为之前做过一个很简单的滑动验证码的识别，当时那个网站的图片色彩风格很单一，仅根据像素变化就找出来了缺口位置，观察极验这里感觉应该也可以用类似的方式实现，所以就尝试了一下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_picture_gap</span><span class="params">(name, path)</span>:</span></span><br><span class="line">    image = Image.open(path+name)</span><br><span class="line">    gray = image.convert(<span class="string">'L'</span>)</span><br><span class="line">    <span class="comment"># gray.save('gray.jpg')</span></span><br><span class="line">    width, height = gray.size</span><br><span class="line">    <span class="keyword">for</span> col <span class="keyword">in</span> range(width - <span class="number">55</span>):</span><br><span class="line">        <span class="keyword">for</span> row <span class="keyword">in</span> range(height - <span class="number">55</span>):</span><br><span class="line">            <span class="keyword">if</span> gray.getpixel((col, row)) &lt; <span class="number">80</span>:</span><br><span class="line">                count_i = <span class="number">0</span></span><br><span class="line">                count_j = <span class="number">0</span></span><br><span class="line">                <span class="keyword">for</span> i <span class="keyword">in</span> range(row + <span class="number">1</span>, row + <span class="number">50</span>):</span><br><span class="line">                    <span class="keyword">if</span> gray.getpixel((col, i)) &lt; <span class="number">80</span>:</span><br><span class="line">                        count_i += <span class="number">1</span></span><br><span class="line">                <span class="keyword">for</span> j <span class="keyword">in</span> range(col + <span class="number">1</span>, col + <span class="number">50</span>):</span><br><span class="line">                    <span class="keyword">if</span> gray.getpixel((j, row)) &lt; <span class="number">80</span>:</span><br><span class="line">                        count_j += <span class="number">1</span></span><br><span class="line">                <span class="keyword">if</span> count_i &gt; <span class="number">20</span> <span class="keyword">and</span> count_j&gt;<span class="number">20</span>:</span><br><span class="line">                    <span class="keyword">return</span> col</span><br></pre></td></tr></table></figure>
+<p>算法的大概思路在之前的海关进出口破解的那里已经讲过了，不再详细说了，然后我随机测试了五张图片（我自己利用上面的方式还原后的图片）：</p>
+<p><img src="/2020/09/28/ip-slider-captcha/one.png" alt></p>
+<p><img src="/2020/09/28/ip-slider-captcha/two.png" alt></p>
+<p><img src="/2020/09/28/ip-slider-captcha/three.png" alt></p>
+<p><img src="/2020/09/28/ip-slider-captcha/four.png" alt></p>
+<p><img src="/2020/09/28/ip-slider-captcha/five.png" alt></p>
+<p>只有第三张图片定位错误，其他四张都准确定位了；因为我这里没有实际破解需求，只是兴趣使然，所以没有再去优化算法，应该还有进一步优化的空间。</p>
+</li>
+<li><p>方法二：对比带缺口的和不带缺口的图片</p>
+<p>对于极验的滑动验证码比较特殊的一点是可以获取完整地图片和待缺口的图片，由此就产生一种大家都很容易想到的方法，逐列扫描对比这两个图片，发现连续较多行都有一定的像素差，一般就是缺口的位置，我这里简单写了一个算法，同样是测试了上面的五张图片，更巧的是，也是第三张图片没有获取到缺口位置，因为这个算法是我凭感觉直接写的，没有去认真观察图片像素变化，应该也是存在优化空间的，我这里仅仅判断这一列若干行，其实可以再继续判断后续的列和行，只不过会增加时间复杂度。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_picture_gap1</span><span class="params">(self, name1, name2, path1, path2)</span>:</span></span><br><span class="line">    image1 = Image.open(path1 + name1)</span><br><span class="line">    image2 = Image.open(path2 + name2)</span><br><span class="line">    gray1 = image1.convert(<span class="string">'L'</span>)</span><br><span class="line">    gray2 = image2.convert(<span class="string">'L'</span>)</span><br><span class="line">    <span class="comment"># gray.save('gray.jpg')</span></span><br><span class="line">    width, height = gray1.size</span><br><span class="line">    <span class="keyword">for</span> col <span class="keyword">in</span> range(width - <span class="number">55</span>):</span><br><span class="line">        count_i = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> row <span class="keyword">in</span> range(height - <span class="number">55</span>):</span><br><span class="line">            <span class="keyword">if</span> abs(gray1.getpixel((col, row)) - gray2.getpixel((col, row))) &gt; <span class="number">20</span>:</span><br><span class="line">                count_i += <span class="number">1</span></span><br><span class="line">     <span class="keyword">if</span> count_i &gt; <span class="number">25</span>:</span><br><span class="line">         <span class="keyword">return</span> col</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>至于这里识别出来的缺口位置是不是实际滑动的距离，他们之间的关系，不属于这里的研究范围……做出来这一步，再去计算实际滑动距离基本就没什么困难了。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/模板匹配/" rel="tag"># 模板匹配</a>
+          
+            <a href="/tags/cv2/" rel="tag"># cv2</a>
+          
+            <a href="/tags/PIL/" rel="tag"># PIL</a>
+          
+            <a href="/tags/易盾/" rel="tag"># 易盾</a>
+          
+            <a href="/tags/极验/" rel="tag"># 极验</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/08/08/spider-yidun2/" rel="next" title="网易易盾滑动验证码破解（下篇）">
+                <i class="fa fa-chevron-left"></i> 网易易盾滑动验证码破解（下篇）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/11/16/python-aes/" rel="prev" title="Python AES加解密">
+                Python AES加解密 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">70</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">141</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Python图像处理识别滑动验证码缺口"><span class="nav-text">Python图像处理识别滑动验证码缺口</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#网易易盾"><span class="nav-text">网易易盾</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#模板匹配"><span class="nav-text">模板匹配</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#传统算法"><span class="nav-text">传统算法</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#极验"><span class="nav-text">极验</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#图片还原"><span class="nav-text">图片还原</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#模板匹配-1"><span class="nav-text">模板匹配</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#传统算法-1"><span class="nav-text">传统算法</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

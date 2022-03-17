@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="pytorch,CNN,open-cv,CrossEntropyLoss,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="使用Pytorch识别字符验证码之前已经学习过利用Keras搭建神经网络模型来识别字符验证码，近期又学习了pytorch实现卷积神经网络相关的技术，正好遇到一个验证码识别的需求，所以尝试使用pytorch来实现。 数据预处理要训练的验证码如下所示:  其为中文汉字的简单运算，实际上仅包括零壹贰叁肆伍陆柒捌玖加减乘等于，这15个汉字，等于可以不识别（其实识别也完全没问题，只不过问题能简化就尽量简化嘛">
+<meta name="keywords" content="pytorch,CNN,open-cv,CrossEntropyLoss">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Pytorch识别字符验证码">
+<meta property="og:url" content="http://yoursite.com/2021/09/23/dl-pytorch-captcha/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="使用Pytorch识别字符验证码之前已经学习过利用Keras搭建神经网络模型来识别字符验证码，近期又学习了pytorch实现卷积神经网络相关的技术，正好遇到一个验证码识别的需求，所以尝试使用pytorch来实现。 数据预处理要训练的验证码如下所示:  其为中文汉字的简单运算，实际上仅包括零壹贰叁肆伍陆柒捌玖加减乘等于，这15个汉字，等于可以不识别（其实识别也完全没问题，只不过问题能简化就尽量简化嘛">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2021/09/23/dl-pytorch-captcha/p1.jpg">
+<meta property="og:updated_time" content="2022-01-02T10:21:27.135Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用Pytorch识别字符验证码">
+<meta name="twitter:description" content="使用Pytorch识别字符验证码之前已经学习过利用Keras搭建神经网络模型来识别字符验证码，近期又学习了pytorch实现卷积神经网络相关的技术，正好遇到一个验证码识别的需求，所以尝试使用pytorch来实现。 数据预处理要训练的验证码如下所示:  其为中文汉字的简单运算，实际上仅包括零壹贰叁肆伍陆柒捌玖加减乘等于，这15个汉字，等于可以不识别（其实识别也完全没问题，只不过问题能简化就尽量简化嘛">
+<meta name="twitter:image" content="http://yoursite.com/2021/09/23/dl-pytorch-captcha/p1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2021/09/23/dl-pytorch-captcha/">
+
+
+
+
+
+  <title>使用Pytorch识别字符验证码 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/09/23/dl-pytorch-captcha/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">使用Pytorch识别字符验证码</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-23T19:22:54+08:00">
+                2021-09-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="使用Pytorch识别字符验证码"><a href="#使用Pytorch识别字符验证码" class="headerlink" title="使用Pytorch识别字符验证码"></a>使用<code>Pytorch</code>识别字符验证码</h2><p>之前已经学习过利用<code>Keras</code>搭建神经网络模型来识别字符验证码，近期又学习了<code>pytorch</code>实现卷积神经网络相关的技术，正好遇到一个验证码识别的需求，所以尝试使用<code>pytorch</code>来实现。</p>
+<h3 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理</h3><p>要训练的验证码如下所示:</p>
+<p><img src="/2021/09/23/dl-pytorch-captcha/p1.jpg" style="zoom:150%;"></p>
+<p>其为中文汉字的简单运算，实际上仅包括<strong>零壹贰叁肆伍陆柒捌玖加减乘等于</strong>，这15个汉字，<strong>等于</strong>可以不识别（其实识别也完全没问题，只不过问题能简化就尽量简化嘛），那最后也就是总共要识别13个汉字，分类数就是13。</p>
+<p>另外我们可以用’0123456789+-x’来代替汉字，避免文件名称无法使用汉字（windows下open-cv不能读取带有中文路径或文件名称）的问题。</p>
+<p>下载并标注了1000张验证码，观察其字体颜色和干扰线、点均多变，无法根据特定规则将其区分；另外，尝试中值模糊、均值模糊和高斯模糊，均得不到较好的效果（肉眼观察）。只有灰度化和二值化后，感觉稍微变得清晰了一些。</p>
+<p>另外，针对数据集我还统计了一下各个类别的数量是否均衡（主要怕有的文字训练样本太少，训练效果差）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;&apos;捌&apos;: 206, &apos;减&apos;: 346, &apos;肆&apos;: 220, &apos;柒&apos;: 205, &apos;零&apos;: 200, &apos;伍&apos;: 214, &apos;加&apos;: 358, </span><br><span class="line">&apos;玖&apos;: 189, &apos;壹&apos;: 195, &apos;叁&apos;: 191, &apos;陆&apos;: 206, &apos;乘&apos;: 297, &apos;贰&apos;: 176&#125;</span><br></pre></td></tr></table></figure>
+<p>数据集的分布情况如上数据，总体还算均衡，那就表示可以开始处理数据和进行训练了。</p>
+<a id="more"></a>
+<p>在进一步处理数据之前，先划分数据集，800个训练集、验证集和测试集分别100，划分完数据集后，我也是统计了下各个数据集下的分类数量是否均衡（毕竟以前犯过划分数据集有问题的错误）。</p>
+<p>以上都是一些简单的操作，下面仅展示后续将图片和标签转换成<code>numpy</code>矩阵的代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">from</span> os <span class="keyword">import</span> remove</span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ImageProcess</span>:</span></span><br><span class="line">    channel = <span class="number">1</span></span><br><span class="line">    height = <span class="number">40</span></span><br><span class="line">    width = <span class="number">90</span></span><br><span class="line">    num_classes = <span class="number">13</span>  <span class="comment"># 共13个汉字</span></span><br><span class="line">    labels_len = <span class="number">3</span>  <span class="comment"># 每个标签包含3个汉字</span></span><br><span class="line">    words = <span class="string">'0123456789+-x'</span>  <span class="comment"># 用字符来代替汉字</span></span><br><span class="line"></span><br><span class="line">    images_path_train = <span class="string">'D:/captcha/shanghai/train/'</span></span><br><span class="line">    images_path_val = <span class="string">'D:/captcha/shanghai/val/'</span></span><br><span class="line">    images_path_test = <span class="string">'D:/captcha/shanghai/test/'</span></span><br><span class="line">    images_train = os.listdir(images_path_train)</span><br><span class="line">    images_val = os.listdir(images_path_val)</span><br><span class="line">    images_test = os.listdir(images_path_test)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.x_data_train = <span class="literal">None</span></span><br><span class="line">        self.y_data_train = <span class="literal">None</span></span><br><span class="line">        self.x_data_val = <span class="literal">None</span></span><br><span class="line">        self.y_data_val = <span class="literal">None</span></span><br><span class="line">        self.x_data_test = <span class="literal">None</span></span><br><span class="line">        self.y_data_test = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">        print(<span class="string">'预处理图像...'</span>)</span><br><span class="line">        self.process_image(<span class="string">"train"</span>)</span><br><span class="line">        self.process_image(<span class="string">"test"</span>)</span><br><span class="line">        self.process_image(<span class="string">"val"</span>)</span><br><span class="line"></span><br><span class="line">        print(<span class="string">'预处理标签'</span>)</span><br><span class="line">        self.process_label(<span class="string">"train"</span>)</span><br><span class="line">        self.process_label(<span class="string">"test"</span>)</span><br><span class="line">        self.process_label(<span class="string">"val"</span>)</span><br><span class="line"></span><br><span class="line">        print(<span class="string">'处理完成'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">process_label</span><span class="params">(self, which)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        处理标签</span></span><br><span class="line"><span class="string">        如果每个样本是单类别，每个类别就一个值，处理成一个长度为batch的列表就可以</span></span><br><span class="line"><span class="string">        如果每个样本是多类别(假设为n, n&gt;=2)，处理成[batch, n]的二维数组</span></span><br><span class="line"><span class="string">        :param: which 处理哪个数据集</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        labels_list = []</span><br><span class="line">        <span class="keyword">if</span> which == <span class="string">"train"</span>:</span><br><span class="line">            images = self.images_train</span><br><span class="line">        <span class="keyword">elif</span> which == <span class="string">"test"</span>:</span><br><span class="line">            images = self.images_test</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            images = self.images_val</span><br><span class="line">        <span class="keyword">for</span> image <span class="keyword">in</span> images:</span><br><span class="line">            labels = image.split(<span class="string">"_"</span>)[<span class="number">1</span>].replace(<span class="string">'.jpg'</span>, <span class="string">''</span>)</span><br><span class="line">            <span class="string">"""</span></span><br><span class="line"><span class="string">            这部分是ont-hot编码的处理逻辑，在pytorch种实际不需要这样处理，</span></span><br><span class="line"><span class="string">            这主要取决于 nn.CrossEntropyLoss()的输入参数格式</span></span><br><span class="line"><span class="string">            参数只需要标签即可, 不需要传one-hot向量</span></span><br><span class="line"><span class="string">            """</span></span><br><span class="line">            <span class="comment"># 初始化一个 3x13 的矩阵，初始值为0.0</span></span><br><span class="line">            <span class="comment"># result = np.zeros((self.labels_len, self.num_classes), dtype='float32')</span></span><br><span class="line">            <span class="comment"># for i, c in enumerate(labels):</span></span><br><span class="line">            <span class="comment">#     result[i][self.words.index(c)] = 1</span></span><br><span class="line"></span><br><span class="line">            <span class="string">"""</span></span><br><span class="line"><span class="string">            直接处理为 [batch, n]的二维数组 即可</span></span><br><span class="line"><span class="string">            """</span></span><br><span class="line">            result = []</span><br><span class="line">            <span class="keyword">for</span> label <span class="keyword">in</span> labels:</span><br><span class="line">                result.append(self.words.index(label))</span><br><span class="line">            labels_list.append(result)</span><br><span class="line">        <span class="keyword">if</span> which == <span class="string">"train"</span>:</span><br><span class="line">            self.y_data_train = np.array(labels_list, dtype=<span class="string">'int32'</span>)</span><br><span class="line">        <span class="keyword">elif</span> which == <span class="string">"test"</span>:</span><br><span class="line">            self.y_data_test = np.array(labels_list, dtype=<span class="string">'int32'</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.y_data_val = np.array(labels_list, dtype=<span class="string">'int32'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">process_image</span><span class="params">(self, which)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        处理图片 处理目标 (batch, channel, height, width)</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        images_list = []</span><br><span class="line">        <span class="keyword">if</span> which == <span class="string">"train"</span>:</span><br><span class="line">            images = self.images_train</span><br><span class="line">            images_path = self.images_path_train</span><br><span class="line">        <span class="keyword">elif</span> which == <span class="string">"test"</span>:</span><br><span class="line">            images = self.images_test</span><br><span class="line">            images_path = self.images_path_test</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            images = self.images_val</span><br><span class="line">            images_path = self.images_path_val</span><br><span class="line">        <span class="keyword">for</span> image <span class="keyword">in</span> images:</span><br><span class="line">            path = <span class="string">f'<span class="subst">&#123;images_path&#125;</span><span class="subst">&#123;image&#125;</span>'</span></span><br><span class="line">            img = cv2.imread(path)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 中值模糊</span></span><br><span class="line">            <span class="comment"># img = cv2.medianBlur(img, 3)</span></span><br><span class="line">            <span class="comment"># 均值模糊</span></span><br><span class="line">            <span class="comment"># img = cv2.blur(img, (2, 2))</span></span><br><span class="line">            <span class="comment"># 高斯模糊</span></span><br><span class="line">            <span class="comment"># img = cv2.GaussianBlur(img, (5, 5), 1)</span></span><br><span class="line"></span><br><span class="line">            <span class="comment"># 灰度化</span></span><br><span class="line">            img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)</span><br><span class="line">            <span class="comment"># 二值化</span></span><br><span class="line">            ret, img = cv2.threshold(img, <span class="number">0</span>, <span class="number">255</span>, cv2.THRESH_OTSU)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># cv2.namedWindow('captcha', cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)</span></span><br><span class="line">            <span class="comment"># cv2.resizeWindow('captcha', 180, 80)</span></span><br><span class="line">            <span class="comment"># cv2.imshow('captcha', img)</span></span><br><span class="line">            <span class="comment"># cv2.waitKey(0)</span></span><br><span class="line"></span><br><span class="line">            img = np.array(img, dtype=<span class="string">'float32'</span>)</span><br><span class="line">            <span class="comment"># 归一化</span></span><br><span class="line">            img /= <span class="number">255</span></span><br><span class="line">            images_list.append(np.reshape(img, (<span class="number">1</span>, self.height, self.width)))</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> which == <span class="string">"train"</span>:</span><br><span class="line">            self.x_data_train = np.array(images_list, dtype=<span class="string">'float32'</span>)</span><br><span class="line">        <span class="keyword">elif</span> which == <span class="string">"test"</span>:</span><br><span class="line">            self.x_data_test = np.array(images_list, dtype=<span class="string">'float32'</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.x_data_val = np.array(images_list, dtype=<span class="string">'float32'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">train_loader</span><span class="params">(self, batch_size=<span class="number">16</span>)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        按批次，将训练数据和标签 迭代返回</span></span><br><span class="line"><span class="string">        :param batch_size:</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        batch_nums = math.ceil(len(self.x_data_train)/batch_size)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(batch_nums):</span><br><span class="line">            x_train = self.x_data_train[i*batch_size:(i+<span class="number">1</span>)*batch_size]</span><br><span class="line">            y_train = self.y_data_train[i*batch_size:(i+<span class="number">1</span>)*batch_size]</span><br><span class="line">            <span class="keyword">yield</span> x_train, y_train</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_loader</span><span class="params">(self, batch_size=<span class="number">16</span>)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        按批次，将测试数据和标签 迭代返回</span></span><br><span class="line"><span class="string">        :param batch_size:</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        batch_nums = math.ceil(len(self.x_data_test)/batch_size)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(batch_nums):</span><br><span class="line">            x_test = self.x_data_test[i*batch_size:(i+<span class="number">1</span>)*batch_size]</span><br><span class="line">            y_test = self.y_data_test[i*batch_size:(i+<span class="number">1</span>)*batch_size]</span><br><span class="line">            <span class="keyword">yield</span> x_test, y_test</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">val_loader</span><span class="params">(self, batch_size=<span class="number">16</span>)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        按批次，将验证数据和标签 迭代返回</span></span><br><span class="line"><span class="string">        :param batch_size:</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        batch_nums = math.ceil(len(self.x_data_val)/batch_size)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(batch_nums):</span><br><span class="line">            x_val = self.x_data_val[i*batch_size:(i+<span class="number">1</span>)*batch_size]</span><br><span class="line">            y_val = self.y_data_val[i*batch_size:(i+<span class="number">1</span>)*batch_size]</span><br><span class="line">            <span class="keyword">yield</span> x_val, y_val</span><br></pre></td></tr></table></figure>
+<p>关于代码核心的地方，在代码中都有注释。</p>
+<p>另外需要注意的一点是，如果输入到神经网络中的图片为三维，则</p>
+<p><code>images_list.append(np.reshape(rr_img, (1, self.height, self.width)))</code></p>
+<p>要替换为</p>
+<p><code>images_list.append(np.transpose(img, (2, 0, 1)))</code></p>
+<p>否则reshape会导致整个数据错乱。</p>
+<h3 id="搭建模型"><a href="#搭建模型" class="headerlink" title="搭建模型"></a>搭建模型</h3><p>之前使用<code>Keras</code>做字符验证码识别的时候，得到的经验就是针对这种比较简单的字符验证码，无需过于复杂的模型，几层CNN就够了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> torch <span class="keyword">import</span> nn</span><br><span class="line"><span class="keyword">from</span> torch <span class="keyword">import</span> optim</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NeuralNetWork</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, channel, num_classes)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        :param channel: 输入图片的channel</span></span><br><span class="line"><span class="string">        :param num_classes: 分类数量</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        super(NeuralNetWork, self).__init__()</span><br><span class="line">        self.convin = nn.Sequential(</span><br><span class="line">            nn.Conv2d(channel, <span class="number">64</span>, kernel_size=(<span class="number">3</span>, <span class="number">3</span>), padding=<span class="number">1</span>, bias=<span class="literal">False</span>),</span><br><span class="line">            nn.ReLU(),</span><br><span class="line">            nn.Conv2d(<span class="number">64</span>, <span class="number">64</span>, kernel_size=(<span class="number">3</span>, <span class="number">3</span>), padding=<span class="number">1</span>, bias=<span class="literal">False</span>),</span><br><span class="line">            nn.ReLU(),</span><br><span class="line">            nn.MaxPool2d(<span class="number">2</span>, <span class="number">2</span>),</span><br><span class="line">            nn.Dropout(<span class="number">0.25</span>)</span><br><span class="line">        )</span><br><span class="line">        self.convall = nn.Sequential(</span><br><span class="line">            nn.Conv2d(<span class="number">64</span>, <span class="number">64</span>, kernel_size=(<span class="number">3</span>, <span class="number">3</span>), padding=<span class="number">1</span>, bias=<span class="literal">False</span>),</span><br><span class="line">            nn.ReLU(),</span><br><span class="line">            nn.Conv2d(<span class="number">64</span>, <span class="number">64</span>, kernel_size=(<span class="number">3</span>, <span class="number">3</span>), padding=<span class="number">1</span>, bias=<span class="literal">False</span>),</span><br><span class="line">            nn.ReLU(),</span><br><span class="line">            nn.MaxPool2d(<span class="number">2</span>, <span class="number">2</span>),</span><br><span class="line">            nn.Dropout(<span class="number">0.25</span>)</span><br><span class="line">        )</span><br><span class="line">        <span class="comment"># 承接卷积层和fc层</span></span><br><span class="line">        self.fc1 = nn.Sequential(</span><br><span class="line">            nn.Linear(<span class="number">64</span>*<span class="number">5</span>*<span class="number">11</span>, <span class="number">1024</span>),  <span class="comment"># 这个输入值需要计算，根据输入图像的尺寸决定（本次输入图像尺寸为40*90）</span></span><br><span class="line">            nn.ReLU(),</span><br><span class="line">            nn.Dropout(<span class="number">0.5</span>)</span><br><span class="line">        )</span><br><span class="line">        self.dense1 = nn.Sequential(</span><br><span class="line">            nn.Linear(<span class="number">1024</span>, <span class="number">512</span>),</span><br><span class="line">            nn.ReLU(),</span><br><span class="line">            nn.Linear(<span class="number">512</span>, num_classes),</span><br><span class="line">            <span class="comment"># nn.LogSoftmax()</span></span><br><span class="line">        )</span><br><span class="line">        self.dense2 = nn.Sequential(</span><br><span class="line">            nn.Linear(<span class="number">1024</span>, <span class="number">512</span>),</span><br><span class="line">            nn.ReLU(),</span><br><span class="line">            nn.Linear(<span class="number">512</span>, num_classes),</span><br><span class="line">            <span class="comment"># nn.LogSoftmax()</span></span><br><span class="line">        )</span><br><span class="line">        self.dense3 = nn.Sequential(</span><br><span class="line">            nn.Linear(<span class="number">1024</span>, <span class="number">512</span>),</span><br><span class="line">            nn.ReLU(),</span><br><span class="line">            nn.Linear(<span class="number">512</span>, num_classes),</span><br><span class="line">            <span class="comment"># nn.LogSoftmax()</span></span><br><span class="line">        )</span><br><span class="line">       </span><br><span class="line">    </span><br><span class="line">   <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, n_input)</span>:</span></span><br><span class="line">        <span class="comment"># 进行卷积、激活和池化操作</span></span><br><span class="line">        feature = self.convin(n_input)</span><br><span class="line">        feature = self.convall(feature)</span><br><span class="line">        feature = self.convall(feature)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 对特征层(Tensor类型)进行维度变换，变成两维</span></span><br><span class="line">        feature = feature.view(n_input.size(<span class="number">0</span>), <span class="number">-1</span>)  <span class="comment"># size(0)是批次大小</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 进行全连接操作</span></span><br><span class="line">        feature = self.fc1(feature)</span><br><span class="line">        out_put1 = self.dense1(feature)</span><br><span class="line">        out_put2 = self.dense2(feature)</span><br><span class="line">        out_put3 = self.dense3(feature)</span><br><span class="line">        <span class="comment"># 每个样本有三个输出值</span></span><br><span class="line">        <span class="keyword">return</span> [out_put1, out_put2, out_put3]</span><br></pre></td></tr></table></figure>
+<p>关于模型代码，有以下几点说明：</p>
+<ol>
+<li><p>使用几层卷积、卷积核的数量、池化操作和dropout等并不是固定的，这要根据你的训练情况逐步调整；</p>
+</li>
+<li><p>全连接层的地方的输入值是需要计算的，是由输入到全连接层的输出通道数量x你的图片经过你的卷积和池化层后得到的尺寸，比如这里输出通道数量为64，原始输入图片尺寸为<code>40x90</code>，经过padding=1的卷积层尺寸不变，经过三次(2, 2)的池化层，变为<code>5x11</code>。</p>
+<p><code>40x90 --&gt; 20x45 --&gt; 10x22 --&gt; 5x11</code></p>
+<p>并且在全连接层之前要把feature转换为(batch, )形状的二维tensor。</p>
+</li>
+<li><p>如何控制每个样本有3个输出值，这里是我遇到的难题，因为之前学习都是每个样本一个类型。</p>
+<p>这里经过咨询有经验的同事得知，实际上就是利用相同的线性层计算得到三个值，同时返回。</p>
+<p>不过需要注意的是，即使这三个输出值是经过了相同的线性层，就像这里的</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">nn.Sequential(</span><br><span class="line">    nn.Linear(<span class="number">1024</span>, <span class="number">512</span>),</span><br><span class="line">    nn.ReLU(),</span><br><span class="line">    nn.Linear(<span class="number">512</span>, num_classes),</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><strong>但是一定是三个独立定义的层（层名称无所谓），如果均使用同一个层，那么输出的这三个值永远都是一样的（亲身踩坑）</strong></p>
+</li>
+</ol>
+<h3 id="编写训练代码"><a href="#编写训练代码" class="headerlink" title="编写训练代码"></a>编写训练代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> image_process <span class="keyword">import</span> ImageProcess</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line"></span><br><span class="line">    net = NeuralNetWork(<span class="number">1</span>, <span class="number">13</span>)  <span class="comment"># channel=1，classes=13</span></span><br><span class="line"></span><br><span class="line">    epochs = <span class="number">100</span>  <span class="comment"># 设置训练轮次</span></span><br><span class="line">    batch_size = <span class="number">16</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 训练部分代码</span></span><br><span class="line">    criterion = nn.CrossEntropyLoss()  <span class="comment"># 交叉熵损失函数</span></span><br><span class="line">    <span class="comment"># 随机梯度下降优化</span></span><br><span class="line">    <span class="comment"># optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)</span></span><br><span class="line">    optimizer = optim.Adam(net.parameters(), lr=<span class="number">0.001</span>, weight_decay=<span class="number">1e-6</span>)</span><br><span class="line"></span><br><span class="line">    ip = ImageProcess()</span><br><span class="line"></span><br><span class="line">    val_loss_min = <span class="number">0</span>  <span class="comment"># 保存训练过程中的最小损失（验证）</span></span><br><span class="line">    <span class="keyword">for</span> epoch <span class="keyword">in</span> range(epochs):</span><br><span class="line"></span><br><span class="line">        net.train()  <span class="comment"># 训练与测试，BN和Dropout有区别</span></span><br><span class="line">        <span class="comment"># 如果没有BN和Dropout,或者只训练不验证，可以不执行该方法</span></span><br><span class="line">        train_loss = <span class="number">0.0</span>  <span class="comment"># 实时打印当前损失变化情况</span></span><br><span class="line">        <span class="keyword">for</span> batch_idx, data <span class="keyword">in</span> enumerate(ip.train_loader(batch_size=batch_size)):</span><br><span class="line">            inputs, labels = data</span><br><span class="line">            inputs = torch.from_numpy(inputs)  <span class="comment"># 从numpy array转成tensor</span></span><br><span class="line">            labels = torch.from_numpy(labels).long()  <span class="comment"># 输入损失函数要求type为long</span></span><br><span class="line">            optimizer.zero_grad()  <span class="comment"># 先将梯度设置为0</span></span><br><span class="line"></span><br><span class="line">            out_puts = net(inputs)  <span class="comment"># 前向传播</span></span><br><span class="line">            <span class="comment"># out_puts的shape(n, batch_size, num_classes) 3x16x13 n表示每个样本包含的分类数量</span></span><br><span class="line">            <span class="comment"># 这里因为输出多个值，所以计算损失把多个损失加在一起</span></span><br><span class="line">            <span class="comment"># labels的shape(batch_size, n) 16x3</span></span><br><span class="line">            loss = (</span><br><span class="line">                    criterion(out_puts[<span class="number">0</span>], labels[:, <span class="number">0</span>]) +</span><br><span class="line">                    criterion(out_puts[<span class="number">1</span>], labels[:, <span class="number">1</span>]) +</span><br><span class="line">                    criterion(out_puts[<span class="number">2</span>], labels[:, <span class="number">2</span>])</span><br><span class="line">            )</span><br><span class="line"></span><br><span class="line">            loss.backward()  <span class="comment"># 反向传播</span></span><br><span class="line">            optimizer.step()</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 查看网络训练状态(损失是计算几批数据的平均损失)</span></span><br><span class="line">            train_loss += loss.item()</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 800个训练样本，batch_size=16, 800/16 = 50（一共50批次）</span></span><br><span class="line">            <span class="comment"># 每10批，打印一次损失</span></span><br><span class="line">            <span class="keyword">if</span> (batch_idx+<span class="number">1</span>) % <span class="number">10</span> == <span class="number">0</span>:</span><br><span class="line">                print(<span class="string">f'epoch: <span class="subst">&#123;epoch+<span class="number">1</span>&#125;</span>, batch_inx: <span class="subst">&#123;batch_idx+<span class="number">1</span>&#125;</span> train loss: <span class="subst">&#123;train_loss/<span class="number">160</span>&#125;</span>'</span>)</span><br><span class="line">                train_loss = <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line">        state = &#123;</span><br><span class="line">            <span class="string">'net'</span>: net.state_dict(),</span><br><span class="line">            <span class="string">'epoch'</span>: epoch+<span class="number">1</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> os.path.isdir(<span class="string">'checkpoint'</span>):</span><br><span class="line">            os.mkdir(<span class="string">'checkpoint'</span>)</span><br><span class="line">        <span class="keyword">if</span> (epoch+<span class="number">1</span>) % <span class="number">10</span> == <span class="number">0</span>:   <span class="comment"># 每10轮保存一次权重</span></span><br><span class="line">            print(<span class="string">f'saving epoch <span class="subst">&#123;epoch+<span class="number">1</span>&#125;</span> mode ...'</span>)</span><br><span class="line">            torch.save(state, <span class="string">f'./checkpoint/shanghai_epoch_<span class="subst">&#123;epoch+<span class="number">1</span>&#125;</span>.pth'</span>)  <span class="comment"># pth 与 ckpt</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 验证部分</span></span><br><span class="line">        net.eval()</span><br><span class="line">        val_loss = <span class="number">0.0</span></span><br><span class="line">        <span class="keyword">for</span> batch_idx, val_data <span class="keyword">in</span> enumerate(ip.val_loader(<span class="number">16</span>)):</span><br><span class="line">            inputs, labels = val_data</span><br><span class="line">            inputs = torch.from_numpy(inputs)  <span class="comment"># 从numpy array转成tensor</span></span><br><span class="line">            labels = torch.from_numpy(labels).long()  <span class="comment"># 输入损失函数要求type为long</span></span><br><span class="line">            out_puts = net(inputs)</span><br><span class="line"></span><br><span class="line">            loss = (</span><br><span class="line">                    criterion(out_puts[<span class="number">0</span>], labels[:, <span class="number">0</span>]) +</span><br><span class="line">                    criterion(out_puts[<span class="number">1</span>], labels[:, <span class="number">1</span>]) +</span><br><span class="line">                    criterion(out_puts[<span class="number">2</span>], labels[:, <span class="number">2</span>])</span><br><span class="line">            )</span><br><span class="line"></span><br><span class="line">            val_loss += loss.item()</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 100个训练样本，batch_size=16, 100/16 = 6（一共7批次）</span></span><br><span class="line">            <span class="comment"># 一轮计算一次平均损失</span></span><br><span class="line">            <span class="keyword">if</span> (batch_idx+<span class="number">1</span>) % <span class="number">7</span> == <span class="number">0</span>:</span><br><span class="line">                print(<span class="string">f'epoch: <span class="subst">&#123;epoch+<span class="number">1</span>&#125;</span>, batch_inx: <span class="subst">&#123;batch_idx+<span class="number">1</span>&#125;</span> val loss: <span class="subst">&#123;val_loss/<span class="number">100</span>&#125;</span>'</span>)</span><br><span class="line">                <span class="keyword">if</span> <span class="keyword">not</span> val_loss_min:</span><br><span class="line">                    val_loss_min = val_loss</span><br><span class="line">                <span class="comment"># 正常是每10轮保存一次权重，当发现这一轮验证损失更小时，也会保存一次权重</span></span><br><span class="line">                <span class="keyword">elif</span> val_loss_min &gt;= val_loss:</span><br><span class="line">                    val_loss_min = val_loss</span><br><span class="line">                    print(<span class="string">f'saving epoch <span class="subst">&#123;epoch+<span class="number">1</span>&#125;</span> mode ...'</span>)</span><br><span class="line">                    torch.save(state, <span class="string">f'./checkpoint/shanghai_epoch_<span class="subst">&#123;epoch+<span class="number">1</span>&#125;</span>.pth'</span>)</span><br><span class="line">            val_loss = <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line">    print(<span class="string">'training task finished'</span>)</span><br></pre></td></tr></table></figure>
+<p>关于训练代码，有以下几点说明：</p>
+<ol>
+<li><p>这里批量加载训练集和验证集是我在前面数据预处理部分特别开发好的，我觉得还是蛮巧妙地；</p>
+</li>
+<li><p>pytorch中都是使用tensor，所以需要将加载的数据(numpy矩阵)转换成tensor：</p>
+<p><code>torch.from_numpy(inputs)</code></p>
+</li>
+<li><p>最重要的一点是三个输出的情况下，如何计算损失，这是我开发过程中遇到的另一个难题。</p>
+<p>经过咨询有经验的同事得知，<strong>实际上就是将三个输出的损失加在一起，但是你要根据神经网络的数据输出格式和你自己的标签格式，将正确的数据输入到损失函数中进行计算，且要注意<code>CrossEntropyLoss</code>的输入参数格式</strong>。</p>
+<p>关于<code>CrossEntropyLoss</code>使用方式的介绍：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> torch <span class="keyword">import</span> nn</span><br><span class="line"></span><br><span class="line">x = torch.tensor([[<span class="number">0.2</span>, <span class="number">0.3</span>, <span class="number">0.5</span>, <span class="number">0.1</span>], [<span class="number">0.3</span>, <span class="number">0.01</span>, <span class="number">0.02</span>, <span class="number">0.4</span>]])</span><br><span class="line">y = torch.tensor([<span class="number">2</span>, <span class="number">3</span>])</span><br><span class="line">criterion = nn.CrossEntropyLoss()</span><br><span class="line">loss = criterion(x, y)</span><br><span class="line">print(loss)</span><br></pre></td></tr></table></figure>
+<p>其y参数只需要标签即可, 不需要传one-hot向量，这也就是前面数据预处理时没有采用one-hot编码来处理标签的原因。另外out_puts的输出shape我在代码中也有注释。</p>
+</li>
+</ol>
+<h3 id="记录一些训练过程中遇到的情况"><a href="#记录一些训练过程中遇到的情况" class="headerlink" title="记录一些训练过程中遇到的情况"></a>记录一些训练过程中遇到的情况</h3><ol>
+<li><p>训练到第30轮，训练损失才开始明显下降，一度让我以为程序哪里有问题，经过上网查资料发现：损失函数(loss)在最初的几个epochs时没有下降，可能的原因是<strong>学习率设置的太低、正则参数太高和陷入局部最小值。</strong></p>
+<p>我当时设置的学习率lr=0.0001，确实比较小，我尝试调整为lr=0.001再训练，发现在第20轮时损失就开始下降了，果然是学习率设置的太低。</p>
+<p>另外我觉得dropout的太多有可能也是导致损失延迟降低的原因，所以我尝试将dropout的值缩小，也能提前几轮损失开始下降，但是最后的训练效果却不如dropout较大的时候。</p>
+</li>
+<li><p>在较前面的轮次，val_loss远小于train_loss，这是因为在网络中添加了dropout层，而dropout仅在训练时生效，测试时是不会dropout的。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">net.train()  <span class="comment"># 训练与测试，BN和Dropout有区别</span></span><br><span class="line"></span><br><span class="line">net.eval() <span class="comment"># 验证部分</span></span><br></pre></td></tr></table></figure>
+<p>也就是这两行代码的作用，执行后告诉神经网络接下来将进入训练模式还是测试模型；另外<code>BN</code>层也是仅在训练时生效，在测试时不使用。</p>
+</li>
+<li><p>关于<strong>如何设计出较好的模型，目前是我能力欠缺的一个地方</strong>，上面代码使用的模型架构（<strong>经过80轮的训练准确率能达到80%，经过250轮的训练准确率能达到90%</strong>），是参考大佬的模型，而我自己设计的模型准确率最高仅能达到70%，并且我也经过多次调整和训练，效果也并没有显著提升。</p>
+</li>
+</ol>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> train <span class="keyword">import</span> NeuralNetWork</span><br><span class="line"><span class="keyword">from</span> image_process <span class="keyword">import</span> ImageProcess</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    <span class="comment"># 测试</span></span><br><span class="line">    net = NeuralNetWork(<span class="number">1</span>, <span class="number">13</span>)</span><br><span class="line">    <span class="comment"># 如果有dropout和BN操作，这里一定执行该方法，表示网络接下来进行测试操作</span></span><br><span class="line">    net.eval() </span><br><span class="line">    check_point = torch.load(<span class="string">'./checkpoint/shanghai_epoch_27.pth'</span>)</span><br><span class="line">    <span class="comment"># check_point = torch.load('shanghai_epoch_80.pth')</span></span><br><span class="line">    net.load_state_dict(check_point[<span class="string">'net'</span>])</span><br><span class="line">    batch_size = <span class="number">16</span></span><br><span class="line"></span><br><span class="line">    ip = ImageProcess()</span><br><span class="line">    total_image = <span class="number">0</span>  <span class="comment"># 总的图片数量</span></span><br><span class="line">    correct_image = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    total_label = <span class="number">0</span>  <span class="comment"># 总的标签数量</span></span><br><span class="line">    correct_label = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> data <span class="keyword">in</span> ip.test_loader(batch_size):</span><br><span class="line">        images, labels = data</span><br><span class="line">        images = torch.from_numpy(images)</span><br><span class="line">        out_puts = net(images)</span><br><span class="line">        <span class="comment"># batch_result = []</span></span><br><span class="line">        _, predicted1 = torch.max(out_puts[<span class="number">0</span>], <span class="number">1</span>)</span><br><span class="line">        _, predicted2 = torch.max(out_puts[<span class="number">1</span>], <span class="number">1</span>)</span><br><span class="line">        _, predicted3 = torch.max(out_puts[<span class="number">2</span>], <span class="number">1</span>)</span><br><span class="line">        <span class="comment"># batch_result.append(temp_result)</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(labels.shape[<span class="number">0</span>]):</span><br><span class="line">            total_image += <span class="number">1</span></span><br><span class="line">            total_label += <span class="number">3</span></span><br><span class="line">            print(<span class="string">f'true label: <span class="subst">&#123;labels[i]&#125;</span>'</span>)</span><br><span class="line">            true_label = labels[i]</span><br><span class="line">            print(<span class="string">f'predicted label: <span class="subst">&#123;predicted1[i]&#125;</span>  <span class="subst">&#123;predicted2[i]&#125;</span>  <span class="subst">&#123;predicted3[i]&#125;</span>'</span>)</span><br><span class="line">            predicted_label = [int(predicted1[i]), int(predicted2[i]), int(predicted3[i])]</span><br><span class="line">            <span class="keyword">if</span> list(true_label) == predicted_label:</span><br><span class="line">                correct_image += <span class="number">1</span></span><br><span class="line">            <span class="keyword">if</span> true_label[<span class="number">0</span>] == predicted_label[<span class="number">0</span>]:</span><br><span class="line">                correct_label += <span class="number">1</span></span><br><span class="line">            <span class="keyword">if</span> true_label[<span class="number">1</span>] == predicted_label[<span class="number">1</span>]:</span><br><span class="line">                correct_label += <span class="number">1</span></span><br><span class="line">            <span class="keyword">if</span> true_label[<span class="number">2</span>] == predicted_label[<span class="number">2</span>]:</span><br><span class="line">                correct_label += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    print(<span class="string">f'correct_image / total_image: <span class="subst">&#123;correct_image&#125;</span>/<span class="subst">&#123;total_image&#125;</span>'</span>)</span><br><span class="line">    print(<span class="string">f'correct_label / total_label: <span class="subst">&#123;correct_label&#125;</span>/<span class="subst">&#123;total_label&#125;</span>'</span>)</span><br></pre></td></tr></table></figure>
+<p>这里的测试是批量测试，与实际的预测方法还有区别，但是大同小异，只不过在预测的方法中要注意针对单张图片<strong>再增加一个维度表示批次</strong>，否则传入神经网络的数据格式会出问题。</p>
+<h3 id="尝试进一步优化"><a href="#尝试进一步优化" class="headerlink" title="尝试进一步优化"></a>尝试进一步优化</h3><ol>
+<li><p>添加<code>BN</code>层</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">self.convin = nn.Sequential(</span><br><span class="line">    nn.Conv2d(channel, <span class="number">64</span>, kernel_size=(<span class="number">3</span>, <span class="number">3</span>), padding=<span class="number">1</span>, bias=<span class="literal">False</span>),</span><br><span class="line">    nn.BatchNorm2d(<span class="number">64</span>),</span><br><span class="line">    nn.ReLU(),</span><br><span class="line">    nn.Conv2d(<span class="number">64</span>, <span class="number">64</span>, kernel_size=(<span class="number">3</span>, <span class="number">3</span>), padding=<span class="number">1</span>, bias=<span class="literal">False</span>),</span><br><span class="line">    nn.BatchNorm2d(<span class="number">64</span>),</span><br><span class="line">    nn.ReLU(),</span><br><span class="line">    nn.MaxPool2d(<span class="number">2</span>, <span class="number">2</span>),</span><br><span class="line">    nn.Dropout(<span class="number">0.25</span>)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>添加批规范化层后，训练得到的模型效果并没有不添加之前好，不过训练损失则在第2~3轮就开始明显下降了，不使用<code>BN</code>层的话，要训练15~20轮，训练损失才开始明显下降。</p>
+<p>考虑到<code>BN</code>层的目标就是防止梯度消失或爆炸、加快训练速度，所以损失下降比较快就体现了<code>BN层</code>的用处，但是针对我这个项目，整体效果却并没有提升。</p>
+</li>
+<li><p>旋转图片</p>
+<p>因为观察验证码会稍微有些倾斜，倾斜幅度很小，所以想着能不能利用数据增强（旋转一个很小的角度）来进一步提升准确率。</p>
+</li>
+</ol>
+<p>​       为了进行数据增强，我是直接在process_image方法中，对每一张图片进行旋转，然后生成一张新的直接添加  到训练集中，另外标签也要添加两遍，这样我的训练集就变成了1600张，这种方法有个缺点就是一张图片和他的旋转图是挨着的两个样本，在训练时如果可以彻底打乱比较好，而且不知道是不是这个原因，再次训练时，损失吃吃降不下来了（到60轮没有下降，我就停了），但是添加<code>BN</code>层后快速下降（但最终效果没有提升）。</p>
+<p>​       这里记录下旋转用到的技术：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">from</span> torchvision.transforms <span class="keyword">import</span> transforms</span><br><span class="line">    </span><br><span class="line"><span class="comment"># 随机旋转图像</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">random_rotation</span><span class="params">(image)</span>:</span></span><br><span class="line">    image = Image.fromarray(image)  <span class="comment"># 传入的image为CV2对象，转换为PIL.Image格式</span></span><br><span class="line">    <span class="comment"># image.show()</span></span><br><span class="line">    rr = transforms.RandomRotation(degrees=(<span class="number">5</span>, <span class="number">10</span>))</span><br><span class="line">    rr_image = rr(image)</span><br><span class="line">    <span class="comment"># rr_image.show()</span></span><br><span class="line">    <span class="keyword">return</span> rr_image  <span class="comment"># 返回的依然是PIL.Image格式，但是同样可以直接转为np.array</span></span><br></pre></td></tr></table></figure>
+<p>后来我觉得进行数据增强实际上可以对训练集操作然后直接生成相应的图片保存下来，然后在读取的时候打乱数据集比较方便，感兴趣的可以自己尝试。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/pytorch/" rel="tag"># pytorch</a>
+          
+            <a href="/tags/CNN/" rel="tag"># CNN</a>
+          
+            <a href="/tags/open-cv/" rel="tag"># open-cv</a>
+          
+            <a href="/tags/CrossEntropyLoss/" rel="tag"># CrossEntropyLoss</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/09/10/nlp-word-order/" rel="next" title="中文点选验证码——语序">
+                <i class="fa fa-chevron-left"></i> 中文点选验证码——语序
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/11/03/dl-tuning-one/" rel="prev" title="关于神经网络的一些调参经验">
+                关于神经网络的一些调参经验 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">70</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">141</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用Pytorch识别字符验证码"><span class="nav-text">使用Pytorch识别字符验证码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据预处理"><span class="nav-text">数据预处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#搭建模型"><span class="nav-text">搭建模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编写训练代码"><span class="nav-text">编写训练代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#记录一些训练过程中遇到的情况"><span class="nav-text">记录一些训练过程中遇到的情况</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试"><span class="nav-text">测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#尝试进一步优化"><span class="nav-text">尝试进一步优化</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

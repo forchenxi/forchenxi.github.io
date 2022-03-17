@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="python,js加密,DES3加密，crypto-js,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="反爬五这一次针对此网站的破解，这次的网站破解过程没有前两面的那么复杂（当然对大佬来讲前面几个也是小菜一碟），下面开始介绍这次的破解过程吧。 这里要说明的一点是一开始我也不知道这个网站有加密，直接构造参数做POST请求毫无问题，但是当持续爬取后出现请求被限制的相关问题，才逐渐开始发现问题并解决问题。 1、构造参数做post请求 post请求的具体参数如图中所示，其中比较重要的是queryCondit">
+<meta name="keywords" content="python,js加密,DES3加密，crypto-js">
+<meta property="og:type" content="article">
+<meta property="og:title" content="反爬（五）">
+<meta property="og:url" content="http://yoursite.com/2020/01/13/spider-market-regulation/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="反爬五这一次针对此网站的破解，这次的网站破解过程没有前两面的那么复杂（当然对大佬来讲前面几个也是小菜一碟），下面开始介绍这次的破解过程吧。 这里要说明的一点是一开始我也不知道这个网站有加密，直接构造参数做POST请求毫无问题，但是当持续爬取后出现请求被限制的相关问题，才逐渐开始发现问题并解决问题。 1、构造参数做post请求 post请求的具体参数如图中所示，其中比较重要的是queryCondit">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2020/01/13/spider-market-regulation/p1.PNG">
+<meta property="og:image" content="http://yoursite.com/2020/01/13/spider-market-regulation/p2.PNG">
+<meta property="og:image" content="http://yoursite.com/2020/01/13/spider-market-regulation/p3.PNG">
+<meta property="og:image" content="http://yoursite.com/2020/01/13/spider-market-regulation/p4.PNG">
+<meta property="og:updated_time" content="2022-03-14T02:42:20.553Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="反爬（五）">
+<meta name="twitter:description" content="反爬五这一次针对此网站的破解，这次的网站破解过程没有前两面的那么复杂（当然对大佬来讲前面几个也是小菜一碟），下面开始介绍这次的破解过程吧。 这里要说明的一点是一开始我也不知道这个网站有加密，直接构造参数做POST请求毫无问题，但是当持续爬取后出现请求被限制的相关问题，才逐渐开始发现问题并解决问题。 1、构造参数做post请求 post请求的具体参数如图中所示，其中比较重要的是queryCondit">
+<meta name="twitter:image" content="http://yoursite.com/2020/01/13/spider-market-regulation/p1.PNG">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/01/13/spider-market-regulation/">
+
+
+
+
+
+  <title>反爬（五） | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/13/spider-market-regulation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">反爬（五）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-13T19:03:20+08:00">
+                2020-01-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/爬虫/" itemprop="url" rel="index">
+                    <span itemprop="name">爬虫</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="反爬五"><a href="#反爬五" class="headerlink" title="反爬五"></a>反爬五</h3><p>这一次针对<a href="http://cfws.samr.gov.cn/list.html?21_s=110101" target="_blank" rel="noopener">此网站</a>的破解，这次的网站破解过程没有前两面的那么复杂（当然对大佬来讲前面几个也是小菜一碟），下面开始介绍这次的破解过程吧。</p>
+<p>这里要说明的一点是一开始我也不知道这个网站有加密，直接构造参数做POST请求毫无问题，但是当持续爬取后出现请求被限制的相关问题，才逐渐开始发现问题并解决问题。</p>
+<h4 id="1、构造参数做post请求"><a href="#1、构造参数做post请求" class="headerlink" title="1、构造参数做post请求"></a>1、构造参数做<code>post</code>请求</h4><p><img src="/2020/01/13/spider-market-regulation/p1.PNG" alt></p>
+<p><code>post</code>请求的具体参数如图中所示，其中比较重要的是<code>queryCondition</code>,其为一个列表类型，每个元素是一个<code>json</code>对象（Python字典对象），并且支持添加多个元素，对应处罚种类、年份等，包括种类、年份以及地区代码等如何设置其实有一个文件写的非常清楚，直接在下面的search框中，搜索诸如“21_s”之类的关键字，就能找到相应的文件，这里不再多说。</p>
+<p>这里的<code>ciphertext</code>参数一开始看不出来什么线索，第一反应这可能是个固定的参数值，直接复制到代码中请求果然可以成功请求到数据，可是后来持续爬取了一会发现就爬不到数据了，调式发现请求返回“你的请求已被限制”此类的信息。后来想到可能这个参数有问题，去浏览器中复制了一个新的到程序中执行又可以正常跑，所以此时才明确这个参数不是固定的，会动态变化，所以要去从网站源码中找出其是如何生成的。</p>
+<h4 id="2、寻找关键参数ciphertext"><a href="#2、寻找关键参数ciphertext" class="headerlink" title="2、寻找关键参数ciphertext"></a>2、寻找关键参数<code>ciphertext</code></h4><a id="more"></a>
+<p>非常容易想到的方式就是在下面的搜索框中输入<code>ciphertext</code>进行搜索，然后很轻松的就找到了这样一串代码：</p>
+<p><img src="/2020/01/13/spider-market-regulation/p2.PNG" alt></p>
+<p>可以清楚地看到，<code>ciphertext</code>参数的值是由<code>ciper</code>函数返回的，下面就是去看<code>ciper</code>函数的功能,接着通过查找我们发现有这样一行代码：<code>var ciper=cipher()</code>,这有点像个小陷阱的意思，如果我们不注意看，一直搜索<code>ciper</code>就啥也找不到了，但是如果搜索<code>cipher</code>一下就找到了下面的核心代码：</p>
+<p><img src="/2020/01/13/spider-market-regulation/p3.PNG" alt></p>
+<p>这段代码并不复杂，可以很清楚的看到就是对当前时间进行了某些处理，然后将处理好的三个参数传入加密函数，对得到的返回值再进行二进制转换。其中最核心的就是加密函数，接下来看下加密函数到底是什么样的：</p>
+<p><img src="/2020/01/13/spider-market-regulation/p4.PNG" alt></p>
+<h4 id="3、扣出网站中相关的源代码，使其可以正常执行"><a href="#3、扣出网站中相关的源代码，使其可以正常执行" class="headerlink" title="3、扣出网站中相关的源代码，使其可以正常执行"></a>3、扣出网站中相关的源代码，使其可以正常执行</h4><p>配合这个具有良好素养的程序员的注释，我们也是看得一清二楚，这里分别定义了一个加密函数一个解密函数，其实解密函数我们可以不用管，想必是他后台做校验用的，我们只需要调用这个加密函数就行了，可以看到这里用到了<code>CryptoJS</code>，似曾相识，没错前面反爬二里就有遇到，这里不再细讲了，即使没见过相信上网查阅相关资料也可以弄清楚。所以我们自然而然生成了这样一个<code>js</code>文件:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> CryptoJS=<span class="built_in">require</span>(<span class="string">'crypto-js'</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">random</span> (<span class="params">size</span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> str = <span class="string">""</span>,</span><br><span class="line">	arr = [<span class="string">'0'</span>, <span class="string">'1'</span>, <span class="string">'2'</span>, <span class="string">'3'</span>, <span class="string">'4'</span>, <span class="string">'5'</span>, <span class="string">'6'</span>, <span class="string">'7'</span>, <span class="string">'8'</span>, <span class="string">'9'</span>, <span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>, <span class="string">'d'</span>, <span class="string">'e'</span>, <span class="string">'f'</span>, <span class="string">'g'</span>, <span class="string">'h'</span>, <span class="string">'i'</span>, <span class="string">'j'</span>, <span class="string">'k'</span>, <span class="string">'l'</span>, <span class="string">'m'</span>, <span class="string">'n'</span>, <span class="string">'o'</span>, <span class="string">'p'</span>, <span class="string">'q'</span>, <span class="string">'r'</span>, <span class="string">'s'</span>, <span class="string">'t'</span>, <span class="string">'u'</span>, <span class="string">'v'</span>, <span class="string">'w'</span>, <span class="string">'x'</span>, <span class="string">'y'</span>, <span class="string">'z'</span>, <span class="string">'A'</span>, <span class="string">'B'</span>, <span class="string">'C'</span>, <span class="string">'D'</span>, <span class="string">'E'</span>, <span class="string">'F'</span>, <span class="string">'G'</span>, <span class="string">'H'</span>, <span class="string">'I'</span>, <span class="string">'J'</span>, <span class="string">'K'</span>, <span class="string">'L'</span>, <span class="string">'M'</span>, <span class="string">'N'</span>, <span class="string">'O'</span>, <span class="string">'P'</span>, <span class="string">'Q'</span>, <span class="string">'R'</span>, <span class="string">'S'</span>, <span class="string">'T'</span>, <span class="string">'U'</span>, <span class="string">'V'</span>, <span class="string">'W'</span>, <span class="string">'X'</span>, <span class="string">'Y'</span>, <span class="string">'Z'</span>];</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">var</span> i=<span class="number">0</span>; i&lt;size; i++)&#123;</span><br><span class="line">        <span class="comment">// Math.round()把不同的数舍入为最接近的整数</span></span><br><span class="line">		str += arr[<span class="built_in">Math</span>.round(<span class="built_in">Math</span>.random() * (arr.length<span class="number">-1</span>))];</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> str;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> DES3 = &#123;</span><br><span class="line">    iv: <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> formatDate(<span class="keyword">new</span> <span class="built_in">Date</span>(), <span class="string">"yyyyMMdd"</span>);</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="comment">// 3DES加密，使用PKCS7 padding</span></span><br><span class="line">    encrypt : <span class="function"><span class="keyword">function</span>(<span class="params">input, key, vector</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (key) &#123;</span><br><span class="line">            <span class="keyword">return</span> (CryptoJS.TripleDES.encrypt(input, CryptoJS.enc.Utf8.parse(key), &#123;</span><br><span class="line">                iv: CryptoJS.enc.Utf8.parse(vector||DES3.iv()),</span><br><span class="line">                mode: CryptoJS.mode.CBC,</span><br><span class="line">                padding: CryptoJS.pad.Pkcs7</span><br><span class="line">            &#125;)).toString();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span>;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="comment">// //3DES解密，CBC/PKCS5Padding</span></span><br><span class="line">    decrypt : <span class="function"><span class="keyword">function</span>(<span class="params">input, key, vector</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (key) &#123;</span><br><span class="line">            <span class="keyword">return</span> CryptoJS.enc.Utf8.stringify(CryptoJS.TripleDES.decrypt(input, </span><br><span class="line">                    CryptoJS.enc.Utf8.parse(key), &#123;</span><br><span class="line">                iv: CryptoJS.enc.Utf8.parse(vector||DES3.iv()),</span><br><span class="line">                mode: CryptoJS.mode.CBC,</span><br><span class="line">                padding: CryptoJS.pad.Pkcs7</span><br><span class="line">            &#125;)).toString();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">strTobinary</span>(<span class="params">str</span>) </span>&#123;</span><br><span class="line">	<span class="keyword">var</span> result = [];</span><br><span class="line">	<span class="keyword">var</span> list = str.split(<span class="string">""</span>);</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; list.length; i++) &#123;</span><br><span class="line">		<span class="keyword">if</span> (i != <span class="number">0</span>) &#123;</span><br><span class="line">			result.push(<span class="string">" "</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">var</span> item = list[i];</span><br><span class="line">		<span class="keyword">var</span> binaryStr = item.charCodeAt().toString(<span class="number">2</span>);</span><br><span class="line">		result.push(binaryStr);</span><br><span class="line">	&#125;;</span><br><span class="line">	<span class="keyword">return</span> result.join(<span class="string">""</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">cipher</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="keyword">var</span> date = <span class="keyword">new</span> <span class="built_in">Date</span>();</span><br><span class="line">	<span class="keyword">var</span> timestamp = date.getTime().toString();</span><br><span class="line">	<span class="keyword">var</span> salt = random(<span class="number">24</span>);</span><br><span class="line">	<span class="keyword">var</span> year = date.getFullYear().toString();</span><br><span class="line">	<span class="keyword">var</span> month = (date.getMonth() + <span class="number">1</span> &lt; <span class="number">10</span> ? <span class="string">"0"</span> + (date.getMonth() + <span class="number">1</span>) : date</span><br><span class="line">			.getMonth()+<span class="number">1</span>).toString();</span><br><span class="line">	<span class="keyword">var</span> day = (date.getDate() &lt; <span class="number">10</span> ? <span class="string">"0"</span> + date.getDate() : date.getDate())</span><br><span class="line">			.toString();</span><br><span class="line">	<span class="keyword">var</span> iv = year + month + day;</span><br><span class="line">	<span class="keyword">var</span> enc = DES3.encrypt(timestamp, salt, iv).toString();</span><br><span class="line">	<span class="keyword">var</span> str = salt + iv + enc;</span><br><span class="line">	<span class="keyword">var</span> ciphertext = strTobinary(str);</span><br><span class="line">	<span class="keyword">return</span> ciphertext;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(cipher())</span><br></pre></td></tr></table></figure>
+<p>执行一下运行结果为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">110110</span> <span class="number">1100100</span> <span class="number">1010111</span> <span class="number">1010111</span> <span class="number">1111001</span> <span class="number">1100011</span> <span class="number">1001000</span> <span class="number">1010111</span> <span class="number">1010110</span> <span class="number">110110</span> <span class="number">1110001</span> <span class="number">1110000</span> <span class="number">1001001</span> <span class="number">1101000</span> <span class="number">1100011</span> <span class="number">1110100</span> <span class="number">110111</span> <span class="number">1100010</span> <span class="number">1000001</span> <span class="number">1110000</span> <span class="number">1010011</span> <span class="number">110110</span> <span class="number">1110110</span> <span class="number">1110110</span> <span class="number">110010</span> <span class="number">110000</span> <span class="number">110010</span> <span class="number">110000</span> <span class="number">110000</span> <span class="number">110001</span> <span class="number">110001</span> <span class="number">110011</span> <span class="number">1010110</span> <span class="number">1000111</span> <span class="number">1011010</span> <span class="number">101011</span> <span class="number">1110110</span> <span class="number">1110000</span> <span class="number">1001000</span> <span class="number">1110101</span> <span class="number">1000011</span> <span class="number">1100100</span> <span class="number">1101101</span> <span class="number">1001111</span> <span class="number">1101000</span> <span class="number">1100001</span> <span class="number">1100111</span> <span class="number">1000010</span> <span class="number">1101100</span> <span class="number">110110</span> <span class="number">1110101</span> <span class="number">1001101</span> <span class="number">1001010</span> <span class="number">1010001</span> <span class="number">111101</span> <span class="number">111101</span></span><br></pre></td></tr></table></figure>
+<p>没毛病，就是我们想要的内容。</p>
+<h4 id="4、将其布置为js服务，供程序调用"><a href="#4、将其布置为js服务，供程序调用" class="headerlink" title="4、将其布置为js服务，供程序调用"></a>4、将其布置为<code>js</code>服务，供程序调用</h4><p>因为这段<code>js</code>代码导入了外部包<code>crypto-js</code>，所以是无法直接使用Python执行这段<code>js</code>的，我们只能将其布置为<code>js</code>服务， 然后使用Python调用即可。</p>
+<p>只需要在上述<code>js</code>代码最后加上：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="keyword">function</span> <span class="title">marketregulationHandler</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">          <span class="keyword">return</span> cipher()</span><br><span class="line">      &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">        <span class="built_in">console</span>.error(err.message)</span><br><span class="line">        <span class="keyword">return</span> <span class="string">''</span></span><br><span class="line">      &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>相应地，按照反爬二文章中给出的<code>server.js</code>代码，我们只要导入这个文件，并添加相应的路由，就可以了。</p>
+<h4 id="5、再说点其他的"><a href="#5、再说点其他的" class="headerlink" title="5、再说点其他的"></a>5、再说点其他的</h4><p>基于上面的问题，是否除了使用<code>js</code>服务的方式，真的不能通过Python来执行所有的代码吗？其实不然，如果对<code>CrytoJS</code>或者<code>DES3</code>等技术有所了解，其实<code>DES3</code>是一种常见的加密算法，既然是加密算法，就不局限于某一种语言，每种语言肯定都有自己的实现方法，相应的python也有实现该算法的相应的包，网上出现过<code>crypto</code>、<code>pycrypto</code>以及<code>pycryptodome</code>等库的介绍，具体哪个可以用，或者更好用我没有尝试，有兴趣的可以自己去尝试下。</p>
+<p>此外，常见的加密算法还有以下这些：</p>
+<p>对称加密（加密解密密钥相同）：<code>DES、DES3、AES</code></p>
+<p>非对称加密（分公钥私钥）：<code>RSA</code></p>
+<p>信息摘要算法/签名算法：<code>MD5、HMAC、SHA</code></p>
+<p>这里记录以下常见算法的名字，加深下印象，如果以后再遇到这些可以快速地看穿网站的意图，寻找解决办法。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/js加密/" rel="tag"># js加密</a>
+          
+            <a href="/tags/DES3加密，crypto-js/" rel="tag"># DES3加密，crypto-js</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/01/01/dl-cnn-cifar10/" rel="next" title="Keras简单应用cifar10">
+                <i class="fa fa-chevron-left"></i> Keras简单应用cifar10
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/01/20/dl-concept/" rel="prev" title="深度学习概念">
+                深度学习概念 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">70</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">141</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#反爬五"><span class="nav-text">反爬五</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、构造参数做post请求"><span class="nav-text">1、构造参数做post请求</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、寻找关键参数ciphertext"><span class="nav-text">2、寻找关键参数ciphertext</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、扣出网站中相关的源代码，使其可以正常执行"><span class="nav-text">3、扣出网站中相关的源代码，使其可以正常执行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4、将其布置为js服务，供程序调用"><span class="nav-text">4、将其布置为js服务，供程序调用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5、再说点其他的"><span class="nav-text">5、再说点其他的</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

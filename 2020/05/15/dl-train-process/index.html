@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="deep learning,numpy,Keras API,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="验证码识别之模型构建Keras函数式API之前学习使用的神经网络都是用Sequential模型实现的，网络只有一个输入和一个输出，而且网络是层的线性堆叠，这种网络配置非常常见，只使用Sequential模型类就能够涵盖许多主题和实际应用，但是有些情况下这种假设过于死板，有些网络需要多个独立的输入，有些网络则需要多个输出，而有些网络在层与层之间具有内部分支，这使得网络看起来像是层构成的图(graph">
+<meta name="keywords" content="deep learning,numpy,Keras API">
+<meta property="og:type" content="article">
+<meta property="og:title" content="字符验证码识别之模型构建">
+<meta property="og:url" content="http://yoursite.com/2020/05/15/dl-train-process/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="验证码识别之模型构建Keras函数式API之前学习使用的神经网络都是用Sequential模型实现的，网络只有一个输入和一个输出，而且网络是层的线性堆叠，这种网络配置非常常见，只使用Sequential模型类就能够涵盖许多主题和实际应用，但是有些情况下这种假设过于死板，有些网络需要多个独立的输入，有些网络则需要多个输出，而有些网络在层与层之间具有内部分支，这使得网络看起来像是层构成的图(graph">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2020/05/15/dl-train-process/img1.png">
+<meta property="og:image" content="http://yoursite.com/2020/05/15/dl-train-process/img2.png">
+<meta property="og:updated_time" content="2021-11-03T09:37:16.557Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="字符验证码识别之模型构建">
+<meta name="twitter:description" content="验证码识别之模型构建Keras函数式API之前学习使用的神经网络都是用Sequential模型实现的，网络只有一个输入和一个输出，而且网络是层的线性堆叠，这种网络配置非常常见，只使用Sequential模型类就能够涵盖许多主题和实际应用，但是有些情况下这种假设过于死板，有些网络需要多个独立的输入，有些网络则需要多个输出，而有些网络在层与层之间具有内部分支，这使得网络看起来像是层构成的图(graph">
+<meta name="twitter:image" content="http://yoursite.com/2020/05/15/dl-train-process/img1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/05/15/dl-train-process/">
+
+
+
+
+
+  <title>字符验证码识别之模型构建 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/15/dl-train-process/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">字符验证码识别之模型构建</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-15T17:45:24+08:00">
+                2020-05-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="验证码识别之模型构建"><a href="#验证码识别之模型构建" class="headerlink" title="验证码识别之模型构建"></a>验证码识别之模型构建</h3><h4 id="Keras函数式API"><a href="#Keras函数式API" class="headerlink" title="Keras函数式API"></a><code>Keras</code>函数式<code>API</code></h4><p>之前学习使用的神经网络都是用<code>Sequential</code>模型实现的，网络只有一个输入和一个输出，而且网络是层的线性堆叠，这种网络配置非常常见，只使用<code>Sequential</code>模型类就能够涵盖许多主题和实际应用，但是有些情况下这种假设过于死板，有些网络需要多个独立的输入，有些网络则需要多个输出，而有些网络在层与层之间具有内部分支，这使得网络看起来像是层构成的图(<code>graph</code>)，而不是层的线性堆叠。</p>
+<p>也就是针对类似多输入模型、多输出模型和类图模型的使用案例，只用<code>Keras</code>中的<code>Sequentail</code>模型是无法实现的，但是还有另一种更加更加通用、更加灵活的使用<code>keras</code>的方式，就是函数式<code>API</code>。</p>
+<p>有机会我会在之外的文章中记录这方面更详细的内容，这里先简单了解下就好。</p>
+<h4 id="构建模型"><a href="#构建模型" class="headerlink" title="构建模型"></a>构建模型</h4><p>对于验证码识别来说，一般是多输出模型，所以我们需要使用函数式<code>API</code>来构建模型</p>
+<a id="more"></a>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> keras</span><br><span class="line"><span class="keyword">from</span> keras.models <span class="keyword">import</span> Model</span><br><span class="line"><span class="keyword">from</span> keras.layers <span class="keyword">import</span> Input, Flatten, Conv2D, Activation, MaxPooling2D, Dropout, Dense,</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> keras.preprocessing.image <span class="keyword">import</span> ImageDataGenerator</span><br><span class="line"><span class="keyword">from</span> keras.callbacks <span class="keyword">import</span> EarlyStopping</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># Data parameters</span></span><br><span class="line">num_classes = <span class="number">36</span></span><br><span class="line">img_shape = (<span class="number">40</span>, <span class="number">120</span>, <span class="number">1</span>)</span><br><span class="line">train_nums = <span class="number">3000</span></span><br><span class="line">val_nums = <span class="number">1000</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Network parameters</span></span><br><span class="line">batch_size = <span class="number">64</span></span><br><span class="line">epochs = <span class="number">50</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建CNN模型</span></span><br><span class="line">main_input = Input(shape=img_shape, name=<span class="string">"inputs"</span>)</span><br><span class="line"><span class="comment"># 32个卷积核，卷积核大小3*3</span></span><br><span class="line">conv1 = Conv2D(<span class="number">32</span>, (<span class="number">3</span>, <span class="number">3</span>), name=<span class="string">"conv1"</span>, padding=<span class="string">"same"</span>)(main_input)</span><br><span class="line"><span class="comment"># 激活函数优先使用relu</span></span><br><span class="line">relu1 = Activation(<span class="string">'relu'</span>, name=<span class="string">"relu1"</span>)(conv1)</span><br><span class="line"><span class="comment"># 最大池化</span></span><br><span class="line">pool1 = MaxPooling2D(pool_size=(<span class="number">2</span>, <span class="number">2</span>), padding=<span class="string">"same"</span>, name=<span class="string">"pool1"</span>)(relu1)</span><br><span class="line"></span><br><span class="line">conv2 = Conv2D(<span class="number">32</span>, (<span class="number">3</span>, <span class="number">3</span>), name=<span class="string">"conv2"</span>, padding=<span class="string">"same"</span>)(pool1)</span><br><span class="line">relu2 = Activation(<span class="string">'relu'</span>, name=<span class="string">"relu2"</span>)(conv2)</span><br><span class="line">pool2 = MaxPooling2D(pool_size=(<span class="number">2</span>, <span class="number">2</span>), padding=<span class="string">'same'</span>, name=<span class="string">'pool2'</span>)(relu2)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 全连接层</span></span><br><span class="line">x = Flatten(name=<span class="string">"flatten"</span>)(pool2)</span><br><span class="line"></span><br><span class="line">x = Dense(<span class="number">256</span>, activation=<span class="string">"relu"</span>, name=<span class="string">"dense1"</span>)(x)</span><br><span class="line">out_put = [Dense(num_classes, activation=<span class="string">'softmax'</span>, name=<span class="string">'out%d'</span> % (i+<span class="number">1</span>))(x) <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">5</span>)]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义模型的输入和输出</span></span><br><span class="line">model = Model(inputs=main_input, outputs=out_put)</span><br><span class="line"><span class="comment"># 查看模型</span></span><br><span class="line">model.summary()</span><br><span class="line">opt = <span class="string">'rmsprop'</span></span><br><span class="line"><span class="comment"># opt = keras.optimizers.Adam(lr=0.001)</span></span><br><span class="line">loss = <span class="string">'categorical_crossentropy'</span></span><br><span class="line">model.compile(optimizer=opt, loss=loss, loss_weights=[<span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>], metrics=[<span class="string">'acc'</span>])</span><br></pre></td></tr></table></figure>
+<p>这里定义了一个两层的神经网络，按照我测试的情况，像一般几千张的图片，两层的网络基本就可以了，层数多了反而准确度提升很慢，如果训练数据量很大，可以尝试增加网络层数；</p>
+<p>之后全连接展开之后，定义了一个256维空间的隐藏层，这个大小实际上一般取决于输出空间的维度大小，这里是36（共36个验证码字符分类），隐藏层的维度大小至少要比输出空间的维度大（个人意见），否则太小可能无法学会区分这么多类别，这种维度较小的层可能成为信息瓶颈，永久地丢失信息。</p>
+<p>因为每张验证码图片是4个字符，所以网络是4个输出，并且每个输出是36个分类中的一个，所以使用 <code>softmax</code> 激活，这样可以输出在 N 个输出类别上的概率分布。 </p>
+<p><code>model.summary()</code>可以控制台打印我们的网络结构；</p>
+<p>代码中的两个优化器，我都有测试，差别甚微，像这种验证码识别的项目其实属于比较简单地项目，无论哪种优化器应该都可以胜任，只是效果上有一些差距。</p>
+<p><code>loss_weight</code>:用来计算总的loss 的权重。默认为1，多个输出时，可以设置不同输出loss的权重来决定训练过程。因为这里是多输出，训练时每个输出都有一个损失值，此外还有一个总的损失值，这里设置每个损失值的权重相同，表示每个输出地位相同，为其降低损失值的优先级是相同的。</p>
+<h4 id="加载数据"><a href="#加载数据" class="headerlink" title="加载数据"></a>加载数据</h4><p>上面已经完成了神经网络构建，只要调用<code>model.fit</code>就可以进行训练了，但是这里有一个重点需要注意，因为我们的网络是多输出（这里是4个输出），所以在将训练标签传入<code>fit</code>方法时要注意传入形式，标准的传入形式为</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">model.fit(x_train, [y1, y2, y3, y4])</span><br></pre></td></tr></table></figure>
+<p><code>y1</code>指的是每张验证码图片4个字符的第一个字符，其自身也是一个二维数组，第一维是训练集样本数量，与<code>x_train</code>的长度保持一致，第二维是一个长度为36的数组，只有其代表的字符所在的索引的值为1，其余为0（one-hot编码，前面文章有具体讲过数据处理过程，这里不详细讲了）。</p>
+<p>我们先加载数据，然后看如何将数据传入到<code>fit</code>函数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">x_train = np.load(<span class="string">"x_train.npy"</span>)  <span class="comment"># shape: (3000, 40, 120, 1)</span></span><br><span class="line">y_train = np.load(<span class="string">"y_train.npy"</span>)  <span class="comment"># shape: (3000, 4, 36)</span></span><br><span class="line">x_val = np.load(<span class="string">"x_val.npy"</span>)    <span class="comment"># shape: (1000, 40, 120, 1) </span></span><br><span class="line">y_val = np.load(<span class="string">"y_val.npy"</span>)    <span class="comment"># shape: (1000, 4, 36)</span></span><br></pre></td></tr></table></figure>
+<p><code>y_train</code>是3000个样本，然后每个样本是一个<code>4x36</code>的二维数组，我们要把这4个字符拆分开</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将y_train,y_val作为参数传入该函数</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">convert_labels</span><span class="params">(y)</span>:</span></span><br><span class="line">    y1, y2, y3, y4 = [], [], [], []</span><br><span class="line">    <span class="keyword">for</span> capt <span class="keyword">in</span> y:</span><br><span class="line">        y1.append(capt[<span class="number">0</span>])</span><br><span class="line">        y2.append(capt[<span class="number">1</span>])</span><br><span class="line">        y3.append(capt[<span class="number">2</span>])</span><br><span class="line">        y4.append(capt[<span class="number">3</span>])</span><br><span class="line">    <span class="keyword">return</span> [y1, y2, y3, y4]</span><br></pre></td></tr></table></figure>
+<p>然后调用<code>fit</code>函数进行训练</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">early_stopping = EarlyStopping(monitor=<span class="string">'loss'</span>, patience=<span class="number">10</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 开始训练</span></span><br><span class="line">history = model.fit(</span><br><span class="line">    x_train,</span><br><span class="line">    convert_labels(y_train),</span><br><span class="line">    batch_size=batch_size,</span><br><span class="line">    epochs=epochs,</span><br><span class="line">    validation_data=(x_val, convert_labels(y_val)),</span><br><span class="line">    callbacks=[early_stopping]</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 保存模型</span></span><br><span class="line">model_path = <span class="string">'cnn_captcha.h5'</span></span><br><span class="line">model.save(model_path)</span><br></pre></td></tr></table></figure>
+<p><code>EarlyStopping</code>是用于提前停止训练的callbacks,如当某些指标（损失值，准确率等）在经过一定次数的<code>epoch</code>后，没有得到<code>improvement</code>就提前停止训练，可以在一定程度上避免过拟合（当网络在训练集上表现越来越好，错误率越来越低的时候，实际上在某一刻，它在测试集的表现已经开始变差）。</p>
+<p>这里使用的参数含义</p>
+<ul>
+<li>monitor：监控的数据接口，有<code>acc</code>,<code>val_acc</code>,<code>loss</code>,<code>val_loss</code>等等。正常情况下如果有验证集，就用<code>val_acc</code>或者<code>val_loss</code>。</li>
+<li>patience：能够容忍多少个epoch内都没有improvement。这个设置其实是在抖动和真正的准确率下降之间做<code>tradeoff</code>。如果patience设的大，那么最终得到的准确率要略低于模型可以达到的最高准确率。如果patience设的小，那么模型很可能在前期抖动，还在全图搜索的阶段就停止了，准确率一般很差。patience的大小和learning rate直接相关。在learning rate设定的情况下，前期先训练几次观察抖动的epoch number，比其稍大些设置patience。在learning rate变化的情况下，建议要略小于最大的抖动epoch number。</li>
+</ul>
+<p>一般是在<code>model.fit</code>函数中调用callbacks，fit函数中有一个参数为callbacks。注意这里需要输入的是list类型的数据，所以通常情况只用<code>EarlyStopping</code>的话也要是[<code>EarlyStopping()</code>]。</p>
+<h4 id="利用History作图"><a href="#利用History作图" class="headerlink" title="利用History作图"></a>利用History作图</h4><p>因为这里是多输出，history的key和以前不太一样，我们可以打印其key值看看：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">history_dict = history.history</span><br><span class="line">print(history_dict.keys())</span><br><span class="line"></span><br><span class="line">dict_keys([<span class="string">'val_loss'</span>, <span class="string">'val_out2_loss'</span>, <span class="string">'val_out3_loss'</span>, <span class="string">'val_out4_loss'</span>, <span class="string">'val_out5_loss'</span>, <span class="string">'val_out2_acc'</span>, <span class="string">'val_out3_acc'</span>, <span class="string">'val_out4_acc'</span>, <span class="string">'val_out5_acc'</span>, <span class="string">'loss'</span>, <span class="string">'out2_loss'</span>, <span class="string">'out3_loss'</span>, <span class="string">'out4_loss'</span>, <span class="string">'out5_loss'</span>, <span class="string">'out2_acc'</span>, <span class="string">'out3_acc'</span>, <span class="string">'out4_acc'</span>, <span class="string">'out5_acc'</span>])</span><br></pre></td></tr></table></figure>
+<p>可以看到，这里损失值分为总的损失值和各个输出的损失值，准确率没有总的准确率，只有各个输出的准确率，实际上我们在作图时，损失值的变化情况看总的就可以了（主要是看变化情况），准确率的话可以看任一输出的，因为我们在调整网络参数时，针对每个输出都是一样的，一般不会单独调整某一个验证码字符。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">loss_values = history_dict[<span class="string">"loss"</span>]  <span class="comment"># 训练数据的损失(总损失)</span></span><br><span class="line">acc_values = history_dict[<span class="string">"out2_acc"</span>]  <span class="comment"># 训练数据的准确率</span></span><br><span class="line">val_loss_values = history_dict[<span class="string">"val_loss"</span>]  <span class="comment"># 验证数据的损失(总损失)</span></span><br><span class="line">val_acc_values = history_dict[<span class="string">"val_out2_acc"</span>]   <span class="comment"># 验证数据的准确率</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 绘制训练损失和验证损失(第一个和第二个参数的维度要一致)</span></span><br><span class="line">plt.plot(range(<span class="number">1</span>, epochs+<span class="number">1</span>), loss_values, <span class="string">'bo'</span>, label=<span class="string">"Training loss"</span>)</span><br><span class="line">plt.plot(range(<span class="number">1</span>, epochs+<span class="number">1</span>), val_loss_values, <span class="string">'b'</span>, label=<span class="string">"Validation loss"</span>)</span><br><span class="line">plt.title(<span class="string">'Training and validation loss'</span>)</span><br><span class="line">plt.xlabel(<span class="string">'Epochs'</span>)</span><br><span class="line">plt.ylabel(<span class="string">'Loss'</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 清空图像</span></span><br><span class="line">plt.clf()</span><br><span class="line"><span class="comment"># 绘制训练精度和验证精度</span></span><br><span class="line">plt.plot(range(<span class="number">1</span>, epochs+<span class="number">1</span>), acc_values, <span class="string">'bo'</span>, label=<span class="string">"Training acc"</span>)</span><br><span class="line">plt.plot(range(<span class="number">1</span>, epochs+<span class="number">1</span>), val_acc_values, <span class="string">'b'</span>, label=<span class="string">"Validation acc"</span>)</span><br><span class="line">plt.title(<span class="string">"Training and validation accuracy"</span>)</span><br><span class="line">plt.xlabel(<span class="string">"Epochs"</span>)</span><br><span class="line">plt.ylabel(<span class="string">"Accuracy"</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p>损失图像：</p>
+<p><img src="/2020/05/15/dl-train-process/img1.png" alt></p>
+<p>准确率图像：</p>
+<p><img src="/2020/05/15/dl-train-process/img2.png" alt></p>
+<p>由图像可以粗略看到，基本在<code>epochs</code>达到40左右时，验证的损失和准确率基本已经达到了峰值，无法再通过增加轮数来提升（再增加过多的<code>epochs</code>，可能会出现准确率下降的情况），只能通过调整参数来提升，这也是一个避免过拟合的方式（类似人工<code>earlystopping</code>）。</p>
+<h4 id="记录一个坑"><a href="#记录一个坑" class="headerlink" title="记录一个坑"></a>记录一个坑</h4><p>因为这里是多输出，所以fit函数参数的传入形式有特别的要求（上面我们已经介绍过了），但是我们将数据加载好后，实际上我们的训练/验证标签集的shape是(samples, 4, 36)，一开始我想的比较简单，直接利用了<code>numpy</code>的<code>reshape</code>方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">y_train = np.load(<span class="string">"y_train.npy"</span>)  <span class="comment"># shape: (3000, 4, 36)</span></span><br><span class="line">y_train.reshape((<span class="number">4</span>, <span class="number">3000</span>, <span class="number">36</span>))</span><br><span class="line">model.fit(</span><br><span class="line">    x_train,</span><br><span class="line">    [y <span class="keyword">for</span> y <span class="keyword">in</span> y_train],</span><br><span class="line">    batch_size=batch_size,</span><br><span class="line">    epochs=epochs</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>之后我无论怎么训练，训练集数据的正确率能提升至百分十八九十，而验证数据的准确率都极低（小于0.1），曾上网查过可能导致此类问题的原因，1、过拟合（一般原因：训练数据过少，网络过于复杂）；2、没有将数据规格化（如图片，<code>img</code>/255）;3、没有在分验证集之前打乱数据；4、数据和标签没有对上；5、网络结构有问题。</p>
+<p>针对以上问题，我进行了一一排查，首先第2点我肯定是做了<code>img/255</code>规格化操作，其次网络结构如果有问题，那么我的训练集准备率也不可能提升至百分之八九十，所以首先排除了2和5；其实第3点“没有在分验证集之前打乱数据”，我确实犯了这个错误，并且后续做了调整，但是验证集的准确率依然没有得到提升，而且仔细思考，如果仅仅存在这个问题，验证集的准确率不会极低（小于0.1），只会和训练集相比低很多，如训练集0.9，验证集0.3；那么会不会是过拟合呢，这个不是特别好判断，理论上讲我的训练数据3000张，网络也只有两层，不应该出现过拟合的问题，于是我进一步进行了验证，先保存训练的模型，然后利用<code>model.predict</code>方法对训练集进行了准确率测试，发现准确率是0，这说明不是过拟合（过拟合训练的模型至少对训练集数据还是很准确的），而是训练模型时数据和标签没有对上。</p>
+<p>最后经过进一步排查和思考，发现就是<code>reshape</code>操作导致数据和标签没有对上，我一开始是想当然的认为<code>reshape</code>操作可以达到我想要的变化，实际上<code>reshape</code>操作是先将整个数组（不管几维）按顺序展开成一维，然后再按照你设定的<code>shape</code>做变化，所以完全打乱了标签的顺序，因此在训练时，图片和标签就无法对应上，自然训练的模型是有问题的。</p>
+<h4 id="测试模型"><a href="#测试模型" class="headerlink" title="测试模型"></a>测试模型</h4><p>当我们训练完一个模型后，一般会先测试下其在新的数据集上的准确率（如测试集），如果觉得其准确率可以满足需求，就可以将其应用到实际项目中。我们一般使用<code>model.predict</code>方法测试新的数据（单张验证码图片），具体方法如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.models <span class="keyword">import</span> load_model</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> string <span class="keyword">import</span> digits, ascii_lowercase</span><br><span class="line"></span><br><span class="line">alphanumeric = ascii_lowercase + digits</span><br><span class="line"><span class="comment"># 加载模型</span></span><br><span class="line">model = load_model(<span class="string">'cnn_captcha.h5'</span>)</span><br><span class="line"></span><br><span class="line">img = cv2.imread(<span class="string">'D:/captcha/2BUY_0.4279397312997719.jpg'</span>)</span><br><span class="line"><span class="comment"># 这里模糊处理、灰度化、二值化操作与我们训练数据前的预处理操作一致</span></span><br><span class="line">img = cv2.medianBlur(img, <span class="number">3</span>)</span><br><span class="line">img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)</span><br><span class="line">img = cv2.adaptiveThreshold(img, <span class="number">1</span>, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, <span class="number">11</span>, <span class="number">2</span>)</span><br><span class="line">x = np.reshape(img, [<span class="number">1</span>, <span class="number">40</span>, <span class="number">120</span>, <span class="number">1</span>])</span><br><span class="line">x = x.astype(<span class="string">'float32'</span>)</span><br><span class="line">y = model.predict(x)</span><br><span class="line">print(y)</span><br><span class="line">print(np.array(y).shape)</span><br><span class="line"></span><br><span class="line">[array([[<span class="number">5.28798296e-07</span>, <span class="number">3.42879761e-12</span>, <span class="number">1.27859680e-12</span>, <span class="number">1.51475721e-10</span>,</span><br><span class="line">        <span class="number">1.54283617e-11</span>, <span class="number">4.58582120e-13</span>, <span class="number">6.79610139e-06</span>, <span class="number">4.35170048e-13</span>,</span><br><span class="line">        <span class="number">9.55004025e-16</span>, <span class="number">1.08291341e-14</span>, <span class="number">2.69922586e-16</span>, <span class="number">1.01885084e-10</span>,</span><br><span class="line">        <span class="number">4.44191640e-13</span>, <span class="number">1.14316467e-15</span>, <span class="number">5.36134357e-22</span>, <span class="number">2.23994608e-11</span>,</span><br><span class="line">        <span class="number">6.06738063e-11</span>, <span class="number">2.43026763e-13</span>, <span class="number">6.78680934e-09</span>, <span class="number">2.18888582e-03</span>,</span><br><span class="line">        <span class="number">4.14231410e-12</span>, <span class="number">1.86173295e-07</span>, <span class="number">4.49651261e-10</span>, <span class="number">9.76482957e-12</span>,</span><br><span class="line">        <span class="number">2.61363240e-11</span>, <span class="number">2.52953911e-27</span>, <span class="number">5.78615527e-19</span>, <span class="number">4.92441056e-21</span>,</span><br><span class="line">        <span class="number">9.97238040e-01</span>, <span class="number">5.64109650e-04</span>, <span class="number">5.19347791e-15</span>, <span class="number">4.78807966e-19</span>,</span><br><span class="line">        <span class="number">2.59984375e-16</span>, <span class="number">5.82205351e-09</span>, <span class="number">7.84171252e-12</span>, <span class="number">1.48196716e-06</span>]],</span><br><span class="line">      dtype=float32), </span><br><span class="line"> array([[<span class="number">1.5315172e-13</span>, <span class="number">9.9999976e-01</span>, <span class="number">1.5357235e-13</span>, <span class="number">7.2629148e-13</span>,</span><br><span class="line">        <span class="number">2.1462998e-07</span>, <span class="number">7.6742697e-13</span>, <span class="number">2.5091420e-11</span>, <span class="number">4.1176382e-10</span>,</span><br><span class="line">        <span class="number">1.9094962e-29</span>, <span class="number">7.7268429e-15</span>, <span class="number">5.0311681e-18</span>, <span class="number">2.8639531e-17</span>,</span><br><span class="line">        <span class="number">1.7258057e-19</span>, <span class="number">5.9554156e-16</span>, <span class="number">7.7035002e-31</span>, <span class="number">1.8753172e-12</span>,</span><br><span class="line">        <span class="number">1.2075517e-22</span>, <span class="number">3.4183542e-13</span>, <span class="number">1.8748737e-12</span>, <span class="number">5.4038486e-21</span>,</span><br><span class="line">        <span class="number">6.9473838e-16</span>, <span class="number">1.9005614e-25</span>, <span class="number">1.2699458e-17</span>, <span class="number">1.6363264e-16</span>,</span><br><span class="line">        <span class="number">3.4829533e-19</span>, <span class="number">3.0176148e-27</span>, <span class="number">5.4507461e-27</span>, <span class="number">5.6286962e-31</span>,</span><br><span class="line">        <span class="number">5.7909650e-09</span>, <span class="number">6.1705683e-20</span>, <span class="number">1.6654239e-12</span>, <span class="number">5.3886505e-16</span>,</span><br><span class="line">        <span class="number">3.9584940e-19</span>, <span class="number">6.8287107e-20</span>, <span class="number">1.9061467e-12</span>, <span class="number">3.9144452e-22</span>]],</span><br><span class="line">      dtype=float32), </span><br><span class="line"> array([[<span class="number">9.1667207e-14</span>, <span class="number">4.5887819e-10</span>, <span class="number">1.8035324e-08</span>, <span class="number">4.1263881e-09</span>,</span><br><span class="line">        <span class="number">2.1240913e-16</span>, <span class="number">2.2113813e-13</span>, <span class="number">4.3324260e-09</span>, <span class="number">1.7904261e-02</span>,</span><br><span class="line">        <span class="number">2.4622420e-23</span>, <span class="number">4.4261217e-10</span>, <span class="number">9.8902886e-10</span>, <span class="number">5.9147430e-07</span>,</span><br><span class="line">        <span class="number">1.6013598e-07</span>, <span class="number">8.2238061e-05</span>, <span class="number">6.3615531e-22</span>, <span class="number">6.0304046e-13</span>,</span><br><span class="line">        <span class="number">2.8841313e-12</span>, <span class="number">1.6485173e-09</span>, <span class="number">1.3376454e-09</span>, <span class="number">5.8543783e-08</span>,</span><br><span class="line">        <span class="number">9.8201251e-01</span>, <span class="number">8.5446914e-08</span>, <span class="number">5.3870757e-08</span>, <span class="number">1.6634169e-19</span>,</span><br><span class="line">        <span class="number">4.6868596e-11</span>, <span class="number">9.3067975e-25</span>, <span class="number">3.3543603e-23</span>, <span class="number">8.2183687e-23</span>,</span><br><span class="line">        <span class="number">4.8181098e-10</span>, <span class="number">4.7426272e-09</span>, <span class="number">1.0263661e-12</span>, <span class="number">4.9370295e-13</span>,</span><br><span class="line">        <span class="number">6.2335454e-12</span>, <span class="number">2.7922051e-15</span>, <span class="number">5.1308588e-13</span>, <span class="number">3.9786208e-14</span>]],</span><br><span class="line">      dtype=float32), </span><br><span class="line"> array([[<span class="number">2.0625102e-19</span>, <span class="number">2.1865435e-21</span>, <span class="number">2.3202852e-21</span>, <span class="number">1.1478310e-22</span>,</span><br><span class="line">        <span class="number">7.0164137e-24</span>, <span class="number">1.6291809e-17</span>, <span class="number">1.2901671e-22</span>, <span class="number">5.0137744e-16</span>,</span><br><span class="line">        <span class="number">3.0980038e-18</span>, <span class="number">1.6256985e-09</span>, <span class="number">3.3972040e-12</span>, <span class="number">6.6958219e-17</span>,</span><br><span class="line">        <span class="number">3.2773488e-13</span>, <span class="number">2.2989457e-14</span>, <span class="number">2.4578894e-22</span>, <span class="number">2.8838988e-21</span>,</span><br><span class="line">        <span class="number">1.6804537e-25</span>, <span class="number">1.8011018e-20</span>, <span class="number">1.2620437e-18</span>, <span class="number">5.8037561e-09</span>,</span><br><span class="line">        <span class="number">7.3418249e-21</span>, <span class="number">1.5270443e-10</span>, <span class="number">1.1045169e-12</span>, <span class="number">5.7356374e-07</span>,</span><br><span class="line">        <span class="number">9.9999928e-01</span>, <span class="number">7.2028659e-30</span>, <span class="number">4.2386959e-29</span>, <span class="number">8.5332044e-32</span>,</span><br><span class="line">        <span class="number">1.6475497e-07</span>, <span class="number">2.5067137e-20</span>, <span class="number">7.7604845e-15</span>, <span class="number">2.9342590e-27</span>,</span><br><span class="line">        <span class="number">3.5429564e-28</span>, <span class="number">3.3450085e-15</span>, <span class="number">1.1052841e-08</span>, <span class="number">8.7345167e-20</span>]],</span><br><span class="line">      dtype=float32)]</span><br><span class="line">(<span class="number">4</span>, <span class="number">1</span>, <span class="number">36</span>)</span><br></pre></td></tr></table></figure>
+<p>可以看到，<code>predict</code>方法返回一个(4, 1, 36)的三维数组，其值是一个浮点数，表示概率；我们只要分别取出4个(1, 36)的二维数组中的值最大的下标值，然后找出该下标在<code>alphanumeric</code>中对应哪个字符即可。</p>
+<p>这里需要用到<code>np.argmax</code>方法，可以较快速地找到相应的下标（当然也可以自己遍历数组，一层层找出），该方法的主要作用就是在张量中找出最大值所对应的索引。针对一维张量，没有任何疑问；针对二维张量，若不设置<code>axis</code>参数，默认就是将张量展开成一维张量，然后找出索引，<code>axis=0</code>表示按列搜索，<code>axis=1</code>表示按行搜索；对于三维张量，比较复杂，很难简单地表述清楚，这里仅简要说明（具体内容可以查询相关资料），设置<code>axis=2</code>表示在每个矩阵内部按行搜索，例如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">print(np.argmax(y, axis=<span class="number">2</span>))</span><br><span class="line"></span><br><span class="line">[[<span class="number">28</span>]</span><br><span class="line"> [ <span class="number">1</span>]</span><br><span class="line"> [<span class="number">20</span>]</span><br><span class="line"> [<span class="number">24</span>]]</span><br><span class="line"></span><br><span class="line">result = <span class="string">''</span>.join((alphanumeric[i[<span class="number">0</span>]] <span class="keyword">for</span> i <span class="keyword">in</span> np.argmax(y, axis=<span class="number">2</span>)))</span><br><span class="line">print(result)</span><br><span class="line"><span class="number">2</span>buy</span><br></pre></td></tr></table></figure>
+<p>上面是一个完整地拿训练好的模型测试新的数据的过程，我们可以写个循环，将所有的测试集图片都预测一遍，并且我们是知道每张验证码真实的答案的，所以可以将预测值和真实值进行比较，计算出准确率，如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">path = <span class="string">'D:/captcha/test/'</span></span><br><span class="line">i = <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> f <span class="keyword">in</span> os.listdir(_path):</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> f.endswith(<span class="string">'jpg'</span>):</span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">    img = cv2.imread(_path + f)</span><br><span class="line">    <span class="comment"># 中值模糊</span></span><br><span class="line">    img = cv2.medianBlur(img, <span class="number">3</span>)</span><br><span class="line">    <span class="comment"># 转灰度图</span></span><br><span class="line">    img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)</span><br><span class="line">    <span class="comment"># 自适应阈值二值化</span></span><br><span class="line">    img = cv2.adaptiveThreshold(img, <span class="number">1</span>, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, <span class="number">11</span>, <span class="number">2</span>)</span><br><span class="line">    x = np.reshape(img, [<span class="number">1</span>, <span class="number">40</span>, <span class="number">120</span>, <span class="number">1</span>])</span><br><span class="line">    x = x.astype(<span class="string">'float32'</span>)</span><br><span class="line">    <span class="comment"># x /= 255</span></span><br><span class="line">    y = model.predict(x)</span><br><span class="line">    captcha = f.split(<span class="string">'_'</span>)[<span class="number">0</span>].lower()</span><br><span class="line">    result = <span class="string">''</span>.join((alphanumeric[i[<span class="number">0</span>]] <span class="keyword">for</span> i <span class="keyword">in</span> np.argmax(y, axis=<span class="number">2</span>)))</span><br><span class="line">    print(<span class="string">'img &#123;&#125; predict: &#123;&#125;'</span>.format(captcha, result))</span><br><span class="line">    <span class="keyword">if</span> result == captcha.lower():</span><br><span class="line">        i += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">total_imgs = len(os.listdir(path))</span><br><span class="line">print(<span class="string">"&#123;&#125;/&#123;&#125;"</span>.format(i, total_imgs))</span><br><span class="line">accuracy = i / total_imgs</span><br><span class="line">print(<span class="string">'accuracy: &#123;&#125;'</span>.format(accuracy))</span><br></pre></td></tr></table></figure>
+<p>除利用上面的方法之外，其实还有一个计算测试集准确率的方法，<code>model.evaluate</code>，该方法的调用方式与<code>fit</code>方法类似，也就是把数据先预处理后直接传入，直接帮我们计算出准确率。这里假设我们已经将测试集数据预处理过了：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">x_test = np.load(<span class="string">"x_test.npy"</span>)</span><br><span class="line">y_test = np.load(<span class="string">"y_test.npy"</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">convert_labels</span><span class="params">(y)</span>:</span></span><br><span class="line">    y1, y2, y3, y4 = [], [], [], []</span><br><span class="line">    <span class="keyword">for</span> capt <span class="keyword">in</span> y:</span><br><span class="line">        y1.append(capt[<span class="number">0</span>])</span><br><span class="line">        y2.append(capt[<span class="number">1</span>])</span><br><span class="line">        y3.append(capt[<span class="number">2</span>])</span><br><span class="line">        y4.append(capt[<span class="number">3</span>])</span><br><span class="line">    <span class="keyword">return</span> [y1, y2, y3, y4]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">result = model.evaluate(x_test, convert_labels(y_test))</span><br><span class="line">print(model.metrics_names)</span><br><span class="line">print(result)</span><br><span class="line"></span><br><span class="line">[<span class="string">'loss'</span>, <span class="string">'out2_loss'</span>, <span class="string">'out3_loss'</span>, <span class="string">'out4_loss'</span>, <span class="string">'out5_loss'</span>, <span class="string">'out2_acc'</span>, <span class="string">'out3_acc'</span>, <span class="string">'out4_acc'</span>, <span class="string">'out5_acc'</span>]</span><br><span class="line">[<span class="number">3.710993268966675</span>, <span class="number">0.6383588314056396</span>, <span class="number">0.7733393311500549</span>, <span class="number">0.7200027704238892</span>, <span class="number">1.5855121612548828</span>, <span class="number">0.8579999804496765</span>, <span class="number">0.8489999771118164</span>, <span class="number">0.8579999804496765</span>, <span class="number">0.7419999837875366</span>]</span><br></pre></td></tr></table></figure>
+<p>如果是单输出的模型，<code>model.evaluate</code>的返回值，第一个是损失值，第二个是准确率；这里是多输出，所以可以将返回值的标签打印出来看一下，一共是9个返回值。而且这里得到的准确率一般比我们上面那种主动循环使用<code>predict</code>的方法看上去高，实际上这里有个隐藏的问题，这里只给出了每给字符的准确率，如0.8左右，而实际上我们<code>predict</code>后和真实值比较时，是4个字符同时比较的，那么准确率其实就是<code>0.8x0.8x0.8x0.8</code>，准确率约等于0.4，可能实际会比0.4稍高一些，但是明显比我们训练完的单个字符准确率低很多。</p>
+<h4 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h4><p>以上基本是一个完整地搭建神经网络的过程，这里要补充的一点是利用<code>model.fit_generator</code>方法分批将数据加载入内存，以降低内存的占用，我们在使用<code>fit</code>方法时，训练数据是被完整地加载进内存的（其实训练过程是分批进行的），如果我们数据量很大，无法将数据一次性全部载入内存，这时，使用<code>model.fit_generator</code>就很方便。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.preprocessing.image <span class="keyword">import</span> ImageDataGenerator</span><br><span class="line"></span><br><span class="line">batch_size = <span class="number">64</span></span><br><span class="line">epochs = <span class="number">50</span></span><br><span class="line">train_nums = <span class="number">3000</span></span><br><span class="line">val_nums = <span class="number">1000</span></span><br><span class="line"></span><br><span class="line">datagen = ImageDataGenerator()</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">data_generator</span><span class="params">(p_x, p_y, p_batch_size=<span class="number">64</span>)</span>:</span></span><br><span class="line">    x_y_gen = datagen.flow(p_x, p_y, batch_size=p_batch_size, shuffle=<span class="literal">True</span>)</span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        x, y = x_y_gen.next()</span><br><span class="line">        y1, y2, y3, y4 = (np.array(l) <span class="keyword">for</span> l <span class="keyword">in</span> zip(*y))</span><br><span class="line">        <span class="keyword">yield</span> x, [y1, y2, y3, y4]</span><br><span class="line"></span><br><span class="line">history = model.fit_generator(</span><br><span class="line">    data_generator(x_train, y_train, batch_size),</span><br><span class="line">    steps_per_epoch=train_nums // batch_size,</span><br><span class="line">    validation_data=data_generator(x_val, y_val, batch_size),</span><br><span class="line">    validation_steps=val_nums // batch_size,</span><br><span class="line">    epochs=epochs,</span><br><span class="line">    callbacks=[early_stopping])</span><br></pre></td></tr></table></figure>
+<p>之前有用到过<code>ImageDataGenerator</code>，当时是用来做<strong>数据增强</strong>的，这里不设置任何参数，就是没有去使用它的数据增强的功能，仅把它当做一个分批加载数据的方法。</p>
+<p><code>model.fit_generator</code>的第一个参数要求为一个生成器，生成器的输出应该为以下之一：</p>
+<ul>
+<li>一个(inputs, targets)元组</li>
+<li>一个(inputs, targets, sample_weights)元组</li>
+</ul>
+<p>所以这里写了一个<code>data_generator</code>方法，用来分批生成数据，<code>shuffle</code>参数表示是否随机打乱顺序，<code>fit</code>方法也是有该参数的，默认为<code>True</code>。</p>
+<p>其他参数：</p>
+<ul>
+<li><strong>steps_per_epoch</strong>: 在声明一个 epoch 完成并开始下一个 epoch 之前从 <code>generator</code> 产生的总步数（批次样本）。 它通常应该等于你的数据集的样本数量除以批量大小；</li>
+<li><strong>verbose</strong>: 0, 1 或 2。日志显示模式。 0 = 安静模式, 1 = 进度条, 2 = 每轮一行；</li>
+<li><strong>validation_data</strong>: 与第一个参数格式相同， 在每个 epoch 结束时评估损失和任何模型指标。该模型不会对此数据进行训练；</li>
+<li><strong>validation_steps</strong>: 仅当 <code>validation_data</code> 是一个生成器时才可用。 在停止前 <code>generator</code> 生成的总步数（样本批数）。</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/numpy/" rel="tag"># numpy</a>
+          
+            <a href="/tags/Keras-API/" rel="tag"># Keras API</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/04/02/elk-kibana/" rel="next" title="Kibana简单使用">
+                <i class="fa fa-chevron-left"></i> Kibana简单使用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/06/20/ip-char-captcha/" rel="prev" title="字符验证码识别补充">
+                字符验证码识别补充 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">70</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">141</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#验证码识别之模型构建"><span class="nav-text">验证码识别之模型构建</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Keras函数式API"><span class="nav-text">Keras函数式API</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#构建模型"><span class="nav-text">构建模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#加载数据"><span class="nav-text">加载数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#利用History作图"><span class="nav-text">利用History作图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#记录一个坑"><span class="nav-text">记录一个坑</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试模型"><span class="nav-text">测试模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#补充"><span class="nav-text">补充</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

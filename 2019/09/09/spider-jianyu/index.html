@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="python,js加密,字体加密，逆向， fontTools,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="网站三的反爬破解1、请求url，查看数据情况首先我们请求想要爬取的页面url，根据页面元素提取重要信息，发现请求返回的数据如下： 莘器规奉网医卫生录红霉素眼膏到院次设六柒莘器规奉网医卫生录红霉素眼膏到院到院机局聊城利筑药国集团元重六有dCc2TW6qweCe/4qu5++U7OyM68vQ6MvbrM6VgvOf/umNtruC8dGU9dCP4O2O+uyjyMgHX3fe5rSBz8qy0PO">
+<meta name="keywords" content="python,js加密,字体加密，逆向， fontTools">
+<meta property="og:type" content="article">
+<meta property="og:title" content="反爬（三）">
+<meta property="og:url" content="http://yoursite.com/2019/09/09/spider-jianyu/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="网站三的反爬破解1、请求url，查看数据情况首先我们请求想要爬取的页面url，根据页面元素提取重要信息，发现请求返回的数据如下： 莘器规奉网医卫生录红霉素眼膏到院次设六柒莘器规奉网医卫生录红霉素眼膏到院到院机局聊城利筑药国集团元重六有dCc2TW6qweCe/4qu5++U7OyM68vQ6MvbrM6VgvOf/umNtruC8dGU9dCP4O2O+uyjyMgHX3fe5rSBz8qy0PO">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2019/09/09/spider-jianyu/picture1.PNG">
+<meta property="og:image" content="http://yoursite.com/2019/09/09/spider-jianyu/picture2.PNG">
+<meta property="og:image" content="http://yoursite.com/2019/09/09/spider-jianyu/picture3.PNG">
+<meta property="og:image" content="http://yoursite.com/2019/09/09/spider-jianyu/picture4.PNG">
+<meta property="og:image" content="http://yoursite.com/2019/09/09/spider-jianyu/picture5.PNG">
+<meta property="og:image" content="http://yoursite.com/2019/09/09/spider-jianyu/picture6.PNG">
+<meta property="og:image" content="http://yoursite.com/2019/09/09/spider-jianyu/picture7.PNG">
+<meta property="og:image" content="http://yoursite.com/2019/09/09/spider-jianyu/picture8.PNG">
+<meta property="og:updated_time" content="2020-09-16T06:13:11.236Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="反爬（三）">
+<meta name="twitter:description" content="网站三的反爬破解1、请求url，查看数据情况首先我们请求想要爬取的页面url，根据页面元素提取重要信息，发现请求返回的数据如下： 莘器规奉网医卫生录红霉素眼膏到院次设六柒莘器规奉网医卫生录红霉素眼膏到院到院机局聊城利筑药国集团元重六有dCc2TW6qweCe/4qu5++U7OyM68vQ6MvbrM6VgvOf/umNtruC8dGU9dCP4O2O+uyjyMgHX3fe5rSBz8qy0PO">
+<meta name="twitter:image" content="http://yoursite.com/2019/09/09/spider-jianyu/picture1.PNG">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/09/09/spider-jianyu/">
+
+
+
+
+
+  <title>反爬（三） | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/09/spider-jianyu/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">反爬（三）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-09T19:03:54+08:00">
+                2019-09-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/爬虫/" itemprop="url" rel="index">
+                    <span itemprop="name">爬虫</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="网站三的反爬破解"><a href="#网站三的反爬破解" class="headerlink" title="网站三的反爬破解"></a><a href="https://api.jianyu360.com/open/article/3ABCY2EBZCkeMDg4M2RhcHUJJzACHj1mZnB%2FKTgsPT0waFRiYgktVhlESApN.html" target="_blank" rel="noopener">网站三</a>的反爬破解</h3><h4 id="1、请求url，查看数据情况"><a href="#1、请求url，查看数据情况" class="headerlink" title="1、请求url，查看数据情况"></a>1、请求<code>url</code>，查看数据情况</h4><p>首先我们请求想要爬取的页面<code>url</code>，根据页面元素提取重要信息，发现请求返回的数据如下：</p>
+<p><code>莘器规奉网医卫生录红霉素眼膏到院次设六柒莘器规奉网医卫生录红霉素眼膏到院到院机局聊城利筑药国集团元重六有dCc2TW6qweCe/4qu5++U7OyM68vQ6MvbrM6VgvOf/umNtruC8dGU9dCP4O2O+uyjyMgHX3fe5rSBz8qy0POnlfuL/f+wrNHU6+7Hx9vU0+aK4d6C/cDVsOeg39+52cqq48vSztOj9M+o5vq3q9uGjryi+oa64cCz+Z/Q1fd+SnNXBAFDVw==</code></p>
+<p>仔细观察发现返回的内容和我们在浏览器中看到的不同，我们在浏览器中看到的内容为：</p>
+<p><img src="/2019/09/09/spider-jianyu/picture1.PNG" alt></p>
+<a id="more"></a>
+<p>接着查看网页源代码，发现数据确实是被处理过的。先看下面的那串字符串，对应“药品名称：……”，猜想是js加密，上一篇文章中讲了，寻找加密的js函数有两个方法，一是在页面元素中加断点调试，二是查看请求调用。第二种方式在本网站行不通，因为它没有调用栈。</p>
+<h4 id="2、寻找js加密函数"><a href="#2、寻找js加密函数" class="headerlink" title="2、寻找js加密函数"></a>2、寻找<code>js</code>加密函数</h4><p>我们在“药品名称：……”这部分内容之前加个断点，然后刷新网页，浏览器页面如下所示：</p>
+<p><img src="/2019/09/09/spider-jianyu/picture2.PNG" alt></p>
+<p>接下来我们要找出控制内容从加密的字符串转变成正常的文字的相关方法，观察Sources区域：</p>
+<p><img src="/2019/09/09/spider-jianyu/picture3.PNG" alt></p>
+<p>我们发现a已经为正常的文字，那证明我们还需要向前面的调用进行追溯，所以我们看右边的callback，选择图中画横线的调用，点进去内容如下：</p>
+<p><img src="/2019/09/09/spider-jianyu/picture4.PNG" alt></p>
+<p>将鼠标放到<code>infoDetail</code>上，发现其值就是我们在重点关注的文字，我们猜想它是通过Restore函数从字符串转变而来，于是我们在该段代码前加断点，然后刷新网页，发现这个时候<code>infoDetail</code>值的确为那串加密字符串，接下来我们可以在console中验证猜想：</p>
+<p><img src="/2019/09/09/spider-jianyu/picture5.PNG" alt></p>
+<h4 id="3、将加密函数修改为可执行的方法，并布置为js服务"><a href="#3、将加密函数修改为可执行的方法，并布置为js服务" class="headerlink" title="3、将加密函数修改为可执行的方法，并布置为js服务"></a>3、将加密函数修改为可执行的方法，并布置为js服务</h4><p>所以现在我们只要抠出Restore函数就可以了,它还调用了其他函数，所以一并抠出来：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">'use strict'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> atob = <span class="built_in">require</span>(<span class="string">'atob'</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Restore</span>(<span class="params">str, keyIndex</span>) </span>&#123;</span><br><span class="line">	<span class="comment">//window.atob用于解码使用base-64编码的字符串，编码是btoa</span></span><br><span class="line">    <span class="comment">//str = stringToBytes(window.atob(str))</span></span><br><span class="line">    str = stringToBytes(atob(str))</span><br><span class="line">	keyArr = stringToBytes(keyIndex)</span><br><span class="line">	<span class="built_in">console</span>.log(keyArr.length)</span><br><span class="line">	test1:<span class="keyword">for</span>(<span class="keyword">var</span> i=<span class="number">0</span>;i&lt;str.length;)&#123;</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">var</span> j=<span class="number">0</span>; j&lt;keyArr.length; j++,i++) &#123;</span><br><span class="line">			</span><br><span class="line">			<span class="keyword">if</span> (i &gt;= str.length) &#123;</span><br><span class="line">				<span class="keyword">continue</span> test1</span><br><span class="line">			&#125;</span><br><span class="line">			str[i] = str[i]^keyArr[j]</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> utf8ByteToUnicodeStr(str);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">stringToBytes</span> (<span class="params">str</span>) </span>&#123;</span><br><span class="line">	<span class="keyword">var</span> ch, st, re = []; </span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; str.length; i++ ) &#123; </span><br><span class="line">		ch = str.charCodeAt(i); </span><br><span class="line">		st = [];                 </span><br><span class="line">	<span class="keyword">do</span> &#123;  </span><br><span class="line">			st.push( ch &amp; <span class="number">0xFF</span> ); </span><br><span class="line">			ch = ch &gt;&gt; <span class="number">8</span>; </span><br><span class="line">		&#125;    </span><br><span class="line">		<span class="keyword">while</span> ( ch );  </span><br><span class="line">		re = re.concat( st.reverse() ); </span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> re;  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">utf8ByteToUnicodeStr</span>(<span class="params">utf8Bytes</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> unicodeStr =<span class="string">""</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> pos = <span class="number">0</span>; pos &lt; utf8Bytes.length;)&#123;</span><br><span class="line">        <span class="keyword">var</span> flag= utf8Bytes[pos];</span><br><span class="line">        <span class="keyword">var</span> unicode = <span class="number">0</span> ;</span><br><span class="line">        <span class="keyword">if</span> ((flag &gt;&gt;&gt;<span class="number">7</span>) === <span class="number">0</span> ) &#123;</span><br><span class="line">            unicodeStr+= <span class="built_in">String</span>.fromCharCode(utf8Bytes[pos]);</span><br><span class="line">            pos += <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> ((flag &amp;<span class="number">0xFC</span>) === <span class="number">0xFC</span> )&#123;</span><br><span class="line">            unicode = (utf8Bytes[pos] &amp; <span class="number">0x3</span>) &lt;&lt; <span class="number">30</span>;</span><br><span class="line">            unicode |= (utf8Bytes[pos+<span class="number">1</span>] &amp; <span class="number">0x3F</span>) &lt;&lt; <span class="number">24</span>;</span><br><span class="line">            unicode |= (utf8Bytes[pos+<span class="number">2</span>] &amp; <span class="number">0x3F</span>) &lt;&lt; <span class="number">18</span>;</span><br><span class="line">            unicode |= (utf8Bytes[pos+<span class="number">3</span>] &amp; <span class="number">0x3F</span>) &lt;&lt; <span class="number">12</span>;</span><br><span class="line">            unicode |= (utf8Bytes[pos+<span class="number">4</span>] &amp; <span class="number">0x3F</span>) &lt;&lt; <span class="number">6</span>;</span><br><span class="line">            unicode |= (utf8Bytes[pos+<span class="number">5</span>] &amp; <span class="number">0x3F</span>);</span><br><span class="line">            unicodeStr+= <span class="built_in">String</span>.fromCharCode(unicode) ;</span><br><span class="line">            pos += <span class="number">6</span>;</span><br><span class="line"></span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span> ((flag &amp;<span class="number">0xF8</span>) === <span class="number">0xF8</span> )&#123;</span><br><span class="line">            unicode = (utf8Bytes[pos] &amp; <span class="number">0x7</span>) &lt;&lt; <span class="number">24</span>;</span><br><span class="line">            unicode |= (utf8Bytes[pos+<span class="number">1</span>] &amp; <span class="number">0x3F</span>) &lt;&lt; <span class="number">18</span>;</span><br><span class="line">            unicode |= (utf8Bytes[pos+<span class="number">2</span>] &amp; <span class="number">0x3F</span>) &lt;&lt; <span class="number">12</span>;</span><br><span class="line">            unicode |= (utf8Bytes[pos+<span class="number">3</span>] &amp; <span class="number">0x3F</span>) &lt;&lt; <span class="number">6</span>;</span><br><span class="line">            unicode |= (utf8Bytes[pos+<span class="number">4</span>] &amp; <span class="number">0x3F</span>);</span><br><span class="line">            unicodeStr+= <span class="built_in">String</span>.fromCharCode(unicode) ;</span><br><span class="line">            pos += <span class="number">5</span>;</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> ((flag &amp;<span class="number">0xF0</span>) === <span class="number">0xF0</span> )&#123;</span><br><span class="line">            unicode = (utf8Bytes[pos] &amp; <span class="number">0xF</span>) &lt;&lt; <span class="number">18</span>;</span><br><span class="line">            unicode |= (utf8Bytes[pos+<span class="number">1</span>] &amp; <span class="number">0x3F</span>) &lt;&lt; <span class="number">12</span>;</span><br><span class="line">            unicode |= (utf8Bytes[pos+<span class="number">2</span>] &amp; <span class="number">0x3F</span>) &lt;&lt; <span class="number">6</span>;</span><br><span class="line">            unicode |= (utf8Bytes[pos+<span class="number">3</span>] &amp; <span class="number">0x3F</span>);</span><br><span class="line">            unicodeStr+= <span class="built_in">String</span>.fromCharCode(unicode) ;</span><br><span class="line">            pos += <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> ((flag &amp;<span class="number">0xE0</span>) === <span class="number">0xE0</span> )&#123;</span><br><span class="line">            unicode = (utf8Bytes[pos] &amp; <span class="number">0x1F</span>) &lt;&lt; <span class="number">12</span>;;</span><br><span class="line">            unicode |= (utf8Bytes[pos+<span class="number">1</span>] &amp; <span class="number">0x3F</span>) &lt;&lt; <span class="number">6</span>;</span><br><span class="line">            unicode |= (utf8Bytes[pos+<span class="number">2</span>] &amp; <span class="number">0x3F</span>);</span><br><span class="line">            unicodeStr+= <span class="built_in">String</span>.fromCharCode(unicode) ;</span><br><span class="line">            pos += <span class="number">3</span>;</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> ((flag &amp;<span class="number">0xC0</span>) === <span class="number">0xC0</span> )&#123; <span class="comment">//110</span></span><br><span class="line">            unicode = (utf8Bytes[pos] &amp; <span class="number">0x3F</span>) &lt;&lt; <span class="number">6</span>;</span><br><span class="line">            unicode |= (utf8Bytes[pos+<span class="number">1</span>] &amp; <span class="number">0x3F</span>);</span><br><span class="line">            unicodeStr+= <span class="built_in">String</span>.fromCharCode(unicode) ;</span><br><span class="line">            pos += <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span>&#123;</span><br><span class="line">            unicodeStr+= <span class="built_in">String</span>.fromCharCode(utf8Bytes[pos]);</span><br><span class="line">            pos += <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> unicodeStr;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="keyword">function</span> <span class="title">jianyuHandler</span> (<span class="params">req, res</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">let</span> &#123;</span><br><span class="line">        content,</span><br><span class="line">        secret_key,</span><br><span class="line">      &#125; = req.payload</span><br><span class="line">        <span class="keyword">let</span> info_detail = Restore(content, secret_key)</span><br><span class="line">        info_detail = info_detail.replace(<span class="regexp">/(&lt;\/?br\/?&gt;)+/ig</span>,<span class="string">"&lt;br&gt;"</span>);</span><br><span class="line">        info_detail = info_detail.replace(<span class="regexp">/&lt;style.*?&gt;.*?&lt;\/style&gt;/igm</span>,<span class="string">""</span>)</span><br><span class="line">        <span class="keyword">return</span> info_detail</span><br><span class="line">    &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">      <span class="built_in">console</span>.error(err.message)</span><br><span class="line">      <span class="keyword">return</span> <span class="string">''</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>上面代码中涉及<code>window.atob</code>，上网查询发现其用于解码使用base-64编码的字符串，可以通过导入<code>atob</code>模块来直接使用，即将上述代码中的<code>str = stringToBytes(window.atob(str))</code>替换为<code>str = stringToBytes(atob(str))</code>就行了，不过要先导入<code>atob</code>模块<code>const atob = require(&#39;atob&#39;)</code>，如果没有该模块，还要先安装<code>npm install atob</code>，最后我们将其布置为js服务，供我们程序调用(尝试过直接使用python来执行js函数，但是总是报错，可能是调用方法不对)。</p>
+<p>接着，我们发现Restore函数有两个参数，一个是需要解密的字符串，另一个是secret_key，其实仔细观察我们在调用Restore函数的地方已经看到，secret_key是通过一个异步请求返回的值，其请求的<code>url=&#39;https://api.jianyu360.com/open/getConSecretKey&#39;</code>，请求方式为POST，body为<code>{&quot;c&quot;:document.cookie.split(&quot;;&quot;)[0],&quot;d&quot;:new Date()}</code>，其实一个就是cookie的一部分，另一个是时间，我们通过测试发现，不加body也可以成功请求，但是必须在请求头中写<code>Referer</code>。</p>
+<p>下面是完整的请求代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> execjs</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="keyword">from</span> fontTools.ttLib <span class="keyword">import</span> TTFont</span><br><span class="line"><span class="keyword">from</span> io <span class="keyword">import</span> BytesIO</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MySpider</span><span class="params">(object)</span>:</span></span><br><span class="line">    header1 = &#123;<span class="string">'User-Agent'</span>: <span class="string">'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'</span></span><br><span class="line">               &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.index_url = <span class="string">'https://api.jianyu360.com/open/article/3ABCY2EBZCkeMDg4M2RhcHUJJzACHj1mZnB%2FKTgsPT0waFRiYgktVhlESApN.html'</span></span><br><span class="line">        self.secret_key_url = <span class="string">'https://api.jianyu360.com/open/getConSecretKey'</span></span><br><span class="line">        self.decrypt_url = <span class="string">'http://192.168.20.141:3001/jianyu'</span></span><br><span class="line">        self.font_url = <span class="string">'https://api.jianyu360.com/open/fonts/ttf/20_pc.woff2'</span></span><br><span class="line">        self._font_map = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_js</span><span class="params">()</span>:</span></span><br><span class="line">        f = open(<span class="string">"origin.js"</span>, <span class="string">'r'</span>, encoding=<span class="string">'UTF-8'</span>)</span><br><span class="line">        line = f.readline()</span><br><span class="line">        html_str = <span class="string">''</span></span><br><span class="line">        <span class="keyword">while</span> line:</span><br><span class="line">            html_str = html_str + line</span><br><span class="line">            line = f.readline()</span><br><span class="line">        <span class="keyword">return</span> html_str</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">decrypt_content</span><span class="params">(self, content)</span>:</span></span><br><span class="line">        <span class="comment"># 此请求的Referer参数最重要</span></span><br><span class="line">        <span class="comment"># &#123;"c":document.cookie.split(";")[0],"d":new Date()&#125; post参数不加也可以</span></span><br><span class="line">        self.header1.update(&#123;</span><br><span class="line">            <span class="string">'Referer'</span>: <span class="string">'https://api.jianyu360.com/open/article'</span></span><br><span class="line">                       <span class="string">'/3ABCY2EBZCkeMDg4M2RhcHUJJzACHj1mZnB%2FKTgsPT0waFRiYgktVhlESApN.html'</span>&#125;)</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            req = requests.post(self.secret_key_url, headers=self.header1)</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            print(e)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">if</span> req.status_code == <span class="number">200</span>:</span><br><span class="line">                print(req.text)</span><br><span class="line">                secret_key = json.loads(req.text).get(<span class="string">'secretKey'</span>, <span class="string">''</span>)</span><br><span class="line">                <span class="comment"># js_str = self.get_js()</span></span><br><span class="line">                <span class="comment"># ctx = execjs.compile(js_str)</span></span><br><span class="line">                <span class="comment"># # 执行不了，会报错</span></span><br><span class="line">                <span class="comment"># print(ctx.call('Restore', content, secret_key))</span></span><br><span class="line">                <span class="keyword">try</span>:</span><br><span class="line">                    req1 = requests.post(self.decrypt_url, data=&#123;<span class="string">"content"</span>: content, <span class="string">"secret_key"</span>: secret_key&#125;)</span><br><span class="line">                <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">                    print(e)</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    <span class="keyword">return</span> req1.text</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">request_page</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            req = requests.get(self.index_url, headers=self.header1)</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            print(e)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">if</span> req.status_code == <span class="number">200</span>:</span><br><span class="line">                soup = BeautifulSoup(req.text, <span class="string">'lxml'</span>)</span><br><span class="line">                <span class="comment"># text_list = soup.select('.tft')</span></span><br><span class="line">                <span class="comment"># for text in text_list:</span></span><br><span class="line">                    <span class="comment"># print(text.getText().strip())</span></span><br><span class="line">                com_detail = soup.select_one(<span class="string">'.com-detail'</span>)</span><br><span class="line">                <span class="keyword">if</span> com_detail:</span><br><span class="line">                    content = self.decrypt_content(com_detail.getText())</span><br><span class="line">                    print(content)</span><br><span class="line">                   </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    spider = MySpider()</span><br><span class="line">    spider.request_page()</span><br><span class="line">    </span><br><span class="line">输出：&lt;br&gt;药施工管：红霉素眼膏；系铁片：<span class="number">100</span>；州甘京：机局聊城利筑药国集团元重六有，到院术为<span class="number">495</span>&lt;br&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="4、字体解密"><a href="#4、字体解密" class="headerlink" title="4、字体解密"></a>4、字体解密</h4><p>现在所有能获取的内容全部都是文字了，但是发现看起来非常怪异，而且我们再也找不到相关的加密方法了，不过再经过观察css发现了非常重要的内容：</p>
+<p><img src="/2019/09/09/spider-jianyu/picture6.PNG" alt></p>
+<p>由此推测出这是使用了字体加密，于是我们百度爬虫字体加密找到了python的<code>fontTools</code></p>
+<p><strong>FontTools </strong></p>
+<ol>
+<li>安装：pip install fontTools</li>
+<li>加载字体文件：font = TTFont(‘maoyan.woff’)</li>
+<li>转为xml文件：font.saveXML(‘maoyan.xml’)</li>
+<li>各节点名称：font.keys()</li>
+<li>按序获取GlyphOrder节点name值：<br>font.getGlyphOrder() 或 font[‘cmap’].tables[0].ttFont.getGlyphOrder()</li>
+<li>获取cmap节点code与name值映射：font.getBestCmap()</li>
+<li>获取字体坐标信息：font[‘glyf’][i].coordinates</li>
+<li>获取坐标的0或1：font[‘glyf’][i].flags <strong>注:</strong> 0表示弧形区域 1表示矩形</li>
+</ol>
+<p><strong>破解字体加密的主要步骤如下</strong>：</p>
+<ol>
+<li>获取被加密的 html 文档。</li>
+<li>获取被加密的 html 文档对应的字体文件，有时它被以 base64 编码写在 html 文档中。</li>
+<li>解析网页字体文件，获得加密编码到字体图片的映射。</li>
+<li>通过种种途径，在本地准备一个标准字体文件，即标准编码到字体图片的映射。</li>
+<li>设计匹配算法，生成网页字体文件的字体图片到标准字体文件的字体图片的映射。</li>
+<li>最终，链接三个映射，获得网页加密编码到标准编码的映射，即解密字典。</li>
+<li>利用解密字典，将被加密的 html 文档中的所有加密编码，替换为标准编码。</li>
+</ol>
+<p>理论知识准备完毕，接下来看具体怎么破解剑鱼标讯的字体加密，上面有说要先找到被加密的html文档对应的字体文件，于是我们查看请求中的font类型：</p>
+<p><img src="/2019/09/09/spider-jianyu/picture7.PNG" alt></p>
+<p>还真的有！可以把该文件保存到本地或者每次需要时请求都可以：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> fontTools.ttLib <span class="keyword">import</span> TTFont</span><br><span class="line"><span class="keyword">from</span> io <span class="keyword">import</span> BytesIO</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MySpider</span><span class="params">(object)</span>:</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">decrypt_font</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            response = requests.get(self.font_url, headers=self.header1)</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            print(e)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">if</span> response.status_code == <span class="number">200</span>:</span><br><span class="line">                response_content = response.content</span><br><span class="line">                result = dict()</span><br><span class="line">                <span class="keyword">try</span>:</span><br><span class="line">                    <span class="comment"># no modules named brotli</span></span><br><span class="line">                    font = TTFont(BytesIO(response_content))</span><br><span class="line">                    <span class="comment"># font = TTFont('20_pc.woff2')</span></span><br><span class="line">                <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">                    print(e)</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    <span class="comment"># 获取cmap节点code与name值映射：font.getBestCmap()</span></span><br><span class="line">                    origin_map = font.getBestCmap()</span><br><span class="line">                    <span class="keyword">for</span> key, value <span class="keyword">in</span> origin_map.items():</span><br><span class="line">                        value = value.replace(<span class="string">'uni'</span>, <span class="string">r'\u'</span>).encode().decode(<span class="string">'unicode-escape'</span>)</span><br><span class="line">                        <span class="comment"># ord返回ASCII码值</span></span><br><span class="line">                        result.update(&#123;</span><br><span class="line">                            <span class="comment"># key: ord(value)</span></span><br><span class="line">                            key: value</span><br><span class="line">                        &#125;)</span><br><span class="line">                    <span class="keyword">return</span> result</span><br></pre></td></tr></table></figure>
+<p>上面<code>TTFont(文件名)</code>or<code>TTFont(BytesIO(二进制流))</code>都可以读取字体数据，中间可能会报<code>no modules named brotli</code>，我们只要安装一下就可以了<code>pip install brotli</code>，如果不确定该模块存不存在，可以先查找看下<code>pip search brotli</code>。</p>
+<p>上面origin_map的形式为：</p>
+<p><img src="/2019/09/09/spider-jianyu/picture8.PNG" alt></p>
+<p>我们拿出任意一个value值：</p>
+<p><code>&#39;uni53E4&#39;.replace(&#39;uni&#39;, r&#39;\u&#39;).encode().decode(&#39;unicode_escape&#39;)</code>，得到“古”字。</p>
+<p>所以可以这样来构建我们的字体字典：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> key, value <span class="keyword">in</span> origin_map.items():</span><br><span class="line">      value = value.replace(<span class="string">'uni'</span>, <span class="string">r'\u'</span>).encode().decode(<span class="string">'unicode-escape'</span>)</span><br><span class="line">      <span class="comment"># ord返回ASCII码值</span></span><br><span class="line">      result.update(&#123;</span><br><span class="line">      	 <span class="comment"># key: ord(value)</span></span><br><span class="line">         key: value</span><br><span class="line">      &#125;)</span><br></pre></td></tr></table></figure>
+<p>接着上面的content(药施工管：红霉素眼膏；系铁片：100；州甘京：机局聊城利筑药国集团元重六有，到院术为495)，我们可以这样来解密字体（我也不会啊，在网上查来的）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">text = <span class="string">''</span></span><br><span class="line"><span class="keyword">for</span> char <span class="keyword">in</span> content:</span><br><span class="line">    <span class="comment"># 此步骤是和我们上面获取汉字的步骤相反</span></span><br><span class="line">    hex_char = char.encode(<span class="string">'unicode_escape'</span>).decode()[<span class="number">2</span>:]</span><br><span class="line">    <span class="keyword">if</span> len(hex_char) == <span class="number">4</span>:</span><br><span class="line">        <span class="comment"># 这里将十六进制字符串转变成十进制整数</span></span><br><span class="line">        one_font = int(hex_char, <span class="number">16</span>)</span><br><span class="line">        <span class="comment"># 在我们字体字典中的文字进行转变，不在的原样保留</span></span><br><span class="line">    	<span class="keyword">if</span> one_font <span class="keyword">in</span> font_map.keys():</span><br><span class="line">        	text += font_map[one_font]</span><br><span class="line">    	<span class="keyword">else</span>:</span><br><span class="line">        	text += char</span><br><span class="line">    <span class="comment"># 如果不是四位的也保留，比如可能是数字之类的</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        text += char</span><br><span class="line">print(text)</span><br><span class="line"></span><br><span class="line">输出：&lt;br&gt;药品名称：红霉素眼膏；采购量：<span class="number">100</span>；供应商：山东聊城利民药业集团有限公司，成交价为<span class="number">495</span>&lt;br&gt;</span><br></pre></td></tr></table></figure>
+<p>解决！但是大佬指点，上面的代码可能用一个函数一句搞定<code>print(content.translate(font_map))</code>，只能膜拜了。</p>
+<p>其实一开始我们可能就会发现字体很奇怪，也可以先对其他部分内容进行字体解密；之后再进行js解密。</p>
+<p>破解的过程可能并不是一帆风顺，其中需要一定的经验和技巧，才能快速破解；并且要能会具体问题具体分析，并不一定要按照特定步骤按部就班。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/js加密/" rel="tag"># js加密</a>
+          
+            <a href="/tags/字体加密，逆向，-fontTools/" rel="tag"># 字体加密，逆向， fontTools</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/06/spider-xinyongshanxi/" rel="next" title="反爬（二）">
+                <i class="fa fa-chevron-left"></i> 反爬（二）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/20/spider-bankofchina/" rel="prev" title="反爬（四）">
+                反爬（四） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">70</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">141</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#网站三的反爬破解"><span class="nav-text">网站三的反爬破解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、请求url，查看数据情况"><span class="nav-text">1、请求url，查看数据情况</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、寻找js加密函数"><span class="nav-text">2、寻找js加密函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、将加密函数修改为可执行的方法，并布置为js服务"><span class="nav-text">3、将加密函数修改为可执行的方法，并布置为js服务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4、字体解密"><span class="nav-text">4、字体解密</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

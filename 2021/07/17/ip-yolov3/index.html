@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="yolov3,目标检测,yolov1,yolov2,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="YOLOV1、V2、V3 理论篇YOLOV1核心思想yolo论文地址 这部分参考文章地址：https://blog.csdn.net/litt1e/article/details/88814417 作者在YOLO算法中把物体检测（object detection）问题处理成回归问题，用一个卷积神经网络结构就可以从输入图像直接预测bounding box（边框）和类别概率。 算法首先把输入图像划分成">
+<meta name="keywords" content="yolov3,目标检测,yolov1,yolov2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="YOLOV1、V2、V3 理论篇">
+<meta property="og:url" content="http://yoursite.com/2021/07/17/ip-yolov3/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="YOLOV1、V2、V3 理论篇YOLOV1核心思想yolo论文地址 这部分参考文章地址：https://blog.csdn.net/litt1e/article/details/88814417 作者在YOLO算法中把物体检测（object detection）问题处理成回归问题，用一个卷积神经网络结构就可以从输入图像直接预测bounding box（边框）和类别概率。 算法首先把输入图像划分成">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2021/07/17/ip-yolov3/confidence.png">
+<meta property="og:image" content="http://yoursite.com/2021/07/17/ip-yolov3/yolov1_7x7.png">
+<meta property="og:image" content="http://yoursite.com/2021/07/17/ip-yolov3/yolov2.png">
+<meta property="og:image" content="http://yoursite.com/2021/07/17/ip-yolov3/darknet19.png">
+<meta property="og:image" content="http://yoursite.com/2021/07/17/ip-yolov3/darknet53.png">
+<meta property="og:image" content="http://yoursite.com/2021/07/17/ip-yolov3/yolov3.png">
+<meta property="og:updated_time" content="2022-03-11T12:01:32.034Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="YOLOV1、V2、V3 理论篇">
+<meta name="twitter:description" content="YOLOV1、V2、V3 理论篇YOLOV1核心思想yolo论文地址 这部分参考文章地址：https://blog.csdn.net/litt1e/article/details/88814417 作者在YOLO算法中把物体检测（object detection）问题处理成回归问题，用一个卷积神经网络结构就可以从输入图像直接预测bounding box（边框）和类别概率。 算法首先把输入图像划分成">
+<meta name="twitter:image" content="http://yoursite.com/2021/07/17/ip-yolov3/confidence.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2021/07/17/ip-yolov3/">
+
+
+
+
+
+  <title>YOLOV1、V2、V3 理论篇 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/07/17/ip-yolov3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">YOLOV1、V2、V3 理论篇</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-07-17T14:33:54+08:00">
+                2021-07-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/图像处理/" itemprop="url" rel="index">
+                    <span itemprop="name">图像处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="YOLOV1、V2、V3-理论篇"><a href="#YOLOV1、V2、V3-理论篇" class="headerlink" title="YOLOV1、V2、V3 理论篇"></a>YOLOV1、V2、V3 理论篇</h2><h3 id="YOLOV1核心思想"><a href="#YOLOV1核心思想" class="headerlink" title="YOLOV1核心思想"></a>YOLOV1核心思想</h3><p><a href="https://arxiv.org/pdf/1506.02640.pdf" target="_blank" rel="noopener">yolo论文地址</a></p>
+<p>这部分参考文章地址：<a href="https://blog.csdn.net/litt1e/article/details/88814417" target="_blank" rel="noopener">https://blog.csdn.net/litt1e/article/details/88814417</a></p>
+<p>作者在YOLO算法中把物体检测（object detection）问题处理成回归问题，用一个卷积神经网络结构就可以从输入图像直接预测bounding box（边框）和类别概率。</p>
+<p>算法首先把输入图像划分成S×S的格子，然后对每个格子都预测B个bounding boxes，每个bounding box都包含<strong>5个预测值：x,y,w,h和confidence</strong>。<br>x，y就是bounding box的中心坐标，与grid cell对齐（即相对于当前grid cell的偏移值），使得范围变成0到1；<br>w，h进行归一化（分别除以图像的w和h，这样最后的w和h就在0到1范围）。<br>confidence代表了所预测的box中含有object的置信度和这个box预测的有多准两重信息<br><img src="/2021/07/17/ip-yolov3/confidence.png" alt></p>
+<p>换句话说，如果ground truth(人工标注的框，更一般化的理解为训练集标签)落在这个grid cell里，那么Pr（Object）就取1，否则就是0，IOU就是bounding box与实际的groud truth之间的交并比（所谓交并比就是这两个框相交的面积除以两个框并起来的面积）。confidence是这两者的乘积。</p>
+<p><img src="/2021/07/17/ip-yolov3/yolov1_7x7.png" alt></p>
+<p>在yolov1中作者将一幅图片分成7x7个网格(grid cell)，由网络的最后一层输出7×7×30的tensor，也就是说每个格子输出1×1×30的tensor。30里面包括了2（B=2）个bound ing box的x，y，w，h，confidence以及针对格子而言的20个类别概率，输出就是 7x7x(5x2 + 20) 。<br>(通用公式： <strong>SxS个网格，每个网格要预测B个bounding box还要预测C个categories，输出就是S x S x (5×B+C)的一个tensor</strong>。 注意：class信息是针对每个网格的，confidence信息是针对每个bounding box的）</p>
+<p>v1使用的Backbone是GoogLeNet，带有全连接层，使用224*224的分辨率训练图像，但是输入图像要求448*448的尺寸。</p>
+<h3 id="YOLOV2重要升级"><a href="#YOLOV2重要升级" class="headerlink" title="YOLOV2重要升级"></a>YOLOV2重要升级</h3><a id="more"></a>
+<p><strong>召回率 (Recall)</strong>：正样本有多少被找出来了（召回了多少）。</p>
+<p><strong>准确率 (Precision)</strong>：你认为的正样本，有多少猜对了（猜的准确性如何）。</p>
+<p><strong>MAP： Mean Average Precision 的缩写，即均值平均精度。</strong><br>作为 object dection 中衡量检测精度的指标。<br>计算公式为： 所有类别的平均精度求和除以所有类别。</p>
+<p><strong>fine tune 微调</strong>：省去了大量计算资源和计算时间，提高准确率，魔性的泛化能力和过拟合情况减少</p>
+<p>YOLOV2 相较YOLOV1的具体改进</p>
+<p><img src="/2021/07/17/ip-yolov3/yolov2.png" alt></p>
+<p>这个表格展示了v2相较v1的改进，列出的大多数设计决策都给map带来了显著的提升。不过有两个特例就是，切换到一个带有<strong>锚框</strong>的全连接卷积网络和使用新的网络。锚框的使用虽然没有改变mAP（全连接层没有提升，所以这里的言外之意应该是并没有使用全连接层）,但是提升了召回率；后者减少了33%的计算量。</p>
+<h4 id="Batch-Normalization（批标准化）"><a href="#Batch-Normalization（批标准化）" class="headerlink" title="Batch Normalization（批标准化）"></a><strong>Batch Normalization（批标准化）</strong></h4><p>又叫批规范化、批归一化、批正则化，简称BatchNorm或BN，是神经网络中一种特殊的层，如今已是各种流行网络的标配。<strong>在原paper中，BN被建议插入在（每个）ReLU激活层前面</strong>。</p>
+<p>通常在神经网络训练<strong>开始前,都要对输入数据做一个归一化处理</strong>, 那么具体为什么需要归一化呢?归一化后有什么好处呢?</p>
+<p>因为神经网络学习过程本质就是为了学习数据分布,<strong>一旦训练数据与测试数据的分布不同,那么网络的泛化能力也大大降低</strong>;另外一方面,一旦每批训练数据的分布各不相同(batch 梯度下降),那么网络就要在每次迭代都去学习适应不同的分布,这样将会大大降低网络的训练速度；深度网络的训练是一个复杂的过程,只要网络的前面几层发生微小的改变,那么后面几层就会被累积放大下去。</p>
+<p>所以我们一般会对输入数据进行<strong>“白化”处理，使得它的均值是0，方差是1。但是之后的层就很难保证了，因为随着前面层参数的调整，后面的层的输入是很难保证的。</strong></p>
+<p>什么是Batch Normalization呢？ 说白了就是<strong>对神经网络的每一个卷积层输出结果进行一下归一化，而不是在池化与激活函数之后</strong>。但是这样也带来一个问题，把某个层的输出限制在均值为0方差为1的分布会使得网络的表达能力变弱。因此作者又给batch normalization层进行一些限制的放松，给它增加两个可学习的参数 β 和 γ ，对数据进行缩放和平移，平移参数 β 和缩放参数 γ 是学习出来的。极端的情况这两个参数等于mini-batch的均值和方差，那么经过batch normalization之后的数据和输入完全一样，当然一般的情况是不同的。<br>论文中使用了类似z-score的归一化方式：每一维度减去自身均值，再除以自身标准差，由于使用的是随机梯度下降法，这些均值和方差也只能在当前迭代的batch中计算，故作者给这个算法命名为Batch Normalization。</p>
+<p>BN通过一定的规范化手段，<strong>把每层神经网络任意神经元这个输入值的分布强行拉回到均值为0，方差为1的标准正态分布</strong>，其实就是把越来越偏的分布强制拉回比较标准的分布，这样使得激活输入值落在非线性函数对输入比较敏感的区域，这样输入的小变化就会导致损失函数较大的变化，意思是这样让梯度变大，避免梯度消失问题产生，而且<strong>梯度变大意味着学习收敛速度快</strong>，能大大加快训练速度。</p>
+<h4 id="High-Resolution-Classifier"><a href="#High-Resolution-Classifier" class="headerlink" title="High Resolution Classifier"></a>High Resolution Classifier</h4><p>YOLO 对应训练过程分为两步，第一步是通过 ImageNet 训练集 进行高分辨率的预训练，这一步训练的是分类网络；第二步是训练检测网络，是在分类网络的基础上进行 fine tune。</p>
+<p>之前的 YOLO v1以分辨率224*224训练分类网络，YOLO v2 将分类网络的分辨率提高到 448*448（但是默认输入图像尺寸为416*416，这样做是<strong>希望得到的特征图都是奇数大小的宽和高</strong>，奇数大小的宽和高会使得每个特征图在划分cell的时候只有一个中心cell，因为大的目标一般会占据图像的中心，所以希望用一个中心cell去预测，偶数的话需要四个中心cell），高分辨率样本对于效果有一定的提升（文中mAp提高了约4%）。</p>
+<p><strong>补充</strong></p>
+<p><strong>由于YOLOv2模型中只有卷积层和池化层，所以YOLOv2的输入可以不限于 416×416 大小的图片</strong>（这句话如何理解很重要，之前我研究过VGG16模型，<strong>当从卷积层向全连接层输入时，输入值的大小是要根据最开始输入张量大小再加上一系列卷积池化后得到的大小而决定</strong>，并不是确定的，所以如果没有全连接层，就可以不用限死输入图片的大小了）。为了增强模型的鲁棒性，YOLOv2采用了多尺度输入训练策略，即在训练过程中每间隔一定的iterations之后改变模型的输入图片大小。</p>
+<p>YOLOv2的下采样总步长为32，输入图片大小选择一系列为32倍数的值： {320,352,…,608}，输入图片最小为 320×320 ，此时对应的特征图大小为 10×10，而输入图片最大为 608×608 ，对应的特征图大小为 19×19。在训练过程，每隔10个iterations随机选择一种输入图片大小，然后只需要修改对最后检测层的处理就可以重新训练。</p>
+<h4 id="Convolutional-With-Anchor-Boxes（使用预设框）"><a href="#Convolutional-With-Anchor-Boxes（使用预设框）" class="headerlink" title="Convolutional With Anchor Boxes（使用预设框）"></a>Convolutional With Anchor Boxes（使用预设框）</h4><p><em>为什么提出anchor box？</em><br>1.一个窗口只能检测一个目标<br>2.无法解决多尺度问题。</p>
+<p>v2中，借鉴了faster rcnn中的anchor思想。anchor也是rpn网络的一个很重要的步骤</p>
+<p>anchor box 怎么使用的？ 在训练阶段，是把anchor box作为训练样本，为了训练样本我们需要为每个锚框标注两类标签：一是锚框所含目标的类别，简称类别；二是真实边界框相对锚框的偏移量，简称偏移量（offset）。在目标检测时，我们首先生成多个锚框，然后为每个锚框预测类别以及偏移量，接着根据预测的偏移量调整锚框位置从而得到预测边界框，最后筛选需要输出的预测边界框。</p>
+<p>YOLOV1中将输入图像分成7×7的网格，每个网格预测2个bounding box,一共只有7×7×2=98个box.</p>
+<p>YOLOV2中引入anchor boxes，输出feature map大小为13×13，每个cell有5个anchor box预测得到5个bounding box,一共有13×13×5=845个box。增加box的数量是为了提高目标的定位准确率。</p>
+<h4 id="New-Network"><a href="#New-Network" class="headerlink" title="New Network"></a>New Network</h4><p>也就是改用新的Backbone，Darknet19。</p>
+<h4 id="Dimension-Clusters（维度聚类）"><a href="#Dimension-Clusters（维度聚类）" class="headerlink" title="Dimension Clusters（维度聚类）"></a>Dimension Clusters（维度聚类）</h4><p>用于解决作者引入anchor boxes的问题之一：anchor boxes的尺寸如何选择问题</p>
+<p>anchor一般都是通过人工设计的。例如，在SSD、Faster-RCNN中，设计了9个不同大小和宽高比的anchor。然而，<strong>通过人工设计的anchor存在一个弊端，就是并不能保证它们一定能很好的适合数据集</strong>，如果anchor的尺寸和目标的尺寸差异较大，则会影响模型的检测效果。目前anchor box的选择主要有三种方式：</p>
+<ul>
+<li><p>人为经验选取</p>
+</li>
+<li><p><strong>k-means聚类</strong></p>
+</li>
+<li><p>作为超参数进行学习</p>
+</li>
+</ul>
+<p>yolo中作者是使用k-means聚类的方式来设计anchor box的尺寸，但是如果用标准的K-means（欧式距离）的话会导致大的box会比小的box获得更大的误差，更准确的方式是使用IOU来算，所以作者定义了IOU距离，按照IOU越高距离越小的需求，得出这样的公式：</p>
+<p>d(box,centroid) = 1- IOU(box, centroid)</p>
+<h4 id="Direct-location-prediction"><a href="#Direct-location-prediction" class="headerlink" title="Direct location prediction"></a>Direct location prediction</h4><p>用于解决作者引入anchor boxes的问题之二：模型不稳定，尤其是训练早期。</p>
+<p>基于候选框的网络一般是通过预测相对锚框中心的偏移值来预测边界框的中心坐标，作者认为不稳定就源于此，所以YOLOv2中没有采用这种预测方式，而是沿用了YOLOv1的方法， <strong>预测位置参数时采用了强约束方法，直接预测出b-box中心点相对于网格单元左上角的相对坐标</strong>。</p>
+<h4 id="细粒度特征（Fine-Grained-Features）"><a href="#细粒度特征（Fine-Grained-Features）" class="headerlink" title="细粒度特征（Fine-Grained Features）"></a>细粒度特征（Fine-Grained Features）</h4><p>YOLOV2最后一层卷积层输出是13×13的特征图，这个分辨率对于大尺寸物体的检测已经足够，但对于小尺寸物体不一定奏效。越小的物体，经过层层池化，体现在最后特征图中的可能性越小。</p>
+<p>作者通过添加直通层(passthrough Layer)的方式将前一层高分辨率的特征图连接到低分辨率的特征图上：前一层的特征图维度为26×26×512，最后一层的特征图的维度为13×13×1024，通过直通层将26×26×512的特征图映射到13×13×2048，然后将其与最后一层的特征图连接为13×13×（1024+2048）的特征图，最后在此特征上进行卷积预测。</p>
+<p>通过添加直通层，使得YOLOV2精度提高1%。</p>
+<h4 id="多尺度训练"><a href="#多尺度训练" class="headerlink" title="多尺度训练"></a>多尺度训练</h4><p>由于YOLOV2去掉了全连接层，使得网络理论上可以接收任意尺寸的输入，这使得进行多尺度训练变得可行。</p>
+<p>YOLOV2共进行了5次最大值池化，即下采样32倍，因此在进行多尺度训练时，采用32的整数倍尺寸作为输入尺寸，分别为：320、352、384、416、448、480、512、544、576、608。</p>
+<p>在进行训练时，每10个批次从上述十个尺寸中随机选择一个，经过这样的训练，相同的网络可以预测不同分辨率的图像。</p>
+<h3 id="YOLOV3重要升级"><a href="#YOLOV3重要升级" class="headerlink" title="YOLOV3重要升级"></a>YOLOV3重要升级</h3><ol>
+<li>网络结构（采用Darknet-53结构，在v2的基础上每隔两层增加了一个short cut层（<strong>残差网络</strong>），以训练深层的网络，解决梯度消失或者梯度爆炸的问题）： Darknet-53 52个卷积层</li>
+<li>实现细节：<strong>锚框使用kmeans聚类</strong>、共9种尺寸的锚框、LOSS后三项用二分类交叉熵代替误差和的平方、多尺度预测（更能检测到细粒度物体）、大量使用残差网络（能够更深、避免梯度消失爆炸问题）</li>
+</ol>
+<p>yolov3输出为3个尺度的特征图，分别为13×13、26×26、52×52，对应着9个anchor，每个尺度均分3个anchor。</p>
+<p>最小的13×13的特征图上由于其感受野最大，应该使用大的anchor(116x90)，(156x198)，(373x326)，这几个坐标是针对原始输入的，即416×416的，因此要除以32把尺度缩放到13×3下使用，适合较大的目标检测。中等的26<em>26特征图上由于其具有中等感受野故应用中等的anchor box (30x61)，(62x45)，(59x119)，适合检测中等大小的目标。较大的52</em>52特征图上由于其具有较小的感受野故应用最小的anchor box(10x13)，(16x30)，(33x23)，适合检测较小的目标。具体使用就是每个grid cell都有3个anchor box。</p>
+<h2 id="Darknet"><a href="#Darknet" class="headerlink" title="Darknet"></a>Darknet</h2><p>只说Darknet的话一般指的是YOLO作者Joseph Redmon开源的神经网络框架，引作者自己的原话就是：</p>
+<blockquote>
+<p>Darknet is an open source neural network framework written in C and CUDA. It is fast, easy to install, and supports CPU and GPU computation.</p>
+</blockquote>
+<p>说类似Darknet-19(yolo9000里的backbone)或者Darknet-53(yolov3里的backbone)的时候，指的就是类似于resnet，googlenet这样的模型结构了。</p>
+<p>Darknet-19：</p>
+<p>Darknet-19是yolo v2中的特征提取器，包括<strong>19个卷积层和5个maxpooling层</strong>（没有全连接层）。Darknet-19与VGG16模型设计原则是一致的，主要采用3 <em> 3卷积，采用2 </em> 2的maxpooling层之后，特征图维度降低2倍，而同时将特征图的channles增加两倍。网络结构图：</p>
+<p><img src="/2021/07/17/ip-yolov3/darknet19.png" alt></p>
+<p>Darkenet53是Yolov3网络中的一部分（backbone），Darknet53的网络结构如下图所示：</p>
+<p><img src="/2021/07/17/ip-yolov3/darknet53.png" alt></p>
+<p>其中×1，x2，x8分别表示该模块重复1次、2次和8次，<code>Convolutional</code>表示该模块是一个普通的卷积模块，<code>Residual</code>代表该模块是一个残差网络。Darkenet53包括<strong>52个卷积层+1个线性层（connected）</strong>。</p>
+<p>这两个模型关于输入图片的大小要求需要再了解下。</p>
+<p>从头编写<code>Darknet-19</code>和<code>Darknet-53</code>网络模型：</p>
+<p><a href="https://zhuanlan.zhihu.com/p/105278156" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/105278156</a></p>
+<h2 id="YOLO-V3"><a href="#YOLO-V3" class="headerlink" title="YOLO V3"></a>YOLO V3</h2><p>此部分内容参考文章链接：<a href="https://blog.csdn.net/leviopku/article/details/82660381" target="_blank" rel="noopener">https://blog.csdn.net/leviopku/article/details/82660381</a></p>
+<p>yolo每一代的提升很大一部分决定于backbone网络（主干网络）的提升，从v2的darknet-19到v3的darknet-53。yolo_v3还提供替换backbone——tiny darknet。要想性能牛叉，backbone可以用Darknet-53，要想轻量高速，可以用tiny-darknet。总之，yolo就是天生“灵活”，所以特别适合作为工程算法。</p>
+<p>首先原作者文章中一个最大的亮点就是自己绘制了一个YOLOv3的网络结构图，这里引用还是要说明下的</p>
+<p><img src="/2021/07/17/ip-yolov3/yolov3.png" alt></p>
+<p><strong>DBL</strong>: Darknetconv2d_BN_Leaky，是yolo_v3的基本组件。就是卷积+BN（batch_normalize批规范化层，进行归一化操作）+Leaky relu。</p>
+<p>对于v3来说，BN和leaky relu已经是和卷积层不可分离的部分了(最后一层卷积除外)，共同构成了最小组件。</p>
+<p><strong>resn</strong>：n代表数字，有res1，res2, … ,res8等等，表示这个res_block里含有多少个<strong>res_unit</strong>。</p>
+<p>这是yolo_v3的大组件，yolo_v3开始借鉴了ResNet的残差结构，使用这种结构可以让网络结构更深(从v2的darknet-19上升到v3的darknet-53，前者没有残差结构)。对于res_block的解释，可以在图的右下角直观看到，其基本组件也是DBL。<br><strong>concat</strong>：张量拼接。将darknet中间层和后面的某一层的上采样进行拼接。拼接的操作和残差层add的操作是不一样的，拼接会扩充张量的维度，而add只是直接相加不会导致张量维度的改变。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/yolov3/" rel="tag"># yolov3</a>
+          
+            <a href="/tags/目标检测/" rel="tag"># 目标检测</a>
+          
+            <a href="/tags/yolov1/" rel="tag"># yolov1</a>
+          
+            <a href="/tags/yolov2/" rel="tag"># yolov2</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/07/04/dl-pytorch-cnn/" rel="next" title="PyTorch实现卷积神经网络">
+                <i class="fa fa-chevron-left"></i> PyTorch实现卷积神经网络
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/07/23/dl-pytorch-yolov3/" rel="prev" title="Pytorch-yolov3项目使用总结">
+                Pytorch-yolov3项目使用总结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">70</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">141</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#YOLOV1、V2、V3-理论篇"><span class="nav-text">YOLOV1、V2、V3 理论篇</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#YOLOV1核心思想"><span class="nav-text">YOLOV1核心思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#YOLOV2重要升级"><span class="nav-text">YOLOV2重要升级</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Batch-Normalization（批标准化）"><span class="nav-text">Batch Normalization（批标准化）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#High-Resolution-Classifier"><span class="nav-text">High Resolution Classifier</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Convolutional-With-Anchor-Boxes（使用预设框）"><span class="nav-text">Convolutional With Anchor Boxes（使用预设框）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#New-Network"><span class="nav-text">New Network</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Dimension-Clusters（维度聚类）"><span class="nav-text">Dimension Clusters（维度聚类）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Direct-location-prediction"><span class="nav-text">Direct location prediction</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#细粒度特征（Fine-Grained-Features）"><span class="nav-text">细粒度特征（Fine-Grained Features）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#多尺度训练"><span class="nav-text">多尺度训练</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#YOLOV3重要升级"><span class="nav-text">YOLOV3重要升级</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Darknet"><span class="nav-text">Darknet</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#YOLO-V3"><span class="nav-text">YOLO V3</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

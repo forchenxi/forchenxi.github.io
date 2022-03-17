@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="python,正则表达式,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="继上一篇博客python正则表达式后，此篇文章主要是重点记录”(?=)”(前向肯定界定符)、”(?!)”(前向否定界定符)、”(?&amp;lt;=)”(后项肯定界定符)以及”(?&amp;lt;!)”(后项否定界定符)的用法。">
+<meta name="keywords" content="python,正则表达式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python正则表达式">
+<meta property="og:url" content="http://yoursite.com/2019/07/08/python-regx-1/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="继上一篇博客python正则表达式后，此篇文章主要是重点记录”(?=)”(前向肯定界定符)、”(?!)”(前向否定界定符)、”(?&amp;lt;=)”(后项肯定界定符)以及”(?&amp;lt;!)”(后项否定界定符)的用法。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-07-15T07:34:06.888Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python正则表达式">
+<meta name="twitter:description" content="继上一篇博客python正则表达式后，此篇文章主要是重点记录”(?=)”(前向肯定界定符)、”(?!)”(前向否定界定符)、”(?&amp;lt;=)”(后项肯定界定符)以及”(?&amp;lt;!)”(后项否定界定符)的用法。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/07/08/python-regx-1/">
+
+
+
+
+
+  <title>python正则表达式 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/08/python-regx-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">python正则表达式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-08T21:20:02+08:00">
+                2019-07-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python编程/" itemprop="url" rel="index">
+                    <span itemprop="name">python编程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>继上一篇博客<a href="/2019/06/21/python_regx/#more/">python正则表达式</a>后，此篇文章主要是重点记录”(?=)”(前向肯定界定符)、”(?!)”(前向否定界定符)、”(?&lt;=)”(后项肯定界定符)以及”(?&lt;!)”(后项否定界定符)的用法。</p>
+<a id="more"></a>
+<p>想要纯文字阐述清楚用法很难，直接看例子。</p>
+<h2 id="例一"><a href="#例一" class="headerlink" title="例一"></a>例一</h2><p>若想分割一个字符串，分隔符为：”,”，但是要求当”,”前后均为数字时才有效。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line">s = <span class="string">"abc,123,cde,45,fg,123,456,cba,xyz,5jk"</span></span><br><span class="line">res = re.split(<span class="string">r'(?&lt;=\d),(?=\d)'</span>, s)</span><br><span class="line">print(res)</span><br><span class="line"></span><br><span class="line">[<span class="string">'abc,123,cde,45,fg,123'</span>, <span class="string">'456,cba,xyz,5jk'</span>]</span><br></pre></td></tr></table></figure>
+<p>解析：”(?&lt;=\d),”表示逗号之前要为数字，”,(?=\d)”表示逗号之后要为数字。</p>
+<h2 id="例二"><a href="#例二" class="headerlink" title="例二"></a>例二</h2><p>若想分割一个字符串，分隔符为：”,”，但是要求当”,”前面为数字，后面为字母时才有效。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line">s = <span class="string">"abc,123,cde,45,fg,123,456,cba,xyz,5jk"</span></span><br><span class="line">res = re.split(<span class="string">r'(?&lt;=\d),(?=[a-zA-Z])'</span>, s)</span><br><span class="line">print(res)</span><br><span class="line"></span><br><span class="line">[<span class="string">'abc,123'</span>, <span class="string">'cde,45'</span>, <span class="string">'fg,123,456'</span>, <span class="string">'cba,xyz,5jk'</span>]</span><br></pre></td></tr></table></figure>
+<p>解析：,(?=[a-zA-Z])表示逗号之后为字母。</p>
+<h2 id="例三"><a href="#例三" class="headerlink" title="例三"></a>例三</h2><p>若想分割一个字符串，分隔符为：”,”，但是要求当”,”前面为字母，后面为数字时才生效。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line">s = <span class="string">"abc,123,cde,45,fg,123,456,cba,xyz,5jk"</span></span><br><span class="line">res = re.split(<span class="string">r'(?&lt;=[a-zA-Z]),(?=\d)'</span>, s)</span><br><span class="line">print(res)</span><br><span class="line"></span><br><span class="line">[<span class="string">'abc'</span>, <span class="string">'123,cde'</span>, <span class="string">'45,fg'</span>, <span class="string">'123,456,cba,xyz'</span>, <span class="string">'5jk'</span>]</span><br></pre></td></tr></table></figure>
+<p>解析：将例二顺序调过来即可。</p>
+<h2 id="例四"><a href="#例四" class="headerlink" title="例四"></a>例四</h2><p>若想分割一个字符串，分隔符为：”,”,但是要求当”,”前面不能为$并且后面不能为&amp;时才生效。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line">s = <span class="string">"abc,123$,cde,45,&amp;fg,123,456,cba$,&amp;xyz,5jk"</span></span><br><span class="line">res = re.split(<span class="string">r'(?&lt;!\$),(?!&amp;)'</span>, s)</span><br><span class="line">print(res)</span><br><span class="line"></span><br><span class="line">[<span class="string">'abc'</span>, <span class="string">'123$,cde'</span>, <span class="string">'45,&amp;fg'</span>, <span class="string">'123'</span>, <span class="string">'456'</span>, <span class="string">'cba$,&amp;xyz'</span>, <span class="string">'5jk'</span>]</span><br></pre></td></tr></table></figure>
+<p>解析：”(?&lt;!\$),”表示逗号前面不能有$(因为$是特殊字符，所以加了转义)，”,(?!&amp;)”表示逗号后面不能有&amp;，但是写在一起得到的结果却并不是我们想要的，要求逗号前为”$”且后为”&amp;”时不分割，所以我们想要得到的结果是：<code>[&#39;abc&#39;, &#39;123$&#39;, &#39;cde&#39;, &#39;45&#39;, &#39;&amp;fg&#39;, &#39;123&#39;, &#39;456&#39;, &#39;cba$,&amp;xyz&#39;, &#39;5jk&#39;]</code>。</p>
+<p>上面那种写法可能是很容易犯的错，这里来一步步解析下，我们可以把<strong>逗号</strong>的种类分为四种，</p>
+<ol>
+<li>逗号前面不是”$”，并且后面不是”&amp;”;</li>
+<li>逗号前面是”$”，但后面不是”&amp;”;</li>
+<li>逗号前面不是”$”，但后面是”&amp;”;</li>
+<li>逗号前面是”$”，并且后面是”&amp;”;</li>
+</ol>
+<p>只有第4种情况的逗号不能作为分隔符，其他三种都可以作为分隔符，而我们的表达式实际只表示了第1种情况，当2、3两种情况出现时，表达式不生效，所以我们要写的表达式是前三种情况，也就是<strong>第4种情况的取反</strong>。</p>
+<p>正确的正则分割写法为：<code>re.split(r&#39;(?&lt;!\$),|,(?!&amp;)&#39;, s)</code>，这里面有点绕，需要仔细思考。</p>
+<p><strong>注意</strong>：这里容易混淆前向界定符和后向界定符的含义，要对逗号之前做一些条件限定，应使用后向界定符；要对逗号之后做一些条件限定，应使用前向界定符。此外，当同时使用前向否定和后向否定做一些条件限定时，注意逻辑上的转变。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/正则表达式/" rel="tag"># 正则表达式</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/21/python-regx/" rel="next" title="python正则表达式">
+                <i class="fa fa-chevron-left"></i> python正则表达式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/09/spider/" rel="prev" title="python爬虫">
+                python爬虫 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">70</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">141</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#例一"><span class="nav-text">例一</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#例二"><span class="nav-text">例二</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#例三"><span class="nav-text">例三</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#例四"><span class="nav-text">例四</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

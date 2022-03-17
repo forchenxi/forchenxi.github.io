@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Genetic Algorithm,遗传,变异,选择,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="遗传算法基本概念遗传算法(Genetic Algorithm，简称GA) 遗传算法的基本思想可归为三点： 1）遗传：子代总是和亲代相似。 2）变异：子代和亲代有某些不相似的现象。 3）选择：具有精选的能力，它决定生物进化的方向。 要点1：遗传算法按照一定的规则生成经过基因编码的初始群体， 要点2：然后从这些代表问题的可能潜在解的初始群体出发，挑选适应度强的个体进行交叉(或称交配、交换)和变异，以期">
+<meta name="keywords" content="Genetic Algorithm,遗传,变异,选择">
+<meta property="og:type" content="article">
+<meta property="og:title" content="遗传算法">
+<meta property="og:url" content="http://yoursite.com/2021/12/18/al-genetic/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="遗传算法基本概念遗传算法(Genetic Algorithm，简称GA) 遗传算法的基本思想可归为三点： 1）遗传：子代总是和亲代相似。 2）变异：子代和亲代有某些不相似的现象。 3）选择：具有精选的能力，它决定生物进化的方向。 要点1：遗传算法按照一定的规则生成经过基因编码的初始群体， 要点2：然后从这些代表问题的可能潜在解的初始群体出发，挑选适应度强的个体进行交叉(或称交配、交换)和变异，以期">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2021/12/18/al-genetic/1.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/18/al-genetic/2.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/18/al-genetic/3.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/18/al-genetic/5.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/18/al-genetic/6.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/18/al-genetic/4.png">
+<meta property="og:updated_time" content="2021-12-21T06:57:22.819Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="遗传算法">
+<meta name="twitter:description" content="遗传算法基本概念遗传算法(Genetic Algorithm，简称GA) 遗传算法的基本思想可归为三点： 1）遗传：子代总是和亲代相似。 2）变异：子代和亲代有某些不相似的现象。 3）选择：具有精选的能力，它决定生物进化的方向。 要点1：遗传算法按照一定的规则生成经过基因编码的初始群体， 要点2：然后从这些代表问题的可能潜在解的初始群体出发，挑选适应度强的个体进行交叉(或称交配、交换)和变异，以期">
+<meta name="twitter:image" content="http://yoursite.com/2021/12/18/al-genetic/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2021/12/18/al-genetic/">
+
+
+
+
+
+  <title>遗传算法 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/12/18/al-genetic/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">遗传算法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-12-18T10:29:05+08:00">
+                2021-12-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/算法/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="遗传算法"><a href="#遗传算法" class="headerlink" title="遗传算法"></a>遗传算法</h2><h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>遗传算法(Genetic Algorithm，简称GA)</p>
+<p>遗传算法的基本思想可归为三点：</p>
+<p>1）遗传：子代总是和亲代相似。</p>
+<p>2）变异：子代和亲代有某些不相似的现象。</p>
+<p>3）选择：具有精选的能力，它决定生物进化的方向。</p>
+<p><strong>要点1</strong>：遗传算法按照一定的规则生成经过基因编码的初始群体，</p>
+<p><strong>要点2</strong>：然后从这些代表问题的可能潜在解的初始群体出发，挑选适应度强的个体进行交叉(或称交配、交换)和变异，以期发现适应度更佳的个体，</p>
+<p><strong>要点3</strong>：如此一代代地演化，得到一个最优个体，将其经过解码，该最佳个体编码则对应问题的最优解或近似最优解。</p>
+<p>术语:</p>
+<p><strong>串</strong>：算法中的<strong>二进制串，对应于遗传学中的染色体</strong>。染色体是进化的信息载体。染色体可能发生突变，并因为这种突变，可能生成更好的、更能适应环境的后代。</p>
+<p><strong>基因</strong>：基因是<strong>串中的二进制位之数</strong>，基因用于表示个体的特征。基因是染色体遗传功能的最小操作单位。</p>
+<p><strong>基因位置</strong>：一个基因在串中的位置称为基因位置，有时也简称基因位或基因座。</p>
+<p><strong>基因特征值</strong>：在用串表示整数时，基因的特征值与二进制数的权一致。</p>
+<p><strong>种群</strong>：个体的集合称为种群，或称群体。生物的进化不是通过单个个体来实现的，而是一代代的种群同时进行。</p>
+<p><strong>种群大小</strong>：种群中个体的数量称为群体的大小。</p>
+<p><strong>适应度</strong>：适应度表示某一个体对于环境的适应程度。在GA中，也称做<strong>适值函数，用以估计个体的优劣</strong>。适应度值越高，被选来交配和进行后继遗传行为的概率也就越大。对于给定的优化问题，将其目标函数作为适应度函数。</p>
+<a id="more"></a>
+<h3 id="遗传算法思路"><a href="#遗传算法思路" class="headerlink" title="遗传算法思路"></a>遗传算法思路</h3><p>1、将所有自变量进行编码。常用一组二进制码代表一个自变量的各种取值。</p>
+<p>2、将各自变量取值的二进码连成一串，将得到一组二进制代码串。该串代表了自变量的一组取值所决定的解值域，最优解含于其中。</p>
+<p>3、每一个可能的解（个体）构成种群</p>
+<p>4、每个个体对应于优化问题的一个可行解，优化问题的目标函数作为种群所处的环境，而目标函数值则作为个体对环境的适应度。</p>
+<p>5、优化由三种运算进行，运算包含三个基本算子：</p>
+<ul>
+<li><p>选择(繁殖)：选择算子从一个旧群体(父代)中选出合适的个体，产生新群体(后代)的过程。</p>
+</li>
+<li><p>交叉(重组)：交叉算子选择两个不同个体的染色体（二进制串）的部分基因进行交换，形成新个体。该算子确定和扩充解空间，是一个随机化的重组算子。在很大程度上遗传算法的性能取决于所使用的交换算子的性能。</p>
+</li>
+<li><p>变异(突变)：变异算子对某些个体的某些基因进行变异。在通常的二进制编码方式下，变异操作就是简单地将基因值取反(1变0、0变1)。</p>
+</li>
+</ul>
+<p>GA经过这三种运算可起到产生优良后代的作用。这些后代需满足适应值，经过若干代的遗传，将得到满足要求的后代(问题的解)。 </p>
+<h3 id="基本遗传算法"><a href="#基本遗传算法" class="headerlink" title="基本遗传算法"></a>基本遗传算法</h3><p>遗传算法分为基本遗传算法和高级遗传算法,仅使用选择算子,交叉算子和变异算子的最基本的遗传算法称为基本遗传算法.</p>
+<p>例题:计算f（x)=x^2  ,xɛ[0,31]的最大值</p>
+<h4 id="选择（或复制）算子"><a href="#选择（或复制）算子" class="headerlink" title="选择（或复制）算子"></a>选择（或复制）算子</h4><p>复制操作的初始种群（旧种群）的生成往往是随机产生的。例如我们可以通过投掷硬币20次，可产生维数n=4的初始种群如下（正面=“1”，背面=“0”）：</p>
+<p>0 1 1 0 1、1 1 0 0 0、0 1 0 0 0、1 0 0 1 1</p>
+<p>上述通过抛掷一个均匀的硬币20次得到的初始种群，可以看作是一个长度为5位的无符号二进制数。将其编号成四个位串：</p>
+<p>•位串1：0 1 1 0 1     (相当于十进制数:13)</p>
+<p>•位串2：1 1 0 0 0     (相当于十进制数:24)</p>
+<p>•位串3：0 1 0 0 0     (相当于十进制数:8)</p>
+<p>•位串4：1 0 0 1 1     (相当于十进制数:19)</p>
+<p><img src="/2021/12/18/al-genetic/1.png" style="zoom:80%;"></p>
+<p>遗传算法每一代都是从选择（复制)开始。一种较为简单的选择方法是使用轮盘赌转盘上按比例划分的区域。每个区域代表一个个体。依表5.1可绘制出如图5.2所示的轮盘赌转盘。</p>
+<p><img src="/2021/12/18/al-genetic/2.png" style="zoom:80%;"></p>
+<p>选择（复制）时，只是简单的转动这个按权重（适值占总和的百分比）划分的转盘4次，从而产生4个下一代的种群。例如对于表5.1中的位串1其适值为169，为总适值的14.4%，因此，每转动一次轮盘，指向位串的概率为0.144。这样位串的适值越高，在其下一代中产生的后代越多。当一个位串被选中时，此位串将被完整的复制，然后将复制位串送入匹配池中。</p>
+<p>在本例中，位串1被复制一次，位串2被复制两次，位串3被淘汰，位串4被复制一次。</p>
+<p><img src="/2021/12/18/al-genetic/3.png" alt></p>
+<h4 id="交叉算子"><a href="#交叉算子" class="headerlink" title="交叉算子"></a>交叉算子</h4><p>简单的交叉操作分两步实现。在由等待配对的位串构成的匹配池中，<strong>第一步是将新复制产生的位串个体随机两两配对，第二步是随机地选择交叉点，对匹配的位串进行交叉繁殖，产生一对新位串</strong>。</p>
+<p>交叉方法：设位串的字符长度为L，<strong>在[1，L-1]的范围内</strong>，随机地选取一个整数值K作为交叉点。将两个配对位串后的所有字符进行交换，从而生成两个新的位串。</p>
+<p><img src="/2021/12/18/al-genetic/5.png" alt></p>
+<p>表5.3列出了交叉操作过程。首先随机将匹配池中的个体配对，然后，随机地选取交叉点，设位串1（0110|1）和位串2（1100|0）的交叉点为k=4，二者只交换最后一位，从而生成两个新的位串，即（01100）和（11001）。位串3（11|000）和位串4（10|011）的交叉点为k=2，二者交换后三位。结果生成两个新的位串，即（11011）和（10000）。</p>
+<h4 id="变异算子"><a href="#变异算子" class="headerlink" title="变异算子"></a>变异算子</h4><p>仅有交叉操作存在的问题：尽管复制和交叉操作很重要，在遗传算法中是第一位的，但不能保证不会遗漏一些重要的遗传信息。</p>
+<p>例如：表5.4中无论怎样交叉，在位置4上都不可得到有1的位串。若优化的结果该位串上要求该位置是1，显然仅靠交叉是不够的，还需要有变异，即特定位置上的0和1之间的转变。</p>
+<p><img src="/2021/12/18/al-genetic/6.png" style="zoom:60%;"></p>
+<p>变异方法：</p>
+<p>在简单遗传算法中，变异就是某个字符串某一位的值偶然的（概率很小的）随机的改变，即在某些特定位置上把1变成0，或反之。变异是沿着位串字符空间的随机移动。根据经验的研究，为了取得好的结果，变异的频率为每一个千位的传送中，只变异一位，即变异的概率为0.001。</p>
+<p>例：在表5.4所示的种群中共有20个串字符号（每个位串的长度为5个字符位）。期望的变异串位数为20*0.001=0.02（位），所以在此例情况下无串位值的改变。</p>
+<p>注：变异在遗传算法中的作用是第二位的，但却是必不可少的。变异操作可以起到恢复位串字符多样性的作用，并能适当地提高遗传算法的搜索效率。</p>
+<p>上面流程的完整步骤为:</p>
+<p><img src="/2021/12/18/al-genetic/4.png" alt></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Genetic-Algorithm/" rel="tag"># Genetic Algorithm</a>
+          
+            <a href="/tags/遗传/" rel="tag"># 遗传</a>
+          
+            <a href="/tags/变异/" rel="tag"># 变异</a>
+          
+            <a href="/tags/选择/" rel="tag"># 选择</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/12/11/al-clustering/" rel="next" title="无监督学习--聚类算法">
+                <i class="fa fa-chevron-left"></i> 无监督学习--聚类算法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/12/28/linux-shell/" rel="prev" title="Linux shell命令">
+                Linux shell命令 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">70</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">141</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#遗传算法"><span class="nav-text">遗传算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本概念"><span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#遗传算法思路"><span class="nav-text">遗传算法思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基本遗传算法"><span class="nav-text">基本遗传算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#选择（或复制）算子"><span class="nav-text">选择（或复制）算子</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#交叉算子"><span class="nav-text">交叉算子</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#变异算子"><span class="nav-text">变异算子</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

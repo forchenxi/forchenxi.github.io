@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="deep learning,yolov3,labelImg,目标检测,keras,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="深度学习目标检测破解滑动验证码前言本文主要参考以下文章： 利用深度学习识别滑动验证码缺口位置 利用深度学习 PyTorch 识别滑动验证码缺口 这两篇文章都是同一位大佬所写，第一篇是利用华为云的一个深度学习平台做的(无需做任何编码工作)，第二篇是通过PyTorch来做的，要自己代码实现。我这里主要参考第二篇文章，也直接在这里把作者使用到github项目列出来： 标注工具labelImg PyTor">
+<meta name="keywords" content="deep learning,yolov3,labelImg,目标检测,keras">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深度学习目标检测破解滑动验证码">
+<meta property="og:url" content="http://yoursite.com/2020/11/22/dl-slider-captcha/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="深度学习目标检测破解滑动验证码前言本文主要参考以下文章： 利用深度学习识别滑动验证码缺口位置 利用深度学习 PyTorch 识别滑动验证码缺口 这两篇文章都是同一位大佬所写，第一篇是利用华为云的一个深度学习平台做的(无需做任何编码工作)，第二篇是通过PyTorch来做的，要自己代码实现。我这里主要参考第二篇文章，也直接在这里把作者使用到github项目列出来： 标注工具labelImg PyTor">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2020/11/22/dl-slider-captcha/p1.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/22/dl-slider-captcha/p3.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/22/dl-slider-captcha/p2.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/22/dl-slider-captcha/p4.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/22/dl-slider-captcha/p5.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/22/dl-slider-captcha/p6.png">
+<meta property="og:updated_time" content="2021-07-26T09:56:21.946Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="深度学习目标检测破解滑动验证码">
+<meta name="twitter:description" content="深度学习目标检测破解滑动验证码前言本文主要参考以下文章： 利用深度学习识别滑动验证码缺口位置 利用深度学习 PyTorch 识别滑动验证码缺口 这两篇文章都是同一位大佬所写，第一篇是利用华为云的一个深度学习平台做的(无需做任何编码工作)，第二篇是通过PyTorch来做的，要自己代码实现。我这里主要参考第二篇文章，也直接在这里把作者使用到github项目列出来： 标注工具labelImg PyTor">
+<meta name="twitter:image" content="http://yoursite.com/2020/11/22/dl-slider-captcha/p1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/11/22/dl-slider-captcha/">
+
+
+
+
+
+  <title>深度学习目标检测破解滑动验证码 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/22/dl-slider-captcha/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">深度学习目标检测破解滑动验证码</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-22T12:33:54+08:00">
+                2020-11-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="深度学习目标检测破解滑动验证码"><a href="#深度学习目标检测破解滑动验证码" class="headerlink" title="深度学习目标检测破解滑动验证码"></a>深度学习目标检测破解滑动验证码</h3><h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>本文主要参考以下文章：</p>
+<p><a href="https://zhuanlan.zhihu.com/p/90916336" target="_blank" rel="noopener">利用深度学习识别滑动验证码缺口位置</a></p>
+<p><a href="https://cuiqingcai.com/9200.html" target="_blank" rel="noopener">利用深度学习 PyTorch 识别滑动验证码缺口</a></p>
+<p>这两篇文章都是同一位大佬所写，第一篇是利用华为云的一个深度学习平台做的(无需做任何编码工作)，第二篇是通过<code>PyTorch</code>来做的，要自己代码实现。我这里主要参考第二篇文章，也直接在这里把作者使用到<code>github</code>项目列出来：</p>
+<p><a href="https://github.com/tzutalin/labelImg" target="_blank" rel="noopener">标注工具labelImg</a></p>
+<p><a href="https://github.com/eriklindernoren/PyTorch-YOLOv3#train-on-custom-dataset" target="_blank" rel="noopener">PyTorch-YOLOv3</a></p>
+<p><a href="https://github.com/Python3WebSpider/DeepLearningSlideCaptcha" target="_blank" rel="noopener">作者自己的破解项目</a></p>
+<p>因为我在次之前接触过一点<code>Keras</code>，还没有接触过<code>PyTorch</code>，所以倾向于利用<code>Keras</code>来解决此问题，于是我就查找了<code>keras-yolov3</code>的相关资料，主要参考这两篇博客：</p>
+<p><a href="https://blog.csdn.net/hhhuua/article/details/102792244" target="_blank" rel="noopener">Keras-yolov3如何训练自己的数据集</a></p>
+<p><a href="https://www.pianshen.com/article/8587282225/" target="_blank" rel="noopener">keras-yolov3训练及测试详解</a></p>
+<p>上面那篇博客过于具体过程讲的比较详细，一般按照教程来就可以，下面那篇是我遇到一些问题时找到的，关于这个项目的解析比较详细，可以帮助我们理解这个项目。</p>
+<p>这篇博客主要使用这个<code>github</code>项目：</p>
+<p><a href="https://github.com/qqwweee/keras-yolo3" target="_blank" rel="noopener">keras-yolov3</a></p>
+<a id="more"></a>
+<h4 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h4><h4 id="labelImg"><a href="#labelImg" class="headerlink" title="labelImg"></a><code>labelImg</code></h4><p>是<code>github</code>上的一个开源的图片标注工具，比较适用于目标检测任务的标注，具体使用方法<code>github</code>上写的比较清楚，主要就是安装一个<code>PyQt5</code>应该就可以用了，运行后有一个图像化界面，可以选择图片使用矩形框进行标注，类似这样：</p>
+<p><img src="/2020/11/22/dl-slider-captcha/p1.png" alt></p>
+<p>如果你需要标记的对象有很多种类，可以先在<code>data/predefined_classes.txt</code>中输入所有的分类，后面在图形界面中标注时直接选择相应的class；因为这里只是为了找出验证码中的小滑块，属于同一类，这里起名为target；先设置好<code>xml</code>文件保存的路径，然后打开验证码图片的文件夹，一张张标注即可。</p>
+<p>每标记完成一张图片记得保存，保存后会生成<code>xml</code>文件，文件内容如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">annotation</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">folder</span>&gt;</span>JPEGImages<span class="tag">&lt;/<span class="name">folder</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">filename</span>&gt;</span>0.41614717298921.jpg<span class="tag">&lt;/<span class="name">filename</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">path</span>&gt;</span>D:\python_project\yidun\keras-yolo3\VOCdevkit\VOC2007\JPEGImages\0.41614717298921.jpg<span class="tag">&lt;/<span class="name">path</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">source</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">database</span>&gt;</span>Unknown<span class="tag">&lt;/<span class="name">database</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">source</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">size</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">width</span>&gt;</span>320<span class="tag">&lt;/<span class="name">width</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">height</span>&gt;</span>160<span class="tag">&lt;/<span class="name">height</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">depth</span>&gt;</span>3<span class="tag">&lt;/<span class="name">depth</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">size</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">segmented</span>&gt;</span>0<span class="tag">&lt;/<span class="name">segmented</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">object</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">name</span>&gt;</span>target<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">pose</span>&gt;</span>Unspecified<span class="tag">&lt;/<span class="name">pose</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">truncated</span>&gt;</span>0<span class="tag">&lt;/<span class="name">truncated</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">difficult</span>&gt;</span>0<span class="tag">&lt;/<span class="name">difficult</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">bndbox</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">xmin</span>&gt;</span>190<span class="tag">&lt;/<span class="name">xmin</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">ymin</span>&gt;</span>21<span class="tag">&lt;/<span class="name">ymin</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">xmax</span>&gt;</span>230<span class="tag">&lt;/<span class="name">xmax</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">ymax</span>&gt;</span>63<span class="tag">&lt;/<span class="name">ymax</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">bndbox</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">object</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">annotation</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>object里面的name是这张图片的分类名称（这里都是target），(<code>xmin, ymin</code>)和(<code>xmax, ymax</code>)是两组坐标，表示你标记的矩形的左上角和右下角。</p>
+<p>此外还可以保存成<code>yolo3</code>要求的数据格式：</p>
+<p>点击左上角的<code>file-&gt;PascalVOC</code>,之后会显示为<code>YOLO</code>；<code>YOLO</code>数据格式，会直接把每张图片标注的标签信息保存到一个<code>txt</code>文件中:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span> <span class="number">0.521000</span> <span class="number">0.235075</span> <span class="number">0.362000</span> <span class="number">0.450249</span></span><br><span class="line"><span class="number">0</span> <span class="number">0.213000</span> <span class="number">0.645522</span> <span class="number">0.418000</span> <span class="number">0.519900</span></span><br><span class="line"><span class="number">0</span> <span class="number">0.794000</span> <span class="number">0.665423</span> <span class="number">0.376000</span> <span class="number">0.470149</span></span><br></pre></td></tr></table></figure>
+<p><code>txt</code>中信息说明：</p>
+<ul>
+<li>每一行代表标注的一个目标</li>
+<li>第一个数代表标注目标的标签，第一目标circle_red，对应数字就是0</li>
+<li>后面的四个数代表标注框的中心坐标和标注框的相对宽和高（进行了归一化)</li>
+</ul>
+<p>同时会生成一个<code>Annotation/classes.txt</code>实际类别文件<code>classes.txt</code></p>
+<h4 id="关于yolov3"><a href="#关于yolov3" class="headerlink" title="关于yolov3"></a>关于<code>yolov3</code></h4><p><a href="https://pjreddie.com/media/files/papers/YOLOv3.pdf" target="_blank" rel="noopener">yolo3 论文</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/46691043" target="_blank" rel="noopener">yolo v1深入理解</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/47575929" target="_blank" rel="noopener">yolo v2深入理解</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/49556105" target="_blank" rel="noopener">yolo v3深入理解</a></p>
+<h4 id="Pytorch-yolov3"><a href="#Pytorch-yolov3" class="headerlink" title="Pytorch-yolov3"></a><code>Pytorch-yolov3</code></h4><h5 id="Pytorch安装"><a href="#Pytorch安装" class="headerlink" title="Pytorch安装"></a><code>Pytorch</code>安装</h5><p>因为本次实践过程一开始准备使用<code>pytorch</code>,在安装的时候遇到点问题，这里记录下。曾尝试使用<code>pip install torch</code>安装，但会报<code>ModuleNotFoundError:no module named &#39;tools.nnwrap&#39;</code>的错误，这种情况可以打开<a href="https://pytorch.org/" target="_blank" rel="noopener">Pytorch官网</a>,选择你的电脑系统、安装方式、编程语言、显卡版本等会提示你使用相应的安装命令，如图：</p>
+<p><img src="/2020/11/22/dl-slider-captcha/p3.png" alt></p>
+<p>把下面的那串命令复制到终端执行就可以了，但是我使用这种方式也有个问题，下载超时；然后我直接打开了那个<a href="https://download.pytorch.org/whl/torch_stable.html" target="_blank" rel="noopener">下载地址</a>,选择了相应的版本直接在浏览器中进行下载，虽然下载速度较慢，但是勉强可以下载。</p>
+<p>之后把<code>cd</code>到下载的<code>.whl</code>文件目录，然后执行<code>pip install filename</code>即可。比如我这里是：<code>pip install torch-1.6.0+cpu-cp36-cp36m-win_amd64.whl</code></p>
+<p>因为后来我专注于使用<code>keras</code>实现，所以<code>pytorch</code>的内容暂时没了。</p>
+<h4 id="Keras-yolo3"><a href="#Keras-yolo3" class="headerlink" title="Keras-yolo3"></a><code>Keras-yolo3</code></h4><h5 id="下载使用"><a href="#下载使用" class="headerlink" title="下载使用"></a>下载使用</h5><p><code>keras-yolo3</code>的<code>GitHub</code>地址我上面已经给出了，直接将项目拉到本地即可：</p>
+<p><code>git clone https://github.com/qqwweee/keras-yolo3</code></p>
+<p>之后需要下载权重文件<a href="https://pjreddie.com/media/files/yolov3.weights" target="_blank" rel="noopener">yolov3.weights</a>,下载完成后放到<code>keras-yolo3</code>文件夹下;</p>
+<p>因为原生的<code>yolov3</code>使用<code>darknet</code>作为主干网络，需要将其配置文件转化为<code>keras</code>适用的<code>h5</code>格式文件：</p>
+<p><code>python convert.py yolov3.cfg yolov3.weights model_data/yolo.h5</code></p>
+<p>执行完以上命令，会在model_data下生成<code>yolo.h5</code>的文件。</p>
+<p>这里有一篇关于<a href="https://zhuanlan.zhihu.com/p/91587361" target="_blank" rel="noopener"><code>yolov3.cfg</code>参数说明及调参经验</a>的文章,是我在查询我的模型检测不到目标时可能存在的问题时看到的，当时我在纠结下面这个参数说明：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># Testing(此处下面的两行，测试的时候开启即可)</span><br><span class="line">#batch=1                 # 每batch个样本更新一次参数。</span><br><span class="line">#subdivisions=1          # 如果内存不够大，将batch分割为subdivisions个子batch，每个子batch的大小为batch/subdivisions。</span><br><span class="line"></span><br><span class="line"># Training(此处下面的两行，训练的时候开启即可)</span><br><span class="line">batch=64                 # 表示网络积累多少个样本后进行一次正向传播</span><br><span class="line">subdivisions=16          # 将一个batch的图片分sub次完成网络的正向传播</span><br></pre></td></tr></table></figure>
+<p>到底需不需要设置batch和subdivisions，这篇文章里讲到<code>keras</code>实际并没有使用这个配置。</p>
+<p>这里再额外解释一下，这部操作的具体含义，查看<code>yolo.py</code>可以看到有这样一行配置<code>&quot;model_path&quot;: &#39;model_data/yolo.h5&#39;</code>,其实这里生成的<code>yolo.h5</code>文件，本身就是一个训练好的模型，可以直接用来对你的图片进行检测，如果你要检测的目标恰好已经被这个模型包含了，那你就无需再训练了。</p>
+<p>因为我这里训练的滑块缺口，模型肯定是不包含的，所以需要自己从头训练，然后按照很多博客中写的，要去修改<code>yolov3.cfg</code>中的三处地方(文章下面有写)，这样就产生了以下几个问题：</p>
+<p>1、修改完之后并没有告诉我们需要重新生成<code>h5</code>文件,那有啥用呢？参考原始的<code>train.py</code>代码，有一个加载预训练模型的操作，预训练模型名称为<code>yolo_weights.h5</code>,所以如果需要使用预训练模型，这里要重新生成<code>h5</code>文件：</p>
+<p><code>python convert.py -w yolov3.cfg yolov3.weights model_data/yolo_weights.h5</code></p>
+<p>否则直接运行<code>train.py</code>会报错的；或者你可以选择不加载预训练模型，将<code>create_model</code>方法的参数<code>load_pretrained</code>修改为False即可（这时候就根本无需修改<code>yolov3.cfg</code>文件，我尝试过直接删除该文件都可以正常训练，因为根本没有去使用该文件）</p>
+<p>2、博客中要求我们使用文章中给出的<code>train.py</code>去训练，实际上就是对原始的<code>train.py</code>做了修改，设置不加载预训练模型，那为何前面要让我们去改<code>yolov3.cfg</code>文件呢，我感觉这两个操作很矛盾。</p>
+<h5 id="准备数据集"><a href="#准备数据集" class="headerlink" title="准备数据集"></a>准备数据集</h5><ul>
+<li><p>新建文件夹</p>
+<p>1) 新建一个文件夹<code>VOCdevkit</code>；</p>
+<p>2) 在<code>VOCdevkit</code>下新建文件夹<code>VOC2007</code>；</p>
+<p>3) 在<code>VOC2007</code>下，建立如下文件夹</p>
+<p><code>Annotations、ImageSets、JPEGImages、SegmentationClass、SegmentationObject</code></p>
+<p>（后面两个与分割有关暂时没用）</p>
+<p>其中<code>Annotations</code>存放图片<code>xml</code>文件(包括标注的坐标和类别)</p>
+<p><code>JPEGImages</code>存放图片(训练所需的图片)</p>
+<p>而<code>ImageSets</code>下面又有文件夹</p>
+<p><code>Layout、Main、Segmentation</code></p>
+<p><code>ImageSets-&gt;Main</code>目录下，存放<code>train.txt</code>、<code>val.txt</code>、<code>test.txt</code>、<code>trainval.txt</code>（<code>txt</code>文件中只存放图片的名字，不包括后缀名）</p>
+</li>
+<li><p>标注数据</p>
+<p>使用上面提到的<code>labelImg</code>工具，将图片全部放到<code>JPEGImages</code>文件夹，将生成的<code>xml</code>文件放到<code>Annotations</code>（<code>labelImg</code>工具可以直接设置保存的文件夹）</p>
+</li>
+<li><p>划分数据集</p>
+<p>标注好数据之后，需要划分数据集，生成<code>ImageSets/Main</code>目录下的<code>txt</code>文件，</p>
+<p>在<code>VOC2007</code>目录下运行以下代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"> </span><br><span class="line">trainval_percent = <span class="number">0.2</span></span><br><span class="line">train_percent = <span class="number">0.8</span></span><br><span class="line">xmlfilepath = <span class="string">'Annotations'</span></span><br><span class="line">txtsavepath = <span class="string">'ImageSets\Main'</span></span><br><span class="line">total_xml = os.listdir(xmlfilepath)</span><br><span class="line"> </span><br><span class="line">num = len(total_xml)</span><br><span class="line">list = range(num)</span><br><span class="line">tv = int(num * trainval_percent)</span><br><span class="line">tr = int(tv * train_percent)</span><br><span class="line">trainval = random.sample(list, tv)</span><br><span class="line">train = random.sample(trainval, tr)</span><br><span class="line"> </span><br><span class="line">ftrainval = open(<span class="string">'ImageSets/Main/trainval.txt'</span>, <span class="string">'w'</span>)</span><br><span class="line">ftest = open(<span class="string">'ImageSets/Main/test.txt'</span>, <span class="string">'w'</span>)</span><br><span class="line">ftrain = open(<span class="string">'ImageSets/Main/train.txt'</span>, <span class="string">'w'</span>)</span><br><span class="line">fval = open(<span class="string">'ImageSets/Main/val.txt'</span>, <span class="string">'w'</span>)</span><br><span class="line"> </span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> list:</span><br><span class="line">    name = total_xml[i][:<span class="number">-4</span>] + <span class="string">'\n'</span></span><br><span class="line">    <span class="keyword">if</span> i <span class="keyword">in</span> trainval:</span><br><span class="line">        ftrainval.write(name)</span><br><span class="line">        <span class="keyword">if</span> i <span class="keyword">in</span> train:</span><br><span class="line">            ftest.write(name)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            fval.write(name)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        ftrain.write(name)</span><br><span class="line"> </span><br><span class="line">ftrainval.close()</span><br><span class="line">ftrain.close()</span><br><span class="line">fval.close()</span><br><span class="line">ftest.close()</span><br></pre></td></tr></table></figure>
+<p>运行完成后，会在<code>ImageSets-&gt;Main</code>目录下生成这四个文件<code>train.txt</code>、<code>val.txt</code>、<code>test.txt</code>、<code>trainval.txt</code>。</p>
+</li>
+</ul>
+<h5 id="转换数据格式"><a href="#转换数据格式" class="headerlink" title="转换数据格式"></a>转换数据格式</h5><p>生成的数据集不能供<code>yolov3</code>直接使用。需要运行<code>voc_annotation.py</code></p>
+<ol>
+<li>需要修改<code>voc_annotation.py</code></li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sets=[(<span class="string">'2007'</span>, <span class="string">'train'</span>), (<span class="string">'2007'</span>, <span class="string">'val'</span>), (<span class="string">'2007'</span>, <span class="string">'test'</span>)]</span><br><span class="line"></span><br><span class="line">classes = [<span class="string">"target"</span>]</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>运行代码：<code>python voc_annotation.py</code></li>
+</ol>
+<p>​    在<code>keras-yolo3</code>文件夹下得到3个文件:</p>
+<p>   <code>2007_test.txt, 2007_train.txt, 2007_val.txt</code></p>
+<p>​    <code>txt</code>文件中包含图片完整的路径信息、坐标信息和类别信息</p>
+<p><em>包括前面的数据集划分，这里的转化，一直都是划分了三个数据集，但是在后面的训练代码中，实际上是对训练集划分为按照<code>9:1</code>划分训练集和验证集，所以感觉这里分的验证集没有什么用</em></p>
+<h5 id="参数-代码修改"><a href="#参数-代码修改" class="headerlink" title="参数/代码修改"></a>参数/代码修改</h5><p>1、修改参数文件<code>yolov3.cfg</code></p>
+<p>打开<code>yolov3.cfg</code>,搜索<code>yolo</code>(共3次），按如下提示修改</p>
+<p><img src="/2020/11/22/dl-slider-captcha/p2.png" alt></p>
+<p><strong>filters</strong>：<code>3*（5+len（classes））</code>（<code>yolo</code>层上一层的filters）</p>
+<p> <strong>classes</strong>: 你要训练的类别数</p>
+<p> <strong>random</strong>：原来是1，显存小的话改为0，<strong>显存大的话不用改</strong></p>
+<p><strong>！！！注意：filter要设置为具体的数字，我第一次居然就写的3*（5+len(classes)）, 导致训练完的模型检测不到目标</strong></p>
+<p>因为我这里只有目标<code>target</code>一类，所以classes=1,filter=18,因为我是用CPU训练的，所以设置的random=0</p>
+<p>2、修改model_data下的<code>voc_classes.txt</code>为自己训练的类别：</p>
+<p>将<code>voc_classes.txt</code>修改为自己训练的类别，一行一个类别名称。</p>
+<p>3、修改<code>train.py</code>的代码</p>
+<p>这里我在修改一些参数后运行时，会报错，所以直接用了博客中给出的代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">Retrain the YOLO model for your own dataset.</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> keras.backend <span class="keyword">as</span> K</span><br><span class="line"><span class="keyword">from</span> keras.layers <span class="keyword">import</span> Input, Lambda</span><br><span class="line"><span class="keyword">from</span> keras.models <span class="keyword">import</span> Model</span><br><span class="line"><span class="keyword">from</span> keras.callbacks <span class="keyword">import</span> TensorBoard, ModelCheckpoint, EarlyStopping</span><br><span class="line"> </span><br><span class="line"><span class="keyword">from</span> yolo3.model <span class="keyword">import</span> preprocess_true_boxes, yolo_body, tiny_yolo_body, yolo_loss</span><br><span class="line"><span class="keyword">from</span> yolo3.utils <span class="keyword">import</span> get_random_data</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_main</span><span class="params">()</span>:</span></span><br><span class="line">    annotation_path = <span class="string">'2007_train.txt'</span></span><br><span class="line">    log_dir = <span class="string">'logs/000/'</span></span><br><span class="line">    classes_path = <span class="string">'model_data/voc_classes.txt'</span></span><br><span class="line">    anchors_path = <span class="string">'model_data/yolo_anchors.txt'</span></span><br><span class="line">    class_names = get_classes(classes_path)</span><br><span class="line">    anchors = get_anchors(anchors_path)</span><br><span class="line">    input_shape = (<span class="number">416</span>,<span class="number">416</span>) <span class="comment"># multiple of 32, hw</span></span><br><span class="line">    model = create_model(input_shape, anchors, len(class_names) )</span><br><span class="line">    train(model, annotation_path, input_shape, anchors, len(class_names), log_dir=log_dir)</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">train</span><span class="params">(model, annotation_path, input_shape, anchors, num_classes, log_dir=<span class="string">'logs/'</span>)</span>:</span></span><br><span class="line">    model.compile(optimizer=<span class="string">'adam'</span>, loss=&#123;</span><br><span class="line">        <span class="string">'yolo_loss'</span>: <span class="keyword">lambda</span> y_true, y_pred: y_pred&#125;)</span><br><span class="line">    logging = TensorBoard(log_dir=log_dir)</span><br><span class="line">    checkpoint = ModelCheckpoint(log_dir + <span class="string">"ep&#123;epoch:03d&#125;-loss&#123;loss:.3f&#125;-val_loss&#123;val_loss:.3f&#125;.h5"</span>,</span><br><span class="line">        monitor=<span class="string">'val_loss'</span>, save_weights_only=<span class="literal">True</span>, save_best_only=<span class="literal">True</span>, period=<span class="number">1</span>)</span><br><span class="line">    batch_size = <span class="number">10</span></span><br><span class="line">    val_split = <span class="number">0.1</span></span><br><span class="line">    <span class="keyword">with</span> open(annotation_path) <span class="keyword">as</span> f:</span><br><span class="line">        lines = f.readlines()</span><br><span class="line">    np.random.shuffle(lines)</span><br><span class="line">    num_val = int(len(lines)*val_split)</span><br><span class="line">    num_train = len(lines) - num_val</span><br><span class="line">    print(<span class="string">'Train on &#123;&#125; samples, val on &#123;&#125; samples, with batch size &#123;&#125;.'</span>.format(num_train, num_val, batch_size))</span><br><span class="line"> </span><br><span class="line">    model.fit_generator(data_generator_wrap(lines[:num_train], batch_size, input_shape, anchors, num_classes),</span><br><span class="line">            steps_per_epoch=max(<span class="number">1</span>, num_train//batch_size),</span><br><span class="line">            validation_data=data_generator_wrap(lines[num_train:], batch_size, input_shape, anchors, num_classes),</span><br><span class="line">            validation_steps=max(<span class="number">1</span>, num_val//batch_size),</span><br><span class="line">            epochs=<span class="number">500</span>,</span><br><span class="line">            initial_epoch=<span class="number">0</span>)</span><br><span class="line">    model.save_weights(log_dir + <span class="string">'trained_weights.h5'</span>)</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_classes</span><span class="params">(classes_path)</span>:</span></span><br><span class="line">    <span class="keyword">with</span> open(classes_path) <span class="keyword">as</span> f:</span><br><span class="line">        class_names = f.readlines()</span><br><span class="line">    class_names = [c.strip() <span class="keyword">for</span> c <span class="keyword">in</span> class_names]</span><br><span class="line">    <span class="keyword">return</span> class_names</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_anchors</span><span class="params">(anchors_path)</span>:</span></span><br><span class="line">    <span class="keyword">with</span> open(anchors_path) <span class="keyword">as</span> f:</span><br><span class="line">        anchors = f.readline()</span><br><span class="line">    anchors = [float(x) <span class="keyword">for</span> x <span class="keyword">in</span> anchors.split(<span class="string">','</span>)]</span><br><span class="line">    <span class="keyword">return</span> np.array(anchors).reshape(<span class="number">-1</span>, <span class="number">2</span>)</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">create_model</span><span class="params">(input_shape, anchors, num_classes, load_pretrained=False, freeze_body=False,</span></span></span><br><span class="line"><span class="function"><span class="params">            weights_path=<span class="string">'model_data/yolo_weights.h5'</span>)</span>:</span></span><br><span class="line">    K.clear_session() <span class="comment"># get a new session</span></span><br><span class="line">    image_input = Input(shape=(<span class="literal">None</span>, <span class="literal">None</span>, <span class="number">3</span>))</span><br><span class="line">    h, w = input_shape</span><br><span class="line">    num_anchors = len(anchors)</span><br><span class="line">    y_true = [Input(shape=(h//&#123;<span class="number">0</span>:<span class="number">32</span>, <span class="number">1</span>:<span class="number">16</span>, <span class="number">2</span>:<span class="number">8</span>&#125;[l], w//&#123;<span class="number">0</span>:<span class="number">32</span>, <span class="number">1</span>:<span class="number">16</span>, <span class="number">2</span>:<span class="number">8</span>&#125;[l], \</span><br><span class="line">        num_anchors//<span class="number">3</span>, num_classes+<span class="number">5</span>)) <span class="keyword">for</span> l <span class="keyword">in</span> range(<span class="number">3</span>)]</span><br><span class="line"> </span><br><span class="line">    model_body = yolo_body(image_input, num_anchors//<span class="number">3</span>, num_classes)</span><br><span class="line">    print(<span class="string">'Create YOLOv3 model with &#123;&#125; anchors and &#123;&#125; classes.'</span>.format(num_anchors, num_classes))</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> load_pretrained:</span><br><span class="line">        model_body.load_weights(weights_path, by_name=<span class="literal">True</span>, skip_mismatch=<span class="literal">True</span>)</span><br><span class="line">        print(<span class="string">'Load weights &#123;&#125;.'</span>.format(weights_path))</span><br><span class="line">        <span class="keyword">if</span> freeze_body:</span><br><span class="line">            <span class="comment"># Do not freeze 3 output layers.</span></span><br><span class="line">            num = len(model_body.layers)<span class="number">-7</span></span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> range(num): model_body.layers[i].trainable = <span class="literal">False</span></span><br><span class="line">            print(<span class="string">'Freeze the first &#123;&#125; layers of total &#123;&#125; layers.'</span>.format(num, len(model_body.layers)))</span><br><span class="line"> </span><br><span class="line">    model_loss = Lambda(yolo_loss, output_shape=(<span class="number">1</span>,), name=<span class="string">'yolo_loss'</span>,</span><br><span class="line">        arguments=&#123;<span class="string">'anchors'</span>: anchors, <span class="string">'num_classes'</span>: num_classes, <span class="string">'ignore_thresh'</span>: <span class="number">0.5</span>&#125;)(</span><br><span class="line">        [*model_body.output, *y_true])</span><br><span class="line">    model = Model([model_body.input, *y_true], model_loss)</span><br><span class="line">    <span class="keyword">return</span> model</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">data_generator</span><span class="params">(annotation_lines, batch_size, input_shape, anchors, num_classes)</span>:</span></span><br><span class="line">    n = len(annotation_lines)</span><br><span class="line">    np.random.shuffle(annotation_lines)</span><br><span class="line">    i = <span class="number">0</span></span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        image_data = []</span><br><span class="line">        box_data = []</span><br><span class="line">        <span class="keyword">for</span> b <span class="keyword">in</span> range(batch_size):</span><br><span class="line">            i %= n</span><br><span class="line">            image, box = get_random_data(annotation_lines[i], input_shape, random=<span class="literal">True</span>)</span><br><span class="line">            image_data.append(image)</span><br><span class="line">            box_data.append(box)</span><br><span class="line">            i += <span class="number">1</span></span><br><span class="line">        image_data = np.array(image_data)</span><br><span class="line">        box_data = np.array(box_data)</span><br><span class="line">        y_true = preprocess_true_boxes(box_data, input_shape, anchors, num_classes)</span><br><span class="line">        <span class="keyword">yield</span> [image_data, *y_true], np.zeros(batch_size)</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">data_generator_wrap</span><span class="params">(annotation_lines, batch_size, input_shape, anchors, num_classes)</span>:</span></span><br><span class="line">    n = len(annotation_lines)</span><br><span class="line">    <span class="keyword">if</span> n==<span class="number">0</span> <span class="keyword">or</span> batch_size&lt;=<span class="number">0</span>: <span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line">    <span class="keyword">return</span> data_generator(annotation_lines, batch_size, input_shape, anchors, num_classes)</span><br><span class="line"> </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    _main()</span><br></pre></td></tr></table></figure>
+<p>4、修改<code>yolo.py</code>:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">YOLO</span><span class="params">(object)</span>:</span></span><br><span class="line">    _defaults = &#123;</span><br><span class="line">        <span class="string">"model_path"</span>: <span class="string">'logs/000/trained_weights.h5'</span>,</span><br><span class="line">        <span class="string">"anchors_path"</span>: <span class="string">'model_data/yolo_anchors.txt'</span>,</span><br><span class="line">        <span class="string">"classes_path"</span>: <span class="string">'model_data/voc_classes.txt'</span>,</span><br><span class="line">        <span class="string">"score"</span> : <span class="number">0.3</span>,</span><br><span class="line">        <span class="string">"iou"</span> : <span class="number">0.45</span>,</span><br><span class="line">        <span class="string">"model_image_size"</span> : (<span class="number">416</span>, <span class="number">416</span>),</span><br><span class="line">        <span class="string">"gpu_num"</span> : <span class="number">1</span>,</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p><em>其实这里的修改可以等到训练完成后，测试的时候再调整</em></p>
+<h5 id="开始训练"><a href="#开始训练" class="headerlink" title="开始训练"></a>开始训练</h5><p><code>python train.py</code></p>
+<p>代码中epochs=500,batch_size=10可根据情况自行修改，因为这个验证码的目标检测问题比较简单，类别也只有1类，我尝试100轮后loss降到15，但是效果并不明显，batch_size一般也根据显存大小来设置，显存小的话batch_size就设置小一些（模型效果不好时，说不定也会和batch_size有关系，可以调小一些试试，因为太大表示计算机一次性读取的图片过多，可能会处理不过来），当然batch_size设置的越大收敛的会越快；另外按照很多博客写的一般loss降到10左右即可使用。</p>
+<p>PS:运行<code>train</code>时，遇到了一个错误：<code>AttributeError: module &#39;keras.backend&#39; has no attribute &#39;control_flow_ops&#39;</code>,参考这篇博客可以解决：<a href="https://blog.csdn.net/weixin_44697140/article/details/105891364" target="_blank" rel="noopener">https://blog.csdn.net/weixin_44697140/article/details/105891364</a></p>
+<h5 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h5><p>运行<code>python yolo_video.py --image</code></p>
+<p>等这条命令运行完，再输入图片的路径进行预测。</p>
+<p><em>关于<code>yolo_video.py</code>的使用可以看<code>github</code>上面的项目描述。</em></p>
+<p>研究下代码应该可以发现，核心检测方法是<code>yolo.py</code>中的detect_image，<code>yolo_video.py</code>这边实际上是一个外层调用，首先通过命令行传入一些参数，包括图片地址，然后打开图片，传入detect_image,然后对返回的图片进行展示。</p>
+<p>不过<code>yolo.py</code>中的_defaults的配置需要注意下，可能会需要你来进行一定的调整：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">YOLO</span><span class="params">(object)</span>:</span></span><br><span class="line">    _defaults = &#123;</span><br><span class="line">        <span class="string">"model_path"</span>: <span class="string">'logs/000/trained_weights.h5'</span>,</span><br><span class="line">        <span class="string">"anchors_path"</span>: <span class="string">'model_data/yolo_anchors.txt'</span>,</span><br><span class="line">        <span class="string">"classes_path"</span>: <span class="string">'model_data/voc_classes.txt'</span>,</span><br><span class="line">        <span class="string">"score"</span> : <span class="number">0.3</span>,</span><br><span class="line">        <span class="string">"iou"</span> : <span class="number">0.45</span>,</span><br><span class="line">        <span class="string">"model_image_size"</span> : (<span class="number">416</span>, <span class="number">416</span>),</span><br><span class="line">        <span class="string">"gpu_num"</span> : <span class="number">1</span>,</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>这里<code>model_path</code>(测试的模型权重路径)、<code>anchors_path</code>(模型anchors数据路径)、<code>classes_path</code>(数据集种类路径)我们训练前已经调整过，这里不需要再做调整。</p>
+<p><code>score</code>代表一个阈值，只有置信度高于此值的目标才会被框出来，<code>iou</code>交并比（<code>Intersection-over-Union，IoU</code>），是产生的候选框（candidate bound）与原标记框（ground truth bound）的交叠率，即它们的交集与并集的比值（可以看看上面我给出的介绍<code>YOLO</code>的文章，里面有提到这一概念）。当检测到Box比较多时，可以适当的调大这两个值，以搜寻最匹配的结果；当无法检测到Box时，可以适当减少这两个值，有的博客中有提到将这两个值设置到<code>0.0几</code>来解决检测不到Box的问题，实际上这种方式并不可取，调到这么低才出现的box置信度很低，也就表示结果其实并不准确，也就是治标不治本，本质还是要去提升模型的准确率。</p>
+<h5 id="调参"><a href="#调参" class="headerlink" title="调参"></a>调参</h5><p>按照以上操作开始训练之后，可能并不一定就能直接获得理想的模型，之后我们需要来调整一些参数来尝试使模型更优。</p>
+<p>先记录下我这边的训练情况：</p>
+<p>一开始是在windows机器上运行，但是没有显卡，具体环境如下：</p>
+<p><code>windows+CPU(12G内存)+keras(2.3.1)+tersonflow(1.15.0)</code></p>
+<p>训练图片共244张，其中220用于训练，24用于验证。</p>
+<p>跑100轮用了12个小时左右吧，但是识别的时候识别率很低，因为只有少数的图片可以检测到目标，大部分都检测不到，所以明显是模型有问题，但是我多次核查我的所有改动和上面的博客中提到的是否一致，基本确定没有什么错误，此外也查询了许多资料，但是没有得到很有效的解决措施。但是基于一些杂七杂八的信息，得知不同的环境对结果也会有所不同，如有无<code>GPU</code>,<code>tersonflow</code>版本等。于是我换了一个有<code>GPU</code>的环境，打算尝试下，环境如下：</p>
+<p><code>ubuntu+GPU(GeForce GTX 1050 Ti/4G显存)+keras(2.2.4)+tersonflow-gpu(1.13.0)</code></p>
+<p>之后我对input_shape做了调整，不再使用原始的416*416，因为要求长宽都是16的倍数即可，而我的图片长宽正好为320*160，那为啥不直接就用原始尺寸呢，说不定可以得到更精确的结果。因为显存只有<code>4G</code>，继续保持<code>batch_size=8</code>,将epochs扩大了一倍调整为200（本来想的是有显卡训练会很快，但实际发现训练依然很慢，只比CPU版本有一丢丢的提升，平均一轮165秒，200轮也需要9个多小时）</p>
+<p>本次训练结束后测试效果依然不理想，真是让人头大，应该所有操作完全按照这两篇博客讲的来进行的，或许是博客中有些步骤并不对或者遗漏了某些操作，经过查资料对<code>keras yolov3</code>的进一步了解，我提出了一些疑问（具体看<strong>下载使用</strong>这部分内容），所以接下来我进行了一系列的尝试，为了加以区分，加上小标题：</p>
+<h6 id="第一次"><a href="#第一次" class="headerlink" title="第一次"></a>第一次</h6><p>重新生成编辑<code>yolov3.cfg</code>然后重新生成<code>h5</code>文件，然后使用原始的<code>train.py</code>(加载预训练模型)</p>
+<p>1、首先将<code>yolov3.cfg</code>的batch改为64，subdivisions改为16，width=320，height=160，如果<code>keras</code>真的未使用该配置，那做了修改也不会有什么影响，万一使用了，那也就保证了参数正确；然后将<code>random</code>改为1，因为我下面还是在有<code>4G</code>显存的机器上训练，所以可以尝试下改为1；filters和classes肯定还是要改的，不过之前已经改过了；</p>
+<p>2、重新生成<code>h5</code>文件:<code>python convert.py -w yolov3.cfg yolov3.weights model_data/yolo_weights.h5</code>(坑也太多了，之前转换没问题，现在转换又开始报编码错误了，原因在<code>cfg</code>文件中加了中文注释，大家注意下……)</p>
+<p>3、重新调整<code>train.py</code>,首先换为原始<code>train.py</code>文件，修改：</p>
+<p><code>annotation_path = &#39;2007_train.txt&#39;</code></p>
+<p><code>input_shape = (320,160)</code></p>
+<p><code>batch_size = 16</code>(有两处，因为之前设置batch_size=8训练好像没啥压力，所以这次调大点)</p>
+<p>开始训练后，额，速度好像倒是挺快，<strong>val_loss=<code>nan</code>！！！</strong>，貌似哪里不太对，我怀疑因为使用的是预训练模型，但是又擅自改变了input_shape导致的，所以先把input_shape改为(416, 416)，包括<code>cfg</code>文件里的width和height，然后重新生成<code>h5</code>文件，然后再次训练，好像依然不行……难道这里面是不能使用预训练模型的？</p>
+<p>这里转念一想，前50轮好像是“预热”，开始训练时有这样的提示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Load weights model_data/yolo_weights.h5.</span><br><span class="line">Freeze the first 249 layers of total 252 layers</span><br></pre></td></tr></table></figure>
+<p>所以大胆猜想了一下，因为只调整了最后两层(这也是为什么训练的这么快)，实际模型可能与我需要的相差甚远，等过了50轮之后再看看，果然50轮之后有了<code>val_loss</code>，但是在训练到100多轮之后，学习率变得极低</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Epoch 00104: ReduceLROnPlateau reducing learning rate to 9.999999717180686e-11.</span><br><span class="line">Epoch 105/300</span><br><span class="line">13/13 [==============================] - 152s 12s/step - loss: 88.1543 - val_loss: 88.0351</span><br><span class="line">Epoch 00105: early stopping</span><br></pre></td></tr></table></figure>
+<p>损失也降不下去了，导致整个训练提前结束了。没办法拿模型测试了一下，主观上感觉好像比以前稍微强点，对差不多半数的图片都能识别出box，虽然不准确，大小也不对，但是基本是定位在目标范围内。本来想的是看看怎么去优化模型，但是网上几乎查不到什么有用的资料，暂时不知道该怎么去优化。</p>
+<h6 id="第二次"><a href="#第二次" class="headerlink" title="第二次"></a>第二次</h6><p>考虑到针对<code>keras</code>的相关文章都没有提到对<code>cfg</code>文件除filter,classes、random的修改，所以我打算对自己做的多余的修改进行复原，然后重新生成<code>h5</code>文件，然后使用预训练模型,并把shape也还原为(416, 416)，开始训练发现此次的初始loss相比第一次大很多，并且速度也慢了很多，虽然不确定会有提升，但是这说明做的修改还是会产生影响的？</p>
+<p>开始训练后，在初始的50轮预热之后，报错导致训练终止：</p>
+<p><code>Hint: If you want to see a list of allocated tensors when OOM happens, add report_tensor_allocations_upon_oom to RunOptions for current allocation info</code></p>
+<p>上网查了是由于显存不够，所以调整batch_size=8继续训练。</p>
+<p>第51轮，自动Killed……难道还是因为显存不够？</p>
+<h6 id="第三次"><a href="#第三次" class="headerlink" title="第三次"></a>第三次</h6><p>在第二次调整后训练的过程中，仔细思考了下如何针对第一次的模型进行优化（因为其实对第二次根本不报啥希望），然后想到anchors（锚点），在<code>yolov3</code>中也叫先验框，这个是作者根据<code>VOC</code>数据集利用<code>kmeans</code>聚类得到的一些先验框大小,原始的共有9类：<code>10,13,  16,30,  33,23,  30,61,  62,45,  59,119,  116,90,  156,198,  373,326</code>，考虑到我的目标只有一类（滑块缺口），并且大小基本相同，或许应该根据自己的数据集来生成适用的先验框，正好项目中的<code>kmeans.py</code>就具备这样的功能，<code>kmeans.py</code>可以根据你自己的<code>xml</code>数据生成新的anchors(锚点)，只需要更改<code>filename</code>和<code>cluster_number</code>即可：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    cluster_number = <span class="number">3</span></span><br><span class="line">    filename = <span class="string">"2007_train.txt"</span></span><br><span class="line">    kmeans = YOLO_Kmeans(cluster_number, filename)</span><br><span class="line">    kmeans.txt2clusters()</span><br></pre></td></tr></table></figure>
+<p>这里我改成只生成3种大小的先验框，完全没必要生成9种，其实我感觉一种也可以，但是发现不同图片的滑块大小确实会不太一样，所以觉得生成3种大小相比一种或许能够有所提高。</p>
+<p>生成的anchors如下(这个每次运行结果可能都不太一样)：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">K anchors:</span><br><span class="line"> [[<span class="number">39</span> <span class="number">40</span>]</span><br><span class="line"> [<span class="number">39</span> <span class="number">38</span>]</span><br><span class="line"> [<span class="number">40</span> <span class="number">42</span>]]</span><br><span class="line">Accuracy: <span class="number">95.86</span>%</span><br></pre></td></tr></table></figure>
+<p>然后要做的事情：</p>
+<p>1、首先跟第一次的所有调整保持一致；</p>
+<p>2、<code>cfg</code>文件的anchors改成这三组数值，一共有三处要改，然后重新生成<code>h5</code>文件；</p>
+<p>3、修改<code>model_data/yolo_anchors.txt</code>文件内容为这三组数值；</p>
+<p>4、<code>train.py</code> 修改input_shape(320, 160),batch_size=16</p>
+<p>运行报错</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">File <span class="string">"/home/qxb/liutengfei/keras-yolo3/yolo3/model.py"</span>, line <span class="number">376</span>, <span class="keyword">in</span> yolo_loss</span><br><span class="line">anchors[anchor_mask[l]], num_classes, input_shape,calc_loss=<span class="literal">True</span>)</span><br><span class="line">IndexError: index <span class="number">3</span> <span class="keyword">is</span> out of bounds <span class="keyword">for</span> axis <span class="number">0</span> <span class="keyword">with</span> size <span class="number">3</span></span><br></pre></td></tr></table></figure>
+<p>看了下是因为对anchors进行了修改，但是没有改<code>model.py</code>，也就是模型和配置不匹配，上网查了资料，看到了这篇文章<a href="https://blog.csdn.net/BillyPan/article/details/106257642" target="_blank" rel="noopener">基于keras的YOLOV3改变锚框数量代码操作</a>,特别契合我的需求。</p>
+<p>我们这里是将原有的9个anchors（每个尺度3个anchors）改为3个anchors(每个尺度1个anchors)，要进行以下操作：</p>
+<p>1、对于<code>cfg</code>文件,不仅要修改anchors，同时要调整<code>num=3</code>（原先为9）,mask分别改为2， 1， 0；random和classes根据自身情况而定。改完后，每个<code>[yolo]</code>上面几行的filters改为x<em>（5+classes）其中X就是预设的anchor数量，此处我们预设的是1(之前是3，还记得上面是让改的是3\</em>(5+classes))，并且只有一类，所以总共是6；改完记得重新生成<code>h5</code>文件。</p>
+<p>2、修改<code>model.py</code>文件<br><code>num_layers</code>要保证为3，所以在这个文件内出现的<code>num_layer</code>下面的//3，都给去掉;另外anchor_mask改为如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">anchor_mask = [[<span class="number">2</span>], [<span class="number">1</span>], [<span class="number">0</span>]] <span class="keyword">if</span> num_layers==<span class="number">3</span> <span class="keyword">else</span> [[<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>], [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]]</span><br></pre></td></tr></table></figure>
+<p>此次训练依然提前终止，因为学习率在第120轮左右变得极低，不过此次损失值降到了21左右，相比之前的80多也算有了极大的进步，不过测试结果并不理想，测了几个大概都是这样：</p>
+<p><img src="/2020/11/22/dl-slider-captcha/p4.png" alt></p>
+<p>对着测试结果思考了一会，感觉哪里不太对劲，前面还在设置先验框来着，我先验框的大小已经明确给出了，你的检测Box给我一个长方形的是什么鬼，明显不是模型的问题，肯定哪里配置错了，上网一查，果然查到了类似的问题：</p>
+<p>问题描述：预测框的中心位置正常，但是预测的框的width和height不正常。</p>
+<p>解决方法：使得训练的配置<code>cfg</code>和测试中<code>cfg</code>的输入width, height, <code>anchorbox</code>保持一致！</p>
+<p>虽然这里给出的<code>cfg</code>配置文件我的肯定没有问题，并且测试是不需要<code>cfg</code>文件的，但是根据同样的道理，也就是说训练和测试的大小不一致可能会导致这个问题，然后我真的在训练代码中发现了问题：</p>
+<p><code>input_shape = (320, 160) # multiple of 32, hw</code></p>
+<p>这里给出了注释，这是高x宽，我写的320*160实际上宽x高，虽然这里写错了应该会对模型的精度造成一定的影响，只要我检测的时候也这样来配置应该可以正常检测，由于我一开始测试的<code>yolo.py</code>中<code>model_image_size</code>=(320, 160),那我换成(160, 320)或许可以，一试果然可以：</p>
+<p><img src="/2020/11/22/dl-slider-captcha/p5.png" alt></p>
+<p>难道说测试代码中的model_image_size实际是宽x高？测了一些图片，感觉准确率其实还可以（准确率在百分之六七十吧，至少比前几次有了质的飞跃），但是我觉得按照正确的shape重新训练一个模型，准确率应该更高，于是改了<code>train.py</code>再次训练。</p>
+<p>本次训练同样是提前结束，不过这次损失只降到24，还没有上次降得低，测试了一下，准确率跟上面的差不多，不过测试的话<code>model_image_size</code>还是要设置为(160, 320)才比较准确，所以并不是宽x高？也是高x宽？具体这里也搞不清楚到底什么原因，但是好像只要按照高x宽并且和真实测试图片保持一致就可以，而不用管训练中如何设置的。</p>
+<p>因为我之前一共标了305张图片，经过上面的划分，实际训练和验证只使用了244张，我批量测试了一下剩余的61张，差不多有44张算是比较准确的定位了（这个准确我是按照左边界是否准确来判定的，因为左边界不准确后面滑动的距离肯定也会算错，那就无法通过验证）类似这样：</p>
+<p><img src="/2020/11/22/dl-slider-captcha/p6.png" alt></p>
+<p>准确率在70%以上，不过感觉还是有点低，因为损失毕竟也没有降到10左右，所以我打算把这61张也放进训练集进行训练，反正后面测试还可以随便再下一些验证码图片。</p>
+<p>加上之后训练结果依然是70%左右，虽然损失下降到了20，但是准确率没有实质性的提升；之后我就没有再去尝试提升准确率了，其实还可以不使用预训练模型来尝试训练一下，后面如果做了相关尝试有比较好的效果再来更新……</p>
+<h5 id="批量测试以及实际应用"><a href="#批量测试以及实际应用" class="headerlink" title="批量测试以及实际应用"></a>批量测试以及实际应用</h5><p><code>yolo_video</code>中写了一大堆的命令行参数，对于不了解这块的来说反而容易懵，实际上就是去调用<code>yolo</code>中的<code>detect_image</code>,所以我们完全可以自己编写一个脚本，一个循环读取你要测试的图片，使用<code>PIL</code>的Image加载，然后传入<code>detect_image</code>,原始的<code>detect_image</code>方法返回给我们检测后的图片（会把检测的目标图片标注到图片上），所以我们直接保存到一个文件夹中，后面去挨个看一遍就知道大概的效果了。</p>
+<p>当然我们在实际应用中，一般需要用到检测到的目标的坐标，这时候我们修改一下<code>detect_image</code>的内部逻辑，把坐标返回出来就OK了。</p>
+<p>不过这里要注意一个<code>int32</code>的问题，<code>yolo</code>中是把相关坐标值转换成了<code>int32</code>类型，这里我比较疑惑，难道检测到的目标位置不会是小数吗？另外，因为转换成了<code>int32</code>类型，导致我后面使用的时候出错(<code>json.dumps int32</code>型的数据会报错)，后来发现这个问题后就把<code>yolo</code>中相关的<code>astype(&#39;int32&#39;)</code>去掉了。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/yolov3/" rel="tag"># yolov3</a>
+          
+            <a href="/tags/labelImg/" rel="tag"># labelImg</a>
+          
+            <a href="/tags/目标检测/" rel="tag"># 目标检测</a>
+          
+            <a href="/tags/keras/" rel="tag"># keras</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/11/16/python-aes/" rel="next" title="Python AES加解密">
+                <i class="fa fa-chevron-left"></i> Python AES加解密
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/12/31/spider-cookie/" rel="prev" title="Python Request库的cookie使用">
+                Python Request库的cookie使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">70</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">141</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#深度学习目标检测破解滑动验证码"><span class="nav-text">深度学习目标检测破解滑动验证码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#前言"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#正文"><span class="nav-text">正文</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#labelImg"><span class="nav-text">labelImg</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#关于yolov3"><span class="nav-text">关于yolov3</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Pytorch-yolov3"><span class="nav-text">Pytorch-yolov3</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Pytorch安装"><span class="nav-text">Pytorch安装</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Keras-yolo3"><span class="nav-text">Keras-yolo3</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#下载使用"><span class="nav-text">下载使用</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#准备数据集"><span class="nav-text">准备数据集</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#转换数据格式"><span class="nav-text">转换数据格式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#参数-代码修改"><span class="nav-text">参数/代码修改</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#开始训练"><span class="nav-text">开始训练</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#测试"><span class="nav-text">测试</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#调参"><span class="nav-text">调参</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#第一次"><span class="nav-text">第一次</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#第二次"><span class="nav-text">第二次</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#第三次"><span class="nav-text">第三次</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#批量测试以及实际应用"><span class="nav-text">批量测试以及实际应用</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
