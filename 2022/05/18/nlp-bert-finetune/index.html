@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="deep learning,nlp,BERT,transformers,finetune,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="BERT finetune本文代码部分参考github项目：https://github.com/BSlience/search-engine-zerotohero/tree/main/public/bert_wwm_pretrain 项目概述本文的主要内容是基于huggingface transformer的chinese-bert-wwm模型，在自己的语料集上进行finetune的整体步骤和代">
+<meta name="keywords" content="deep learning,nlp,BERT,transformers,finetune">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BERT finetune">
+<meta property="og:url" content="http://yoursite.com/2022/05/18/nlp-bert-finetune/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="BERT finetune本文代码部分参考github项目：https://github.com/BSlience/search-engine-zerotohero/tree/main/public/bert_wwm_pretrain 项目概述本文的主要内容是基于huggingface transformer的chinese-bert-wwm模型，在自己的语料集上进行finetune的整体步骤和代">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2022-07-16T08:17:02.137Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="BERT finetune">
+<meta name="twitter:description" content="BERT finetune本文代码部分参考github项目：https://github.com/BSlience/search-engine-zerotohero/tree/main/public/bert_wwm_pretrain 项目概述本文的主要内容是基于huggingface transformer的chinese-bert-wwm模型，在自己的语料集上进行finetune的整体步骤和代">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2022/05/18/nlp-bert-finetune/">
+
+
+
+
+
+  <title>BERT finetune | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/05/18/nlp-bert-finetune/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">BERT finetune</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-05-18T15:34:54+08:00">
+                2022-05-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="BERT-finetune"><a href="#BERT-finetune" class="headerlink" title="BERT finetune"></a>BERT finetune</h2><p>本文代码部分参考github项目：<br><a href="https://github.com/BSlience/search-engine-zerotohero/tree/main/public/bert_wwm_pretrain" target="_blank" rel="noopener">https://github.com/BSlience/search-engine-zerotohero/tree/main/public/bert_wwm_pretrain</a></p>
+<h3 id="项目概述"><a href="#项目概述" class="headerlink" title="项目概述"></a>项目概述</h3><p>本文的主要内容是基于huggingface transformer的chinese-bert-wwm模型，在自己的语料集上进行finetune的整体步骤和代码实现。</p>
+<p>关于chinese-bert-wwm：</p>
+<p><a href="https://huggingface.co/hfl/chinese-bert-wwm" target="_blank" rel="noopener">https://huggingface.co/hfl/chinese-bert-wwm</a></p>
+<p><a href="https://github.com/ymcui/Chinese-BERT-wwm" target="_blank" rel="noopener">https://github.com/ymcui/Chinese-BERT-wwm</a></p>
+<p>主要步骤包括：预处理和训练两个部分</p>
+<p><strong>预处理(pre-processing)</strong></p>
+<ol>
+<li>下载chinese-bert-wwm模型的预训练词表(vocab.txt)、config.json和pytorch_model.bin；</li>
+<li>读取自己的原始数据集（比如大量的文章、文本），做句子分割，然后保存成语料集；</li>
+<li>根据自己的语料集进行分词（BERT是分割成单个字），并将自己语料集中相比原始的词表多的字（或者词）添加到原始词表中（就是一个扩充操作），然后就生成了自己的词表；</li>
+</ol>
+<p>步骤1的下载地址：<a href="https://huggingface.co/hfl/chinese-bert-wwm/tree/main" target="_blank" rel="noopener">https://huggingface.co/hfl/chinese-bert-wwm/tree/main</a></p>
+<p>如果生成的语料集比较大，为了后续加载方便可以存储至内存型的数据库中（比如Redis）</p>
+<p><strong>训练(train)</strong></p>
+<ol>
+<li>加载BertTokenizer，读取语料集，生成数据；</li>
+<li>针对1中得到的数据，进行填充、截断和mask等操作，借助data collator类；</li>
+<li>加载chinese-bert-wwm模型的预训练权重文件，基于当前数据开始训练（微调）；</li>
+<li>保存模型，测试效果。</li>
+</ol>
+<p>关于data collator的实现可以查看我的上一篇文章whole word mask；</p>
+<p>步骤3加载的预训练权重文件就是上述预处理步骤1下载的，不过要注意把config.json和pytorch_model.bin放在同一个目录下，然后加载这个目录即可。</p>
+<a id="more"></a>
+<h3 id="预处理"><a href="#预处理" class="headerlink" title="预处理"></a>预处理</h3><p>这里原始数据（大量的知乎文章）存储在mongodb中，我们读取出来，然后执行预处理步骤2、3</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">clean_html_tag</span><span class="params">(data: str)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    清除给定文本中包含的HTML标签</span></span><br><span class="line"><span class="string">    :param data:</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="keyword">if</span> isinstance(data, float):</span><br><span class="line">        print(data)</span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span></span><br><span class="line">    result = bs(data).get_text()</span><br><span class="line">    <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">read_data_from_mongodb</span><span class="params">(mongodb_url, db, collection)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    从mongodb中读取数据</span></span><br><span class="line"><span class="string">    :param mongodb_url: 连接mongodb的地址</span></span><br><span class="line"><span class="string">    :param db: 数据库名称</span></span><br><span class="line"><span class="string">    :param collection: 集合名称</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    client = MongoClient(mongodb_url)</span><br><span class="line">    collection = client[db][collection]</span><br><span class="line">    data = defaultdict(list)  <span class="comment"># 可以将字典的value设置list类型</span></span><br><span class="line">    <span class="keyword">for</span> each <span class="keyword">in</span> tqdm(collection.find(batch_size=<span class="number">10</span>)):   <span class="comment"># tqdm用于显示进度</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="keyword">if</span> each[<span class="string">"title"</span>]:</span><br><span class="line">                title = clean_html_tag(each[<span class="string">"title"</span>])</span><br><span class="line">                data[<span class="string">'title'</span>].append(title)</span><br><span class="line">            <span class="keyword">if</span> each[<span class="string">"excerpt"</span>]:</span><br><span class="line">                summary = clean_html_tag(each[<span class="string">'excerpt'</span>])</span><br><span class="line">                data[<span class="string">'summary'</span>].append(summary)</span><br><span class="line">            <span class="keyword">if</span> each[<span class="string">'content'</span>]:</span><br><span class="line">                clean_content = clean_html_tag(each[<span class="string">'content'</span>])</span><br><span class="line">                data[<span class="string">'content'</span>].append(clean_content)</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> _e:</span><br><span class="line">            print(_e)</span><br><span class="line">            print(each)</span><br><span class="line">    <span class="keyword">return</span> data</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_split_sentences</span><span class="params">(data)</span>:</span></span><br><span class="line">    split_sentence = SplitSentence()</span><br><span class="line">    data_new = defaultdict(list)</span><br><span class="line">    <span class="keyword">for</span> key, value <span class="keyword">in</span> data.items():</span><br><span class="line">        <span class="keyword">if</span> key == <span class="string">'title'</span>:</span><br><span class="line">            data_new[key].extend(data[key])</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            sentences_list = []</span><br><span class="line">            <span class="keyword">for</span> sentences <span class="keyword">in</span> data[key]:</span><br><span class="line">                <span class="keyword">for</span> each <span class="keyword">in</span> split_sentence.split_sentence(sentences):</span><br><span class="line">                    sentences_list.append(each)</span><br><span class="line">                data_new[key].extend(sentences_list)</span><br><span class="line">    <span class="keyword">return</span> data_new</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">pre_processing</span><span class="params">(redis_host, redis_port, redis_pwd, mongodb_host, db, collection)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    预处理操作，包括从mongodb读取数据，分割、存放至redis</span></span><br><span class="line"><span class="string">    :param redis_host:</span></span><br><span class="line"><span class="string">    :param redis_port:</span></span><br><span class="line"><span class="string">    :param redis_pwd</span></span><br><span class="line"><span class="string">    :param mongodb_host:</span></span><br><span class="line"><span class="string">    :param db:</span></span><br><span class="line"><span class="string">    :param collection:</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    print(<span class="string">'start reading data....'</span>)</span><br><span class="line">    data = read_data_from_mongodb(mongodb_host, db, collection)</span><br><span class="line">    print(<span class="string">'read data from mongodb finished'</span>)</span><br><span class="line">    print(<span class="string">'*'</span> * <span class="number">50</span>)</span><br><span class="line">    print(<span class="string">'start saving data'</span>)</span><br><span class="line">    data = get_split_sentences(data)</span><br><span class="line">    res = redis.StrictRedis(host=redis_host, port=redis_port, db=<span class="number">0</span>, password=redis_pwd)</span><br><span class="line">    res.set(<span class="string">'sentences'</span>, json.dumps(data))</span><br><span class="line">    print(<span class="string">'save data to redis finished'</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="comment"># 预训练词表存储的位置</span></span><br><span class="line">    <span class="comment"># 下载地址：https://huggingface.co/hfl/chinese-bert-wwm/tree/main</span></span><br><span class="line">    original_vocab_file_path = <span class="string">'data/chinese_bert_wwm/vocab.txt'</span></span><br><span class="line">    <span class="comment"># 语料存储位置</span></span><br><span class="line">    corpus_file_path = <span class="string">'data/pretrain_corpus.txt'</span></span><br><span class="line">    <span class="comment"># 自己的词表（训练效果一般取决于，词表中的词在语料中出现的次数，如果重要的词在语料中只出现了一次效果就不好）</span></span><br><span class="line">    vocab_file_path = <span class="string">'data/vocab.txt'</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># mongo和redis配置</span></span><br><span class="line">    mongodb_config = &#123;<span class="string">'host'</span>: <span class="string">'mongodb://127.0.0.1:27017'</span>, <span class="string">'db'</span>: <span class="string">'zhihu_new'</span>, <span class="string">'collection'</span>: <span class="string">'articles'</span>&#125;</span><br><span class="line">    redis_config = &#123;<span class="string">'host'</span>: <span class="string">'127.0.0.1'</span>, <span class="string">'port'</span>: <span class="string">'6379'</span>, <span class="string">'db_index'</span>: <span class="string">'0'</span>, <span class="string">'pwd'</span>: <span class="string">'xxx'</span>&#125;</span><br><span class="line">    <span class="comment"># 预处理，生成预料(存至Redis，方便后续使用)</span></span><br><span class="line">    pre_processing(</span><br><span class="line">        redis_host=redis_config[<span class="string">'host'</span>], redis_port=redis_config[<span class="string">'port'</span>], redis_pwd=redis_config[<span class="string">'pwd'</span>],</span><br><span class="line">        mongodb_host=mongodb_config[<span class="string">'host'</span>], db=mongodb_config[<span class="string">'db'</span>], collection=mongodb_config[<span class="string">'collection'</span>]</span><br><span class="line">    )</span><br><span class="line">    res = redis.StrictRedis(</span><br><span class="line">        host=redis_config[<span class="string">'host'</span>],</span><br><span class="line">        port=redis_config[<span class="string">'port'</span>],</span><br><span class="line">        db=<span class="number">0</span>,</span><br><span class="line">        password=redis_config[<span class="string">'pwd'</span>]</span><br><span class="line">    )</span><br><span class="line">    data = json.loads(res.get(<span class="string">'sentences'</span>))</span><br><span class="line">    data_list = []</span><br><span class="line">    <span class="keyword">for</span> each <span class="keyword">in</span> data.keys():</span><br><span class="line">        data_list.extend(data[each])</span><br><span class="line">    print(<span class="string">'start producing corpus'</span>)</span><br><span class="line">    <span class="comment"># 保存语料到文件</span></span><br><span class="line">    save_corpus(data_list, corpus_file_path)</span><br><span class="line">    print(<span class="string">'start producing vocab'</span>)</span><br><span class="line">    <span class="comment"># 生成词表(其实就是单个的字符)</span></span><br><span class="line">    generate_vocab(data_list, vocab_file_path, original_vocab_file_path)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+<p>这里句子分割单独封装了一个类SplitSentence，具体实现如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">replace_with_separator</span><span class="params">(text, separator, regexs)</span>:</span></span><br><span class="line">    replacement = <span class="string">r"\1"</span> + separator + <span class="string">r"\2"</span></span><br><span class="line">    result = text</span><br><span class="line">    <span class="keyword">for</span> regex <span class="keyword">in</span> regexs:</span><br><span class="line">        result = regex.sub(replacement, result)</span><br><span class="line">    <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SplitSentence</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    这个分割的方法需要根据你的数据集调整，比如针对一些没有分开的句子，添加分割符到这里</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.separator = <span class="string">r'@'</span></span><br><span class="line">        self.re_sentence = re.compile(<span class="string">r'(\S.+?[.!?])(?=\s+|$)|(\S.+?)(?=[\n]|$)'</span>, re.UNICODE)</span><br><span class="line">        self.ab_senior = re.compile(<span class="string">r'([A-Z][a-z]&#123;1,2&#125;\.)\s(\w)'</span>, re.UNICODE)</span><br><span class="line">        self.ab_acronym = re.compile(<span class="string">r'(\.[a-zA-Z]\.)\s(\w)'</span>, re.UNICODE)</span><br><span class="line">        self.undo_ab_senior = re.compile(<span class="string">r'([A-Z][a-z]&#123;1,2&#125;\.)'</span> + self.separator + <span class="string">r'(\w)'</span>, re.UNICODE)</span><br><span class="line">        self.undo_ab_acronym = re.compile(<span class="string">r'(\.[a-zA-Z]\.)'</span> + self.separator + <span class="string">r'(\w)'</span>, re.UNICODE)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">split_sentence</span><span class="params">(self, text, best=True)</span>:</span></span><br><span class="line">        <span class="comment"># 句子分割，主要是通过标点符号，如果分割结果发现有些句子分割效果不好，再增加相应的分割符号</span></span><br><span class="line">        text = re.sub(<span class="string">'([。！？?])([^”’])'</span>, <span class="string">r"\1\n\2"</span>, text)</span><br><span class="line">        text = re.sub(<span class="string">'(\.&#123;6&#125;)([^”’])'</span>, <span class="string">r"\1\n\2"</span>, text)</span><br><span class="line">        text = re.sub(<span class="string">'(…&#123;2&#125;)([^”’])'</span>, <span class="string">r"\1\n\2"</span>, text)</span><br><span class="line">        text = re.sub(<span class="string">'([。！？?][”’])([^，。！？?])'</span>, <span class="string">r'\1\n\2'</span>, text)</span><br><span class="line">        <span class="keyword">for</span> chunk <span class="keyword">in</span> text.split(<span class="string">"\n"</span>):</span><br><span class="line">            chunk = chunk.strip()</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> chunk:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> best:</span><br><span class="line">                <span class="keyword">yield</span> chunk</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            processed = replace_with_separator(chunk, self.separator, [self.ab_senior, self.ab_acronym])</span><br><span class="line">            <span class="keyword">for</span> sentence <span class="keyword">in</span> self.re_sentence.finditer(processed):</span><br><span class="line">                sentence = replace_with_separator(sentence.group(), <span class="string">r" "</span>,</span><br><span class="line">                                                  [self.undo_ab_senior, self.undo_ab_acronym])</span><br><span class="line">                <span class="keyword">yield</span> sentence</span><br></pre></td></tr></table></figure>
+<p>上面是pre_processing()方法的实现，接下来还有保存语料到文件和生成词表的操作</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">save_corpus</span><span class="params">(data, corpus_file_path)</span>:</span></span><br><span class="line">    <span class="comment"># 语料其实就是一段段的文本（分割后的一句话）</span></span><br><span class="line">    <span class="keyword">with</span> open(corpus_file_path, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:</span><br><span class="line">        <span class="keyword">for</span> row <span class="keyword">in</span> tqdm(data, total=len(data)):</span><br><span class="line">            f.write(row + <span class="string">'\n'</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">generate_vocab</span><span class="params">(total_data, vocab_file_path, original_vocab_file_path)</span>:</span></span><br><span class="line">    <span class="comment"># 以单个的字作为词表（BERT用的是字，也有其他方法是用词的）</span></span><br><span class="line">    total_tokens = [token <span class="keyword">for</span> sent <span class="keyword">in</span> total_data <span class="keyword">for</span> token <span class="keyword">in</span> sent]</span><br><span class="line">    counter = Counter(total_tokens)</span><br><span class="line">    vocab = [token <span class="keyword">for</span> token, freq <span class="keyword">in</span> counter.items()]</span><br><span class="line">    <span class="comment"># 更新下载的预训练词表，也就是把自己词表添加到原始词表中</span></span><br><span class="line">    <span class="comment"># 如果只使用自己的词表，则无法fine tune成功，一定是扩充原始词表</span></span><br><span class="line">    original_vocab = []</span><br><span class="line">    <span class="keyword">with</span> open(original_vocab_file_path, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:</span><br><span class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> f.readlines():</span><br><span class="line">            line = line.strip(<span class="string">'\n'</span>)</span><br><span class="line">            original_vocab.append(line)</span><br><span class="line">    need_add_token = [each <span class="keyword">for</span> each <span class="keyword">in</span> vocab <span class="keyword">if</span> each <span class="keyword">not</span> <span class="keyword">in</span> original_vocab]</span><br><span class="line"></span><br><span class="line">    original_vocab.extend(need_add_token)</span><br><span class="line">    <span class="keyword">with</span> open(vocab_file_path, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:</span><br><span class="line">        f.write(<span class="string">'\n'</span>.join(original_vocab))</span><br></pre></td></tr></table></figure>
+<p>上面的代码是把所有的语料都放到列表中，然后全部操作完再一条条的写到文件中，很容易在执行的时候超出内存卡死，所以我优化了下，读取一条、处理一条、保存一条，运行瞬间丝滑。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">根据原项目自己优化的版本</span></span><br><span class="line"><span class="string">原项目会把所有的句子都放在内存中，很容易电脑内存超出了</span></span><br><span class="line"><span class="string">这里改为一句一句的读，分割，然后存到文件，并且不使用redis</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup <span class="keyword">as</span> bs</span><br><span class="line"><span class="keyword">from</span> pymongo <span class="keyword">import</span> MongoClient</span><br><span class="line"><span class="keyword">from</span> tqdm <span class="keyword">import</span> tqdm</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> processing <span class="keyword">import</span> SplitSentence</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">clean_html_tag</span><span class="params">(data: str)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    清除给定文本中包含的HTML标签</span></span><br><span class="line"><span class="string">    :param data:</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="keyword">if</span> isinstance(data, float):</span><br><span class="line">        print(data)</span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span></span><br><span class="line">    result = bs(data).get_text()</span><br><span class="line">    <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">read_data_from_mongodb</span><span class="params">(mongodb_url, db, collection)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    从mongodb中读取数据</span></span><br><span class="line"><span class="string">    :param mongodb_url: 连接mongodb的地址</span></span><br><span class="line"><span class="string">    :param db: 数据库名称</span></span><br><span class="line"><span class="string">    :param collection: 集合名称</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    client = MongoClient(mongodb_url)</span><br><span class="line">    collection = client[db][collection]</span><br><span class="line">    <span class="keyword">for</span> each <span class="keyword">in</span> tqdm(collection.find(batch_size=<span class="number">10</span>)):   <span class="comment"># tqdm用于显示进度</span></span><br><span class="line">        data = &#123;&#125;</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="keyword">for</span> key <span class="keyword">in</span> [<span class="string">'title'</span>, <span class="string">'excerpt'</span>, <span class="string">'content'</span>]:</span><br><span class="line">                <span class="keyword">if</span> each[key]:</span><br><span class="line">                    value = clean_html_tag(each[key])</span><br><span class="line">                    data[key] = value</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> _e:</span><br><span class="line">            print(_e)</span><br><span class="line">            print(each)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">yield</span> data</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">generate_vocab</span><span class="params">(corpus_file_path, vocab_file_path, original_vocab_file_path)</span>:</span></span><br><span class="line">    <span class="comment"># 以单个的字作为词表（BERT用的是字，也有其他方法是用词的）</span></span><br><span class="line">    vocab = set()  <span class="comment"># 词表，不重复</span></span><br><span class="line">    <span class="keyword">with</span> open(corpus_file_path, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> fr:</span><br><span class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> fr.readlines():</span><br><span class="line">            <span class="keyword">for</span> word <span class="keyword">in</span> line:</span><br><span class="line">                vocab.add(word)</span><br><span class="line">    <span class="comment"># 更新下载的预训练词表，也就是把自己词表添加到原始词表中</span></span><br><span class="line">    <span class="comment"># 如果只使用自己的词表，则无法fine tune成功，一定是扩充原始词表</span></span><br><span class="line">    original_vocab = []</span><br><span class="line">    <span class="keyword">with</span> open(original_vocab_file_path, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:</span><br><span class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> f.readlines():  <span class="comment"># 原始词表中，每行就是一个字符</span></span><br><span class="line">            line = line.strip(<span class="string">'\n'</span>)</span><br><span class="line">            original_vocab.append(line)</span><br><span class="line">    need_add_token = vocab.difference(set(original_vocab))</span><br><span class="line">    <span class="comment"># new_vocab = vocab.union(original_vocab)  # 并集(这样会打乱原始此表的顺序)</span></span><br><span class="line">    <span class="keyword">with</span> open(vocab_file_path, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:</span><br><span class="line">        f.write(<span class="string">'\n'</span>.join(original_vocab))</span><br><span class="line">        f.write(<span class="string">'\n'</span>)</span><br><span class="line">        f.write(<span class="string">'\n'</span>.join(need_add_token))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="comment"># 预训练词表存储的位置</span></span><br><span class="line">    <span class="comment"># 下载地址：https://huggingface.co/hfl/chinese-bert-wwm/tree/main</span></span><br><span class="line">    original_vocab_file_path = <span class="string">'data/chinese_bert_wwm/vocab.txt'</span></span><br><span class="line">    <span class="comment"># 语料存储位置</span></span><br><span class="line">    corpus_file_path = <span class="string">'data/pretrain_corpus.txt'</span></span><br><span class="line">    <span class="comment"># 自己的词表（训练效果一般取决于，词表中的词在语料中出现的次数，如果重要的词在语料中只出现了一次效果就不好）</span></span><br><span class="line">    vocab_file_path = <span class="string">'data/vocab.txt'</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># mongodb配置</span></span><br><span class="line">    mongodb_config = &#123;<span class="string">'host'</span>: <span class="string">'mongodb://127.0.0.1:27017'</span>, <span class="string">'db'</span>: <span class="string">'zhihu_new'</span>, <span class="string">'collection'</span>: <span class="string">'articles'</span>&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 读取数据预处理，分割句子，生成语料</span></span><br><span class="line">    data_list = read_data_from_mongodb(</span><br><span class="line">        mongodb_url=mongodb_config[<span class="string">'host'</span>],</span><br><span class="line">        db=mongodb_config[<span class="string">'db'</span>],</span><br><span class="line">        collection=mongodb_config[<span class="string">'collection'</span>]</span><br><span class="line">    )</span><br><span class="line">    <span class="comment"># 语料文件，每行一句文本</span></span><br><span class="line">    print(<span class="string">'start producing corpus'</span>)</span><br><span class="line">    fw = open(corpus_file_path, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> data <span class="keyword">in</span> data_list:  <span class="comment"># data_list是一个生成器</span></span><br><span class="line">        split_sentence = SplitSentence()</span><br><span class="line">        <span class="keyword">for</span> key, value <span class="keyword">in</span> data.items():</span><br><span class="line">            <span class="keyword">if</span> key == <span class="string">'title'</span>:</span><br><span class="line">                fw.write(value+<span class="string">"\n"</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">for</span> each <span class="keyword">in</span> split_sentence.split_sentence(value):</span><br><span class="line">                    fw.write(each+<span class="string">"\n"</span>)</span><br><span class="line">    fw.close()</span><br><span class="line">    print(<span class="string">'saving corpus finished'</span>)</span><br><span class="line"></span><br><span class="line">    print(<span class="string">'start producing vocab'</span>)</span><br><span class="line">    <span class="comment"># 生成词表(其实就是单个的字符)</span></span><br><span class="line">    generate_vocab(corpus_file_path, vocab_file_path, original_vocab_file_path)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+<p>不过这里需要注意的是，扩充原词表时，不要改变原始词表的顺序，保持原词表顺序不变，在后面添加新词，新添加的顺序无所谓。</p>
+<h3 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h3><p>先配置一个整体的配置文件，方便后面管理使用</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">CONFIG = &#123;</span><br><span class="line">    <span class="string">'corpus_file_path'</span>: <span class="string">'data/pretrain_corpus.txt'</span>,   <span class="comment"># 训练样本（语料）</span></span><br><span class="line">    <span class="string">'vocab_file_path'</span>: <span class="string">'data/vocab.txt'</span>,  <span class="comment"># 这个词表是根据自己的数据集扩充过的</span></span><br><span class="line">    <span class="string">'redis_url'</span>: <span class="string">'127.0.0.1'</span>,</span><br><span class="line">    <span class="string">'redis_port'</span>: <span class="number">6379</span>,</span><br><span class="line">    <span class="string">'max_seq_len'</span>: <span class="number">102</span>,</span><br><span class="line">    <span class="string">'batch_size'</span>: <span class="number">32</span>,</span><br><span class="line">    <span class="string">'output_dir'</span>: <span class="string">'data/whole_word_mask_bert_output'</span>,</span><br><span class="line">    <span class="string">'bert_model_dir'</span>: <span class="string">'data/chinese_bert_wwm'</span>,  <span class="comment"># 存放config.json和pytorch_model.bin的路径</span></span><br><span class="line">    <span class="string">'debug'</span>: <span class="literal">False</span>  <span class="comment"># 调试用的</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>训练代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">seed_everyone</span><span class="params">(seed_)</span>:</span></span><br><span class="line">    torch.manual_seed(seed_)</span><br><span class="line">    torch.cuda.manual_seed_all(seed_)</span><br><span class="line">    np.random.seed(seed_)</span><br><span class="line">    random.seed(seed_)</span><br><span class="line">    <span class="keyword">return</span> seed_</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">check_dir</span><span class="params">(path)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(path):</span><br><span class="line">        os.makedirs(path)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SearchDataSet</span><span class="params">(Dataset)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, data_dict: dict)</span>:</span></span><br><span class="line">        self.data_dict = data_dict</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 重写魔术方法，可以通过索引来访问对象</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getitem__</span><span class="params">(self, index: int)</span> -&gt; tuple:</span></span><br><span class="line">        data = (self.data_dict[<span class="string">'input_ids'</span>][index],</span><br><span class="line">                self.data_dict[<span class="string">'token_type_ids'</span>][index],</span><br><span class="line">                self.data_dict[<span class="string">'attention_mask'</span>][index])</span><br><span class="line">        <span class="keyword">return</span> data</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__len__</span><span class="params">(self)</span> -&gt; int:</span></span><br><span class="line">        <span class="keyword">return</span> len(self.data_dict[<span class="string">'input_ids'</span>])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">read_data</span><span class="params">(train_file_path, tokenizer: BertTokenizer, debug=False)</span> -&gt; dict:</span></span><br><span class="line">    train_data = open(train_file_path, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>).readlines()</span><br><span class="line">    <span class="keyword">if</span> debug:</span><br><span class="line">        train_data = train_data[:<span class="number">2000</span>]</span><br><span class="line">    inputs = defaultdict(list)</span><br><span class="line">    <span class="keyword">for</span> row <span class="keyword">in</span> tqdm(train_data, desc=<span class="string">'Preprocessing train data'</span>, total=len(train_data)):</span><br><span class="line">        sentence = row.strip()</span><br><span class="line">        <span class="comment"># encode</span></span><br><span class="line">        inputs_dict = tokenizer.encode_plus(sentence, add_special_tokens=<span class="literal">True</span>,</span><br><span class="line">                                            return_token_type_ids=<span class="literal">True</span>, return_attention_mask=<span class="literal">True</span>)</span><br><span class="line">        inputs[<span class="string">'input_ids'</span>].append(inputs_dict[<span class="string">'input_ids'</span>])</span><br><span class="line">        inputs[<span class="string">'token_type_ids'</span>].append(inputs_dict[<span class="string">'token_type_ids'</span>])</span><br><span class="line">        inputs[<span class="string">'attention_mask'</span>].append(inputs_dict[<span class="string">'attention_mask'</span>])</span><br><span class="line">    <span class="keyword">return</span> inputs</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    seed_everyone(<span class="number">20220531</span>)  <span class="comment"># 统一设置随机数种子</span></span><br><span class="line">    train_file_path = CONFIG[<span class="string">'corpus_file_path'</span>]</span><br><span class="line">    <span class="comment"># 加载预训练的分词器</span></span><br><span class="line">    tokenizer = BertTokenizer.from_pretrained(CONFIG[<span class="string">'vocab_file_path'</span>], local_file_only=<span class="literal">True</span>)</span><br><span class="line">    <span class="comment"># 使用分词器读取数据（语料）</span></span><br><span class="line">    data = read_data(train_file_path, tokenizer, CONFIG[<span class="string">'debug'</span>])</span><br><span class="line"></span><br><span class="line">    train_dataset = SearchDataSet(data)</span><br><span class="line">    <span class="comment"># huggingface transformer中特有的概念，data collator 数据修补(截断和填充)</span></span><br><span class="line">    <span class="comment"># https://huggingface.co/docs/transformers/main/en/main_classes/data_collator#transformers.DataCollatorForLanguageModeling</span></span><br><span class="line">    <span class="comment"># 上面的train_dataset中只有单独的句子，还没有标签（BERT中就是被MASK的值,随机遮蔽一些值，然后预测）</span></span><br><span class="line">    data_collator = SearchCollator(max_seq_len=CONFIG[<span class="string">'max_seq_len'</span>], tokenizer=tokenizer, mlm_probability=<span class="number">0.15</span>)</span><br><span class="line">    <span class="comment"># 测试</span></span><br><span class="line">    data_collator(list(train_dataset))</span><br><span class="line"></span><br><span class="line">    output_dir = CONFIG[<span class="string">'output_dir'</span>]</span><br><span class="line">    model = BertForMaskedLM.from_pretrained(CONFIG[<span class="string">'bert_model_dir'</span>])</span><br><span class="line"></span><br><span class="line">    model_save_dir = (os.path.join(output_dir, <span class="string">'best_model_dir'</span>))</span><br><span class="line">    tokenizer_and_config = os.path.join(output_dir, <span class="string">'tokenizer_and_config'</span>)</span><br><span class="line">    check_dir(model_save_dir)</span><br><span class="line">    check_dir(tokenizer_and_config)</span><br><span class="line"></span><br><span class="line">    training_args = TrainingArguments(</span><br><span class="line">        output_dir=output_dir,</span><br><span class="line">        overwrite_output_dir=<span class="literal">True</span>,</span><br><span class="line">        num_train_epochs=<span class="number">20</span>,</span><br><span class="line">        fp16_backend=<span class="string">'auto'</span>,</span><br><span class="line">        per_device_train_batch_size=<span class="number">128</span>,</span><br><span class="line">        save_steps=<span class="number">500</span>,</span><br><span class="line">        logging_steps=<span class="number">500</span>,</span><br><span class="line">        save_total_limit=<span class="number">5</span>,</span><br><span class="line">        prediction_loss_only=<span class="literal">True</span>,</span><br><span class="line">        <span class="comment"># report_to='comet_ml',</span></span><br><span class="line">        logging_first_step=<span class="literal">True</span>,</span><br><span class="line">        dataloader_num_workers=<span class="number">4</span>,</span><br><span class="line">        disable_tqdm=<span class="literal">False</span>,</span><br><span class="line">        seed=<span class="number">202203</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    trainer = Trainer(</span><br><span class="line">        model=model,</span><br><span class="line">        args=training_args,</span><br><span class="line">        data_collator=data_collator,</span><br><span class="line">        train_dataset=train_dataset,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    trainer.train()</span><br><span class="line">    trainer.save_model(model_save_dir)</span><br><span class="line">    tokenizer.save_pretrained(tokenizer_and_config)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+<p>训练的时候可能会出现这个问题</p>
+<p><code>Failed to create a directory: data/whole_word_mask_bert_output\runs\Jun21_16-47-59_user; No such file or directory</code></p>
+<p>我在whole_word_mask_bert_output文件夹下又创建了一个runs文件夹解决了。</p>
+<p>另外，如果你的debug配置忘记改为False，那么传入trainer.train()的数据只有2000条，是会报错的，<code>IndexError: index out of range in self</code></p>
+<p>报这个错误是embedding层的张量输入超过了合法范围，embedding层的合法张量输入数值范围应该在[0, num_embeddings-1]的范围内，过大过小都会报错。</p>
+<h4 id="关于tokenizer-encode-plus"><a href="#关于tokenizer-encode-plus" class="headerlink" title="关于tokenizer.encode_plus"></a>关于tokenizer.encode_plus</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">tokenizer = BertTokenizer.from_pretrained(CONFIG[<span class="string">'vocab_file_path'</span>], local_file_only=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">inputs_dict = tokenizer.encode_plus(</span><br><span class="line">    sentence, </span><br><span class="line">    add_special_tokens=<span class="literal">True</span>,</span><br><span class="line">    return_token_type_ids=<span class="literal">True</span>, </span><br><span class="line">    return_attention_mask=<span class="literal">True</span></span><br><span class="line">)</span><br><span class="line">inputs[<span class="string">'input_ids'</span>].append(inputs_dict[<span class="string">'input_ids'</span>])</span><br><span class="line">inputs[<span class="string">'token_type_ids'</span>].append(inputs_dict[<span class="string">'token_type_ids'</span>])</span><br><span class="line">inputs[<span class="string">'attention_mask'</span>].append(inputs_dict[<span class="string">'attention_mask'</span>])</span><br></pre></td></tr></table></figure>
+<p>[CLS] 标志放在第一个句子的首位，经过 BERT 得到的的表征向量 C 可以用于后续的分类任务。<br>[SEP] 标志用于分开两个输入句子，例如输入句子 A 和 B，要在句子 A，B 后面增加 [SEP] 标志。<br>[UNK]标志指的是未知字符<br>[MASK] 标志用于遮盖句子中的一些单词，将单词用 [MASK] 遮盖之后，再利用 BERT 输出的 [MASK] 向量预测单词是什么。</p>
+<h3 id="特征抽取"><a href="#特征抽取" class="headerlink" title="特征抽取"></a>特征抽取</h3><p>训练(finetune)完成后，就可以使用训练得到的模型来抽取文本的特征，其实这里所说的抽取文本的特征实际就是把自然语言文本转为向量，我们直接使用原始的模型也是可以进行特征抽取的，只不过在自己的数据集上finetune之后效果会更好，而具体效果要在下游的实际任务中才能评估，仅通过finetune后的模型来将文本转为特征向量无法评估效果的好坏。</p>
+<p>特征抽取代码示例</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">使用BERT抽取自然语言特征</span></span><br><span class="line"><span class="string">过程分为两步：1、在自己的数据集上进行finetune；2、利用finetune后的模型进行抽取</span></span><br><span class="line"><span class="string">这里是特征抽取过程</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> BertModel, BertTokenizer</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TextVector</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, device_id)</span>:</span></span><br><span class="line">        self.tokenizer = BertTokenizer.from_pretrained(</span><br><span class="line">            <span class="comment"># 文件夹下包括config.json、pytorch_model.bin、vocab.txt</span></span><br><span class="line">            <span class="string">'./data/best_model_ckpt'</span>  </span><br><span class="line">        )</span><br><span class="line">        self.model = BertModel.from_pretrained(</span><br><span class="line">            <span class="string">'./data/best_model_ckpt'</span></span><br><span class="line">        )</span><br><span class="line">        <span class="keyword">if</span> torch.cuda.is_available():</span><br><span class="line">            self.device = <span class="string">"cuda:"</span> + str(device_id)</span><br><span class="line">            self.model.to(self.device)</span><br><span class="line">            print(<span class="string">f"bert model 加载到了cuda:<span class="subst">&#123;self.device&#125;</span>."</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.device = <span class="string">'cpu'</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self, data)</span>:</span></span><br><span class="line">        <span class="comment"># bert长度限制一般为512，超过长度截断（长度过长会导致参数量太大）</span></span><br><span class="line">        <span class="keyword">if</span> len(data) &gt; <span class="number">510</span>:</span><br><span class="line">            data = data[:<span class="number">510</span>]</span><br><span class="line">        inputs = self.tokenizer(data, return_tensors=<span class="string">'pt'</span>)</span><br><span class="line">        print(inputs)</span><br><span class="line">        <span class="comment"># 将数据放入cpu或者gpu</span></span><br><span class="line">        inputs = &#123;key: value.to(self.device) <span class="keyword">for</span> key, value <span class="keyword">in</span> inputs.items()&#125;</span><br><span class="line">        outputs = self.model(**inputs)</span><br><span class="line">        print(outputs.pooler_output.detach().size())  <span class="comment"># tensor类型, torch.Size([1, 768])</span></span><br><span class="line">        print(outputs.pooler_output.detach().to(<span class="string">"cpu"</span>).numpy().shape)  <span class="comment"># 转为numpy, shape(1, 768)</span></span><br><span class="line">        <span class="comment"># 这里取0号元素后，得到的就是一个列表，reshape(1, -1)转为1行，列自动计算，又变成了(1, 768)</span></span><br><span class="line">        data_vector = outputs.pooler_output.detach().to(<span class="string">"cpu"</span>).numpy()[<span class="number">0</span>].reshape(<span class="number">1</span>, <span class="number">-1</span>)</span><br><span class="line">        <span class="keyword">return</span> data_vector[<span class="number">0</span>].tolist()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">text_vector = TextVector(device_id=<span class="number">0</span>)</span><br><span class="line">res = text_vector.run(<span class="string">"我喜欢学习"</span>)</span><br><span class="line">print(len(res))  <span class="comment"># 768</span></span><br><span class="line">print(res)</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/nlp/" rel="tag"># nlp</a>
+          
+            <a href="/tags/BERT/" rel="tag"># BERT</a>
+          
+            <a href="/tags/transformers/" rel="tag"># transformers</a>
+          
+            <a href="/tags/finetune/" rel="tag"># finetune</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/05/10/nlp-whole-word-mask/" rel="next" title="Whole Word Masking (wwm)">
+                <i class="fa fa-chevron-left"></i> Whole Word Masking (wwm)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">74</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">153</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#BERT-finetune"><span class="nav-text">BERT finetune</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#项目概述"><span class="nav-text">项目概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#预处理"><span class="nav-text">预处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#训练"><span class="nav-text">训练</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#关于tokenizer-encode-plus"><span class="nav-text">关于tokenizer.encode_plus</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#特征抽取"><span class="nav-text">特征抽取</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
