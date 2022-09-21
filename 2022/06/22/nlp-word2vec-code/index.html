@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="nlp,word2vec,gensim,文本摘要生成,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Word2Vec 实践gensim库使用这里的Word2Vec借助 gensim 库实现，首先安装pip install gensim==3.8.3 123456789101112131415161718192021222324from gensim.models.word2vec import Word2Vecmodel = Word2Vec(    sentences=None,     si">
+<meta name="keywords" content="nlp,word2vec,gensim,文本摘要生成">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Word2Vec 实践">
+<meta property="og:url" content="http://yoursite.com/2022/06/22/nlp-word2vec-code/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="Word2Vec 实践gensim库使用这里的Word2Vec借助 gensim 库实现，首先安装pip install gensim==3.8.3 123456789101112131415161718192021222324from gensim.models.word2vec import Word2Vecmodel = Word2Vec(    sentences=None,     si">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2022/06/22/nlp-word2vec-code/1.png">
+<meta property="og:updated_time" content="2022-09-21T14:45:41.878Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Word2Vec 实践">
+<meta name="twitter:description" content="Word2Vec 实践gensim库使用这里的Word2Vec借助 gensim 库实现，首先安装pip install gensim==3.8.3 123456789101112131415161718192021222324from gensim.models.word2vec import Word2Vecmodel = Word2Vec(    sentences=None,     si">
+<meta name="twitter:image" content="http://yoursite.com/2022/06/22/nlp-word2vec-code/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2022/06/22/nlp-word2vec-code/">
+
+
+
+
+
+  <title>Word2Vec 实践 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/06/22/nlp-word2vec-code/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Word2Vec 实践</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-06-22T16:19:54+08:00">
+                2022-06-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Word2Vec-实践"><a href="#Word2Vec-实践" class="headerlink" title="Word2Vec 实践"></a>Word2Vec 实践</h2><h3 id="gensim库使用"><a href="#gensim库使用" class="headerlink" title="gensim库使用"></a>gensim库使用</h3><p>这里的Word2Vec借助 gensim 库实现，首先安装<code>pip install gensim==3.8.3</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> gensim.models.word2vec <span class="keyword">import</span> Word2Vec</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">model = Word2Vec(</span><br><span class="line">    sentences=<span class="literal">None</span>, </span><br><span class="line">    size=<span class="number">100</span>, </span><br><span class="line">    alpha=<span class="number">0.025</span>, </span><br><span class="line">    window=<span class="number">5</span>, </span><br><span class="line">    min_count=<span class="number">5</span>,</span><br><span class="line">    max_vocab_size=<span class="literal">None</span>, </span><br><span class="line">    sample=<span class="number">1e-3</span>,                          </span><br><span class="line">    seed=<span class="number">1</span>, </span><br><span class="line">    workers=<span class="number">3</span>, </span><br><span class="line">    min_alpha=<span class="number">0.0001</span>,</span><br><span class="line">    sg=<span class="number">0</span>, hs=<span class="number">0</span>, </span><br><span class="line">    negative=<span class="number">5</span>, </span><br><span class="line">    cbow_mean=<span class="number">1</span>, </span><br><span class="line">    hashfxn=hash, </span><br><span class="line">    iter=<span class="number">5</span>,                                        </span><br><span class="line">    null_word=<span class="number">0</span>,</span><br><span class="line">    trim_rule=<span class="literal">None</span>, </span><br><span class="line">    sorted_vocab=<span class="number">1</span>, </span><br><span class="line">    batch_words=MAX_WORDS_IN_BATCH</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>参数说明：</p>
+<a id="more"></a>
+<ul>
+<li>sentences：可以是一个list，对于大语料集，建议使用BrownCorpus,Text8Corpus或lineSentence构建。</li>
+<li>size：是指特征向量的维度，默认为100</li>
+<li>alpha: 是初始的学习速率，在训练过程中会线性地递减到min_alpha</li>
+<li>window：窗口大小，表示当前词与预测词在一个句子中的最大距离是多少</li>
+<li>min_count: 可以对字典做截断，词频少于min_count次数的单词会被丢弃掉, 默认值为5</li>
+<li>max_vocab_size: 设置词向量构建期间的RAM限制，设置成None则没有限制</li>
+<li>sample: 高频词汇的随机降采样的配置阈值，默认为1e-3，范围是(0,1e-5)</li>
+<li>seed：用于随机数发生器。与初始化词向量有关</li>
+<li>workers：用于控制训练的并行数</li>
+<li>min_alpha：学习率的最小值</li>
+<li>sg： 用于设置训练算法，默认为0，对应CBOW算法；sg=1则采用skip-gram算法</li>
+<li>hs: 如果为1则会采用hierarchica·softmax技巧。如果设置为0（默认），则使用negative sampling</li>
+<li>negative: 如果&gt;0,则会采用negativesampling，用于设置多少个noise words（一般是5-20）</li>
+<li>cbow_mean: 如果为0，则采用上下文词向量的和，如果为1（default）则采用均值，只有使用CBOW的时候才起作用</li>
+<li>hashfxn： hash函数来初始化权重，默认使用python的hash函数</li>
+<li>iter： 迭代次数，默认为5</li>
+<li>trim_rule： 用于设置词汇表的整理规则，指定那些单词要留下，哪些要被删除。可以设置为None（min_count会被使用）</li>
+<li>sorted_vocab： 如果为1（默认），则在分配word index 的时候会先对单词基于频率降序</li>
+<li>batch_words：每一批的传递给线程的单词的数量，默认为10000</li>
+</ul>
+<p>关于sentences参数的更多说明： 中文的或者英文的文章都可以，一般一篇文章就是一行，要经过预处理才能使用，将文本语料进行分词，以空格,tab隔开都可以。可以是读入数据以后为list的语料，一般是二维list，每一个子list是一篇文章切词后的形式 。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> gensim.models.word2vec <span class="keyword">import</span> LineSentence</span><br><span class="line"></span><br><span class="line">LineSentence(file_path)</span><br></pre></td></tr></table></figure>
+<p> <strong>LinSentence 函数在使用之前需要对待处理的文本数据进行分词，并以空格分隔；函数在运行时，按行读取已经以空格分隔的文档。</strong> </p>
+<p> <strong>保存和加载训练得到的词向量</strong>： </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 二进制形式</span></span><br><span class="line">model.save(<span class="string">'word2vec.model'</span>)  <span class="comment"># 保存</span></span><br><span class="line">model = Word2Vec.load(<span class="string">'word2vec.model'</span>)  <span class="comment"># 加载</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 文本文件形式</span></span><br><span class="line">model.wv.save_word2vec_format(<span class="string">'word2vec.txt'</span>, binary=<span class="literal">False</span>)  <span class="comment"># 保存</span></span><br><span class="line"><span class="comment"># 加载txt词向量</span></span><br><span class="line">model = gensim.models.KeyedVectors.load_word2vec_format(<span class="string">'word2vec.txt'</span>)</span><br></pre></td></tr></table></figure>
+<p>获取训练得到的词表</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vocab = wv_model.wv.vocab</span><br></pre></td></tr></table></figure>
+<p>本部分参考博客链接：<a href="https://blog.csdn.net/weixin_41097516/article/details/103320098" target="_blank" rel="noopener">https://blog.csdn.net/weixin_41097516/article/details/103320098</a></p>
+<h3 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理</h3><p><img src="/2022/06/22/nlp-word2vec-code/1.png" alt></p>
+<p>有这样一批来自汽车大师的文本信息，包括问题ID（<code>QID</code>）、品牌(Brand)、车型(Model)、用户问题(Question)、Dialogue(对话)和解决方法(Report)。</p>
+<p>这里截图来自<code>pycharm</code>的展示，因为文本内容过大，展示不完整，具体拿出来两条数据看下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">QID: Q5001</span><br><span class="line">Brand: 福特</span><br><span class="line">Model: 福克斯</span><br><span class="line">Question: 长安福特福克斯，突然打不着车 </span><br><span class="line">Dialogue: 技师说：你好车主，根据提供图片，这是车辆防盗系统起作用了，需要从新匹配车辆的所有的钥匙。|车主说：哦|技师说：需要联系当地4s店，或者专业做汽车钥匙的|车主说：OK </span><br><span class="line">Report: 根据提供图片，这是车辆防盗起作用了，需要从新匹配钥匙。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">QID: Q5002</span><br><span class="line">Brand: 路虎</span><br><span class="line">Model: 揽胜运动版</span><br><span class="line">Question: 路虎电动脚踏板无反应，请问是什么原因，如何解决？</span><br><span class="line">Dialogue：技师说：电机接触不良吧|车主说：不是，是因为车主右边踏板底盘被刮了，踏板支架被挂断了，现在修复了，但是感觉电机在响，电动踏板不回位，请问如何复位或者匹配脚踏板？|技师说：是不是与踏板脱槽了|车主说：是的，电机之前和踏板脱槽了，现在已经修复上了，但是踏板不正常，开关门几次后现在再开关门有电机声音，但是不复位|技师说：踏板变形了吗？|车主说：现在如何解决？需要匹配电机|车主说：吗|车主说：踏板没变形|技师说：他这个有专门的开关吗？|车主说：16款运动揽胜|技师说：你按开关十秒左右看看能匹配上不|车主说：开关在什么位置|技师说：它开关是怎么控制的|车主说：开门和关门控制的|车主说：[图片]|车主说：这个是开关控制吗|技师说：你常按10秒以上这个开关能学习上不能|车主说：这个是减震放气的|车主说：我按了，就放气|技师说：你按遥控器上的按键试下|车主说：车架号是  SALGA3FV9HA334882|车主说：[图片]|技师说：你找个电脑匹配一下试试|车主说：没反应|车主说：用了，电脑里面关于脚踏板只有维修模式启用和禁用|车主说：都试了，没有用|技师说：那你找当地的专业维修这款车的人员给你看看|车主说：没有复位匹配的方法吗|车主说：我自己就是学修车的，不找别人，咨询可以，要靠自己修|技师说：没有，我修这车也不多   </span><br><span class="line">Report: 检查踏板与电机是否托槽</span><br></pre></td></tr></table></figure>
+<p>训练集 77943条数据，测试集 5000条数据</p>
+<p>项目的最终目标是做一个文本摘要的模型，但是第一步要训练生成词向量，本篇文章研究词向量如何生成。</p>
+<p>预处理包括以下步骤：</p>
+<ol>
+<li>使用pandas加载cvs格式的训练数据和测试数据；</li>
+<li>剔除report字段为空的数据，之后将所有空值替换为空字符串；</li>
+<li>对文本进行分词（这里使用jieba分词），并先加载自定义词表，避免这些词被分割；</li>
+<li>过滤掉停用词。</li>
+</ol>
+<p>自定义词表部分示例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">语音</span><br><span class="line">图片</span><br><span class="line">车主说</span><br><span class="line">技师说</span><br><span class="line">档位</span><br><span class="line">长安</span><br><span class="line">冲击感</span><br><span class="line">漏机油</span><br><span class="line">故障码</span><br><span class="line">安全码</span><br><span class="line">钣金</span><br><span class="line">双离合</span><br><span class="line">油底壳</span><br><span class="line">翼子板</span><br><span class="line">擦车</span><br><span class="line">值</span><br><span class="line">拓下来</span><br><span class="line">副作用</span><br><span class="line">扎胎</span><br><span class="line">分泵轴</span><br><span class="line">双闪</span><br><span class="line">不客气</span><br><span class="line">外球笼</span><br><span class="line">一控三</span><br><span class="line">中控</span><br><span class="line">宝马X1</span><br><span class="line">奔驰</span><br><span class="line">宝马</span><br><span class="line">Jeep</span><br><span class="line">雪佛兰</span><br><span class="line">丰田</span><br><span class="line">昌河</span><br><span class="line">长安</span><br><span class="line">吉利汽车</span><br></pre></td></tr></table></figure>
+<p><em>因为对话中包含图片、语音这类数据，但是被[图片]、[语音]标签替代了，所以在分词时，要考虑到这种情况，在分词后把这些词和字符删掉</em>。</p>
+<p>以下代码预处理步骤3、4的实现</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> jieba</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置文件中存储了一系列路径</span></span><br><span class="line"><span class="keyword">from</span> src.utils <span class="keyword">import</span> config</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 自定义词表</span></span><br><span class="line">jieba.load_userdict(config.user_dict)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">load_stop_words</span><span class="params">(stop_word_path)</span>:</span></span><br><span class="line">    <span class="string">"""加载停用词</span></span><br><span class="line"><span class="string">    :param stop_word_path:停用词路径</span></span><br><span class="line"><span class="string">    :return: 停用词表 list</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="comment"># 打开文件</span></span><br><span class="line">    file = open(stop_word_path, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>)</span><br><span class="line">    <span class="comment"># 读取所有行</span></span><br><span class="line">    stop_words = file.readlines()</span><br><span class="line">    <span class="comment"># 去除每一个停用词前后 空格 换行符</span></span><br><span class="line">    stop_words = [stop_word.strip() <span class="keyword">for</span> stop_word <span class="keyword">in</span> stop_words]</span><br><span class="line">    <span class="keyword">return</span> stop_words</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载停用词</span></span><br><span class="line">stop_words = load_stop_words(config.stop_word_path)</span><br><span class="line"></span><br><span class="line">remove_words = [<span class="string">'|'</span>, <span class="string">'['</span>, <span class="string">']'</span>, <span class="string">'语音'</span>, <span class="string">'图片'</span>]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">filter_words</span><span class="params">(sentence)</span>:</span></span><br><span class="line">    <span class="string">"""过滤停用词</span></span><br><span class="line"><span class="string">    :param sentence: 分好词的句子，以空格做分割</span></span><br><span class="line"><span class="string">    :return: 过滤后的停用词</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    words = sentence.split(<span class="string">' '</span>)</span><br><span class="line">    <span class="comment"># 去掉多余空字符</span></span><br><span class="line">    words = [word <span class="keyword">for</span> word <span class="keyword">in</span> words <span class="keyword">if</span> word <span class="keyword">and</span> word <span class="keyword">not</span> <span class="keyword">in</span> remove_words]</span><br><span class="line">    <span class="comment"># 去掉停用词 包括一下标点符号也会去掉</span></span><br><span class="line">    words = [word <span class="keyword">for</span> word <span class="keyword">in</span> words <span class="keyword">if</span> word <span class="keyword">not</span> <span class="keyword">in</span> stop_words]</span><br><span class="line">    <span class="keyword">return</span> words</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">seg_proc</span><span class="params">(sentence)</span>:</span></span><br><span class="line">    tokens = sentence.split(<span class="string">'|'</span>)</span><br><span class="line">    result = []</span><br><span class="line">    <span class="keyword">for</span> t <span class="keyword">in</span> tokens:</span><br><span class="line">        result.append(cut_sentence(t))</span><br><span class="line">    <span class="keyword">return</span> <span class="string">' | '</span>.join(result)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cut_sentence</span><span class="params">(line)</span>:</span></span><br><span class="line">    <span class="comment"># 切词，默认精确模式，全模式cut参数cut_all=True</span></span><br><span class="line">    tokens = jieba.cut(line)</span><br><span class="line">    <span class="keyword">return</span> <span class="string">' '</span>.join(tokens)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sentence_proc</span><span class="params">(sentence)</span>:</span></span><br><span class="line">    <span class="string">"""预处理模块</span></span><br><span class="line"><span class="string">    :param sentence:待处理字符串</span></span><br><span class="line"><span class="string">    :return: 处理后的字符串</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="comment"># 清除无用词</span></span><br><span class="line">    <span class="comment"># sentence = clean_sentence(sentence)</span></span><br><span class="line">    <span class="comment"># 分段切词</span></span><br><span class="line">    sentence = seg_proc(sentence)</span><br><span class="line">    <span class="comment"># 过滤停用词</span></span><br><span class="line">    words = filter_words(sentence)</span><br><span class="line">    <span class="comment"># 拼接成一个字符串,按空格分隔</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">' '</span>.join(words)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    <span class="comment"># 单条测试</span></span><br><span class="line">    text = <span class="string">"技师说：电机接触不良吧|车主说：不是，是因为车主右边踏板底盘被刮了，踏板支架被挂断了，现在修复了，但是感觉电机在响，电动踏板不回位，请问如何复位或者匹配脚踏板？|技师说：是不是与踏板脱槽了|车主说：是的，电机之前和踏板脱槽了，现在已经修复上了，但是踏板不正常，开关门几次后现在再开关门有电机声音，但是不复位|技师说：踏板变形了吗？|车主说：现在如何解决？需要匹配电机|车主说：吗|车主说：踏板没变形|技师说：他这个有专门的开关吗？|车主说：16款运动揽胜|技师说：你按开关十秒左右看看能匹配上不|车主说：开关在什么位置|技师说：它开关是怎么控制的|车主说：开门和关门控制的|车主说：[图片]|车主说：这个是开关控制吗|技师说：你常按10秒以上这个开关能学习上不能|车主说：这个是减震放气的|车主说：我按了，就放气|技师说：你按遥控器上的按键试下|车主说：车架号是  SALGA3FV9HA334882|车主说：[图片]|技师说：你找个电脑匹配一下试试|车主说：没反应|车主说：用了，电脑里面关于脚踏板只有维修模式启用和禁用|车主说：都试了，没有用|技师说：那你找当地的专业维修这款车的人员给你看看|车主说：没有复位匹配的方法吗|车主说：我自己就是学修车的，不找别人，咨询可以，要靠自己修|技师说：没有，我修这车也不多   "</span></span><br><span class="line">    print(sentence_proc(text))</span><br></pre></td></tr></table></figure>
+<p>输出结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">技师说 电机 接触不良 车主说 不是 ， 是因为 车主 右边 踏板 底盘 刮 ， 踏板 支架 挂断 ， 现在 修复 ， 感觉 电机 响 ， 电动 踏板 不 回位 ， 请问 复位 匹配 脚踏板 ？ 技师说 是不是 踏板 脱槽 车主说 ， 电机 之前 踏板 脱槽 ， 现在 已经 修复 上 ， 踏板 不 正常 ， 开关门 几次 后 现在 再 开关门 电机 声音 ， 不 复位 技师说 踏板 变形 ？ 车主说 现在 解决 ？ 需要 匹配 电机 车主说 车主说 踏板 没 变形 技师说 专门 开关 ？ 车主说 16 款 运动 揽胜 技师说 开关 十秒 左右 看看 匹配 上 不 车主说 开关 位置 技师说 开关 控制 车主说 开门 关门 控制 车主说 车主说 开关 控制 技师说 你常 10 秒 以上 开关 学习 上 不能 车主说 减震 放气 车主说 ， 放气 技师说 遥控器 上 按键 试下 车主说 车架号 SALGA3FV9HA334882 车主说 技师说 找个 电脑 匹配 一下 试试 车主说 没 反应 车主说 ， 电脑 里面 脚踏板 维修 模式 启用 禁用 车主说 都 试 ， 没有 技师说 找 当地 专业 维修 这款 车 人员 看看 车主说 没有 复位 匹配 方法 车主说 学 修车 ， 不 找 别人 ， 咨询 ， 修 技师说 没有 ， 我修 这车 不</span><br></pre></td></tr></table></figure>
+<h3 id="加载数据并训练"><a href="#加载数据并训练" class="headerlink" title="加载数据并训练"></a>加载数据并训练</h3><p>我们的数据”Question”、”Dialogue”和”Report”字段都包含文本信息，所以可以把这些字段分词后的结果全部合并到一起来训练词向量</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> jieba</span><br><span class="line"><span class="keyword">import</span> logging</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> gensim.models.word2vec <span class="keyword">import</span> LineSentence, Word2Vec</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> src.utils <span class="keyword">import</span> config</span><br><span class="line"><span class="keyword">from</span> src.utils.wv_loader <span class="keyword">import</span> Vocab</span><br><span class="line"><span class="keyword">from</span> src.utils.file_utils <span class="keyword">import</span> save_dict</span><br><span class="line"><span class="keyword">from</span> src.utils.multi_proc_utils <span class="keyword">import</span> parallelize, cores</span><br><span class="line"></span><br><span class="line">logging.basicConfig(format=<span class="string">'%(asctime)s : %(levelname)s : %(message)s'</span>, level=logging.INFO)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 自定义词表</span></span><br><span class="line">jieba.load_userdict(config.user_dict)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">build_dataset</span><span class="params">(train_data_path, test_data_path)</span>:</span></span><br><span class="line">    <span class="string">"""数据加载+预处理</span></span><br><span class="line"><span class="string">    :param train_data_path:训练集路径</span></span><br><span class="line"><span class="string">    :param test_data_path: 测试集路径</span></span><br><span class="line"><span class="string">    :return: 训练数据 测试数据  合并后的数据 </span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="comment"># 1.加载数据</span></span><br><span class="line">    train_df = pd.read_csv(train_data_path)</span><br><span class="line">    test_df = pd.read_csv(test_data_path)</span><br><span class="line">    print(<span class="string">'train data size &#123;&#125;,test data size &#123;&#125;'</span>.format(len(train_df), len(test_df)))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># pd.set_option('display.max_columns', None)</span></span><br><span class="line">    <span class="comment"># pd.set_option('display.max_rows', None)</span></span><br><span class="line">    <span class="comment"># pd.set_option('max_colwidth', 1000)</span></span><br><span class="line">    <span class="comment"># print(train_df.head())</span></span><br><span class="line">    <span class="comment"># print(train_df[["QID", "Brand", "Model", "Question", "Dialogue", "Report"]])</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 2. 空值剔除</span></span><br><span class="line">    train_df.dropna(subset=[<span class="string">'Report'</span>], inplace=<span class="literal">True</span>)</span><br><span class="line">    test_df.dropna(subset=[<span class="string">'Report'</span>], inplace=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    train_df.fillna(<span class="string">''</span>, inplace=<span class="literal">True</span>)</span><br><span class="line">    test_df.fillna(<span class="string">''</span>, inplace=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 3.多线程, 批量数据处理</span></span><br><span class="line">    train_df = parallelize(train_df, sentences_proc)</span><br><span class="line">    test_df = parallelize(test_df, sentences_proc)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 4. 合并训练测试集合</span></span><br><span class="line">    train_df[<span class="string">'merged'</span>] = train_df[[<span class="string">'Question'</span>, <span class="string">'Dialogue'</span>, <span class="string">'Report'</span>]].apply(<span class="keyword">lambda</span> x: <span class="string">' '</span>.join(x), axis=<span class="number">1</span>)</span><br><span class="line">    test_df[<span class="string">'merged'</span>] = test_df[[<span class="string">'Question'</span>, <span class="string">'Dialogue'</span>, <span class="string">'Report'</span>]].apply(<span class="keyword">lambda</span> x: <span class="string">' '</span>.join(x), axis=<span class="number">1</span>)</span><br><span class="line">    merged_df = pd.concat([train_df[[<span class="string">'merged'</span>]], test_df[[<span class="string">'merged'</span>]]], axis=<span class="number">0</span>)</span><br><span class="line">    print(<span class="string">'train data size &#123;&#125;,test data size &#123;&#125;,merged_df data size &#123;&#125;'</span>.format(len(train_df),</span><br><span class="line">                                                                               len(test_df),</span><br><span class="line">                                                                               len(merged_df)))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 5.保存处理好的 训练 测试集合</span></span><br><span class="line">    train_df = train_df.drop([<span class="string">'merged'</span>], axis=<span class="number">1</span>)</span><br><span class="line">    test_df = test_df.drop([<span class="string">'merged'</span>], axis=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    train_df.to_csv(config.train_seg_path, index=<span class="literal">False</span>, header=<span class="literal">False</span>)</span><br><span class="line">    test_df.to_csv(config.test_seg_path, index=<span class="literal">False</span>, header=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 6. 保存合并数据</span></span><br><span class="line">    merged_df.to_csv(config.merger_seg_path, index=<span class="literal">False</span>, header=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 7. 训练词向量</span></span><br><span class="line">    print(<span class="string">'start build w2v model'</span>)</span><br><span class="line">    wv_model = Word2Vec(LineSentence(config.merger_seg_path),</span><br><span class="line">                        size=config.embedding_dim,</span><br><span class="line">                        sg=<span class="number">1</span>,</span><br><span class="line">                        workers=cores,</span><br><span class="line">                        iter=config.wv_train_epochs,</span><br><span class="line">                        window=<span class="number">5</span>,</span><br><span class="line">                        min_count=<span class="number">5</span>)</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    <span class="comment"># 数据集批量处理</span></span><br><span class="line">    build_dataset(config.train_data_path, config.test_data_path)</span><br></pre></td></tr></table></figure>
+<p>多进程处理代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> cpu_count, Pool</span><br><span class="line"></span><br><span class="line"><span class="comment"># cpu 数量</span></span><br><span class="line">cores = cpu_count()</span><br><span class="line"><span class="comment"># 分块个数</span></span><br><span class="line">partitions = cores</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">parallelize</span><span class="params">(df, func)</span>:</span></span><br><span class="line">    <span class="string">"""多核并行处理模块</span></span><br><span class="line"><span class="string">    :param df: DataFrame数据</span></span><br><span class="line"><span class="string">    :param func: 预处理函数</span></span><br><span class="line"><span class="string">    :return: 处理后的数据</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="comment"># 数据切分</span></span><br><span class="line">    data_split = np.array_split(df, partitions)</span><br><span class="line">    <span class="comment"># 线程池</span></span><br><span class="line">    pool = Pool(cores)</span><br><span class="line">    <span class="comment"># 数据分发 合并</span></span><br><span class="line">    data = pd.concat(pool.map(func, data_split))</span><br><span class="line">    <span class="comment"># 关闭线程池</span></span><br><span class="line">    pool.close()</span><br><span class="line">    <span class="comment"># 执行完close后不会有新的进程加入到pool,join函数等待所有子进程结束</span></span><br><span class="line">    pool.join()</span><br><span class="line">    <span class="keyword">return</span> data</span><br></pre></td></tr></table></figure>
+<h3 id="保存词向量文件-amp-标签数据分离"><a href="#保存词向量文件-amp-标签数据分离" class="headerlink" title="保存词向量文件&amp;标签数据分离"></a>保存词向量文件&amp;标签数据分离</h3><p>标签和数据分离其实已经不属于词向量训练部分，但是属于整体预处理的一部分，均在为后续正式训练相关模型做准备，所以合并在这一节。</p>
+<p>训练完成之后，保存词向量，下面代码依然属于上面的build_dataset方法内。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 8. 分离数据和标签</span></span><br><span class="line">train_df[<span class="string">'X'</span>] = train_df[[<span class="string">'Question'</span>, <span class="string">'Dialogue'</span>]].apply(<span class="keyword">lambda</span> x: <span class="string">' '</span>.join(x), axis=<span class="number">1</span>)</span><br><span class="line">test_df[<span class="string">'X'</span>] = test_df[[<span class="string">'Question'</span>, <span class="string">'Dialogue'</span>]].apply(<span class="keyword">lambda</span> x: <span class="string">' '</span>.join(x), axis=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">train_df[<span class="string">'X'</span>].to_csv(config.train_x_seg_path, index=<span class="literal">None</span>, header=<span class="literal">False</span>)</span><br><span class="line">train_df[<span class="string">'Report'</span>].to_csv(config.train_y_seg_path, index=<span class="literal">None</span>, header=<span class="literal">False</span>)</span><br><span class="line">test_df[<span class="string">'X'</span>].to_csv(config.test_x_seg_path, index=<span class="literal">None</span>, header=<span class="literal">False</span>)</span><br><span class="line">test_df[<span class="string">'Report'</span>].to_csv(config.test_y_seg_path, index=<span class="literal">None</span>, header=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 9. 填充开始结束符号,未知词填充 oov, 长度填充</span></span><br><span class="line"><span class="comment"># 使用GenSim训练得出的vocab</span></span><br><span class="line">vocab = wv_model.wv.vocab</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练集X处理</span></span><br><span class="line"><span class="comment"># 获取适当的最大长度</span></span><br><span class="line">train_x_max_len = get_max_len(train_df[<span class="string">'X'</span>])</span><br><span class="line">test_X_max_len = get_max_len(test_df[<span class="string">'X'</span>])</span><br><span class="line">X_max_len = max(train_x_max_len, test_X_max_len)</span><br><span class="line">train_df[<span class="string">'X'</span>] = train_df[<span class="string">'X'</span>].apply(<span class="keyword">lambda</span> x: pad_proc(x, X_max_len, vocab))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试集X处理</span></span><br><span class="line"><span class="comment"># 获取适当的最大长度</span></span><br><span class="line">test_df[<span class="string">'X'</span>] = test_df[<span class="string">'X'</span>].apply(<span class="keyword">lambda</span> x: pad_proc(x, X_max_len, vocab))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练集Y处理</span></span><br><span class="line"><span class="comment"># 获取适当的最大长度</span></span><br><span class="line">train_y_max_len = get_max_len(train_df[<span class="string">'Report'</span>])</span><br><span class="line">train_df[<span class="string">'Y'</span>] = train_df[<span class="string">'Report'</span>].apply(<span class="keyword">lambda</span> x: pad_proc(x, train_y_max_len, vocab))</span><br><span class="line"></span><br><span class="line">test_y_max_len = get_max_len(test_df[<span class="string">'Report'</span>])</span><br><span class="line">test_df[<span class="string">'Y'</span>] = test_df[<span class="string">'Report'</span>].apply(<span class="keyword">lambda</span> x: pad_proc(x, test_y_max_len, vocab))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 10. 保存pad oov处理后的,数据和标签</span></span><br><span class="line">train_df[<span class="string">'X'</span>].to_csv(config.train_x_pad_path, index=<span class="literal">False</span>, header=<span class="literal">False</span>)</span><br><span class="line">train_df[<span class="string">'Y'</span>].to_csv(config.train_y_pad_path, index=<span class="literal">False</span>, header=<span class="literal">False</span>)</span><br><span class="line">test_df[<span class="string">'X'</span>].to_csv(config.test_x_pad_path, index=<span class="literal">False</span>, header=<span class="literal">False</span>)</span><br><span class="line">test_df[<span class="string">'Y'</span>].to_csv(config.test_y_pad_path, index=<span class="literal">False</span>, header=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 11. 保存词向量模型</span></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(os.path.dirname(config.save_wv_model_path)):</span><br><span class="line">    os.makedirs(os.path.dirname(config.save_wv_model_path))</span><br><span class="line">wv_model.save(config.save_wv_model_path)</span><br><span class="line">print(<span class="string">'finish retrain w2v model'</span>)</span><br><span class="line">print(<span class="string">'final w2v_model has vocabulary of '</span>, len(wv_model.wv.vocab))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 12. 更新vocab</span></span><br><span class="line">vocab = &#123;word: index <span class="keyword">for</span> index, word <span class="keyword">in</span> enumerate(wv_model.wv.index2word)&#125;</span><br><span class="line">reverse_vocab = &#123;index: word <span class="keyword">for</span> index, word <span class="keyword">in</span> enumerate(wv_model.wv.index2word)&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 保存字典</span></span><br><span class="line">save_dict(config.vocab_path, vocab)</span><br><span class="line">save_dict(config.reverse_vocab_path, reverse_vocab)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 13. 保存词向量矩阵</span></span><br><span class="line">embedding_matrix = wv_model.wv.vectors</span><br><span class="line">np.save(config.embedding_matrix_path, embedding_matrix)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 14. 数据集转换 将词转换成索引  [&lt;START&gt; 方向机 重 ...] -&gt; [2, 403, 986, 246, 231</span></span><br><span class="line">vocab = Vocab()</span><br><span class="line"></span><br><span class="line">train_ids_x = train_df[<span class="string">'X'</span>].apply(<span class="keyword">lambda</span> x: transform_data(x, vocab))</span><br><span class="line">train_ids_y = train_df[<span class="string">'Y'</span>].apply(<span class="keyword">lambda</span> x: transform_data(x, vocab))</span><br><span class="line">test_ids_x = test_df[<span class="string">'X'</span>].apply(<span class="keyword">lambda</span> x: transform_data(x, vocab))</span><br><span class="line">test_ids_y = test_df[<span class="string">'Y'</span>].apply(<span class="keyword">lambda</span> x: transform_data(x, vocab))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 15. 数据转换成numpy数组</span></span><br><span class="line"><span class="comment"># 将索引列表转换成矩阵 [2, 403, 986, 246, 231] --&gt; array([[2,   403,   986 , 246, 231]]</span></span><br><span class="line">train_X = np.array(train_ids_x.tolist())</span><br><span class="line">train_Y = np.array(train_ids_y.tolist())</span><br><span class="line">test_X = np.array(test_ids_x.tolist())</span><br><span class="line">test_Y = np.array(test_ids_y.tolist())</span><br><span class="line"></span><br><span class="line"><span class="comment"># 保存数据</span></span><br><span class="line">np.save(config.train_x_path, train_X)</span><br><span class="line">np.save(config.train_y_path, train_Y)</span><br><span class="line">np.save(config.test_x_path, test_X)</span><br><span class="line">np.save(config.test_y_path, test_Y)</span><br><span class="line"><span class="keyword">return</span> train_X, train_Y, test_X, test_Y</span><br></pre></td></tr></table></figure>
+<p>这里是吧”Question”和”Dailogue”作为数据(X)，”Report”作为标签(Y)进行分割。</p>
+<p>以上代码中使用的方法在这里，主要目的是得到最大长度的句子（不一定是实际最长），并且长度不是按照字符数量计算，而是根据词的数量；然后将所有句子补成一样的长度。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> gensim.models.word2vec <span class="keyword">import</span> Word2Vec</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> src.utils.config <span class="keyword">import</span> embedding_matrix_path, vocab_path, save_wv_model_path</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Vocab</span>:</span></span><br><span class="line">    PAD_TOKEN = <span class="string">'&lt;PAD&gt;'</span></span><br><span class="line">    UNKNOWN_TOKEN = <span class="string">'&lt;UNK&gt;'</span></span><br><span class="line">    START_DECODING = <span class="string">'&lt;START&gt;'</span></span><br><span class="line">    STOP_DECODING = <span class="string">'&lt;STOP&gt;'</span></span><br><span class="line">    MASKS = [PAD_TOKEN, UNKNOWN_TOKEN, START_DECODING, STOP_DECODING]</span><br><span class="line">    MASK_COUNT = len(MASKS)</span><br><span class="line"></span><br><span class="line">    PAD_TOKEN_INDEX = MASKS.index(PAD_TOKEN)</span><br><span class="line">    UNKNOWN_TOKEN_INDEX = MASKS.index(UNKNOWN_TOKEN)</span><br><span class="line">    START_DECODING_INDEX = MASKS.index(START_DECODING)</span><br><span class="line">    STOP_DECODING_INDEX = MASKS.index(STOP_DECODING)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, vocab_file=vocab_path, vocab_max_size=None)</span>:</span></span><br><span class="line">        <span class="string">"""Vocab 对象,vocab基本操作封装</span></span><br><span class="line"><span class="string">        :param vocab_file: Vocab 存储路径</span></span><br><span class="line"><span class="string">        :param vocab_max_size: 最大字典数量</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        self.word2id, self.id2word = self.load_vocab(vocab_file, vocab_max_size)</span><br><span class="line">        self.count = len(self.word2id)</span><br><span class="line"></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">load_vocab</span><span class="params">(file_path, vocab_max_size=None)</span>:</span></span><br><span class="line">        <span class="string">"""读取字典</span></span><br><span class="line"><span class="string">        :param file_path: 文件路径</span></span><br><span class="line"><span class="string">        :param vocab_max_size:</span></span><br><span class="line"><span class="string">        :return: 返回读取后的字典</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        vocab = &#123;mask: index</span><br><span class="line">                 <span class="keyword">for</span> index, mask <span class="keyword">in</span> enumerate(Vocab.MASKS)&#125;</span><br><span class="line"></span><br><span class="line">        reverse_vocab = &#123;index: mask</span><br><span class="line">                         <span class="keyword">for</span> index, mask <span class="keyword">in</span> enumerate(Vocab.MASKS)&#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> open(file_path, <span class="string">"r"</span>, encoding=<span class="string">'utf-8'</span>).readlines():</span><br><span class="line">            word, index = line.strip().split(<span class="string">"\t"</span>)</span><br><span class="line">            index = int(index)</span><br><span class="line">            <span class="comment"># 如果vocab 超过了指定大小</span></span><br><span class="line">            <span class="comment"># 跳出循环 截断</span></span><br><span class="line">            <span class="keyword">if</span> vocab_max_size <span class="keyword">and</span> index &gt; vocab_max_size - Vocab.MASK_COUNT:</span><br><span class="line">                print(<span class="string">"max_size of vocab was specified as %i; we now have %i words. Stopping reading."</span> % (</span><br><span class="line">                    vocab_max_size, index))</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            vocab[word] = index + Vocab.MASK_COUNT</span><br><span class="line">            reverse_vocab[index + Vocab.MASK_COUNT] = word</span><br><span class="line">        <span class="keyword">return</span> vocab, reverse_vocab</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">word_to_id</span><span class="params">(self, word)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> word <span class="keyword">not</span> <span class="keyword">in</span> self.word2id:</span><br><span class="line">            <span class="keyword">return</span> self.word2id[self.UNKNOWN_TOKEN]</span><br><span class="line">        <span class="keyword">return</span> self.word2id[word]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">id_to_word</span><span class="params">(self, word_id)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> word_id <span class="keyword">not</span> <span class="keyword">in</span> self.id2word:</span><br><span class="line">            <span class="keyword">raise</span> ValueError(<span class="string">'Id not found in vocab: %d'</span> % word_id)</span><br><span class="line">        <span class="keyword">return</span> self.id2word[word_id]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">size</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.count</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_max_len</span><span class="params">(data)</span>:</span></span><br><span class="line">    <span class="string">"""获得合适的最大长度值</span></span><br><span class="line"><span class="string">    :param data: 待统计的数据  train_df['Question']</span></span><br><span class="line"><span class="string">    :return: 最大长度值</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    max_lens = data.apply(<span class="keyword">lambda</span> x: x.count(<span class="string">' '</span>) + <span class="number">1</span>)</span><br><span class="line">    <span class="keyword">return</span> int(np.mean(max_lens) + <span class="number">2</span> * np.std(max_lens))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">pad_proc</span><span class="params">(sentence, max_len, vocab)</span>:</span></span><br><span class="line">    <span class="string">"""填充字段</span></span><br><span class="line"><span class="string">    &lt; start &gt; &lt; end &gt; &lt; pad &gt; &lt; unk &gt; max_lens</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="comment"># 0.按空格统计切分出词</span></span><br><span class="line">    words = sentence.strip().split(<span class="string">' '</span>)</span><br><span class="line">    <span class="comment"># 1. 截取规定长度的词数</span></span><br><span class="line">    words = words[:max_len]</span><br><span class="line">    <span class="comment"># 2. 填充&lt; unk &gt; ,判断是否在vocab中, 不在填充 &lt; unk &gt;</span></span><br><span class="line">    sentence = [word <span class="keyword">if</span> word <span class="keyword">in</span> vocab <span class="keyword">else</span> Vocab.UNKNOWN_TOKEN <span class="keyword">for</span> word <span class="keyword">in</span> words]</span><br><span class="line">    <span class="comment"># 3. 填充&lt; start &gt; &lt; end &gt;</span></span><br><span class="line">    sentence = [Vocab.START_DECODING] + sentence + [Vocab.STOP_DECODING]</span><br><span class="line">    <span class="comment"># 4. 判断长度，填充　&lt; pad &gt;</span></span><br><span class="line">    sentence = sentence + [Vocab.PAD_TOKEN] * (max_len - len(words))</span><br><span class="line">    <span class="keyword">return</span> <span class="string">' '</span>.join(sentence)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">save_dict</span><span class="params">(save_path, dict_data)</span>:</span></span><br><span class="line">    <span class="string">"""保存字典</span></span><br><span class="line"><span class="string">    :param save_path: 保存路径</span></span><br><span class="line"><span class="string">    :param dict_data: 字典路径</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="keyword">with</span> open(save_path, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:</span><br><span class="line">        <span class="keyword">for</span> k, v <span class="keyword">in</span> dict_data.items():</span><br><span class="line">            f.write(<span class="string">"&#123;&#125;\t&#123;&#125;\n"</span>.format(k, v))</span><br></pre></td></tr></table></figure>
+<p>src.utils.config文件</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> pathlib</span><br><span class="line"></span><br><span class="line"><span class="comment"># 预处理数据 构建数据集</span></span><br><span class="line">is_build_dataset = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取项目根目录</span></span><br><span class="line">root = pathlib.Path(os.path.abspath(__file__)).parent.parent.parent</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练数据路径</span></span><br><span class="line">train_data_path = os.path.join(root, <span class="string">'data'</span>, <span class="string">'train.csv'</span>)</span><br><span class="line"><span class="comment"># 测试数据路径</span></span><br><span class="line">test_data_path = os.path.join(root, <span class="string">'data'</span>, <span class="string">'test.csv'</span>)</span><br><span class="line"><span class="comment"># 停用词路径</span></span><br><span class="line"><span class="comment"># stop_word_path = os.path.join(root, 'data', 'stopwords/哈工大停用词表.txt')</span></span><br><span class="line">stop_word_path = os.path.join(root, <span class="string">'data'</span>, <span class="string">'stopwords/stopwords.txt'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 自定义切词表</span></span><br><span class="line">user_dict = os.path.join(root, <span class="string">'data'</span>, <span class="string">'user_dict.txt'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 0. 预处理</span></span><br><span class="line"><span class="comment"># 预处理后的训练数据</span></span><br><span class="line">train_seg_path = os.path.join(root, <span class="string">'data'</span>, <span class="string">'train_seg_data.csv'</span>)</span><br><span class="line"><span class="comment"># 预处理后的测试数据</span></span><br><span class="line">test_seg_path = os.path.join(root, <span class="string">'data'</span>, <span class="string">'test_seg_data.csv'</span>)</span><br><span class="line"><span class="comment"># 合并训练集测试集数据</span></span><br><span class="line">merger_seg_path = os.path.join(root, <span class="string">'data'</span>, <span class="string">'merged_train_test_seg_data.csv'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 数据标签分离</span></span><br><span class="line">train_x_seg_path = os.path.join(root, <span class="string">'data'</span>, <span class="string">'train_X_seg_data.csv'</span>)</span><br><span class="line">train_y_seg_path = os.path.join(root, <span class="string">'data'</span>, <span class="string">'train_Y_seg_data.csv'</span>)</span><br><span class="line"></span><br><span class="line">test_x_seg_path = os.path.join(root, <span class="string">'data'</span>, <span class="string">'test_X_seg_data.csv'</span>)</span><br><span class="line">test_y_seg_path = os.path.join(root, <span class="string">'data'</span>, <span class="string">'test_Y_seg_data.csv'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. pad oov处理后的数据</span></span><br><span class="line">train_x_pad_path = os.path.join(root, <span class="string">'data'</span>, <span class="string">'train_X_pad_data.csv'</span>)</span><br><span class="line">train_y_pad_path = os.path.join(root, <span class="string">'data'</span>, <span class="string">'train_Y_pad_data.csv'</span>)</span><br><span class="line">test_x_pad_path = os.path.join(root, <span class="string">'data'</span>, <span class="string">'test_X_pad_data.csv'</span>)</span><br><span class="line">test_y_pad_path = os.path.join(root, <span class="string">'data'</span>, <span class="string">'test_Y_pad_data.csv'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. numpy 转换后的数据</span></span><br><span class="line">train_x_path = os.path.join(root, <span class="string">'data'</span>, <span class="string">'train_X'</span>)</span><br><span class="line">train_y_path = os.path.join(root, <span class="string">'data'</span>, <span class="string">'train_Y'</span>)</span><br><span class="line">test_x_path = os.path.join(root, <span class="string">'data'</span>, <span class="string">'test_X'</span>)</span><br><span class="line">test_y_path = os.path.join(root, <span class="string">'data'</span>, <span class="string">'test_Y'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 词向量路径</span></span><br><span class="line">save_wv_model_path = os.path.join(root, <span class="string">'data'</span>, <span class="string">'wv_new'</span>, <span class="string">'word2vec.model'</span>)</span><br><span class="line"><span class="comment"># 词向量矩阵保存路径</span></span><br><span class="line">embedding_matrix_path = os.path.join(root, <span class="string">'data'</span>, <span class="string">'wv_new'</span>, <span class="string">'embedding_matrix'</span>)</span><br><span class="line"><span class="comment"># 字典路径</span></span><br><span class="line">vocab_path = os.path.join(root, <span class="string">'data'</span>, <span class="string">'wv_new'</span>, <span class="string">'vocab.txt'</span>)</span><br><span class="line">reverse_vocab_path = os.path.join(root, <span class="string">'data'</span>, <span class="string">'wv_new'</span>, <span class="string">'reverstest_save_dire_vocab.txt'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 词向量训练轮数</span></span><br><span class="line">wv_train_epochs = <span class="number">5</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 模型保存文件夹</span></span><br><span class="line"><span class="comment"># checkpoint_dir = os.path.join(root, 'data', 'checkpoints', 'training_checkpoints_pgn_cov_not_clean')</span></span><br><span class="line"></span><br><span class="line">checkpoint_dir = os.path.join(root, <span class="string">'data'</span>, <span class="string">'checkpoints'</span>, <span class="string">'training_checkpoints_seq2seq_backed'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># checkpoint_dir = os.path.join(root, 'data', 'checkpoints', 'training_checkpoints_seq2seq')</span></span><br><span class="line">seq2seq_checkpoint_dir = os.path.join(root, <span class="string">'data'</span>, <span class="string">'checkpoints'</span>, <span class="string">'training_checkpoints_seq2seq'</span>)</span><br><span class="line">transformer_checkpoint_dir = os.path.join(root, <span class="string">'data'</span>, <span class="string">'checkpoints'</span>, <span class="string">'training_checkpoints_pgn_tfs'</span>)</span><br><span class="line"></span><br><span class="line">checkpoint_prefix = os.path.join(checkpoint_dir, <span class="string">'ckpt'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 结果保存文件夹</span></span><br><span class="line">save_result_dir = os.path.join(root, <span class="string">'result'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 词向量维度</span></span><br><span class="line">embedding_dim = <span class="number">300</span></span><br><span class="line"></span><br><span class="line">sample_total = <span class="number">82871</span></span><br><span class="line"></span><br><span class="line">batch_size = <span class="number">32</span></span><br><span class="line"><span class="comment"># batch_size = 4</span></span><br><span class="line"></span><br><span class="line">epochs = <span class="number">20</span></span><br><span class="line"></span><br><span class="line">vocab_size = <span class="number">30000</span></span><br></pre></td></tr></table></figure>
+<p>上面保存了训练后得到的词向量模型和词表之后，又进一步保存了词向量矩阵，并且将X和Y数据也保存为npy文件，不过因为X和Y都是词，需要转换为其在词表中的索引。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">transform_data</span><span class="params">(sentence, vocab)</span>:</span></span><br><span class="line">    <span class="string">"""word 2 index</span></span><br><span class="line"><span class="string">    :param sentence: [word1,word2,word3, ...] ---&gt; [index1,index2,index3 ......]</span></span><br><span class="line"><span class="string">    :param vocab: 词表</span></span><br><span class="line"><span class="string">    :return: 转换后的序列</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="comment"># 字符串切分成词</span></span><br><span class="line">    words = sentence.split(<span class="string">' '</span>)</span><br><span class="line">    <span class="comment"># 按照vocab的index进行转换         # 遇到未知词就填充unk的索引</span></span><br><span class="line">    ids = [vocab.word2id[word] <span class="keyword">if</span> word <span class="keyword">in</span> vocab.word2id <span class="keyword">else</span> vocab.UNKNOWN_TOKEN_INDEX <span class="keyword">for</span> word <span class="keyword">in</span> words]</span><br><span class="line">    <span class="keyword">return</span> ids</span><br></pre></td></tr></table></figure>
+<p>自此word2vec词向量训练和其他的数据预处理全部完成。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/nlp/" rel="tag"># nlp</a>
+          
+            <a href="/tags/word2vec/" rel="tag"># word2vec</a>
+          
+            <a href="/tags/gensim/" rel="tag"># gensim</a>
+          
+            <a href="/tags/文本摘要生成/" rel="tag"># 文本摘要生成</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/06/13/nlp-word2vec/" rel="next" title="Word2Vec">
+                <i class="fa fa-chevron-left"></i> Word2Vec
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/07/06/nlp-rnn2/" rel="prev" title="理解循环神经网络">
+                理解循环神经网络 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">82</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Word2Vec-实践"><span class="nav-text">Word2Vec 实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#gensim库使用"><span class="nav-text">gensim库使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据预处理"><span class="nav-text">数据预处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#加载数据并训练"><span class="nav-text">加载数据并训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#保存词向量文件-amp-标签数据分离"><span class="nav-text">保存词向量文件&amp;标签数据分离</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

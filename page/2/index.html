@@ -259,6 +259,1084 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/04/29/nlp-hf-transformer-ner/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2022/04/29/nlp-hf-transformer-ner/" itemprop="url">利用huggingface-transformers进行命名实体识别</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-04-29T14:19:54+08:00">
+                2022-04-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="利用huggingface-transformers进行命名实体识别"><a href="#利用huggingface-transformers进行命名实体识别" class="headerlink" title="利用huggingface-transformers进行命名实体识别"></a>利用huggingface-transformers进行命名实体识别</h2><p>项目地址：<a href="https://github.com/huggingface/transformers" target="_blank" rel="noopener">https://github.com/huggingface/transformers</a></p>
+<p>文档地址：<a href="https://huggingface.co/docs/transformers/pipeline_tutorial" target="_blank" rel="noopener">https://huggingface.co/docs/transformers/pipeline_tutorial</a></p>
+<h3 id="寻找你要的模型"><a href="#寻找你要的模型" class="headerlink" title="寻找你要的模型"></a>寻找你要的模型</h3><p>Transformers 提供了数以千计的预训练模型，支持 100 多种语言的文本分类、信息抽取、问答、摘要、翻译、文本生成。</p>
+<p>从这里：<a href="https://huggingface.co/models" target="_blank" rel="noopener">https://huggingface.co/models</a> 可以查找你要的模型，可以根据任务、语言、框架、数据集等筛选。</p>
+<p>这里我们想要进行基于中文的ner任务，筛选出这个模型：<a href="https://huggingface.co/ckiplab/bert-base-chinese-ner" target="_blank" rel="noopener"> bert-base-chinese-ner</a></p>
+<p>打开之后，通过介绍我们发现这是一个基于<strong>繁体中文</strong>的模型，对应的github地址是：</p>
+<p><a href="https://github.com/ckiplab/ckip-transformers" target="_blank" rel="noopener">https://github.com/ckiplab/ckip-transformers</a></p>
+<p>有需要的小伙伴可以尝试。</p>
+<p>我们继续筛选，找到了这个模型：<a href="https://huggingface.co/uer/roberta-base-finetuned-cluener2020-chinese" target="_blank" rel="noopener">uer/roberta-base-finetuned-cluener2020-chinese</a></p>
+<h3 id="模型使用"><a href="#模型使用" class="headerlink" title="模型使用"></a>模型使用</h3>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2022/04/29/nlp-hf-transformer-ner/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/04/23/nlp-hanlp-ner/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2022/04/23/nlp-hanlp-ner/" itemprop="url">使用HanLP进行分词和实体抽取</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-04-23T10:19:54+08:00">
+                2022-04-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="使用HanLP进行分词和实体抽取"><a href="#使用HanLP进行分词和实体抽取" class="headerlink" title="使用HanLP进行分词和实体抽取"></a>使用HanLP进行分词和实体抽取</h2><p>HanLP Github地址：<a href="https://github.com/hankcs/HanLP" target="_blank" rel="noopener">https://github.com/hankcs/HanLP</a></p>
+<p>HanLP文档地址：<a href="https://hanlp.hankcs.com/docs/api/hanlp/pretrained/index.html" target="_blank" rel="noopener">https://hanlp.hankcs.com/docs/api/hanlp/pretrained/index.html</a></p>
+<h3 id="多任务模型"><a href="#多任务模型" class="headerlink" title="多任务模型"></a>多任务模型</h3><p>首先我们来了解下HanLP有哪些预训练模型，其分为单任务模型和多任务模型，多任务模型就是可以同时执行多个任务，其模型的位置都在<strong>hanlp.pretrained.mtl</strong>这个包下，根据其文档说明</p>
+<p><strong>hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_BASE_ZH</strong></p>
+<p>Electra（Clark et al.2020）在近源中文语料库上训练的联合tok、pos、ner、srl、dep、sdp和con模型的<strong>基础版本</strong>。</p>
+<p><strong>hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_SMALL_ZH</strong></p>
+<p>Electra（Clark et al.2020）在近源中文语料库上训练的联合tok、pos、ner、srl、dep、sdp和con模型的<strong>迷你版本</strong>。</p>
+<p><strong>hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ERNIE_GRAM_ZH</strong></p>
+<p>ERNIE（Xiao et al.2021）在近源汉语语料库上训练的联合tok、pos、ner、srl、dep、sdp和con模型的基础版本。</p>
+<p><strong>hanlp.pretrained.mtl.NPCMJ_UD_KYOTO_TOK_POS_CON_BERT_BASE_CHAR_JA</strong></p>
+<p>BERT（Devlin et al.2019）在NPCMJ/UD/Kyoto语料库上训练基本字符编码器，解码器包括tok、pos、ner、dep、con、srl。</p>
+<p><strong>hanlp.pretrained.mtl.OPEN_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_BASE_ZH</strong></p>
+<p>Electra（Clark et al.2020）在<strong>开源</strong>中文语料库上训练的联合tok、pos、ner、srl、dep、sdp和con模型的<strong>基础版本</strong>。</p>
+<p><strong>hanlp.pretrained.mtl.OPEN_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTRA_SMALL_ZH</strong></p>
+<p>Electra（Clark et al.2020）在开源中文语料库上训练的联合tok、pos、ner、srl、dep、sdp和con模型的<strong>迷你版本</strong>。</p>
+<p><strong>hanlp.pretrained.mtl.UD_ONTONOTES_TOK_POS_LEM_FEA_NER_SRL_DEP_SDP_CON_XLMR_BASE</strong></p>
+<p>XLM-R（Conneau et al.2020）联合tok、pos、lem、fea、ner、srl、dep、sdp和con模型的基础版本，在UD和OntoNotes5语料库上进行训练。</p>
+<p><strong>hanlp.pretrained.mtl.UD_ONTONOTES_TOK_POS_LEM_FEA_NER_SRL_DEP_SDP_CON_MT5_SMALL</strong></p>
+<p>mT5（Xue et al.2021）联合tok、pos、lem、fea、ner、srl、dep、sdp和con模型的迷你版本，在UD和OntoNotes5语料库上进行训练。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2022/04/23/nlp-hanlp-ner/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/04/03/linux-oom/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2022/04/03/linux-oom/" itemprop="url">Linux OOM机制</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-04-03T18:30:54+08:00">
+                2022-04-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="记录一次程序总是异常中止的解决过程"><a href="#记录一次程序总是异常中止的解决过程" class="headerlink" title="记录一次程序总是异常中止的解决过程"></a>记录一次程序总是异常中止的解决过程</h2><h3 id="问题描述："><a href="#问题描述：" class="headerlink" title="问题描述："></a>问题描述：</h3><p>开发的爬虫脚本在服务器上99%的时间都可以正常运行，但是偶尔会自动中止，进程消失。频率不固定，有的时候一天一次，有的时候一周一次，甚至很久不报错。后来解决该问题后，发现其实就是因为触发了某些条件才会出现异常，所以并不是有规律可言的。</p>
+<h3 id="解决过程"><a href="#解决过程" class="headerlink" title="解决过程"></a>解决过程</h3><p>前面的这些解决过程不是很重要，实际是Linux系统的OOM机制导致程序被杀，不过遇到问题一般很难一开始就精准的定位到问题，都是一步步的推测问题产生的原因，然后不断地排除，直至问题的解决。所以前面这些步骤仅是在问题解决时的一些尝试性思路。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2022/04/03/linux-oom/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/03/12/spider-shixinchaxun/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2022/03/12/spider-shixinchaxun/" itemprop="url">反爬（八）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-03-12T16:03:20+08:00">
+                2022-03-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/爬虫/" itemprop="url" rel="index">
+                    <span itemprop="name">爬虫</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="反爬八"><a href="#反爬八" class="headerlink" title="反爬八"></a>反爬八</h2><h3 id="网站介绍"><a href="#网站介绍" class="headerlink" title="网站介绍"></a>网站介绍</h3><p>本次破解<a href="https://neris.csrc.gov.cn/shixinchaxun/" target="_blank" rel="noopener">目标网站</a>，该网站是一个搜索式的网站，支持模糊搜索，我们输入“公司”进行搜索，发现有滑动验证码。</p>
+<p><img src="/2022/03/12/spider-shixinchaxun/p1.png" alt></p>
+<p>分析其网络请求，我们可以看到这样几个关键请求：</p>
+<p>获取验证码的请求：<a href="https://neris.csrc.gov.cn/shixinchaxun/sxcx/captcha/get（实际为一个POST请求）" target="_blank" rel="noopener">https://neris.csrc.gov.cn/shixinchaxun/sxcx/captcha/get（实际为一个POST请求）</a></p>
+<p>post参数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">captchaType: <span class="string">"blockPuzzle"</span></span><br><span class="line">clientUid: <span class="string">"slider-d063f7fa-f53c-4868-8fed-12d68cfe932b"</span></span><br><span class="line">ts: <span class="number">1647072841626</span></span><br></pre></td></tr></table></figure>
+<p>请求返回<code>json</code>数据，内容如下</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2022/03/12/spider-shixinchaxun/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/01/27/python-sm4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2022/01/27/python-sm4/" itemprop="url">Python sm4加解密</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-01-27T19:31:02+08:00">
+                2022-01-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python编程/" itemprop="url" rel="index">
+                    <span itemprop="name">python编程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>安装模块<code>gmssl</code>，<code>pip install gmssl</code></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2022/01/27/python-sm4/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/01/09/dl-captcha-crnn/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2022/01/09/dl-captcha-crnn/" itemprop="url">CRNN项目实践</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-01-09T20:32:14+08:00">
+                2022-01-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="CRNN项目实战"><a href="#CRNN项目实战" class="headerlink" title="CRNN项目实战"></a><code>CRNN</code>项目实战</h2><p>之前写过一篇文章利用<a href="https://forchenxi.github.io/2021/08/28/dl-crnn/#more" target="_blank" rel="noopener"><code>CRNN</code>进行文字识别</a>，当时重点讲的<code>CRNN</code>网络结构和CNN部分的代码实现，因为缺少文字数据集没有进行真正的训练，这次正好有一批不定长的字符验证码，正好<code>CRNN</code>主要就是用于<strong>端到端地对不定长的文本序列进行识别</strong>，当然是字符和文字都是可以用的，所以这里进行了一次实战。</p>
+<p>主要是参考<code>github</code>项目：<a href="https://github.com/meijieru/crnn.pytorch" target="_blank" rel="noopener">https://github.com/meijieru/crnn.pytorch</a></p>
+<h3 id="关于lmdb"><a href="#关于lmdb" class="headerlink" title="关于lmdb"></a>关于<code>lmdb</code></h3><h4 id="lmdb安装"><a href="#lmdb安装" class="headerlink" title="lmdb安装"></a>lmdb安装</h4><p>首先关于lmdb这个数据库，python有两个包，一个是lmdb，另一个是python-lmdb。</p>
+<p>使用pycharm的包安装功能可以看到关于lmdb的描述</p>
+<p><code>Universal Python binding for the LMDB &#39;Lightning&#39; Database  Version 1.3.0</code></p>
+<p>关于<code>python-lmdb</code>的描述</p>
+<p><code>simple lmdb bindings written using ctypes Version 1.0.0</code></p>
+<p>所以理论上我们安装前者肯定是可以用的，但是经过亲身实践，</p>
+<p>在pip环境中使用<code>pip install lmdb</code>确实可以正常使用；</p>
+<p>但是在<code>conda</code>环境中，使用<code>conda install lmdb</code>安装完成之后却无法导入包。</p>
+<p>所以又使用：<code>conda install python-lmdb</code>安装，安装完之后却可以使用，非常奇怪。</p>
+<p>后发现原因大概率是版本问题，使用pip可以安装<code>lmdb=1.3.0</code>的最新版本，而<code>conda</code>只能安装<code>lmdb=0.9.x</code>的版本，所以目前在<code>conda</code>中只能使用<code>python-lmdb</code>暂替使用。</p>
+<h4 id="制作适用CRNN的lmdb数据集"><a href="#制作适用CRNN的lmdb数据集" class="headerlink" title="制作适用CRNN的lmdb数据集"></a>制作适用<code>CRNN</code>的<code>lmdb</code>数据集</h4><p><code>github</code>项目中关于如何训练自己的数据集写的不是很清楚，如果我们直接运行<code>train.py</code>会遇到各种问题，首先第一个问题就是数据集的问题，<code>lmdbDataset</code>中的初始化</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2022/01/09/dl-captcha-crnn/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/12/28/linux-shell/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/12/28/linux-shell/" itemprop="url">Linux shell命令</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-12-28T19:21:05+08:00">
+                2021-12-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="Linux-shell命令"><a href="#Linux-shell命令" class="headerlink" title="Linux shell命令"></a>Linux shell命令</h2><h3 id="vim程序编译器"><a href="#vim程序编译器" class="headerlink" title="vim程序编译器"></a>vim程序编译器</h3><p>vi分为3种模式，分别是一般命令模式，编辑模式与命令行模式。</p>
+<ul>
+<li><p><strong>一般命令模式</strong>：以vi/vim打开一个文件就直接进入一般命令模式，在该模式下可以进行光标移动、复制、粘贴、删除操作。</p>
+</li>
+<li><p><strong>编辑模式</strong>：在一般命令模式下，输入【i、o、a、r】(大写也可)，进入编辑模式。按【ESC】键回到一般命令模式。</p>
+</li>
+<li><p><strong>命令行模式</strong>：在一般命令模式下，输入【: / ?】中的任何一个，进入到命令行模式，光标会移动到最下面一行，可以进行读取、保存、批量替换字符、退出vi、显示行号等操作。</p>
+</li>
+</ul>
+<p>编辑模式与命令行模式之间不可互相切换。</p>
+<h4 id="一般命令模式下的快捷键"><a href="#一般命令模式下的快捷键" class="headerlink" title="一般命令模式下的快捷键"></a>一般命令模式下的快捷键</h4>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/12/28/linux-shell/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/12/18/al-genetic/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -707,1123 +1785,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/11/27/al-decision-tree/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/11/27/al-decision-tree/" itemprop="url">决策树</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-11-27T10:11:05+08:00">
-                2021-11-27
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/算法/" itemprop="url" rel="index">
-                    <span itemprop="name">算法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="决策树"><a href="#决策树" class="headerlink" title="决策树"></a>决策树</h2><h3 id="决策树的概念"><a href="#决策树的概念" class="headerlink" title="决策树的概念"></a>决策树的概念</h3><p>1、决策树是一种分类器，是一个<strong>有向、无环树</strong>。</p>
-<p>2、树中根节点没有父节点，<strong>一个节点可以有1-2个或者没有子节点</strong>。</p>
-<p>3、<strong>每个叶节点都对应一个类别标识C的值</strong>；每个内部节点都对应一个用于分割数据集的属性Xi，称为分割属性；每个内部节点都有一个分割判断规则<code>qj</code>。</p>
-<p>4、节点n的分割属性和分割判断规则组成了节点n的分割标准。</p>
-<p><img src="/2021/11/27/al-decision-tree/1.png" alt></p>
-<h3 id="决策树原理"><a href="#决策树原理" class="headerlink" title="决策树原理"></a>决策树原理</h3><p>1、决策树原理：归纳推理</p>
-<p>2、归纳：是从特殊到一般的过程</p>
-<p>3、归纳推理：从若干个事实表现出的特征、特性或属性中，通过比较、总结、概括而得出一个规律性的结论。</p>
-<p>4、归纳推理的基本假定：<strong>任一假设如果能在足够大的训练样本集中很好地逼近目标函数，则它也能在未见样本中很好地逼近目标函数。</strong></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2021/11/27/al-decision-tree/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/11/20/al-naive-bayes-classifier/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/11/20/al-naive-bayes-classifier/" itemprop="url">朴素贝叶斯分类</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-11-20T10:05:05+08:00">
-                2021-11-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/算法/" itemprop="url" rel="index">
-                    <span itemprop="name">算法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="贝叶斯分类（朴素）"><a href="#贝叶斯分类（朴素）" class="headerlink" title="贝叶斯分类（朴素）"></a>贝叶斯分类（朴素）</h2><p>• 是一种<strong>统计学</strong>分类方法</p>
-<p>• 可以用来对一个<strong>未知的样本判定其属于特定类的概率</strong></p>
-<p>• 分类模型是在<strong>有指导</strong>的学习下获得</p>
-<p>• 分类算法可与决策树和神经网络算法媲美</p>
-<p>• 用于大型数据库时具有较高的分类准确率和高效率。</p>
-<h3 id="基础概念"><a href="#基础概念" class="headerlink" title="基础概念"></a>基础概念</h3><p>朴素贝叶斯分类的假设前提：<strong>类别C确定的情况下</strong>，不同属性(X1,X2)间是<strong>相互独立</strong>的，即<strong>条件独立</strong>。(<strong>朴素</strong>即为条件独立)</p>
-<p>即：C确定下，P(X1,X2)=P(X1)P(X2) ；或表示为：P(X1,X2|C)=P(X1|C)P(X2|C)</p>
-<p>设X是未知类别的数据样本(属性值已知)，H为假定：X属于某特定类的类C。分类问题即为，确定P(H|X)——给定观测数据样本X，假定H成立的概率。</p>
-<p>后验概率：P(H|X)，在条件X下,H的后验概率</p>
-<p>先验概率：P(H)</p>
-<h3 id="贝叶斯定理"><a href="#贝叶斯定理" class="headerlink" title="贝叶斯定理"></a>贝叶斯定理</h3><p><img src="/2021/11/20/al-naive-bayes-classifier/1.png" style="zoom:48%;"></p>
-<p><strong>注：P（X/H)相当于已知带标签的数据，即有导师了。</strong></p>
-<p>换个表达形式就会明朗很多：</p>
-<p><img src="/2021/11/20/al-naive-bayes-classifier/2.png" alt></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2021/11/20/al-naive-bayes-classifier/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/11/13/al-apriori/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/11/13/al-apriori/" itemprop="url">关联规则--Apriori算法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-11-13T10:21:05+08:00">
-                2021-11-13
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/算法/" itemprop="url" rel="index">
-                    <span itemprop="name">算法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="关联规则"><a href="#关联规则" class="headerlink" title="关联规则"></a>关联规则</h2><p>啤酒与尿布的故事：</p>
-<p>在美国，一些年轻的父亲下班后经常要到超市去买婴儿尿布，超市也因此发现了一个规律，在购买婴儿尿布的年轻的父亲们中，有30%~40%的人同时要买一些啤酒。超市随后调整了货架的摆放，将尿布和啤酒放在一起，因此，明显增加了销售额。</p>
-<h3 id="兴趣度度量"><a href="#兴趣度度量" class="headerlink" title="兴趣度度量"></a>兴趣度度量</h3><p>1、兴趣度度量的概念</p>
-<p>挖掘出的模式(规律的表示形式)的<strong>简洁性、确定性和实用性</strong>即为兴趣度度量。</p>
-<p>2、兴趣度度量的必要性</p>
-<p>大量的数据 –&gt; 挖掘出大量的规则  –&gt;  规则一小部分是用户感兴趣的 –&gt; 有必要进行兴趣度度量</p>
-<p>3、兴趣度度量方法</p>
-<p><strong>简洁性度量</strong>：模式的便于人理解的度量</p>
-<p><strong>确定性度量</strong>：模式的可信性</p>
-<p>方法：对于关联规则，确定性度量使用置信度。</p>
-<p>设A和B为项目集合，A与B关联的规则A–&gt;B的置信度定义为：</p>
-<p><strong>置信度（A–&gt;B）= 同时包含A和B的元组数/包含A的元组数</strong></p>
-<p>举例：对某计算机商店购买物品的相关情况进行挖掘，得到一个置信度为85%的关联规则：</p>
-<p> buys(X，”computer”)  –&gt;  buys(X，”printer”)</p>
-<p> 意味着买计算机的顾客85%也买打印机。A的元组数为买计算机的事务数（顾客数），同时包含A和B的元组数为买计算机同时又买打印机的事务数（顾客数）。</p>
-<p><strong>实用性度量</strong>：模式的有用性</p>
-<p>方法：对于关联规则，实用性度量使用支持度。</p>
-<p>设A和B为项目集合，A与B关联的规则A”B的支持度定义为：</p>
-<p><strong>支持度（A–&gt;B）= 同时包含A和B的元组数/元组总数</strong></p>
-<p>举例：对某计算机商店购买物品的相关情况进行挖掘，得到一个支持度为30%的关联规则：</p>
-<p>  buys(X，”computer”) –&gt; buys(X，”printer”)</p>
-<p> 意味着该计算机商店的所有顾客的30%同时购买了计算机和打印机。元组总数为购买计算机或购买打印机的事务数（顾客数），同时包含A和B的元组数为买计算机同时又买打印机的事务数（顾客数）。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2021/11/13/al-apriori/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/11/03/dl-tuning-one/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/11/03/dl-tuning-one/" itemprop="url">关于神经网络的一些调参经验</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-11-03T17:35:24+08:00">
-                2021-11-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/深度学习/" itemprop="url" rel="index">
-                    <span itemprop="name">深度学习</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="关于神经网络的一些调参经验"><a href="#关于神经网络的一些调参经验" class="headerlink" title="关于神经网络的一些调参经验"></a>关于神经网络的一些调参经验</h2><h3 id="训练损失不下降"><a href="#训练损失不下降" class="headerlink" title="训练损失不下降"></a>训练损失不下降</h3><p>关于训练损失不下降，根据我的一些经验和理论知识，可以从以下角度来分析</p>
-<p>首先，从数据集来分析：</p>
-<ul>
-<li>是否数据集存在比较多的<strong>标注错误</strong>？</li>
-<li>针对类似分类的项目，是否<strong>数据集分布不均衡</strong>，某些类别的样本数量太少？</li>
-<li><strong>数据集特征不明显</strong>，举个验证码的例子，很多字符类的验证码，为了不让别人破解，会加上<strong>背景、斑点和干扰线</strong>等，如果这些干扰元素影响很大，人类肉眼分辨都存在难度，那直接丢给神经网络学习也是很难的，你需要想办法去除干扰元素，使数据特征尽可能的明显。</li>
-</ul>
-<p>其次，从数据预处理来分析：</p>
-<ul>
-<li>是否<strong>未进行归一化</strong>，比如图片像素值是否除以255；</li>
-<li>是否<strong>未打乱数据集</strong>，不打乱数据集的话，会导致网络在学习过程中产生一定的偏见问题；</li>
-<li>是否<strong>正确对应数据和标签</strong>，比如在预处理后将训练数据和标签输入到神经网络时，因为写了个bug，导致对应错乱；</li>
-</ul>
-<p>最后，从模型结构和参数来分析：</p>
-<ul>
-<li><p>激活函数、损失函数是否选错了？</p>
-</li>
-<li><p>优化器和学习速率不合适，需要调整；</p>
-</li>
-<li><p>模型结构太简单，学习能力不够；</p>
-</li>
-<li><p><strong>正则化过度</strong>，<code>L1、L2和dropout</code>是用来防止过拟合的，如果训练集loss下不来时，就要考虑一下是不是正则化过度，导致模型欠拟合；</p>
-</li>
-<li><p>Batch_Size过大会导致收敛很慢，损失下降也就很慢，给人一种训练损失不下降的感觉；</p>
-</li>
-<li><p><strong>模型训练遇到瓶颈</strong></p>
-<p>这里的瓶颈一般包括：<strong>梯度消失、大量神经元失活、梯度爆炸</strong>和弥散、学习率过大或过小等。</p>
-</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2021/11/03/dl-tuning-one/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/09/23/dl-pytorch-captcha/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/09/23/dl-pytorch-captcha/" itemprop="url">使用Pytorch识别字符验证码</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-23T19:22:54+08:00">
-                2021-09-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/深度学习/" itemprop="url" rel="index">
-                    <span itemprop="name">深度学习</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="使用Pytorch识别字符验证码"><a href="#使用Pytorch识别字符验证码" class="headerlink" title="使用Pytorch识别字符验证码"></a>使用<code>Pytorch</code>识别字符验证码</h2><p>之前已经学习过利用<code>Keras</code>搭建神经网络模型来识别字符验证码，近期又学习了<code>pytorch</code>实现卷积神经网络相关的技术，正好遇到一个验证码识别的需求，所以尝试使用<code>pytorch</code>来实现。</p>
-<h3 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理</h3><p>要训练的验证码如下所示:</p>
-<p><img src="/2021/09/23/dl-pytorch-captcha/p1.jpg" style="zoom:150%;"></p>
-<p>其为中文汉字的简单运算，实际上仅包括<strong>零壹贰叁肆伍陆柒捌玖加减乘等于</strong>，这15个汉字，<strong>等于</strong>可以不识别（其实识别也完全没问题，只不过问题能简化就尽量简化嘛），那最后也就是总共要识别13个汉字，分类数就是13。</p>
-<p>另外我们可以用’0123456789+-x’来代替汉字，避免文件名称无法使用汉字（windows下open-cv不能读取带有中文路径或文件名称）的问题。</p>
-<p>下载并标注了1000张验证码，观察其字体颜色和干扰线、点均多变，无法根据特定规则将其区分；另外，尝试中值模糊、均值模糊和高斯模糊，均得不到较好的效果（肉眼观察）。只有灰度化和二值化后，感觉稍微变得清晰了一些。</p>
-<p>另外，针对数据集我还统计了一下各个类别的数量是否均衡（主要怕有的文字训练样本太少，训练效果差）。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;&apos;捌&apos;: 206, &apos;减&apos;: 346, &apos;肆&apos;: 220, &apos;柒&apos;: 205, &apos;零&apos;: 200, &apos;伍&apos;: 214, &apos;加&apos;: 358, </span><br><span class="line">&apos;玖&apos;: 189, &apos;壹&apos;: 195, &apos;叁&apos;: 191, &apos;陆&apos;: 206, &apos;乘&apos;: 297, &apos;贰&apos;: 176&#125;</span><br></pre></td></tr></table></figure>
-<p>数据集的分布情况如上数据，总体还算均衡，那就表示可以开始处理数据和进行训练了。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2021/09/23/dl-pytorch-captcha/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/09/10/nlp-word-order/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/09/10/nlp-word-order/" itemprop="url">中文点选验证码——语序</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-09-10T17:19:54+08:00">
-                2021-09-10
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
-                    <span itemprop="name">自然语言处理</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="中文点选验证码——语序"><a href="#中文点选验证码——语序" class="headerlink" title="中文点选验证码——语序"></a>中文点选验证码——语序</h2><p>前面一直在研究文字点选验证码的文字识别，在文字识别之后，对于有语序要求的，还需要我们自己去按照正确的语序顺序去点击才能通过，例如：</p>
-<p>外圆内方</p>
-<p><img src="/2021/09/10/nlp-word-order/1.png" alt></p>
-<p>积少成多</p>
-<p><img src="/2021/09/10/nlp-word-order/3.png" alt></p>
-<p>得道者多助</p>
-<p><img src="/2021/09/10/nlp-word-order/2.png" alt></p>
-<p>利用结巴分词技术可以解决此问题，但是仅限于词语效果较好，对于古诗或者谚语等效果比较差；其中还借助了结巴分词得<code>dict.txt</code>，其中保存了常见词得词频和词性，在使用得时候可以根据自己的需求进行调整。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2021/09/10/nlp-word-order/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/08/28/dl-crnn/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/08/28/dl-crnn/" itemprop="url">利用CRNN进行文字识别</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-28T16:32:14+08:00">
-                2021-08-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/深度学习/" itemprop="url" rel="index">
-                    <span itemprop="name">深度学习</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="CRNN"><a href="#CRNN" class="headerlink" title="CRNN"></a>CRNN</h2><p>参考文章：<a href="https://xiaobaibubai.blog.csdn.net/article/details/115862743" target="_blank" rel="noopener">https://xiaobaibubai.blog.csdn.net/article/details/115862743</a></p>
-<p>GitHub项目：<a href="https://github.com/meijieru/crnn.pytorch" target="_blank" rel="noopener">https://github.com/meijieru/crnn.pytorch</a></p>
-<p>预训练模型下载地址：<a href="https://pan.baidu.com/s/1pLbeCND" target="_blank" rel="noopener">https://pan.baidu.com/s/1pLbeCND</a></p>
-<p>CRNN 全称为 Convolutional Recurrent Neural Network，主要用于<strong>端到端地对不定长的文本序列进行识别，不用先对单个文字进行切割，而是将文本识别转化为时序依赖的序列学习问题，就是基于图像的序列识别</strong>。</p>
-<p>该算法出自<code>An End-to-End Trainable Neural Network for Image-based Sequence Recognition and Its Application to Secene Text Recognition</code>,这篇文章来自华中科技大学白翔团队，并在2017年被人工智能顶级期刊《TPAMI》收录。</p>
-<h3 id="CRNN网络架构示意图"><a href="#CRNN网络架构示意图" class="headerlink" title="CRNN网络架构示意图"></a>CRNN网络架构示意图</h3>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2021/08/28/dl-crnn/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1871,7 +1837,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">75</span>
+                  <span class="site-state-item-count">82</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1893,7 +1859,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">154</span>
+                  <span class="site-state-item-count">164</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
