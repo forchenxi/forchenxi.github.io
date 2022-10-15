@@ -259,6 +259,929 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/26/spider-shenzhen-environments/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/03/26/spider-shenzhen-environments/" itemprop="url">反爬（六）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-26T19:03:54+08:00">
+                2020-03-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/爬虫/" itemprop="url" rel="index">
+                    <span itemprop="name">爬虫</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h4 id="反爬六"><a href="#反爬六" class="headerlink" title="反爬六"></a>反爬六</h4><p>此次练习的<a href="http://eapi.meeb.sz.gov.cn:50001/pspv3/dblAnn" target="_blank" rel="noopener">网站</a>,其实这个网站无需破解，奈何当时脑子懵了，怎么请求都无法请求到数据，然后观察该网站的请求方式，在请求头中发现了奇怪的<code>pqm</code>参数，理所当然认为这是关键所在，所以开始了破解之路。悲催的是，破解之后还是请求不到数据，才发现问题所在。（不过讲道理，如果这个网站真的利用<code>pqm</code>反爬是很有可能的，我们的破解思路也是没什么问题）。</p>
+<p>因为这个网站的破解不是必须的，下面就简单看下破解过程吧。</p>
+<h5 id="发现异常参数"><a href="#发现异常参数" class="headerlink" title="发现异常参数"></a>发现异常参数</h5><p>首先通过观察，我们发现请求头里有个<code>pqm</code>的参数，那么当我们向服务器进行请求时，服务器端就很有可能利用该参数进行检测，如果我们发送过去的参数值不对，就不给我们返回正确数据。</p>
+<p><img src="/2020/03/26/spider-shenzhen-environments/p1.PNG" alt></p>
+<h5 id="定位该参数在js中的位置"><a href="#定位该参数在js中的位置" class="headerlink" title="定位该参数在js中的位置"></a>定位该参数在<code>js</code>中的位置</h5><p>一般情况，这种参数值的生成方法都是写在<code>js</code>代码中的，当在浏览器中加载页面时就会自动执行。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/03/26/spider-shenzhen-environments/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/09/dl-data-process/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/03/09/dl-data-process/" itemprop="url">字符验证码识别之数据处理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-03-09T10:35:24+08:00">
+                2020-03-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h3 id="验证码识别之数据处理"><a href="#验证码识别之数据处理" class="headerlink" title="验证码识别之数据处理"></a>验证码识别之数据处理</h3><p>当我们想要自己通过深度学习网络训练识别网上的各种验证码时，首先需要下载一定量的图片，而且还需要给这些验证码图片标注好正确的答案。所以，一开始我们要借助一些打码平台来帮助我们完成这部分工作，当然如果不嫌麻烦的话自己一张张图标注也是可以的……</p>
+<p>当我们完成标注工作后，还需要对这些验证码图片进行处理，使之适合输入到我们的网络中。</p>
+<p>对图像处理时我们需要用到<code>OpenCV-python</code>这个库，先使用<code>pip install OpenCV-python</code>安装一下。</p>
+<p>在windows系统中，若出现导入<code>cv2</code>模块后，使用<code>pycharm</code>调用<code>cv2</code>的方法全部标黄，并且不提示方法名的情况，可以进入<code>cv2</code>的<code>__init__.py</code>中，注释全部代码，然后在最后加上以下代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> importlib</span><br><span class="line">os.environ[<span class="string">"PATH"</span>] += os.pathsep + os.path.dirname(os.path.realpath(__file__))</span><br><span class="line"><span class="keyword">from</span> .cv2 <span class="keyword">import</span> *</span><br><span class="line">globals().update(importlib.import_module(<span class="string">'cv2.cv2'</span>).__dict__)</span><br></pre></td></tr></table></figure>
+<p>之后重启<code>Pycharm</code>应该可以解决。</p>
+<h4 id="图像模糊（滤波）"><a href="#图像模糊（滤波）" class="headerlink" title="图像模糊（滤波）"></a>图像模糊（滤波）</h4><p>模糊操作时图像处理中最简单和常用的操作之一，主要是为了给图像预处理时降低噪声。</p>
+<p>模糊的过程与卷积神经网络的原理类似，我们都知道图像其实是由一个个的像素点构成，我们可以选取特定大小的一个模板，然后扫描整幅图像，每一次扫描对整个模板内的所有像素点的值进行运算（不同的模糊操作采用的运算不一样），将得到的值赋值给中间的像素点。</p>
+<p>主要有以下几种常见的模糊操作：</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/03/09/dl-data-process/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/20/dl-news-theme/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/02/20/dl-news-theme/" itemprop="url">新闻分类：多分类问题</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-20T19:35:24+08:00">
+                2020-02-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p><em>本文章参考《python深度学习》</em></p>
+<h3 id="新闻分类：多分类问题"><a href="#新闻分类：多分类问题" class="headerlink" title="新闻分类：多分类问题"></a>新闻分类：多分类问题</h3><p>新闻主题有多个类别，所 这是多分类（<code>multiclass classification</code>）问题的一个例子。因为每个数据点只能划分到一个类别， 所以更具体地说，这是单标签、多分类（<code>single-label, multiclass classification</code>）问题的一个例 子。如果每个数据点可以划分到多个类别（主题），那它就是一个多标签、多分类（<code>multilabel, multiclass classification</code>）问题。</p>
+<p>这篇文章会构建一个网络，将路透社新闻划分为46个互斥的主题。</p>
+<h4 id="路透社数据集"><a href="#路透社数据集" class="headerlink" title="路透社数据集"></a>路透社数据集</h4><p>它包含许多短新闻及其对应的主题，由路透社在1986 年发布。它是一个简单的、广泛使用的文本分类数据集。它包括46 个不同的主题：某些主题的样本更多， 但训练集中每个主题都有至少 10 个样本。 与 <code>IMDB</code>和<code>MNIST</code> 类似，路透社数据集也内置为<code>Keras</code> 的一部分。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.datasets <span class="keyword">import</span> reuters</span><br><span class="line"></span><br><span class="line">(train_data, train_labels), (test_data, test_labels) = reuters.load_data(num_words=<span class="number">10000</span>)</span><br><span class="line"></span><br><span class="line">print(train_data[<span class="number">10</span>])</span><br><span class="line">[<span class="number">1</span>, <span class="number">245</span>, <span class="number">273</span>, <span class="number">207</span>, <span class="number">156</span>, <span class="number">53</span>, <span class="number">74</span>, <span class="number">160</span>, <span class="number">26</span>, <span class="number">14</span>, <span class="number">46</span>, <span class="number">296</span>, <span class="number">26</span>, <span class="number">39</span>, <span class="number">74</span>, <span class="number">2979</span>, <span class="number">3554</span>, <span class="number">14</span>, <span class="number">46</span>, <span class="number">4689</span>, <span class="number">4329</span>, <span class="number">86</span>, <span class="number">61</span>, <span class="number">3499</span>, <span class="number">4795</span>, <span class="number">14</span>, <span class="number">61</span>, <span class="number">451</span>, <span class="number">4329</span>, <span class="number">17</span>, <span class="number">12</span>]</span><br></pre></td></tr></table></figure>
+<p>与<code>IMDB</code>评论一样，每个样本都是一个整数列表（表示单词索引）,甚至将索引解码为新闻文本的方式都一样，只不过要使用<code>reuters.get_word_index()</code>。</p>
+<p>我们有 8982 个训练样本和 2246 个测试样本。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/02/20/dl-news-theme/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/10/dl-movie-comment/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/02/10/dl-movie-comment/" itemprop="url">电影评论分类：二分类问题</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-10T20:09:54+08:00">
+                2020-02-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p><em>本文章参考《python深度学习》</em></p>
+<h3 id="电影评论分类：二分类问题"><a href="#电影评论分类：二分类问题" class="headerlink" title="电影评论分类：二分类问题"></a>电影评论分类：二分类问题</h3><h4 id="IMDB数据集"><a href="#IMDB数据集" class="headerlink" title="IMDB数据集"></a><code>IMDB</code>数据集</h4><p>它包含来自互联网电影数据库（<code>IMDB</code>）的50 000 条严重两极分化的评论。数据集被分为用于训练的 25 000 条评论与用于测试的 25 000 条评论，训练集和测试 集都包含 50% 的正面评论和 50% 的负面评论。</p>
+<p><code>IMDB</code> 数据集内置于<code>Keras</code>库。它已经过预处理：评论（单词序列） 已经被转换为整数序列，其中每个整数代表字典中的某个单词。 </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.datasets <span class="keyword">import</span> imdb</span><br><span class="line"></span><br><span class="line">(train_data, train_labels), (test_data, test_labels) = imdb.load_data(num_words=<span class="number">10000</span>)</span><br></pre></td></tr></table></figure>
+<p>参数<code>num_words=10000</code>的意思是仅保留训练数据中前10 000 个最常出现的单词。低频单词将被舍弃，这样得到的向量数据不会太大，便于处理。 </p>
+<p>train_data 和 test_data 这两个变量都是评论组成的列表，每条评论又是单词索引组成 的列表（表示一系列单词）。train_labels 和 test_labels 都是0 和1组成的列表，其中0 代表负面（negative）， 1 代表正面（positive）。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>train_data[<span class="number">0</span>] </span><br><span class="line">[<span class="number">1</span>, <span class="number">14</span>, <span class="number">22</span>, <span class="number">16</span>, ... <span class="number">178</span>, <span class="number">32</span>] </span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>train_labels[<span class="number">0</span>]</span><br><span class="line"><span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>举例子理解具体某条评论：</p>
+<p>某条评论为：<code>[15, 16, 89, 77]</code>，其中15代表字典中的<code>I</code>、16代表<code>love</code>、89代表<code>this</code>、77代表<code>movie</code>，那么这条评论为<code>I love this moive</code>。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/02/10/dl-movie-comment/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/20/dl-concept/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/01/20/dl-concept/" itemprop="url">深度学习概念</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-20T19:09:54+08:00">
+                2020-01-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="Python深度学习"><a href="#Python深度学习" class="headerlink" title="Python深度学习"></a>Python深度学习</h2><p><em>注：本文章摘自《Python深度学习》书籍</em></p>
+<h3 id="第一部分：深度学习基础"><a href="#第一部分：深度学习基础" class="headerlink" title="第一部分：深度学习基础"></a>第一部分：深度学习基础</h3><h4 id="第一章：什么是深度学习"><a href="#第一章：什么是深度学习" class="headerlink" title="第一章：什么是深度学习"></a>第一章：什么是深度学习</h4><h5 id="人工智能、机器学习与深度学习的关系"><a href="#人工智能、机器学习与深度学习的关系" class="headerlink" title="人工智能、机器学习与深度学习的关系"></a>人工智能、机器学习与深度学习的关系</h5><p><img src="/2020/01/20/dl-concept/p1.png" alt></p>
+<p><strong>符号主义人工智能(symbolic AI)</strong>：</p>
+<p>人们输入的是规则（即程序）和需要根据这些规则进行处理的数据，系统输出的是答案。 </p>
+<p><strong>机器学习</strong>：</p>
+<p>人们输入的是数据和从这些数据中预期得到的答案，系统输出的是 规则。这些规则随后可应用于新的数据，并使计算机自主生成答案。</p>
+<p><img src="/2020/01/20/dl-concept/p2.png" alt></p>
+<p><strong>机器学习的三要素</strong></p>
+<ol>
+<li>输入数据点</li>
+<li>预期输出的示例</li>
+<li>衡量算法结果好坏的方法</li>
+</ol>
+<p><strong>机器学习技术定义</strong>：在预先定义好的可能性空间中，利用反馈信号的指引来寻找输入数据的有用表示。</p>
+<p><strong>深度学习</strong>：它是从数据中学习表示的一种新方法，强调从连续的层中进行学习，这些层对应于越来越有意义的表示。“深度”指的并不是利用这种方法所获取的更深层次的理解，而是指一系列连续的表示层。</p>
+<p><strong>深度</strong>是指数据模型中包含的层数，这些分层表示几乎总是通过叫做<strong>神经网络</strong>(<code>neural network</code>)的模型学习得到。</p>
+<p><strong>注：这里所谓的神经网络与人类大脑神经等无关</strong></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/01/20/dl-concept/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/13/spider-market-regulation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/01/13/spider-market-regulation/" itemprop="url">反爬（五）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-13T19:03:20+08:00">
+                2020-01-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/爬虫/" itemprop="url" rel="index">
+                    <span itemprop="name">爬虫</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h3 id="反爬五"><a href="#反爬五" class="headerlink" title="反爬五"></a>反爬五</h3><p>这一次针对<a href="http://cfws.samr.gov.cn/list.html?21_s=110101" target="_blank" rel="noopener">此网站</a>的破解，这次的网站破解过程没有前两面的那么复杂（当然对大佬来讲前面几个也是小菜一碟），下面开始介绍这次的破解过程吧。</p>
+<p>这里要说明的一点是一开始我也不知道这个网站有加密，直接构造参数做POST请求毫无问题，但是当持续爬取后出现请求被限制的相关问题，才逐渐开始发现问题并解决问题。</p>
+<h4 id="1、构造参数做post请求"><a href="#1、构造参数做post请求" class="headerlink" title="1、构造参数做post请求"></a>1、构造参数做<code>post</code>请求</h4><p><img src="/2020/01/13/spider-market-regulation/p1.PNG" alt></p>
+<p><code>post</code>请求的具体参数如图中所示，其中比较重要的是<code>queryCondition</code>,其为一个列表类型，每个元素是一个<code>json</code>对象（Python字典对象），并且支持添加多个元素，对应处罚种类、年份等，包括种类、年份以及地区代码等如何设置其实有一个文件写的非常清楚，直接在下面的search框中，搜索诸如“21_s”之类的关键字，就能找到相应的文件，这里不再多说。</p>
+<p>这里的<code>ciphertext</code>参数一开始看不出来什么线索，第一反应这可能是个固定的参数值，直接复制到代码中请求果然可以成功请求到数据，可是后来持续爬取了一会发现就爬不到数据了，调式发现请求返回“你的请求已被限制”此类的信息。后来想到可能这个参数有问题，去浏览器中复制了一个新的到程序中执行又可以正常跑，所以此时才明确这个参数不是固定的，会动态变化，所以要去从网站源码中找出其是如何生成的。</p>
+<h4 id="2、寻找关键参数ciphertext"><a href="#2、寻找关键参数ciphertext" class="headerlink" title="2、寻找关键参数ciphertext"></a>2、寻找关键参数<code>ciphertext</code></h4>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/01/13/spider-market-regulation/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/01/dl-cnn-cifar10/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -875,970 +1798,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/21/python-table-header/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/10/21/python-table-header/" itemprop="url">python 提取表格内容的通用方式</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-21T19:03:54+08:00">
-                2019-10-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/python编程/" itemprop="url" rel="index">
-                    <span itemprop="name">python编程</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><strong>提出问题</strong></p>
-<p>当我们写爬虫进行数据结构化时，经常遇到一些表格数据，无论是web表格还是<code>Excel</code>、<code>Word</code> or <code>PDF</code>中的表格，都很常见；如果表格非常规范化，我们在做结构化时可以说非常省事，一般认为某列对应我们的某字段值即可；但是，大多数时候，表格往往写的比较随意，某一字段值对应的数据并不是在固定的列。</p>
-<p>举个例子，表格A对应的表头如下（这里用列表表示）：</p>
-<p>[“企业名称”, “处罚决定书文号”, “违法行为”, “处罚内容”, “处罚决定机关名称”, “处罚决定日期”]</p>
-<p>相应的我们有一个python对象，其字段值为：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PunishmentItem</span><span class="params">(object)</span>:</span></span><br><span class="line">    __slots__ = (</span><br><span class="line">        <span class="string">"name"</span>,                 <span class="comment"># 行政相对人名称</span></span><br><span class="line">        <span class="string">"irregularities"</span>,       <span class="comment"># 违规行为</span></span><br><span class="line">        <span class="string">"punishment_text"</span>,      <span class="comment"># 处罚内容</span></span><br><span class="line">        <span class="string">"department"</span>,           <span class="comment"># 处罚决定机关名称</span></span><br><span class="line">        <span class="string">'public_date'</span>,          <span class="comment"># 时间</span></span><br><span class="line">        <span class="string">'number'</span>,               <span class="comment"># 文号</span></span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
-<p>于是我们在提取的时候，理想的方式是<code>name</code>对应表格第一列，<code>number</code>对应第二列，依此类推……</p>
-<p>但是实际上可能还有表格B，其对应的表头为：</p>
-<p>[“处罚决定书文号”, “企业名称”,  “违法行为”, “处罚内容”, “处罚决定机关名称”, “处罚决定日期”]</p>
-<p>我们发现其文书号和企业名称顺序是反的，那我们可能会想在程序中加个判断如果是B表格我们就调整索引值…</p>
-<p>可是，事实上可能还存在表格C、D、E……，其表头顺序各不相同，我们要在程序中写无数个<code>if else</code>吗，显然是不可以的。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/10/21/python-table-header/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/16/db-开庭公告清洗过程/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/10/16/db-开庭公告清洗过程/" itemprop="url">某次清洗项目笔记</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-16T18:06:54+08:00">
-                2019-10-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数据库/" itemprop="url" rel="index">
-                    <span itemprop="name">数据库</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><strong>mysql常用命令与查询语句</strong></p>
-<p>连接<code>mysql</code>:</p>
-<p><code>mysql -u username -p -h 主机 -D db_name</code></p>
-<p>断开连接：<code>quit</code> or <code>Ctrl + C</code></p>
-<p><strong>所有命令末尾加上;或者\g</strong></p>
-<p>查看所有数据库：</p>
-<p><code>show databases;</code></p>
-<p>切换数据库：</p>
-<p><code>use &lt;数据库名&gt;;</code></p>
-<p>查看所有数据表：</p>
-<p><code>show tables;</code></p>
-<p>通配符：</p>
-<p><code>%</code>百分号通配符: 表示任何字符出现任意次数 <strong>(可以是0次)</strong>.<br><code>_</code>下划线通配符:表示只能匹配单个字符,不能多也不能少,就是一个字符.</p>
-<p>获取表中行数：</p>
-<p><code>select count(md5_id) from t_kaitinggonggaos;</code></p>
-<p>查看表中字段数据类型：</p>
-<p><code>show COLUMNS from table</code></p>
-<p>获取庭审公开网的数据：</p>
-<p><code>select * from t_kaitinggonggaos_0 where url like &#39;http://tingshen%&#39;;</code></p>
-<p>获取前两行并以友好格式展示：</p>
-<p><code>select * from t_kaitinggonggaos_0 where url like &#39;http://tingshen%&#39; limit 0,2\G</code></p>
-<p>查看索引:</p>
-<p><code>show index from table</code></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/10/16/db-开庭公告清洗过程/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/30/python-textract/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/09/30/python-textract/" itemprop="url">python 处理doc、docx以及xls</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-30T18:03:54+08:00">
-                2019-09-30
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/python编程/" itemprop="url" rel="index">
-                    <span itemprop="name">python编程</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>手上有一些<code>.xls</code>、<code>.doc</code>、 <code>.docx</code>以及<code>.wps</code>后缀的格式文件需要解析，知道<code>python-docx</code>和<code>xlrd</code>可以分别读取<code>.doc</code>和<code>.xls</code>，但是<code>.doc</code>python却无法读取，通过上网查找到了<code>textract</code>。下面我对其可行性进行了测试：</p>
-<p><strong><code>textract</code></strong></p>
-<p>这是一个号称可以解析任何形式文件的库，实际上就是利用了特定的库来解析，下面是其可以解析的文件类型，以及其凭借的包：</p>
-<ul>
-<li><code>.csv</code> via python builtins</li>
-<li><code>.doc</code> via <a href="http://www.winfield.demon.nl/" target="_blank" rel="noopener">antiword</a></li>
-<li><code>.docx</code> via <a href="https://github.com/ankushshah89/python-docx2txt" target="_blank" rel="noopener">python-docx2txt</a></li>
-<li><code>.eml</code> via python builtins</li>
-<li><code>.epub</code> via <a href="https://github.com/aerkalov/ebooklib" target="_blank" rel="noopener">ebooklib</a></li>
-<li><code>.gif</code> via <a href="https://code.google.com/p/tesseract-ocr/" target="_blank" rel="noopener">tesseract-ocr</a></li>
-<li><code>.jpg</code> and <code>.jpeg</code> via <a href="https://code.google.com/p/tesseract-ocr/" target="_blank" rel="noopener">tesseract-ocr</a></li>
-<li><code>.json</code> via python builtins</li>
-<li><code>.html</code> and <code>.htm</code> via <a href="http://beautiful-soup-4.readthedocs.org/en/latest/" target="_blank" rel="noopener">beautifulsoup4</a></li>
-<li><code>.mp3</code> via <a href="http://sox.sourceforge.net/" target="_blank" rel="noopener">sox</a>, <a href="https://pypi.python.org/pypi/SpeechRecognition/" target="_blank" rel="noopener">SpeechRecognition</a>, and <a href="https://github.com/cmusphinx/pocketsphinx/" target="_blank" rel="noopener">pocketsphinx</a></li>
-<li><code>.msg</code> via <a href="https://github.com/mattgwwalker/msg-extractor" target="_blank" rel="noopener">msg-extractor</a></li>
-<li><code>.odt</code> via python builtins</li>
-<li><code>.ogg</code> via <a href="http://sox.sourceforge.net/" target="_blank" rel="noopener">sox</a>, <a href="https://pypi.python.org/pypi/SpeechRecognition/" target="_blank" rel="noopener">SpeechRecognition</a>, and <a href="https://github.com/cmusphinx/pocketsphinx/" target="_blank" rel="noopener">pocketsphinx</a></li>
-<li><code>.pdf</code> via <a href="http://poppler.freedesktop.org/" target="_blank" rel="noopener">pdftotext</a> (default) or <a href="https://github.com/goulu/pdfminer" target="_blank" rel="noopener">pdfminer.six</a></li>
-<li><code>.png</code> via <a href="https://code.google.com/p/tesseract-ocr/" target="_blank" rel="noopener">tesseract-ocr</a></li>
-<li><code>.pptx</code> via <a href="https://python-pptx.readthedocs.org/en/latest/" target="_blank" rel="noopener">python-pptx</a></li>
-<li><code>.ps</code> via <a href="http://pages.cs.wisc.edu/~ghost/doc/pstotext.htm" target="_blank" rel="noopener">ps2text</a></li>
-<li><code>.rtf</code> via <a href="http://www.gnu.org/software/unrtf/" target="_blank" rel="noopener">unrtf</a></li>
-<li><code>.tiff</code> and <code>.tif</code> via <a href="https://code.google.com/p/tesseract-ocr/" target="_blank" rel="noopener">tesseract-ocr</a></li>
-<li><code>.txt</code> via python builtins</li>
-<li><code>.wav</code> via <a href="https://pypi.python.org/pypi/SpeechRecognition/" target="_blank" rel="noopener">SpeechRecognition</a> and <a href="https://github.com/cmusphinx/pocketsphinx/" target="_blank" rel="noopener">pocketsphinx</a></li>
-<li><code>.xlsx</code> via <a href="https://pypi.python.org/pypi/xlrd" target="_blank" rel="noopener">xlrd</a></li>
-<li><code>.xls</code> via <a href="https://pypi.python.org/pypi/xlrd" target="_blank" rel="noopener">xlrd</a></li>
-</ul>
-<p>使用方式：</p>
-<p><code>pip install textract</code></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/09/30/python-textract/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/20/spider-bankofchina/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/09/20/spider-bankofchina/" itemprop="url">反爬（四）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-20T10:03:54+08:00">
-                2019-09-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/爬虫/" itemprop="url" rel="index">
-                    <span itemprop="name">爬虫</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="网站四处罚信息反爬破解"><a href="#网站四处罚信息反爬破解" class="headerlink" title="网站四处罚信息反爬破解"></a><a href="http://www.pbc.gov.cn/rmyh/index.html" target="_blank" rel="noopener">网站四</a>处罚信息反爬破解</h3><p>在Chrome中请求列表页时，刷新网页观察网络请求发现，先是跳转到一个中转链接：<code>http://www.pbc.gov.cn/WZWSREL3poZW5nd3Vnb25na2FpLzEyNzkyNC8xMjgwNDEvMjE2MTQyMS9pbmRleC5odG1s?wzwschallenge=V1pXU19DT05GSVJNX1BSRUZJWF9MQUJFTDUxODU2NjI=</code>，然后再跳转回到列表页。</p>
-<p>下面我们来具体看看中间的过程：</p>
-<ol>
-<li><p>请求列表页<code>http://www.pbc.gov.cn/zhengwugongkai/127924/128041/2161421/index.html</code></p>
-<p>请求头中没有携带Cookie，请求响应返回的Cookie为：<code>wzws_cid=6fe01577596a409d77f565c225c8c5a664a89799db7d0985a62413f32f6ba6e2d15be123681d18238c4216ea84a3b705e2a6611466562bf4c66a22358bff5b241873a84dab388b5da80fc2ecf6a2acf41f764692145f8bb5a57762e2fe08c49c; path=/; expires=Thu, 19 Sep 2019 08:41:13 GMT</code></p>
-<p>此时请求返回的是一个携带大量加密<code>js</code>的HTML文件；</p>
-</li>
-<li><p>自动去请求<code>http://www.pbc.gov.cn/WZWSREL3poZW5nd3Vnb25na2FpLzEyNzkyNC8xMjgwNDEvMjE2MTQyMS9pbmRleC5odG1s?wzwschallenge=V1pXU19DT05GSVJNX1BSRUZJWF9MQUJFTDUxODU2NjI=</code></p>
-<p>请求头中携带的Cookie为：</p>
-<p><code>wzws_cid=6fe01577596a409d77f565c225c8c5a664a89799db7d0985a62413f32f6ba6e2d15be123681d18238c4216ea84a3b705e2a6611466562bf4c66a22358bff5b241873a84dab388b5da80fc2ecf6a2acf41f764692145f8bb5a57762e2fe08c49c</code></p>
-<p>请求响应返回的Cookie为：</p>
-<p><code>wzws_cid=6fe01577596a409d77f565c225c8c5a664a89799db7d0985a62413f32f6ba6e2d15be123681d18238c4216ea84a3b705b81cba9208ba6c30f9c7a9ed07941d8e; path=/; expires=Thu, 19 Sep 2019 08:41:13 GMT</code></p>
-<p>此时请求返回的是一个302的重定向页面；</p>
-</li>
-<li><p>自动再次请求列表页<code>http://www.pbc.gov.cn/zhengwugongkai/127924/128041/2161421/index.html</code></p>
-<p>请求头中携带的Cookie为：</p>
-<p><code>wzws_cid=6fe01577596a409d77f565c225c8c5a664a89799db7d0985a62413f32f6ba6e2d15be123681d18238c4216ea84a3b705b81cba9208ba6c30f9c7a9ed07941d8e</code></p>
-<p>请求响应中没有返回Cookie；</p>
-<p>但是返回了我们想要获取的列表页内容；</p>
-</li>
-</ol>
-<p>通过观察总结，我们发现步骤2是为了返回给我们请求需要的真正的Cookie，只有携带步骤2返回的Cookie才可以成功请求到数据，所以我们每次只要进行一次步骤2的操作去获取cookie就可以了；但是，步骤2的请求链接是如何获取的呢？</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/09/20/spider-bankofchina/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/09/spider-jianyu/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/09/09/spider-jianyu/" itemprop="url">反爬（三）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-09T19:03:54+08:00">
-                2019-09-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/爬虫/" itemprop="url" rel="index">
-                    <span itemprop="name">爬虫</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="网站三的反爬破解"><a href="#网站三的反爬破解" class="headerlink" title="网站三的反爬破解"></a><a href="https://api.jianyu360.com/open/article/3ABCY2EBZCkeMDg4M2RhcHUJJzACHj1mZnB%2FKTgsPT0waFRiYgktVhlESApN.html" target="_blank" rel="noopener">网站三</a>的反爬破解</h3><h4 id="1、请求url，查看数据情况"><a href="#1、请求url，查看数据情况" class="headerlink" title="1、请求url，查看数据情况"></a>1、请求<code>url</code>，查看数据情况</h4><p>首先我们请求想要爬取的页面<code>url</code>，根据页面元素提取重要信息，发现请求返回的数据如下：</p>
-<p><code>莘器规奉网医卫生录红霉素眼膏到院次设六柒莘器规奉网医卫生录红霉素眼膏到院到院机局聊城利筑药国集团元重六有dCc2TW6qweCe/4qu5++U7OyM68vQ6MvbrM6VgvOf/umNtruC8dGU9dCP4O2O+uyjyMgHX3fe5rSBz8qy0POnlfuL/f+wrNHU6+7Hx9vU0+aK4d6C/cDVsOeg39+52cqq48vSztOj9M+o5vq3q9uGjryi+oa64cCz+Z/Q1fd+SnNXBAFDVw==</code></p>
-<p>仔细观察发现返回的内容和我们在浏览器中看到的不同，我们在浏览器中看到的内容为：</p>
-<p><img src="/2019/09/09/spider-jianyu/picture1.PNG" alt></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/09/09/spider-jianyu/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/06/spider-xinyongshanxi/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/09/06/spider-xinyongshanxi/" itemprop="url">反爬（二）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-06T15:03:54+08:00">
-                2019-09-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/爬虫/" itemprop="url" rel="index">
-                    <span itemprop="name">爬虫</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="网站二处罚信息爬取破解"><a href="#网站二处罚信息爬取破解" class="headerlink" title="网站二处罚信息爬取破解"></a><a href="http://www.sxcredit.gov.cn/" target="_blank" rel="noopener">网站二</a>处罚信息爬取破解</h3><h4 id="1、请求url，查看数据情况"><a href="#1、请求url，查看数据情况" class="headerlink" title="1、请求url，查看数据情况"></a>1、请求<code>url</code>，查看数据情况</h4><p>首先根据网络请求的顺序，请求列表页看下</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">url = <span class="string">'http://credit.shaanxi.gov.cn/queryPermitPublishPage.jspx'</span></span><br><span class="line">post_data = &#123;<span class="string">"lb"</span>: <span class="string">"xzcf"</span>, <span class="string">"pageNo"</span>: <span class="string">"1"</span>, <span class="string">"pageSize"</span>: <span class="string">"10"</span>&#125;</span><br><span class="line">_Request_Header = &#123;</span><br><span class="line">        <span class="string">"User-Agent"</span>: <span class="string">'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0'</span>,</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    req = requests.post(url, data=post_data, headers=_Request_Header)</span><br><span class="line"><span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">    print(e)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    <span class="keyword">if</span> req.status_code == <span class="number">200</span>:</span><br><span class="line">        print(req.text)</span><br><span class="line">        </span><br><span class="line">&lt;&lt;&lt; &#123;<span class="string">"total"</span>:<span class="number">-1</span>,<span class="string">"pageCount"</span>:<span class="number">1</span>,<span class="string">"pageNo"</span>:<span class="number">1</span>,<span class="string">"columns"</span>:&#123;<span class="string">"zh"</span>:[<span class="string">"决定文号"</span>,<span class="string">"处罚类别"</span>,<span class="string">"相对人名称"</span>,<span class="string">"处罚机关"</span>,<span class="string">"处罚决定日期"</span>],<span class="string">"en"</span>:[<span class="string">"xy020102"</span>,<span class="string">"xy020103"</span>,<span class="string">"xy010101"</span>,<span class="string">"xy020101"</span>,<span class="string">"xy020107"</span>]&#125;,<span class="string">"pageSize"</span>:<span class="number">10</span>,<span class="string">"list"</span>:<span class="string">"a75yXqmRStbuWNG6esIpxGRyYd2ZshrzvW9wFLKTwPNBP74nGyY13VrrI8c6mGe2c04/xNVS+GmL\nLB4QkA61163PC8E31UQcmpVzMtd8eyoSDffABXjNPnTwiBTDYjEB6/HrNytCSiIezl/qIUkCEFyP\nwC1+t9Qu5ozKZ3jkkQ3G*********************************************************************************\nbNnRldjsqiI="</span>&#125;</span><br><span class="line">以上***省略了若干内容</span><br></pre></td></tr></table></figure>
-<p>请求列表页后，返回的的关键信息被加密了，乍一看上去像<code>base64</code>编码，使用<code>base64</code>解码后发现没有用，于是猜想肯定该网站使用了<code>js</code>加密，需要找出来该加密函数（或者说解密函数）。</p>
-<h4 id="2、寻找js加密函数"><a href="#2、寻找js加密函数" class="headerlink" title="2、寻找js加密函数"></a>2、寻找<code>js</code>加密函数</h4><p>找加密函数一般有两种方式</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/09/06/spider-xinyongshanxi/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1891,7 +1850,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">82</span>
+                  <span class="site-state-item-count">88</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1913,7 +1872,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-count">176</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

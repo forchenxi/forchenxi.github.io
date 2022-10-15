@@ -259,6 +259,970 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/21/python-table-header/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/10/21/python-table-header/" itemprop="url">python 提取表格内容的通用方式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-21T19:03:54+08:00">
+                2019-10-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python编程/" itemprop="url" rel="index">
+                    <span itemprop="name">python编程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p><strong>提出问题</strong></p>
+<p>当我们写爬虫进行数据结构化时，经常遇到一些表格数据，无论是web表格还是<code>Excel</code>、<code>Word</code> or <code>PDF</code>中的表格，都很常见；如果表格非常规范化，我们在做结构化时可以说非常省事，一般认为某列对应我们的某字段值即可；但是，大多数时候，表格往往写的比较随意，某一字段值对应的数据并不是在固定的列。</p>
+<p>举个例子，表格A对应的表头如下（这里用列表表示）：</p>
+<p>[“企业名称”, “处罚决定书文号”, “违法行为”, “处罚内容”, “处罚决定机关名称”, “处罚决定日期”]</p>
+<p>相应的我们有一个python对象，其字段值为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PunishmentItem</span><span class="params">(object)</span>:</span></span><br><span class="line">    __slots__ = (</span><br><span class="line">        <span class="string">"name"</span>,                 <span class="comment"># 行政相对人名称</span></span><br><span class="line">        <span class="string">"irregularities"</span>,       <span class="comment"># 违规行为</span></span><br><span class="line">        <span class="string">"punishment_text"</span>,      <span class="comment"># 处罚内容</span></span><br><span class="line">        <span class="string">"department"</span>,           <span class="comment"># 处罚决定机关名称</span></span><br><span class="line">        <span class="string">'public_date'</span>,          <span class="comment"># 时间</span></span><br><span class="line">        <span class="string">'number'</span>,               <span class="comment"># 文号</span></span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+<p>于是我们在提取的时候，理想的方式是<code>name</code>对应表格第一列，<code>number</code>对应第二列，依此类推……</p>
+<p>但是实际上可能还有表格B，其对应的表头为：</p>
+<p>[“处罚决定书文号”, “企业名称”,  “违法行为”, “处罚内容”, “处罚决定机关名称”, “处罚决定日期”]</p>
+<p>我们发现其文书号和企业名称顺序是反的，那我们可能会想在程序中加个判断如果是B表格我们就调整索引值…</p>
+<p>可是，事实上可能还存在表格C、D、E……，其表头顺序各不相同，我们要在程序中写无数个<code>if else</code>吗，显然是不可以的。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/10/21/python-table-header/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/16/db-开庭公告清洗过程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/10/16/db-开庭公告清洗过程/" itemprop="url">某次清洗项目笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-16T18:06:54+08:00">
+                2019-10-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数据库/" itemprop="url" rel="index">
+                    <span itemprop="name">数据库</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p><strong>mysql常用命令与查询语句</strong></p>
+<p>连接<code>mysql</code>:</p>
+<p><code>mysql -u username -p -h 主机 -D db_name</code></p>
+<p>断开连接：<code>quit</code> or <code>Ctrl + C</code></p>
+<p><strong>所有命令末尾加上;或者\g</strong></p>
+<p>查看所有数据库：</p>
+<p><code>show databases;</code></p>
+<p>切换数据库：</p>
+<p><code>use &lt;数据库名&gt;;</code></p>
+<p>查看所有数据表：</p>
+<p><code>show tables;</code></p>
+<p>通配符：</p>
+<p><code>%</code>百分号通配符: 表示任何字符出现任意次数 <strong>(可以是0次)</strong>.<br><code>_</code>下划线通配符:表示只能匹配单个字符,不能多也不能少,就是一个字符.</p>
+<p>获取表中行数：</p>
+<p><code>select count(md5_id) from t_kaitinggonggaos;</code></p>
+<p>查看表中字段数据类型：</p>
+<p><code>show COLUMNS from table</code></p>
+<p>获取庭审公开网的数据：</p>
+<p><code>select * from t_kaitinggonggaos_0 where url like &#39;http://tingshen%&#39;;</code></p>
+<p>获取前两行并以友好格式展示：</p>
+<p><code>select * from t_kaitinggonggaos_0 where url like &#39;http://tingshen%&#39; limit 0,2\G</code></p>
+<p>查看索引:</p>
+<p><code>show index from table</code></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/10/16/db-开庭公告清洗过程/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/30/python-textract/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/09/30/python-textract/" itemprop="url">python 处理doc、docx以及xls</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-30T18:03:54+08:00">
+                2019-09-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python编程/" itemprop="url" rel="index">
+                    <span itemprop="name">python编程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>手上有一些<code>.xls</code>、<code>.doc</code>、 <code>.docx</code>以及<code>.wps</code>后缀的格式文件需要解析，知道<code>python-docx</code>和<code>xlrd</code>可以分别读取<code>.doc</code>和<code>.xls</code>，但是<code>.doc</code>python却无法读取，通过上网查找到了<code>textract</code>。下面我对其可行性进行了测试：</p>
+<p><strong><code>textract</code></strong></p>
+<p>这是一个号称可以解析任何形式文件的库，实际上就是利用了特定的库来解析，下面是其可以解析的文件类型，以及其凭借的包：</p>
+<ul>
+<li><code>.csv</code> via python builtins</li>
+<li><code>.doc</code> via <a href="http://www.winfield.demon.nl/" target="_blank" rel="noopener">antiword</a></li>
+<li><code>.docx</code> via <a href="https://github.com/ankushshah89/python-docx2txt" target="_blank" rel="noopener">python-docx2txt</a></li>
+<li><code>.eml</code> via python builtins</li>
+<li><code>.epub</code> via <a href="https://github.com/aerkalov/ebooklib" target="_blank" rel="noopener">ebooklib</a></li>
+<li><code>.gif</code> via <a href="https://code.google.com/p/tesseract-ocr/" target="_blank" rel="noopener">tesseract-ocr</a></li>
+<li><code>.jpg</code> and <code>.jpeg</code> via <a href="https://code.google.com/p/tesseract-ocr/" target="_blank" rel="noopener">tesseract-ocr</a></li>
+<li><code>.json</code> via python builtins</li>
+<li><code>.html</code> and <code>.htm</code> via <a href="http://beautiful-soup-4.readthedocs.org/en/latest/" target="_blank" rel="noopener">beautifulsoup4</a></li>
+<li><code>.mp3</code> via <a href="http://sox.sourceforge.net/" target="_blank" rel="noopener">sox</a>, <a href="https://pypi.python.org/pypi/SpeechRecognition/" target="_blank" rel="noopener">SpeechRecognition</a>, and <a href="https://github.com/cmusphinx/pocketsphinx/" target="_blank" rel="noopener">pocketsphinx</a></li>
+<li><code>.msg</code> via <a href="https://github.com/mattgwwalker/msg-extractor" target="_blank" rel="noopener">msg-extractor</a></li>
+<li><code>.odt</code> via python builtins</li>
+<li><code>.ogg</code> via <a href="http://sox.sourceforge.net/" target="_blank" rel="noopener">sox</a>, <a href="https://pypi.python.org/pypi/SpeechRecognition/" target="_blank" rel="noopener">SpeechRecognition</a>, and <a href="https://github.com/cmusphinx/pocketsphinx/" target="_blank" rel="noopener">pocketsphinx</a></li>
+<li><code>.pdf</code> via <a href="http://poppler.freedesktop.org/" target="_blank" rel="noopener">pdftotext</a> (default) or <a href="https://github.com/goulu/pdfminer" target="_blank" rel="noopener">pdfminer.six</a></li>
+<li><code>.png</code> via <a href="https://code.google.com/p/tesseract-ocr/" target="_blank" rel="noopener">tesseract-ocr</a></li>
+<li><code>.pptx</code> via <a href="https://python-pptx.readthedocs.org/en/latest/" target="_blank" rel="noopener">python-pptx</a></li>
+<li><code>.ps</code> via <a href="http://pages.cs.wisc.edu/~ghost/doc/pstotext.htm" target="_blank" rel="noopener">ps2text</a></li>
+<li><code>.rtf</code> via <a href="http://www.gnu.org/software/unrtf/" target="_blank" rel="noopener">unrtf</a></li>
+<li><code>.tiff</code> and <code>.tif</code> via <a href="https://code.google.com/p/tesseract-ocr/" target="_blank" rel="noopener">tesseract-ocr</a></li>
+<li><code>.txt</code> via python builtins</li>
+<li><code>.wav</code> via <a href="https://pypi.python.org/pypi/SpeechRecognition/" target="_blank" rel="noopener">SpeechRecognition</a> and <a href="https://github.com/cmusphinx/pocketsphinx/" target="_blank" rel="noopener">pocketsphinx</a></li>
+<li><code>.xlsx</code> via <a href="https://pypi.python.org/pypi/xlrd" target="_blank" rel="noopener">xlrd</a></li>
+<li><code>.xls</code> via <a href="https://pypi.python.org/pypi/xlrd" target="_blank" rel="noopener">xlrd</a></li>
+</ul>
+<p>使用方式：</p>
+<p><code>pip install textract</code></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/09/30/python-textract/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/20/spider-bankofchina/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/09/20/spider-bankofchina/" itemprop="url">反爬（四）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-20T10:03:54+08:00">
+                2019-09-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/爬虫/" itemprop="url" rel="index">
+                    <span itemprop="name">爬虫</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h3 id="网站四处罚信息反爬破解"><a href="#网站四处罚信息反爬破解" class="headerlink" title="网站四处罚信息反爬破解"></a><a href="http://www.pbc.gov.cn/rmyh/index.html" target="_blank" rel="noopener">网站四</a>处罚信息反爬破解</h3><p>在Chrome中请求列表页时，刷新网页观察网络请求发现，先是跳转到一个中转链接：<code>http://www.pbc.gov.cn/WZWSREL3poZW5nd3Vnb25na2FpLzEyNzkyNC8xMjgwNDEvMjE2MTQyMS9pbmRleC5odG1s?wzwschallenge=V1pXU19DT05GSVJNX1BSRUZJWF9MQUJFTDUxODU2NjI=</code>，然后再跳转回到列表页。</p>
+<p>下面我们来具体看看中间的过程：</p>
+<ol>
+<li><p>请求列表页<code>http://www.pbc.gov.cn/zhengwugongkai/127924/128041/2161421/index.html</code></p>
+<p>请求头中没有携带Cookie，请求响应返回的Cookie为：<code>wzws_cid=6fe01577596a409d77f565c225c8c5a664a89799db7d0985a62413f32f6ba6e2d15be123681d18238c4216ea84a3b705e2a6611466562bf4c66a22358bff5b241873a84dab388b5da80fc2ecf6a2acf41f764692145f8bb5a57762e2fe08c49c; path=/; expires=Thu, 19 Sep 2019 08:41:13 GMT</code></p>
+<p>此时请求返回的是一个携带大量加密<code>js</code>的HTML文件；</p>
+</li>
+<li><p>自动去请求<code>http://www.pbc.gov.cn/WZWSREL3poZW5nd3Vnb25na2FpLzEyNzkyNC8xMjgwNDEvMjE2MTQyMS9pbmRleC5odG1s?wzwschallenge=V1pXU19DT05GSVJNX1BSRUZJWF9MQUJFTDUxODU2NjI=</code></p>
+<p>请求头中携带的Cookie为：</p>
+<p><code>wzws_cid=6fe01577596a409d77f565c225c8c5a664a89799db7d0985a62413f32f6ba6e2d15be123681d18238c4216ea84a3b705e2a6611466562bf4c66a22358bff5b241873a84dab388b5da80fc2ecf6a2acf41f764692145f8bb5a57762e2fe08c49c</code></p>
+<p>请求响应返回的Cookie为：</p>
+<p><code>wzws_cid=6fe01577596a409d77f565c225c8c5a664a89799db7d0985a62413f32f6ba6e2d15be123681d18238c4216ea84a3b705b81cba9208ba6c30f9c7a9ed07941d8e; path=/; expires=Thu, 19 Sep 2019 08:41:13 GMT</code></p>
+<p>此时请求返回的是一个302的重定向页面；</p>
+</li>
+<li><p>自动再次请求列表页<code>http://www.pbc.gov.cn/zhengwugongkai/127924/128041/2161421/index.html</code></p>
+<p>请求头中携带的Cookie为：</p>
+<p><code>wzws_cid=6fe01577596a409d77f565c225c8c5a664a89799db7d0985a62413f32f6ba6e2d15be123681d18238c4216ea84a3b705b81cba9208ba6c30f9c7a9ed07941d8e</code></p>
+<p>请求响应中没有返回Cookie；</p>
+<p>但是返回了我们想要获取的列表页内容；</p>
+</li>
+</ol>
+<p>通过观察总结，我们发现步骤2是为了返回给我们请求需要的真正的Cookie，只有携带步骤2返回的Cookie才可以成功请求到数据，所以我们每次只要进行一次步骤2的操作去获取cookie就可以了；但是，步骤2的请求链接是如何获取的呢？</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/09/20/spider-bankofchina/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/09/spider-jianyu/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/09/09/spider-jianyu/" itemprop="url">反爬（三）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-09T19:03:54+08:00">
+                2019-09-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/爬虫/" itemprop="url" rel="index">
+                    <span itemprop="name">爬虫</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h3 id="网站三的反爬破解"><a href="#网站三的反爬破解" class="headerlink" title="网站三的反爬破解"></a><a href="https://api.jianyu360.com/open/article/3ABCY2EBZCkeMDg4M2RhcHUJJzACHj1mZnB%2FKTgsPT0waFRiYgktVhlESApN.html" target="_blank" rel="noopener">网站三</a>的反爬破解</h3><h4 id="1、请求url，查看数据情况"><a href="#1、请求url，查看数据情况" class="headerlink" title="1、请求url，查看数据情况"></a>1、请求<code>url</code>，查看数据情况</h4><p>首先我们请求想要爬取的页面<code>url</code>，根据页面元素提取重要信息，发现请求返回的数据如下：</p>
+<p><code>莘器规奉网医卫生录红霉素眼膏到院次设六柒莘器规奉网医卫生录红霉素眼膏到院到院机局聊城利筑药国集团元重六有dCc2TW6qweCe/4qu5++U7OyM68vQ6MvbrM6VgvOf/umNtruC8dGU9dCP4O2O+uyjyMgHX3fe5rSBz8qy0POnlfuL/f+wrNHU6+7Hx9vU0+aK4d6C/cDVsOeg39+52cqq48vSztOj9M+o5vq3q9uGjryi+oa64cCz+Z/Q1fd+SnNXBAFDVw==</code></p>
+<p>仔细观察发现返回的内容和我们在浏览器中看到的不同，我们在浏览器中看到的内容为：</p>
+<p><img src="/2019/09/09/spider-jianyu/picture1.PNG" alt></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/09/09/spider-jianyu/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/06/spider-xinyongshanxi/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/09/06/spider-xinyongshanxi/" itemprop="url">反爬（二）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-06T15:03:54+08:00">
+                2019-09-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/爬虫/" itemprop="url" rel="index">
+                    <span itemprop="name">爬虫</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h3 id="网站二处罚信息爬取破解"><a href="#网站二处罚信息爬取破解" class="headerlink" title="网站二处罚信息爬取破解"></a><a href="http://www.sxcredit.gov.cn/" target="_blank" rel="noopener">网站二</a>处罚信息爬取破解</h3><h4 id="1、请求url，查看数据情况"><a href="#1、请求url，查看数据情况" class="headerlink" title="1、请求url，查看数据情况"></a>1、请求<code>url</code>，查看数据情况</h4><p>首先根据网络请求的顺序，请求列表页看下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">url = <span class="string">'http://credit.shaanxi.gov.cn/queryPermitPublishPage.jspx'</span></span><br><span class="line">post_data = &#123;<span class="string">"lb"</span>: <span class="string">"xzcf"</span>, <span class="string">"pageNo"</span>: <span class="string">"1"</span>, <span class="string">"pageSize"</span>: <span class="string">"10"</span>&#125;</span><br><span class="line">_Request_Header = &#123;</span><br><span class="line">        <span class="string">"User-Agent"</span>: <span class="string">'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0'</span>,</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    req = requests.post(url, data=post_data, headers=_Request_Header)</span><br><span class="line"><span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">    print(e)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    <span class="keyword">if</span> req.status_code == <span class="number">200</span>:</span><br><span class="line">        print(req.text)</span><br><span class="line">        </span><br><span class="line">&lt;&lt;&lt; &#123;<span class="string">"total"</span>:<span class="number">-1</span>,<span class="string">"pageCount"</span>:<span class="number">1</span>,<span class="string">"pageNo"</span>:<span class="number">1</span>,<span class="string">"columns"</span>:&#123;<span class="string">"zh"</span>:[<span class="string">"决定文号"</span>,<span class="string">"处罚类别"</span>,<span class="string">"相对人名称"</span>,<span class="string">"处罚机关"</span>,<span class="string">"处罚决定日期"</span>],<span class="string">"en"</span>:[<span class="string">"xy020102"</span>,<span class="string">"xy020103"</span>,<span class="string">"xy010101"</span>,<span class="string">"xy020101"</span>,<span class="string">"xy020107"</span>]&#125;,<span class="string">"pageSize"</span>:<span class="number">10</span>,<span class="string">"list"</span>:<span class="string">"a75yXqmRStbuWNG6esIpxGRyYd2ZshrzvW9wFLKTwPNBP74nGyY13VrrI8c6mGe2c04/xNVS+GmL\nLB4QkA61163PC8E31UQcmpVzMtd8eyoSDffABXjNPnTwiBTDYjEB6/HrNytCSiIezl/qIUkCEFyP\nwC1+t9Qu5ozKZ3jkkQ3G*********************************************************************************\nbNnRldjsqiI="</span>&#125;</span><br><span class="line">以上***省略了若干内容</span><br></pre></td></tr></table></figure>
+<p>请求列表页后，返回的的关键信息被加密了，乍一看上去像<code>base64</code>编码，使用<code>base64</code>解码后发现没有用，于是猜想肯定该网站使用了<code>js</code>加密，需要找出来该加密函数（或者说解密函数）。</p>
+<h4 id="2、寻找js加密函数"><a href="#2、寻找js加密函数" class="headerlink" title="2、寻找js加密函数"></a>2、寻找<code>js</code>加密函数</h4><p>找加密函数一般有两种方式</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/09/06/spider-xinyongshanxi/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/29/python-urllib-parse/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -854,941 +1818,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/21/python-apscheduler/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/21/python-apscheduler/" itemprop="url">python 调度</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-21T16:03:54+08:00">
-                2019-08-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/python编程/" itemprop="url" rel="index">
-                    <span itemprop="name">python编程</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>python的任务调度模块，<strong>apscheduler</strong>，它主要包含了四种组件triggers(触发器)、job stores(任务存储器)、executors(执行器)、schedulers(定时调度器)。</p>
-<ul>
-<li><p>安装</p>
-<p>pip install apscheduler</p>
-</li>
-<li><p>定时器种类</p>
-<p>BlockingScheduler：当调度器是进程中唯一运行的程序时使用</p>
-<p>BackgroundScheduler：在不使用下面任何框架时使用，并希望调度器在应用程序的后台运行。</p>
-<p>AsyncIOScheduler：你使用的应用程序中必须有asyncio模块</p>
-<p>GeventScheduler：在你的应用程序中必须有gevent模块</p>
-<p>TornadoScheduler：你的应用程序是Tornado框架可以使用</p>
-<p>TwistedScheduler：你的应用程序是Twisted框架可以使用</p>
-<p>QtScheduler： 在QT框架中使用</p>
-</li>
-<li><p>触发器种类</p>
-<p>date：一次性任务，即只执行一次任务</p>
-<p>interval：循环任务，即按照时间间隔执行任务</p>
-<p>cron：定时任务，即在每个时间段执行任务</p>
-</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/08/21/python-apscheduler/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/20/python-dict-and-object/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/20/python-dict-and-object/" itemprop="url">python 字典和对象</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-20T10:03:54+08:00">
-                2019-08-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/python编程/" itemprop="url" rel="index">
-                    <span itemprop="name">python编程</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="python字典"><a href="#python字典" class="headerlink" title="python字典"></a>python字典</h2><h3 id="字典初始化的N种方法"><a href="#字典初始化的N种方法" class="headerlink" title="字典初始化的N种方法"></a>字典初始化的N种方法</h3><ul>
-<li><p>直接赋值</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a = &#123;<span class="string">"one"</span>: <span class="number">1</span>, <span class="string">"two"</span>: <span class="number">2</span>, <span class="string">"three"</span>: <span class="number">3</span>&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>先新建字典对象，再动态赋值</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">b = dict()</span><br><span class="line">b[<span class="string">"one"</span>] = <span class="number">1</span></span><br><span class="line">b[<span class="string">"two"</span>] = <span class="number">2</span></span><br><span class="line">b[<span class="string">"three"</span>] = <span class="number">3</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>新建字典对象时，通过参数赋值</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">c = dict(one=<span class="number">1</span>, two=<span class="number">2</span>, three=<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>新建字典对象时，通过嵌套的元组和列表来赋值</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">d = dict([(<span class="string">"one"</span>, <span class="number">1</span>), (<span class="string">"two"</span>, <span class="number">2</span>), (<span class="string">"three"</span>, <span class="number">3</span>)])</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/08/20/python-dict-and-object/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/08/db-mongo常用命令/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/08/db-mongo常用命令/" itemprop="url">mongodb小技能</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-08T16:03:54+08:00">
-                2019-08-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数据库/" itemprop="url" rel="index">
-                    <span itemprop="name">数据库</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="MongoDB小技能"><a href="#MongoDB小技能" class="headerlink" title="MongoDB小技能"></a>MongoDB小技能</h2><h3 id="MongoDB导入导出"><a href="#MongoDB导入导出" class="headerlink" title="MongoDB导入导出"></a>MongoDB导入导出</h3><ul>
-<li><p>数据导出</p>
-<p>MongoDB中的mongoexport工具可以把一个collection导出成JSON格式或CSV格式的文件。可以通过参数指定导出的数据项，也可以根据指定的条件导出数据。</p>
-<p>命令：</p>
-<p><code>mongoexport -d dbname -c collectionname -o file --type json/csv -f field</code></p>
-<p>参数说明：</p>
-</li>
-</ul>
-<p>​            -d ：数据库名</p>
-<p>​            -c ：collection名</p>
-<p>​            -o ：输出的文件名</p>
-<p>​            –type ： 输出的格式，默认为json</p>
-<p>​            -f ：输出的字段，如果-type为csv，则需要加上-f “字段名”</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/08/08/db-mongo常用命令/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/02/elk/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/02/elk/" itemprop="url">ELK日志分析平台</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-02T17:40:54+08:00">
-                2019-08-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/ELK/" itemprop="url" rel="index">
-                    <span itemprop="name">ELK</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>前段时间，对ELK做了一定的研习，中间踩了许多坑，全都是自己一个人一点点查阅资料解决的，在此做个记录，对logstash方面的记录比较多，其他关于elasticserarch或者kibana以后有了更深入的学习后，再来扩展。</p>
-<h3 id="Logstash"><a href="#Logstash" class="headerlink" title="Logstash"></a>Logstash</h3><ul>
-<li><p>logstash 如何安装详细参考<a href="https://www.elastic.co/cn" target="_blank" rel="noopener">官网</a>。在centos系统上，一般logstash配置文件目录为：/etc/logstash，<br>执行文件目录为：/usr/share/logstash，logstash运行的日志目录：/var/log/messages；</p>
-</li>
-<li><p>logstash的运行依赖JVM，所以需要先安装jdk，安装好jdk后需要配置环境变量；</p>
-<p>在测试阶段，我们使用logstash命令启动程序，只要环境变量配置正确一般是没什么问题的，但是应用阶段我们一般是以服务形式来启动程序，如<code>systemctl start logstash</code>，这时可能会遇到报错的情况，找不到JAVA_HOME，使用以下命令可以解决：<code>ln  -s /usr/local/jdk1.8.0_181/bin/java /bin/java</code>，意为：为/bin/java 建立一个软连接，需要的源文件在/usr/local/jdk1.8.0_181/bin/java 中，因为以服务方式启动logstash时，默认去/bin/java路径中寻找java源文件（JAVA_HOME供java命令使用，系统并不关心）。</p></li></ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/08/02/elk/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/25/python-logging/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/25/python-logging/" itemprop="url">python logging模块</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-25T10:03:54+08:00">
-                2019-07-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/python编程/" itemprop="url" rel="index">
-                    <span itemprop="name">python编程</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="python-logging模块-常用handlers"><a href="#python-logging模块-常用handlers" class="headerlink" title="python logging模块 常用handlers"></a>python logging模块 常用<a href="https://docs.python.org/2/library/logging.handlers.html" target="_blank" rel="noopener">handlers</a></h3><ul>
-<li><p><strong>StreamHandler</strong>：流handler——包含在logging模块中的三个handler之一，主要用来屏幕打印日志。</p>
-</li>
-<li><p><strong>FileHandler</strong>：logging模块自带的三个handler之一，继承自StreamHandler。将日志信息输出到磁盘文件上。</p>
-<p>构造函数：</p>
-<p><code>class logging.FileHandler(filename, mode=&#39;a&#39;, encoding=None, delay=False)</code></p>
-<p>模式默认为append，delay为true时，文件直到emit方法被执行才会打开。默认情况下，日志文件可以无限增大。</p>
-</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/07/25/python-logging/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/09/spider/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/09/spider/" itemprop="url">python爬虫</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-09T09:21:42+08:00">
-                2019-07-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/爬虫/" itemprop="url" rel="index">
-                    <span itemprop="name">爬虫</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>这篇文章的目的不是为了一步步教新手如何写python爬虫，只是记录自己在学习python爬虫过程中的使用的技术点和遇到的问题，做一个技术沉淀。</p>
-<h3 id="常用的工具与技术"><a href="#常用的工具与技术" class="headerlink" title="常用的工具与技术"></a>常用的工具与技术</h3><p><strong><a href="https://2.python-requests.org//zh_CN/latest/user/quickstart.html" target="_blank" rel="noopener">Requests</a></strong>库，主要用来做HTTP请求，支持通过参数添加headers、cookie、proxy等，并且支持HTTP请求的许多类型如：PUT，DELETE，HEAD 以及 OPTIONS 等。简单易上手，功能也很强大。当然也可以使用python自带的urllib(python3)或urllib2(python2)。</p>
-<p><strong><a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/index.zh.html" target="_blank" rel="noopener">BeautifulSoup</a></strong>库，主要用来做解析，可以从HTML或XML中提取数据，通过将HTML或XML转变为BeautifulSoup对象，并指定相应的解析器(html.parser,lxml,xml,html5lib)，就可以调用BeautifulSoup内置的各种方法,进而从HTML或XML中获取我们想要提取的数据。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/07/09/spider/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1841,7 +1870,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">82</span>
+                  <span class="site-state-item-count">88</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1863,7 +1892,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-count">176</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

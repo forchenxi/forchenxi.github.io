@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="nlp,whole word mask,wordpiece,bert,">
+  <meta name="keywords" content="nlp,wordpiece,whole word mask,bert,">
 
 
 
@@ -80,14 +80,14 @@
 
 
 <meta name="description" content="Whole Word Masking (wwm)本文代码部分参考github项目：https://github.com/BSlience/search-engine-zerotohero/tree/main/public/bert_wwm_pretrain Whole Word Masking (wwm)，暂翻译为全词Mask或整词Mask，是谷歌在2019年5月31日发布的一项BERT的升级版本">
-<meta name="keywords" content="nlp,whole word mask,wordpiece,bert">
+<meta name="keywords" content="nlp,wordpiece,whole word mask,bert">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Whole Word Masking (wwm)">
 <meta property="og:url" content="http://yoursite.com/2022/05/10/nlp-whole-word-mask/index.html">
 <meta property="og:site_name" content="Sunrise">
 <meta property="og:description" content="Whole Word Masking (wwm)本文代码部分参考github项目：https://github.com/BSlience/search-engine-zerotohero/tree/main/public/bert_wwm_pretrain Whole Word Masking (wwm)，暂翻译为全词Mask或整词Mask，是谷歌在2019年5月31日发布的一项BERT的升级版本">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2022-07-16T08:14:56.569Z">
+<meta property="og:updated_time" content="2022-10-05T11:40:25.472Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Whole Word Masking (wwm)">
 <meta name="twitter:description" content="Whole Word Masking (wwm)本文代码部分参考github项目：https://github.com/BSlience/search-engine-zerotohero/tree/main/public/bert_wwm_pretrain Whole Word Masking (wwm)，暂翻译为全词Mask或整词Mask，是谷歌在2019年5月31日发布的一项BERT的升级版本">
@@ -367,8 +367,8 @@
 <a id="more"></a>
 <h4 id="WordPiece"><a href="#WordPiece" class="headerlink" title="WordPiece"></a>WordPiece</h4><p>BERT原文中的遮蔽语言模型是基于wordPiece拆词后的子词进行MASK，所谓的wordPiece其实是把word再进一步的拆分，拆分为piece，得到更细粒度。</p>
 <p>比如<strong>“loved”,”loving”,”loves”</strong>这三个单词。其实本身的语义都是“爱”的意思，但是如果我们以单词为单位，那它们就算作是不一样的词，在英语中不同后缀的词非常的多，就会使得词表变的很大，训练速度变慢，训练的效果也不是太好。</p>
-<p>WordPiece的一种主要的实现方式叫做<strong>BPE（Byte-Pair Encoding）双字节编码</strong>。BPE的过程可以理解为把一个单词再拆分，使得词表会变得精简，并且寓意更加清晰。</p>
-<p>BPE算法通过训练，能够把上面的”loved”,”loving”,”loves”3个单词拆分成”lov”,”ed”,”ing”,”es”几部分，这样可以把词的本身的意思和时态分开，有效的减少了词表的数量。</p>
+<p>WordPiece与<strong>BPE（Byte-Pair Encoding）双字节编码</strong>算法比较相似，它们是两种不同的子词切分算法，主要区别在于如何选择两个子词进行合并。</p>
+<p>例如WordPiece(或<code>BPE</code>)通过训练，能够把上面的”loved”,”loving”,”loves”3个单词拆分成”lov”,”ed”,”ing”,”es”几部分，这样可以把词的本身的意思和时态分开，有效的减少了词表的数量。</p>
 <h3 id="Whole-Word-Masking策略"><a href="#Whole-Word-Masking策略" class="headerlink" title="Whole Word Masking策略"></a>Whole Word Masking策略</h3><p>在BERT中，原有基于WordPiece的分词方式会把一个完整的词切分成若干个子词，在生成训练样本时，这些<strong>被分开的子词会随机被mask</strong>。 在全词Mask中，如果一个完整的词的<strong>部分WordPiece子词被mask，则同属该词的其他部分也会被mask</strong>，即全词Mask。</p>
 <p>需要注意的是，这里的mask指的是<strong>广义的mask（替换成[MASK]；保持原词汇；随机替换成另外一个词）</strong>，并非只局限于单词替换成[MASK]标签的情况。</p>
 <p>由于谷歌官方发布的BERT-base, Chinese中，<strong>中文是以字为粒度进行切分</strong>，没有考虑到传统NLP中的中文分词（CWS, chinese word segment），所以全词Mask可以用在中文预训练中。</p>
@@ -422,9 +422,9 @@
           
             <a href="/tags/nlp/" rel="tag"># nlp</a>
           
-            <a href="/tags/whole-word-mask/" rel="tag"># whole word mask</a>
-          
             <a href="/tags/wordpiece/" rel="tag"># wordpiece</a>
+          
+            <a href="/tags/whole-word-mask/" rel="tag"># whole word mask</a>
           
             <a href="/tags/bert/" rel="tag"># bert</a>
           
@@ -530,7 +530,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">82</span>
+                  <span class="site-state-item-count">88</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -552,7 +552,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">164</span>
+                  <span class="site-state-item-count">176</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
