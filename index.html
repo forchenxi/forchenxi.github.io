@@ -259,6 +259,759 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/11/05/nlp-ktgg_ner4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2022/11/05/nlp-ktgg_ner4/" itemprop="url">使用UER进行开庭公告命名实体识别-续3</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-11-05T11:24:04+08:00">
+                2022-11-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="使用UER进行开庭公告命名实体识别-续3"><a href="#使用UER进行开庭公告命名实体识别-续3" class="headerlink" title="使用UER进行开庭公告命名实体识别-续3"></a>使用UER进行开庭公告命名实体识别-续3</h2><h3 id="模型训练和测试"><a href="#模型训练和测试" class="headerlink" title="模型训练和测试"></a>模型训练和测试</h3><h4 id="未使用CRF层"><a href="#未使用CRF层" class="headerlink" title="未使用CRF层"></a>未使用CRF层</h4><p>将上次的问题全部解决之后，并且增加了一些特定法院名称和案由的训练数据，并且兼容了劳动仲裁开庭公告的抽取，模型的训练日志如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[2022-10-15 09:09:03,601 INFO] Epoch id: 5, Training steps: 1900, Avg loss: 0.000</span><br><span class="line">[2022-10-15 09:09:25,614 INFO] Epoch id: 5, Training steps: 2000, Avg loss: 0.001</span><br><span class="line">[2022-10-15 09:09:47,766 INFO] Epoch id: 5, Training steps: 2100, Avg loss: 0.000</span><br><span class="line">[2022-10-15 09:10:09,830 INFO] Epoch id: 5, Training steps: 2200, Avg loss: 0.001</span><br><span class="line">[2022-10-15 09:10:31,829 INFO] Epoch id: 5, Training steps: 2300, Avg loss: 0.001</span><br><span class="line">[2022-10-15 09:10:53,881 INFO] Epoch id: 5, Training steps: 2400, Avg loss: 0.001</span><br><span class="line">[2022-10-15 09:11:15,982 INFO] Epoch id: 5, Training steps: 2500, Avg loss: 0.001</span><br><span class="line">[2022-10-15 09:11:38,139 INFO] Epoch id: 5, Training steps: 2600, Avg loss: 0.000</span><br><span class="line">[2022-10-15 09:13:33,811 INFO] Report precision, recall, and f1:</span><br><span class="line">[2022-10-15 09:13:33,812 INFO] 0.994, 0.994, 0.994</span><br></pre></td></tr></table></figure></p>
+<p>测试的结果如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">correct/total: 2567/2600</span><br><span class="line">accuracy: 0.9873076923076923</span><br><span class="line">correct/total: 2570/2600</span><br><span class="line">precision: 0.9884615384615385</span><br><span class="line">correct/total: 2567/2600</span><br><span class="line">precision: 0.9873076923076923</span><br></pre></td></tr></table></figure></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2022/11/05/nlp-ktgg_ner4/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/10/29/nlp-ktgg_ner3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2022/10/29/nlp-ktgg_ner3/" itemprop="url">BERT finetune</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-10-29T19:54:09+08:00">
+                2022-10-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="使用UER进行开庭公告命名实体识别-续2"><a href="#使用UER进行开庭公告命名实体识别-续2" class="headerlink" title="使用UER进行开庭公告命名实体识别-续2"></a>使用UER进行开庭公告命名实体识别-续2</h2><p>再接着上篇博客，本次依然采用自己生成训练数据的方式来训练，经过上一次的实验和优化，本次生成的训练数据标注错误的问题将会大大减少，因为很多实体是根据已有数据进行收集的，没有耗费大量的人力去逐条核验，难免会存在噪音，这一次修复了上篇中存在的各种噪音问题，并且还做了较多优化，具体效果如何，继续来看看吧。</p>
+<h3 id="优化方案"><a href="#优化方案" class="headerlink" title="优化方案"></a>优化方案</h3><p>这一次在上一次的训练结果上做了以下优化点：</p>
+<ol>
+<li>修复了目前见过的在数据集生成方面的噪音；</li>
+<li>生成的数据种类大幅增加，增加了6种模板；</li>
+<li>大幅度减少每种模板生成的数量，防止过拟合；</li>
+<li>通过在生成的文本中增加一定的冗余数据，来让模型学会识别哪些信息并不是我们需要的实体；</li>
+<li>生成了一定比例当事人之间没有任何分隔符号的数据，以此来进一步提升训练模型的抽取能力；</li>
+<li>修复了一个“意料之外，又在情理之中”的问题，这个问题下面会说明；</li>
+<li>修复了有空白字符开头的句子预测实体的位置索引不准确的问题。</li>
+</ol>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2022/10/29/nlp-ktgg_ner3/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/10/20/nlp-ktgg_ner2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2022/10/20/nlp-ktgg_ner2/" itemprop="url">使用UER进行开庭公告命名实体识别-续1</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-10-20T16:14:23+08:00">
+                2022-10-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="使用UER进行开庭公告命名实体识别-续1"><a href="#使用UER进行开庭公告命名实体识别-续1" class="headerlink" title="使用UER进行开庭公告命名实体识别-续1"></a>使用UER进行开庭公告命名实体识别-续1</h2><p>接着上篇博客，这次我采用自己生成训练数据的方式来再次训练，自己生成的训练数据不会存在标注错误的问题，也可以尽可能的保证各种实体的类别尽可能的丰富。</p>
+<h3 id="生成训练数据"><a href="#生成训练数据" class="headerlink" title="生成训练数据"></a>生成训练数据</h3><p>生成训练数据的程序是这里比较核心的模块，且考虑到公司的知识产权（因为是我在公司工作的时期开发的），就不做公开展示了。</p>
+<p>不过这里可以大概的说下基本思想：<br>首先根据开庭公告非结构化文本的行文规律，总结出几套模板，这里给出一套模板：</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2022/10/20/nlp-ktgg_ner2/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/10/13/nlp-ktgg_ner1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2022/10/13/nlp-ktgg_ner1/" itemprop="url">使用UER进行开庭公告命名实体识别</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-10-13T17:20:04+08:00">
+                2022-10-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="使用UER进行开庭公告命名实体识别"><a href="#使用UER进行开庭公告命名实体识别" class="headerlink" title="使用UER进行开庭公告命名实体识别"></a>使用UER进行开庭公告命名实体识别</h2><h3 id="项目概述"><a href="#项目概述" class="headerlink" title="项目概述"></a>项目概述</h3><p>上篇文章已经讲述了，如何使用UER进行NER任务微调训练，接下来咱就开始实战了，我这边要做的一个任务是司法文书的信息抽取，简单描述就是抽取出案号、案由、当事人、法院、法庭等信息，不过整体的任务还是比较复杂的，并且司法文书种类也比较多，有裁判文书这种长文本，也有开庭公告、法院公告这种短文本，我这边打算先从开庭公告的一些短文本作为切入点，先做一些尝试，看看效果。</p>
+<p>我这边的一个实验计划暂定为：</p>
+<ol>
+<li>先使用一定量的数据，直接进行NER微调训练，记录训练效果，如precision、recall和f1的值；</li>
+<li>在语料集上先进行词向量微调（也就是bert finetune），并生成自己的词表；</li>
+<li>基于步骤2得到的模型再次进行NER微调训练，对比与步骤1的评测值是否有提升；</li>
+<li>如果方案可行，会再扩充数据集再次重复步骤2、3。</li>
+</ol>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2022/10/13/nlp-ktgg_ner1/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/10/06/nlp-UER-cluener/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2022/10/06/nlp-UER-cluener/" itemprop="url">CLUE命名实体识别</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-10-06T11:54:54+08:00">
+                2022-10-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>使用GitHub项目：<a href="https://github.com/dbiir/UER-py" target="_blank" rel="noopener">https://github.com/dbiir/UER-py</a></p>
+<p>项目完整文档：<a href="https://github.com/dbiir/UER-py/wiki/%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B" target="_blank" rel="noopener">https://github.com/dbiir/UER-py/wiki/%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B</a></p>
+<p>预训练模型仓库：<a href="https://github.com/dbiir/UER-py/wiki/%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E4%BB%93%E5%BA%93" target="_blank" rel="noopener">https://github.com/dbiir/UER-py/wiki/%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E4%BB%93%E5%BA%93</a></p>
+<p>上篇文章是使用huggingface transformer中预训练好的命名实体识别模型来进行实体抽取，但是在实际任务中，一般需要根据自己的数据集再进行微调，所以就继续研究如何进行微调，最终定位到UER-py这个工具包，所以这里先研究下这个工具怎么用。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2022/10/06/nlp-UER-cluener/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/09/24/nlp-hyper-parameters-tuning/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -997,763 +1750,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/08/28/nlp-decoding-strategy/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2022/08/28/nlp-decoding-strategy/" itemprop="url">NLG解码策略</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-28T20:19:54+08:00">
-                2022-08-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
-                    <span itemprop="name">自然语言处理</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="NLG解码策略"><a href="#NLG解码策略" class="headerlink" title="NLG解码策略"></a><code>NLG</code>解码策略</h2><p>自然语言生成（Natural Language Generation，简称<code>NLG</code>），是自然语言处理领域的一个重要分支，在文本摘要生成任务中，另一个重要的分支是自然语言理解（Natural Language Understanding，简称<code>NLU</code>）。前面我们已经学习了<code>seq2seq</code>模型结构，其主要分为Encoder和Decoder两大组件，其实正是对应了<code>NLU</code>和<code>NLG</code>两大分支，<code>seq2seq</code>模型最后经过一个<code>softmax</code>层，<strong>在每个时间步均得到一个词表大小的概率分布，如何利用这些概率分布得到最终的预测句子就是本节学习的解码策略</strong>。</p>
-<p>上篇构建文本摘要baseline时，我们就有提到过解码方法，当时采用的Teacher forcing的技巧，使用了真实标签，避免前面的步骤预测出错被无限放大的问题，但是在实际预测时因为没有真实标签，往往实际预测效果不一定好，所以寻找可行的解码策略是一项重点工作。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2022/08/28/nlp-decoding-strategy/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/08/27/nlp-text-summarize-baseline/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2022/08/27/nlp-text-summarize-baseline/" itemprop="url">构建文本摘要Baseline并且开始训练</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-27T15:19:54+08:00">
-                2022-08-27
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
-                    <span itemprop="name">自然语言处理</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="构建文本摘要Baseline并且开始训练"><a href="#构建文本摘要Baseline并且开始训练" class="headerlink" title="构建文本摘要Baseline并且开始训练"></a>构建文本摘要Baseline并且开始训练</h2><p>基于前面<code>word2vec</code>的原理与训练实践、<code>seq2seq</code>模型的原理与实践以及attention机制，已经分别写了相关的文章来记录，此篇文章就是基于前面所学，开始着手训练文本摘要模型，当然仅是一个比较普通的baseline，后面还会不断优化模型。</p>
-<h3 id="构建seq2seq模型"><a href="#构建seq2seq模型" class="headerlink" title="构建seq2seq模型"></a>构建<code>seq2seq</code>模型</h3><p>首先利用上一节<code>seq2seq</code>实践中，封装的encoder、decoder和attention，集成到此模型中来，另外就是增加了一个训练技巧–<strong>teacher forcing</strong>。那么teacher forcing是啥意思呢？</p>
-<p><img src="/2022/08/27/nlp-text-summarize-baseline/teacher_forcing.png" style="zoom:67%;"></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2022/08/27/nlp-text-summarize-baseline/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/08/21/nlp-seq2seq-code/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2022/08/21/nlp-seq2seq-code/" itemprop="url">使用tensorflow实现seq2seq</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-21T19:19:54+08:00">
-                2022-08-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
-                    <span itemprop="name">自然语言处理</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="使用tensorflow实现seq2seq"><a href="#使用tensorflow实现seq2seq" class="headerlink" title="使用tensorflow实现seq2seq"></a>使用tensorflow实现seq2seq</h2><p>上篇文章记录了seq2seq和attention机制的基本原理，这篇文章趁热打铁看看如何自己写代码实现。</p>
-<h3 id="tf2的一些API操作"><a href="#tf2的一些API操作" class="headerlink" title="tf2的一些API操作"></a>tf2的一些API操作</h3><p>推荐一个学习tensorflow的教程：<a href="https://github.com/lyhue1991/eat_tensorflow2_in_30_days" target="_blank" rel="noopener">https://github.com/lyhue1991/eat_tensorflow2_in_30_days</a></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br></pre></td></tr></table></figure>
-<p><strong>连接操作</strong>(tf.concat)</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">t1 = [[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>], [<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]] <span class="comment"># 2, 3</span></span><br><span class="line">t2 = [[<span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>], [<span class="number">10</span>, <span class="number">11</span>, <span class="number">12</span>]] </span><br><span class="line">tf.concat([t1, t2], axis=<span class="number">0</span>) </span><br><span class="line"></span><br><span class="line">&lt;tf.Tensor: shape=(<span class="number">4</span>, <span class="number">3</span>), dtype=int32, numpy=</span><br><span class="line">array([[ <span class="number">1</span>,  <span class="number">2</span>,  <span class="number">3</span>],</span><br><span class="line">       [ <span class="number">4</span>,  <span class="number">5</span>,  <span class="number">6</span>],</span><br><span class="line">       [ <span class="number">7</span>,  <span class="number">8</span>,  <span class="number">9</span>],</span><br><span class="line">       [<span class="number">10</span>, <span class="number">11</span>, <span class="number">12</span>]])&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">tf.concat([t1, t2], axis=<span class="number">1</span>) </span><br><span class="line"></span><br><span class="line">&lt;tf.Tensor: shape=(<span class="number">2</span>, <span class="number">6</span>), dtype=int32, numpy=</span><br><span class="line">array([[ <span class="number">1</span>,  <span class="number">2</span>,  <span class="number">3</span>,  <span class="number">7</span>,  <span class="number">8</span>,  <span class="number">9</span>],</span><br><span class="line">       [ <span class="number">4</span>,  <span class="number">5</span>,  <span class="number">6</span>, <span class="number">10</span>, <span class="number">11</span>, <span class="number">12</span>]])&gt;</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2022/08/21/nlp-seq2seq-code/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/08/06/nlp-seq2seq/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2022/08/06/nlp-seq2seq/" itemprop="url">Seq2Seq</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-06T18:19:54+08:00">
-                2022-08-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
-                    <span itemprop="name">自然语言处理</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="Seq2Seq"><a href="#Seq2Seq" class="headerlink" title="Seq2Seq"></a><code>Seq2Seq</code></h2><h3 id="encoder-amp-decoder"><a href="#encoder-amp-decoder" class="headerlink" title="encoder &amp; decoder"></a>encoder &amp; decoder</h3><p><code>Seq2Seq</code>结构用于多个输入和多个输出的模型，但是输入和输出的大小可能并不一致，其本质上也是<code>RNN</code>网络的一个扩展，常见的应用场景包括：机器翻译、语音识别、文本摘要等。</p>
-<p>常见的<code>seq2seq</code>的输出的计算方法包括以下两种：</p>
-<p><img src="/2022/08/06/nlp-seq2seq/seq2seq.png" alt></p>
-<p>注意这里C到<code>y1、y2、y3</code>的计算，虽然有两种方式，但是C本质上是前半部分的最终输出状态，并非每个时间步的输出，这里搞清楚对于后续的注意力机制的理解也有帮助。</p>
-<p>在<code>seq2seq</code>结构中，通常将整个模型分为encoder和decoder两个核心组件，连接两个组件的就是context vector，即Encoder组件生成的上下文向量。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2022/08/06/nlp-seq2seq/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/07/18/nlp-lstm/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2022/07/18/nlp-lstm/" itemprop="url">LSTM和GRU</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-18T17:19:54+08:00">
-                2022-07-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
-                    <span itemprop="name">自然语言处理</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="LSTM和GRU"><a href="#LSTM和GRU" class="headerlink" title="LSTM和GRU"></a>LSTM和GRU</h2><h3 id="RNN的优缺点"><a href="#RNN的优缺点" class="headerlink" title="RNN的优缺点"></a>RNN的优缺点</h3><p>优点：</p>
-<ol>
-<li>可以捕获序列之间的关系；</li>
-<li>共享参数。</li>
-</ol>
-<p>缺点：</p>
-<ol>
-<li>存在梯度消失和梯度爆炸问题；</li>
-<li>RNN的训练是一个比较困难的任务；</li>
-<li>无法处理长序列问题。</li>
-</ol>
-<h3 id="LSTM"><a href="#LSTM" class="headerlink" title="LSTM"></a>LSTM</h3><p>LSTM可以处理长序列问题，同样在之前<a href="https://forchenxi.github.io/2021/04/23/nlp-rnn/" target="_blank" rel="noopener">这篇文章</a>中，关于LSTM网络的核心思想介绍的比较明白，而且传送带的比喻比较形象，结合上篇和当前这篇可以对LSTM有更深入的理解。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2022/07/18/nlp-lstm/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1801,7 +1802,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">88</span>
+                  <span class="site-state-item-count">93</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1823,7 +1824,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">176</span>
+                  <span class="site-state-item-count">181</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

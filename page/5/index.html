@@ -259,6 +259,784 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/07/17/ip-yolov3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/07/17/ip-yolov3/" itemprop="url">YOLOV1、V2、V3 理论篇</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-07-17T14:33:54+08:00">
+                2021-07-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/图像处理/" itemprop="url" rel="index">
+                    <span itemprop="name">图像处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="YOLOV1、V2、V3-理论篇"><a href="#YOLOV1、V2、V3-理论篇" class="headerlink" title="YOLOV1、V2、V3 理论篇"></a>YOLOV1、V2、V3 理论篇</h2><h3 id="YOLOV1核心思想"><a href="#YOLOV1核心思想" class="headerlink" title="YOLOV1核心思想"></a>YOLOV1核心思想</h3><p><a href="https://arxiv.org/pdf/1506.02640.pdf" target="_blank" rel="noopener">yolo论文地址</a></p>
+<p>这部分参考文章地址：<a href="https://blog.csdn.net/litt1e/article/details/88814417" target="_blank" rel="noopener">https://blog.csdn.net/litt1e/article/details/88814417</a></p>
+<p>作者在YOLO算法中把物体检测（object detection）问题处理成回归问题，用一个卷积神经网络结构就可以从输入图像直接预测bounding box（边框）和类别概率。</p>
+<p>算法首先把输入图像划分成S×S的格子，然后对每个格子都预测B个bounding boxes，每个bounding box都包含<strong>5个预测值：x,y,w,h和confidence</strong>。<br>x，y就是bounding box的中心坐标，与grid cell对齐（即相对于当前grid cell的偏移值），使得范围变成0到1；<br>w，h进行归一化（分别除以图像的w和h，这样最后的w和h就在0到1范围）。<br>confidence代表了所预测的box中含有object的置信度和这个box预测的有多准两重信息<br><img src="/2021/07/17/ip-yolov3/confidence.png" alt></p>
+<p>换句话说，如果ground truth(人工标注的框，更一般化的理解为训练集标签)落在这个grid cell里，那么Pr（Object）就取1，否则就是0，IOU就是bounding box与实际的groud truth之间的交并比（所谓交并比就是这两个框相交的面积除以两个框并起来的面积）。confidence是这两者的乘积。</p>
+<p><img src="/2021/07/17/ip-yolov3/yolov1_7x7.png" alt></p>
+<p>在yolov1中作者将一幅图片分成7x7个网格(grid cell)，由网络的最后一层输出7×7×30的tensor，也就是说每个格子输出1×1×30的tensor。30里面包括了2（B=2）个bound ing box的x，y，w，h，confidence以及针对格子而言的20个类别概率，输出就是 7x7x(5x2 + 20) 。<br>(通用公式： <strong>SxS个网格，每个网格要预测B个bounding box还要预测C个categories，输出就是S x S x (5×B+C)的一个tensor</strong>。 注意：class信息是针对每个网格的，confidence信息是针对每个bounding box的）</p>
+<p>v1使用的Backbone是GoogLeNet，带有全连接层，使用224*224的分辨率训练图像，但是输入图像要求448*448的尺寸。</p>
+<h3 id="YOLOV2重要升级"><a href="#YOLOV2重要升级" class="headerlink" title="YOLOV2重要升级"></a>YOLOV2重要升级</h3>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/07/17/ip-yolov3/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/07/04/dl-pytorch-cnn/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/07/04/dl-pytorch-cnn/" itemprop="url">PyTorch实现卷积神经网络</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-07-04T10:47:54+08:00">
+                2021-07-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="PyTorch实现卷积神经网络"><a href="#PyTorch实现卷积神经网络" class="headerlink" title="PyTorch实现卷积神经网络"></a><code>PyTorch</code>实现卷积神经网络</h2><p>关于卷积神经网络的一些基础知识和概念等前面已经多次学习，这篇文章的重点是<code>Pytorch</code>来实现卷积神经网络，偏向于代码实践，理论知识不多，不过有一点关于图像经过卷积后的输出尺寸问题的公式我觉得不错，值得记录。</p>
+<h3 id="卷积层"><a href="#卷积层" class="headerlink" title="卷积层"></a>卷积层</h3><p>我们知道卷积的过程是：让卷积核在图片上依次进行滑动，滑动方向为从左到右，从上到下，每滑动一次，卷积核就与其滑窗位置对应的输入图片x做一次点击运算并得到一个数值。在卷积的过程中，一般情况下，图片的宽高会变得越来越小，而通道数会变得越来越多。这里尺寸改变有什么样的规律呢？</p>
+<p>输入1*7的向量，经过1*3的卷积，如果步长为2，最终得到一个1*5的向量；如果步长为2，最终得到一个1*3的向量</p>
+<p>输入7*7的向量，经过3*3的卷积，如果步长为1，最终得到一个5*5的向量；如果步长为2，最终得到一个3*3的向量；如果步长为3，会<strong>报错</strong></p>
+<p>上面的例子卷积核个数都是1且通道数也是1，下面考虑多个卷积核的情况</p>
+<p>输入32*32*3的图片，如果kernel大小为5*5*3(实际上大小就是5*5，后面的3只是为了表示针对3通道图片的一种写法，卷积核会对三个通道分别实行5*5卷积，然后加到一起)，单个卷积核和步长为1的情况下，最终得到一个28*28*1的新图片；如果我们连续堆叠6个不同的卷积，最终特征层将得到6个通道，即28*28*6的新图片。</p>
+<p><img src="/2021/07/04/dl-pytorch-cnn/1.png" alt></p>
+<p>，在7*7的输入图片周边做一个像素的填充(pad=1,周边填充是上下左右都会填充),如果步长为1，kernel为3*3的卷积输出的特征层为7*7。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/07/04/dl-pytorch-cnn/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/06/26/dl-pytorch-nn/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/06/26/dl-pytorch-nn/" itemprop="url">PyTorch实现神经网络图像分类</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-06-26T15:33:54+08:00">
+                2021-06-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="PyTorch实现神经网络图像分类"><a href="#PyTorch实现神经网络图像分类" class="headerlink" title="PyTorch实现神经网络图像分类"></a><code>PyTorch</code>实现神经网络图像分类</h2><p>本文章主要参考《深度学习与图像识别 原理与实践一书》</p>
+<p>上篇文章介绍了<code>KNN</code>分类算法，并用其来实现<code>MNIST</code>和<code>Cifar10</code>数据集的分类任务，这篇文章同样是做这两个数据集的分类，但是使用的<code>Pytorch</code>构建神经网络算法来完成实验，是我自己对<code>Pytorch</code>的一个初步学习。</p>
+<p>之前一直是使用<code>Keras</code>，之所以学习<code>Pytorch</code>是因为，<code>Keras</code>比较适合作为练习使用的深度学习框架，因为其过度的封装导致学习时无法理解深度学习的真正内涵。</p>
+<h3 id="PyTorch的使用"><a href="#PyTorch的使用" class="headerlink" title="PyTorch的使用"></a><code>PyTorch</code>的使用</h3><h4 id="Tensor"><a href="#Tensor" class="headerlink" title="Tensor"></a>Tensor</h4><p>Tensor是<code>Pytorch</code>中的基础组件，Tensor与<code>Numpy</code>中的<code>ndarrays</code>非常类似，但是Tensor可以使用<code>GPU</code>加速而<code>ndarrays</code>不可以。在<code>pytorch</code>下使用如下命令来进行<code>GPU</code>运算：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> torch.cuda.is_available():</span><br><span class="line">    x = x.cuda()</span><br><span class="line">    y = y.cuda()</span><br><span class="line">    print(x+y)</span><br></pre></td></tr></table></figure>
+<p>x和y为Tensor类型的数据，如果电脑无<code>GPU</code>，则无法进行<code>GPU</code>运算。</p>
+<p><code>Terson</code>与<code>Numpy</code>互相转换</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line">np_data = np.arange(<span class="number">8</span>).reshape((<span class="number">2</span>, <span class="number">4</span>))</span><br><span class="line"><span class="comment"># 将numpy数组转换为tensor结构</span></span><br><span class="line">torch_data = torch.from_numpy(np_data)</span><br><span class="line">print(np_data)</span><br><span class="line">print(torch_data)</span><br><span class="line"><span class="comment"># 转回numpy</span></span><br><span class="line">np_data2 = torch_data.numpy()</span><br><span class="line">print(np_data2)</span><br></pre></td></tr></table></figure>
+<p>Tensor做矩阵运算（矩阵相乘）</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/06/26/dl-pytorch-nn/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/06/11/al-knn/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/06/11/al-knn/" itemprop="url">KNN 分类算法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-06-11T20:37:05+08:00">
+                2021-06-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/算法/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="KNN分类算法"><a href="#KNN分类算法" class="headerlink" title="KNN分类算法"></a><code>KNN</code>分类算法</h2><p><code>KNN</code>是机器学习种最简单的分类算法，而图像分类也是图像识别种最简单的问题，所以这里使用<code>KNN</code>来做图像分类，帮忙大家初步了解图像识别算法。</p>
+<p><code>KNN（K-NearestNeighbor）</code>,即K-最近邻算法，顾名思义，找到最近的k个邻居，在前k个最近样本(k近邻)中选择最近的占比最高的类别作为预测类别。</p>
+<p><code>KNN</code>算法的计算逻辑：</p>
+<ol>
+<li>给定测试对象，计算它与训练集中每个对象的距离；</li>
+<li>圈定距离最近的k个训练对象，作为测试对象的邻居；</li>
+<li>根据这k个近邻对象所属的类别，找到占比最高的那个类别作为测试对象的预测类别。</li>
+</ol>
+<p>在<code>KNN</code>中，有两个方面的因素会影响<code>KNN</code>算法的准确度：<strong>一个是距离计算，另一个是k的选择。</strong></p>
+<p>一般使用两种比较常见的距离公式计算距离：</p>
+<ol>
+<li>曼哈顿距离：<img src="/2021/06/11/al-knn/p2.png" alt></li>
+<li>欧式距离：<img src="/2021/06/11/al-knn/p1.png" alt></li>
+</ol>
+<h3 id="KNN算法实现"><a href="#KNN算法实现" class="headerlink" title="KNN算法实现"></a><code>KNN</code>算法实现</h3>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/06/11/al-knn/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/05/18/spider-bankofchina-new/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/05/18/spider-bankofchina-new/" itemprop="url">反爬（七）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-18T22:03:54+08:00">
+                2021-05-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/爬虫/" itemprop="url" rel="index">
+                    <span itemprop="name">爬虫</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="网站七处罚信息反爬破解"><a href="#网站七处罚信息反爬破解" class="headerlink" title="网站七处罚信息反爬破解"></a><a href="http://shanghai.pbc.gov.cn/fzhshanghai/113577/114832/114918/index.html" target="_blank" rel="noopener">网站</a>七处罚信息反爬破解</h2><p>前情回顾：</p>
+<p>本次破解的网站其实在前面的文章中已经有过了，具体可以参考这篇博客：</p>
+<p><a href="https://forchenxi.github.io/2019/09/20/spider-bankofchina/" target="_blank" rel="noopener">https://forchenxi.github.io/2019/09/20/spider-bankofchina/</a></p>
+<p>本次是网站反爬有所升级，所以破解流程也是基于上一次的升级，所以看这篇文章前你需要先补习一下上面那篇。</p>
+<p>正式开始：</p>
+<h3 id="首先跳过无限Debug"><a href="#首先跳过无限Debug" class="headerlink" title="首先跳过无限Debug"></a>首先跳过无限Debug</h3><p>本次网站升级后，当我们按下<code>F12</code>开始调试时，浏览器会出现无限Debug的情况：</p>
+<p><img src="/2021/05/18/spider-bankofchina-new/1.png" alt></p>
+<p>我们只要把鼠标放到Debugger前面的序号3上面，点击鼠标右键，选择<code>Never pause here</code>就可以解决了。</p>
+<p><img src="/2021/05/18/spider-bankofchina-new/2.png" alt></p>
+<h3 id="wzwschallenge参数"><a href="#wzwschallenge参数" class="headerlink" title="wzwschallenge参数"></a><code>wzwschallenge</code>参数</h3><p>上一次破解时，我们需要获取的就是这样一个东西(省略了前缀)：<br><code>/WZWSREL3poZW5nd3Vnb25na2FpLzEyNzkyNC8xMjgwNDEvMjE2MTQyMS9pbmRleC5odG1s?wzwschallenge=V1pXU19DT05GSVJNX1BSRUZJWF9MQUJFTDg2MzAxMQ==</code></p>
+<p>通过发送这样一个请求来获取cookie，从而成功获取到数据。</p>
+<p>而且当时，改变的只有<code>wzwschallenge</code>参数的值，前面那部分是固定的，下面来看下本次网站改版后是什么情况：</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/05/18/spider-bankofchina-new/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/05/16/dl-activation-function/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1027,784 +1805,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/02/26/dl-computer-vision2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/02/26/dl-computer-vision2/" itemprop="url">深度学习用于计算机视觉(中篇)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-26T19:09:54+08:00">
-                2021-02-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/深度学习/" itemprop="url" rel="index">
-                    <span itemprop="name">深度学习</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><em>本文章参考《Python深度学习》</em></p>
-<h3 id="深度学习用于计算机视觉-中篇"><a href="#深度学习用于计算机视觉-中篇" class="headerlink" title="深度学习用于计算机视觉(中篇)"></a>深度学习用于计算机视觉(中篇)</h3><p>本系列文章内容较多，共分为三篇，主要包括以下内容： </p>
-<ul>
-<li>理解卷积神经网络（convnet）</li>
-<li>使用数据增强来降低过拟合 </li>
-<li>使用预训练的卷积神经网络进行特征提取 </li>
-<li>微调预训练的卷积神经网络 </li>
-<li>将卷积神经网络学到的内容及其如何做出分类决策可视化</li>
-</ul>
-<p>上篇主要包括前两点，中篇包括三四点，下篇主要围绕第五点。</p>
-<h4 id="使用预训练的卷积神经网络"><a href="#使用预训练的卷积神经网络" class="headerlink" title="使用预训练的卷积神经网络"></a>使用预训练的卷积神经网络</h4><p>​       深度学习模型本质上具有高度的可复用性，比如，已有一个在大规模数据集上训练的图像分类模型或语音转文本模型，你只需做很小的修改就能将其复用于完全不同的问题。</p>
-<p>​        <strong>想要将深度学习应用于小型图像数据集，一种常用且非常高效的方法是使用预训练网络</strong>。 预训练网络（pretrained network）是一个保存好的网络，之前已在大型数据集（通常是大规模图像分类任务）上训练好。如果这个原始数据集足够大且足够通用，那么预训练网络学到的特征的空间层次结构可以有效地作为视觉世界的通用模型，因此这些特征可用于各种不同的计算机视觉问题，<strong>即使这些新问题涉及的类别和原始任务完全不同</strong>。</p>
-<p>​         举个例子，你在 ImageNet 上训练了一个网络（其类别主要是动物和日常用品），然后将这个训练好的网络应用于某个不相干的任 务，比如在图像中识别家具。<strong>这种学到的特征在不同问题之间的可移植性，是深度学习与许多早期浅层学习方法相比的重要优势，它使得深度学习对小数据问题非常有效</strong>。 </p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2021/02/26/dl-computer-vision2/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/02/05/dl-computer-vision1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/02/05/dl-computer-vision1/" itemprop="url">深度学习用于计算机视觉(上篇)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-05T18:09:54+08:00">
-                2021-02-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/深度学习/" itemprop="url" rel="index">
-                    <span itemprop="name">深度学习</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><em>本文章参考《Python深度学习》</em></p>
-<h3 id="深度学习用于计算机视觉-上篇"><a href="#深度学习用于计算机视觉-上篇" class="headerlink" title="深度学习用于计算机视觉(上篇)"></a>深度学习用于计算机视觉(上篇)</h3><p>本系列文章内容较多，共分为三篇，主要包括以下内容： </p>
-<ul>
-<li>理解卷积神经网络（convnet）</li>
-<li>使用数据增强来降低过拟合 </li>
-<li>使用预训练的卷积神经网络进行特征提取 </li>
-<li>微调预训练的卷积神经网络 </li>
-<li>将卷积神经网络学到的内容及其如何做出分类决策可视化</li>
-</ul>
-<p>上篇主要包括前两点，中篇包括三四点，下篇主要围绕第五点。</p>
-<h4 id="卷积神经网络简介"><a href="#卷积神经网络简介" class="headerlink" title="卷积神经网络简介"></a>卷积神经网络简介</h4><p>我们先通过一个简单的例子来展示什么卷积神经网络，它是<code>Conv2D</code>层和<code>MaxPooling2D</code>层的堆叠。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> layers</span><br><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> models</span><br><span class="line"></span><br><span class="line">model = models.Sequential()</span><br><span class="line">model.add(layers.Conv2D(<span class="number">32</span>, (<span class="number">3</span>, <span class="number">3</span>), activation=<span class="string">'relu'</span>, input_shape=(<span class="number">28</span>, <span class="number">28</span>, <span class="number">1</span>)))</span><br><span class="line">model.add(layers.MaxPooling2D((<span class="number">2</span>, <span class="number">2</span>)))</span><br><span class="line">model.add(layers.Conv2D(<span class="number">64</span>, (<span class="number">3</span>, <span class="number">3</span>), activation=<span class="string">'relu'</span>))</span><br><span class="line">model.add(layers.MaxPooling2D((<span class="number">2</span>, <span class="number">2</span>)))</span><br><span class="line">model.add(layers.Conv2D(<span class="number">64</span>, (<span class="number">3</span>, <span class="number">3</span>), activation=<span class="string">'relu'</span>))</span><br><span class="line"></span><br><span class="line">model.summary()</span><br></pre></td></tr></table></figure>
-<p>卷积神经网络接收形状为 (image_height, image_width, image_channels) 的输入张量（不包括批量维度）。本例中设置卷积神经网络处理大小为 (28, 28, 1) 的输入张量， 这正是 MNIST 图像的格式。</p>
-<p><code>model.summary()</code>可以用来查看卷积神经网络的架构</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2021/02/05/dl-computer-vision1/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/30/spider-yidun3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/01/30/spider-yidun3/" itemprop="url">网易易盾滑动验证码破解（补充篇）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-30T10:33:54+08:00">
-                2021-01-30
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/爬虫/" itemprop="url" rel="index">
-                    <span itemprop="name">爬虫</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="网易易盾破解补充篇"><a href="#网易易盾破解补充篇" class="headerlink" title="网易易盾破解补充篇"></a>网易易盾破解补充篇</h3><p>之前写了两篇易盾破解的文章，分别讲了<code>fp、cb、data</code>等参数的破解，以及额外的图像识别，但是实际上整个破解过程并不完整，我在文章中有提到<code>watchman</code>这块没有破解，这篇文章对此进行补充。</p>
-<h4 id="acToken"><a href="#acToken" class="headerlink" title="acToken"></a><code>acToken</code></h4><p>我在之前的文章中一直把<code>acToken</code>参数当做定值来处理的，但是实际上其并不是定值，我们先来看下其生成过程，点击<code>check</code>请求的调用栈(get请求是没有<code>acToken</code>参数的)</p>
-<p><img src="/2021/01/30/spider-yidun3/p1.png" alt></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2021/01/30/spider-yidun3/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/26/dl-basics/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/01/26/dl-basics/" itemprop="url">机器学习基础</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-26T12:37:05+08:00">
-                2021-01-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/深度学习/" itemprop="url" rel="index">
-                    <span itemprop="name">深度学习</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><em>本文章参考《python深度学习》，看这部分内容之前已经学习过吴恩达机器学习视频的大部分内容，所以看这一章非常简单，易于理解，仅做简单的重点整理。</em></p>
-<h4 id="机器学习的四个分支"><a href="#机器学习的四个分支" class="headerlink" title="机器学习的四个分支"></a>机器学习的四个分支</h4><h5 id="监督学习"><a href="#监督学习" class="headerlink" title="监督学习"></a>监督学习</h5><p>监督学习是目前最常见的机器学习类型。给定一组样本（通常由人工标注），它可以学会将 输入数据映射到已知目标［也叫标注(annotation)］。</p>
-<p>虽然监督学习主要包括分类和回归，但还有更多的奇特变体，主要包括如下几种。</p>
-<ul>
-<li><strong>序列生成</strong>（sequence generation）。给定一张图像，预测描述图像的文字。序列生成有时 可以被重新表示为一系列分类问题，比如反复预测序列中的单词或标记。</li>
-<li><strong>语法树预测</strong>（syntax tree prediction）。给定一个句子，预测其分解生成的语法树。 </li>
-<li><strong>目标检测</strong>（object detection）。给定一张图像，在图中特定目标的周围画一个边界框。这 个问题也可以表示为分类问题（给定多个候选边界框，对每个框内的目标进行分类）或 分类与回归联合问题（用向量回归来预测边界框的坐标）。 </li>
-<li><strong>图像分割</strong>（image segmentation）。给定一张图像，在特定物体上画一个像素级的掩模（mask）。</li>
-</ul>
-<h5 id="无监督学习"><a href="#无监督学习" class="headerlink" title="无监督学习"></a>无监督学习</h5><p>无监督学习是指在没有目标的情况下寻找输入数据的有趣变换，其目的在于数据可视化、 数据压缩、数据去噪或更好地理解数据中的相关性。</p>
-<p><strong>降维</strong>（dimensionality reduction）和<strong>聚类</strong>（clustering）都是众所周知的无监督学习方法。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2021/01/26/dl-basics/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/19/dl-house-price-predict/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/01/19/dl-house-price-predict/" itemprop="url">预测房价：回归问题</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-19T11:09:05+08:00">
-                2021-01-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/深度学习/" itemprop="url" rel="index">
-                    <span itemprop="name">深度学习</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><em>本文章参考《python深度学习》</em></p>
-<h3 id="预测房价：回归问题"><a href="#预测房价：回归问题" class="headerlink" title="预测房价：回归问题"></a>预测房价：回归问题</h3><p>回归问题预测一个连续值而不是离散的标签，例如，根据气象数据 预测明天的气温，或者根据软件说明书预测完成软件项目所需要的时间。</p>
-<p><strong>注意：不要将回归问题与logistic回归算法混为一谈；logistic回归不是回归算法，而是分类算法</strong></p>
-<h4 id="波士顿房价数据集"><a href="#波士顿房价数据集" class="headerlink" title="波士顿房价数据集"></a>波士顿房价数据集</h4><p>预测 20 世纪 70 年代中期波士顿郊区房屋价格的中位数，已知当时郊区的一些数 据点，比如犯罪率、当地房产税率等。这里用到的数据集相对较少，只有 506 个，分为 404 个训练样本和 102 个测试样本。输入数据的 每个特征（比如犯罪率）都有不同的取值范围。例如，有些特性是比例，取值范围为 0~1；有 的取值范围为 1~12；还有的取值范围为 0~100，等等。</p>
-<h5 id="加载数据"><a href="#加载数据" class="headerlink" title="加载数据"></a>加载数据</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.datasets <span class="keyword">import</span> boston_housing</span><br><span class="line"></span><br><span class="line">(train_data, train_targets), (test_data, test_targets) = boston_housing.load_data()</span><br><span class="line">print(train_data[<span class="number">0</span>])</span><br><span class="line">print(train_data.shape)  <span class="comment"># (404, 13)</span></span><br><span class="line">print(test_data.shape)  <span class="comment"># (102, 13)</span></span><br><span class="line"></span><br><span class="line">print(train_targets[:<span class="number">10</span>])</span><br><span class="line">print(train_targets.shape)  <span class="comment"># (404,)</span></span><br><span class="line">print(test_targets.shape)  <span class="comment"># (102,)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出如下：</span></span><br><span class="line">[<span class="number">1.23247</span>    <span class="number">0.</span>    <span class="number">8.14</span>    <span class="number">0.</span>    <span class="number">0.538</span>    <span class="number">6.142</span>    <span class="number">91.7</span>    <span class="number">3.9769</span>    <span class="number">4.</span>    <span class="number">307.</span>    <span class="number">21.</span>    <span class="number">396.9</span>    <span class="number">18.72</span>]</span><br><span class="line">(<span class="number">404</span>, <span class="number">13</span>)</span><br><span class="line">(<span class="number">102</span>, <span class="number">13</span>)</span><br><span class="line">[<span class="number">15.2</span> <span class="number">42.3</span> <span class="number">50.</span>  <span class="number">21.1</span> <span class="number">17.7</span> <span class="number">18.5</span> <span class="number">11.3</span> <span class="number">15.6</span> <span class="number">15.6</span> <span class="number">14.4</span>]</span><br><span class="line">(<span class="number">404</span>,)</span><br><span class="line">(<span class="number">102</span>,)</span><br></pre></td></tr></table></figure>
-<p>如你所见，我们有 404 个训练样本和 102 个测试样本，每个样本都有 13 个数值特征，比如 人均犯罪率、每个住宅的平均房间数、高速公路可达性等。 目标是房屋价格的中位数，单位是千美元。</p>
-<h5 id="准备数据"><a href="#准备数据" class="headerlink" title="准备数据"></a>准备数据</h5>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2021/01/19/dl-house-price-predict/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1852,7 +1857,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">88</span>
+                  <span class="site-state-item-count">93</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1874,7 +1879,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">176</span>
+                  <span class="site-state-item-count">181</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="deep learning,nlp,NER,UER,司法文书,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="使用UER进行开庭公告命名实体识别项目概述上篇文章已经讲述了，如何使用UER进行NER任务微调训练，接下来咱就开始实战了，我这边要做的一个任务是司法文书的信息抽取，简单描述就是抽取出案号、案由、当事人、法院、法庭等信息，不过整体的任务还是比较复杂的，并且司法文书种类也比较多，有裁判文书这种长文本，也有开庭公告、法院公告这种短文本，我这边打算先从开庭公告的一些短文本作为切入点，先做一些尝试，看看效果">
+<meta name="keywords" content="deep learning,nlp,NER,UER,司法文书">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用UER进行开庭公告命名实体识别">
+<meta property="og:url" content="http://yoursite.com/2022/10/13/nlp-ktgg_ner1/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="使用UER进行开庭公告命名实体识别项目概述上篇文章已经讲述了，如何使用UER进行NER任务微调训练，接下来咱就开始实战了，我这边要做的一个任务是司法文书的信息抽取，简单描述就是抽取出案号、案由、当事人、法院、法庭等信息，不过整体的任务还是比较复杂的，并且司法文书种类也比较多，有裁判文书这种长文本，也有开庭公告、法院公告这种短文本，我这边打算先从开庭公告的一些短文本作为切入点，先做一些尝试，看看效果">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2022/10/13/nlp-ktgg_ner1/数据分布.png">
+<meta property="og:updated_time" content="2022-11-26T09:19:26.263Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用UER进行开庭公告命名实体识别">
+<meta name="twitter:description" content="使用UER进行开庭公告命名实体识别项目概述上篇文章已经讲述了，如何使用UER进行NER任务微调训练，接下来咱就开始实战了，我这边要做的一个任务是司法文书的信息抽取，简单描述就是抽取出案号、案由、当事人、法院、法庭等信息，不过整体的任务还是比较复杂的，并且司法文书种类也比较多，有裁判文书这种长文本，也有开庭公告、法院公告这种短文本，我这边打算先从开庭公告的一些短文本作为切入点，先做一些尝试，看看效果">
+<meta name="twitter:image" content="http://yoursite.com/2022/10/13/nlp-ktgg_ner1/数据分布.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2022/10/13/nlp-ktgg_ner1/">
+
+
+
+
+
+  <title>使用UER进行开庭公告命名实体识别 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/10/13/nlp-ktgg_ner1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">使用UER进行开庭公告命名实体识别</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-10-13T17:20:04+08:00">
+                2022-10-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="使用UER进行开庭公告命名实体识别"><a href="#使用UER进行开庭公告命名实体识别" class="headerlink" title="使用UER进行开庭公告命名实体识别"></a>使用UER进行开庭公告命名实体识别</h2><h3 id="项目概述"><a href="#项目概述" class="headerlink" title="项目概述"></a>项目概述</h3><p>上篇文章已经讲述了，如何使用UER进行NER任务微调训练，接下来咱就开始实战了，我这边要做的一个任务是司法文书的信息抽取，简单描述就是抽取出案号、案由、当事人、法院、法庭等信息，不过整体的任务还是比较复杂的，并且司法文书种类也比较多，有裁判文书这种长文本，也有开庭公告、法院公告这种短文本，我这边打算先从开庭公告的一些短文本作为切入点，先做一些尝试，看看效果。</p>
+<p>我这边的一个实验计划暂定为：</p>
+<ol>
+<li>先使用一定量的数据，直接进行NER微调训练，记录训练效果，如precision、recall和f1的值；</li>
+<li>在语料集上先进行词向量微调（也就是bert finetune），并生成自己的词表；</li>
+<li>基于步骤2得到的模型再次进行NER微调训练，对比与步骤1的评测值是否有提升；</li>
+<li>如果方案可行，会再扩充数据集再次重复步骤2、3。</li>
+</ol>
+<a id="more"></a>
+<h3 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理</h3><p>现在手头上有这么一批样例数据，现在需要做的第一项工作是进行数据集格式转换和预处理操作，整个项目的思路是通过开发结构化的程序自动的去生成一定的标注数据，主要是提高标注效率，不过还需要对程序的标注结果进行人工校验，当然还存在很多无法通过程序生成的数据（会提取出错），也是需要人工去标注一部分。<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="attr">"case_no"</span>:<span class="string">"（2016）渝01民终3652号"</span>,<span class="attr">"case_reason"</span>:<span class="string">"买卖合同纠纷"</span>,<span class="attr">"tribunal"</span>:<span class="string">"第十二审判庭"</span>,<span class="attr">"related_companies"</span>:<span class="string">"[&#123;\"item\":\"63bd7827-e519-44bf-b050-3a56977c76df\",\"pure_role\":\"原告\",\"role\":\"原告\",\"name\":\"甘肃金创绿丰环境技术有限公司\",\"type\":\"E\"&#125;,&#123;\"item\":\"\",\"pure_role\":\"被告\",\"role\":\"被告\",\"name\":\"甘肃省危险废物处置中心\",\"type\":\"E\"&#125;,&#123;\"item\":\"991889cb-f858-45ca-9ec1-03cdb1730723\",\"pure_role\":\"被告\",\"role\":\"被告\",\"name\":\"重庆智得热工工业有限公司\",\"type\":\"E\"&#125;]"</span>,<span class="attr">"hearing_date"</span>:<span class="string">"2016-06-23 00:00:00.000"</span>,<span class="attr">"content"</span>:<span class="string">"重庆市第一中级人民法院定于二零一六年六月二十三日15:30到17:30在第十二审判庭开庭审理(2016)渝01民终3652号原告甘肃金创绿丰环境技术有限公司诉被告甘肃省危险废物处置中心,重庆智得热工工业有限公司买卖合同纠纷一案"</span>&#125;</span><br></pre></td></tr></table></figure></p>
+<p>处理过程中需要注意的点：</p>
+<ol>
+<li>这里的hearing_date是标准化后的时间，所以这里是没办法直接使用的，因为NER抽取是从原文抽取，所以这里需要重新提取一下时间；</li>
+<li>法院名称信息缺失，所以需要在这里提取一下，提取不到的也影响不大；</li>
+<li>案号的中英文括号要统一;</li>
+<li>因为tsv格式中，数据和标签之间使用”\t”分割，所以要求文本中不能存在”\t”；</li>
+<li>因为tsv格式中，数据之间、标签之间使用空格分割，所以要求文本中不能存在空格。</li>
+</ol>
+<p>预处理代码：（只是一个初步的方法，后续还会不断迭代）<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">regular_brackets</span><span class="params">(content: str)</span>:</span></span><br><span class="line">    <span class="comment"># 将content中各种形式的括号转变成统一的中文括号</span></span><br><span class="line">    <span class="comment"># 去除\t和空格</span></span><br><span class="line">    <span class="keyword">return</span> (content.replace(<span class="string">'('</span>, <span class="string">'（'</span>).replace(<span class="string">')'</span>, <span class="string">'）'</span>).replace(<span class="string">'【'</span>, <span class="string">'（'</span>).replace(<span class="string">'】'</span>, <span class="string">'）'</span>).replace(<span class="string">'&lt;'</span>, <span class="string">'（'</span>)</span><br><span class="line">            .replace(<span class="string">'&gt;'</span>, <span class="string">'）'</span>).replace(<span class="string">'〔'</span>, <span class="string">'（'</span>).replace(<span class="string">'〕'</span>, <span class="string">'）'</span>).replace(<span class="string">'\t'</span>, <span class="string">''</span>).replace(<span class="string">' '</span>, <span class="string">''</span>).strip())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">find_first</span><span class="params">(pattern, target_text, default_value=<span class="string">''</span>)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    从目标文本根据正则进行匹配，返回第一个匹配的结果，未匹配到返回默认值</span></span><br><span class="line"><span class="string">    :param pattern:</span></span><br><span class="line"><span class="string">    :param target_text:</span></span><br><span class="line"><span class="string">    :param default_value:</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    res = re.search(pattern, target_text)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> res:</span><br><span class="line">        <span class="keyword">return</span> default_value</span><br><span class="line">    <span class="keyword">return</span> res.group(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">find_date</span><span class="params">(content)</span>:</span></span><br><span class="line">    pattern = [</span><br><span class="line">       <span class="string">r"(.&#123;4&#125;年.&#123;1,2&#125;月.&#123;1,3&#125;[日号]\d&#123;1,2&#125;[:：]\d&#123;1,2&#125;)"</span></span><br><span class="line">    ]</span><br><span class="line">    <span class="keyword">for</span> regex <span class="keyword">in</span> pattern:</span><br><span class="line">        date = find_first(regex, content)</span><br><span class="line">        <span class="keyword">if</span> date:</span><br><span class="line">            <span class="keyword">return</span> date</span><br><span class="line">    <span class="keyword">return</span> <span class="string">''</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_english_role</span><span class="params">(role)</span>:</span></span><br><span class="line">    role_dict = &#123;</span><br><span class="line">        <span class="string">"原告"</span>: <span class="string">"plaintiff"</span>, <span class="string">"被告"</span>: <span class="string">"defendant"</span>, <span class="string">"当事人"</span>: <span class="string">"litigant"</span>, <span class="string">"原审第三人"</span>: <span class="string">"origin_third"</span>,</span><br><span class="line">        <span class="string">"第三人"</span>: <span class="string">"third"</span>, <span class="string">"上诉人"</span>: <span class="string">"appellant"</span>, <span class="string">"被上诉人"</span>: <span class="string">"appellee"</span>, <span class="string">"被告人"</span>: <span class="string">"accused"</span>,</span><br><span class="line">        <span class="string">"申请人"</span>: <span class="string">"appellant_c"</span>, <span class="string">"被申请人"</span>: <span class="string">"appellee_c"</span>, <span class="string">"被告单位"</span>: <span class="string">"defendant_c"</span>, <span class="string">"罪犯"</span>: <span class="string">"criminal"</span>,</span><br><span class="line">        <span class="string">"原审被告"</span>: <span class="string">"origin_defendant"</span>, <span class="string">"原审上诉人"</span>: <span class="string">"origin_appellant"</span>,</span><br><span class="line">        <span class="comment"># "原审被上诉人": "origin_appellee", "原审原告": "origin_plaintiff"</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">assert</span> role <span class="keyword">in</span> role_dict.keys(), <span class="string">f"该角色不在映射列表中：<span class="subst">&#123;role&#125;</span>"</span></span><br><span class="line">    <span class="keyword">return</span> role_dict.get(role)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 将原始的ktgg数据转为另一种json数据</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">convert_origin</span><span class="params">(origin_data_path, output_data_path)</span>:</span></span><br><span class="line">    fr = open(origin_data_path, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>)</span><br><span class="line">    fw = open(output_data_path, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>)</span><br><span class="line">    data_list = fr.readlines()</span><br><span class="line">    role_set = set()  <span class="comment"># 收集一下总共有多少种角色</span></span><br><span class="line">    <span class="keyword">for</span> each <span class="keyword">in</span> data_list:</span><br><span class="line">        each = json.loads(each)</span><br><span class="line">        case_reason = regular_brackets(each.get(<span class="string">'case_reason'</span>, <span class="string">''</span>))</span><br><span class="line">        case_no = regular_brackets(each.get(<span class="string">'case_no'</span>, <span class="string">''</span>))</span><br><span class="line">        tribunal = regular_brackets(each.get(<span class="string">'tribunal'</span>, <span class="string">''</span>))</span><br><span class="line">        related_companies = json.loads(each.get(<span class="string">'related_companies'</span>, []))</span><br><span class="line">        content = regular_brackets(each.get(<span class="string">'content'</span>, <span class="string">''</span>))</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> content:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        label_data = &#123;</span><br><span class="line">            <span class="string">"text"</span>: content,</span><br><span class="line">            <span class="string">"label"</span>: &#123;&#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> case_reason:</span><br><span class="line">            index = content.find(case_reason)</span><br><span class="line">            <span class="keyword">if</span> index != <span class="number">-1</span>:</span><br><span class="line">                reason = &#123;case_reason: [[index, index+len(case_reason)<span class="number">-1</span>]]&#125;</span><br><span class="line">                label_data[<span class="string">"label"</span>][<span class="string">"reason"</span>] = reason</span><br><span class="line">        <span class="keyword">if</span> case_no:</span><br><span class="line">            index = content.find(case_no)</span><br><span class="line">            <span class="keyword">if</span> index != <span class="number">-1</span>:</span><br><span class="line">                number = &#123;case_no: [[index, index+len(case_no)<span class="number">-1</span>]]&#125;</span><br><span class="line">                label_data[<span class="string">"label"</span>][<span class="string">"number"</span>] = number</span><br><span class="line">        <span class="keyword">if</span> tribunal:</span><br><span class="line">            index = content.find(tribunal)</span><br><span class="line">            <span class="keyword">if</span> index != <span class="number">-1</span>:</span><br><span class="line">                tribunal = &#123;tribunal: [[index, index+len(tribunal)<span class="number">-1</span>]]&#125;</span><br><span class="line">                label_data[<span class="string">"label"</span>][<span class="string">"tribunal"</span>] = tribunal</span><br><span class="line">        court = find_first(<span class="string">r'([^。]&#123;2,10&#125;?人民法院)'</span>, content)</span><br><span class="line">        <span class="keyword">if</span> court:</span><br><span class="line">            court = &#123;court: [[content.find(court), content.find(court)+len(court)<span class="number">-1</span>]]&#125;</span><br><span class="line">            label_data[<span class="string">"label"</span>][<span class="string">"court"</span>] = court</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            court = find_first(<span class="string">r'。(.&#123;2,10&#125;?(?:人民|运输)法院)'</span>, content)</span><br><span class="line">            <span class="keyword">if</span> court:</span><br><span class="line">                court = &#123;court: [[content.find(court), content.find(court) + len(court) - <span class="number">1</span>]]&#125;</span><br><span class="line">                label_data[<span class="string">"label"</span>][<span class="string">"court"</span>] = court</span><br><span class="line">        time = find_date(content)</span><br><span class="line">        <span class="keyword">if</span> time:</span><br><span class="line">            time = &#123;time: [[content.find(time), content.find(time)+len(time)<span class="number">-1</span>]]&#125;</span><br><span class="line">            label_data[<span class="string">"label"</span>][<span class="string">"time"</span>] = time</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            print(content)</span><br><span class="line">        role_label = &#123;&#125;</span><br><span class="line">        <span class="keyword">for</span> litigant <span class="keyword">in</span> related_companies:</span><br><span class="line">            role = regular_brackets(litigant.get(<span class="string">'role'</span>))</span><br><span class="line">            role_set.add(role)</span><br><span class="line">            role = get_english_role(role)</span><br><span class="line">            name = regular_brackets(litigant.get(<span class="string">'name'</span>))</span><br><span class="line">            index = content.find(name)</span><br><span class="line">            <span class="keyword">if</span> index != <span class="number">-1</span>:</span><br><span class="line">                <span class="keyword">if</span> role <span class="keyword">in</span> role_label.keys():</span><br><span class="line">                    role_label[role].update(&#123;name: [[index, index+len(name)<span class="number">-1</span>]]&#125;)</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    role_label[role] = &#123;name: [[index, index+len(name)<span class="number">-1</span>]]&#125;</span><br><span class="line">        label_data[<span class="string">"label"</span>].update(role_label)</span><br><span class="line">        <span class="comment"># print(label_data)</span></span><br><span class="line">        fw.write(json.dumps(label_data, ensure_ascii=<span class="literal">False</span>))</span><br><span class="line">        fw.write(<span class="string">'\n'</span>)</span><br><span class="line">    print(role_set)</span><br><span class="line">    fr.close()</span><br><span class="line">    fw.close()</span><br></pre></td></tr></table></figure></p>
+<p>这里数据集转换完成后的数据集格式为：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="attr">"text"</span>: <span class="string">"重庆市第一中级人民法院定于二零一六年六月二十三日15:30到17:30在第十二审判庭开庭审理（2016）渝01民终3652号原告甘肃金创绿丰环境技术有限公司诉被告甘肃省危险废物处置中心,重庆智得热工工业有限公司买卖合同纠纷一案"</span>, <span class="attr">"label"</span>: &#123;<span class="attr">"reason"</span>: &#123;<span class="attr">"买卖合同纠纷"</span>: [[<span class="number">105</span>, <span class="number">110</span>]]&#125;, <span class="attr">"number"</span>: &#123;<span class="attr">"（2016）渝01民终3652号"</span>: [[<span class="number">46</span>, <span class="number">61</span>]]&#125;, <span class="attr">"tribunal"</span>: &#123;<span class="attr">"第十二审判庭"</span>: [[<span class="number">36</span>, <span class="number">41</span>]]&#125;, <span class="attr">"court"</span>: &#123;<span class="attr">"重庆市第一中级人民法院"</span>: [[<span class="number">0</span>, <span class="number">10</span>]]&#125;, <span class="attr">"time"</span>: &#123;<span class="attr">"二零一六年六月二十三日15:30"</span>: [[<span class="number">13</span>, <span class="number">28</span>]]&#125;, <span class="attr">"plaintiff"</span>: &#123;<span class="attr">"甘肃金创绿丰环境技术有限公司"</span>: [[<span class="number">64</span>, <span class="number">77</span>]]&#125;, <span class="attr">"defendant"</span>: &#123;<span class="attr">"甘肃省危险废物处置中心"</span>: [[<span class="number">81</span>, <span class="number">91</span>]], <span class="attr">"重庆智得热工工业有限公司"</span>: [[<span class="number">93</span>, <span class="number">104</span>]]&#125;&#125;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>格式与上篇文章提到的CLUENER的数据集格式是一样的，之后再通过已经开发的转换脚本，转为UER的所需的输入数据格式即可。</p>
+<p>划分数据集：这里采用一种完全随机的方式<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">partition</span><span class="params">()</span>:</span></span><br><span class="line">    fw_train = open(<span class="string">r'../../datasets/ktgg/train.json'</span>, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>)</span><br><span class="line">    fw_test = open(<span class="string">r'../../datasets/ktgg/test.json'</span>, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>)</span><br><span class="line">    fw_dev = open(<span class="string">r'../../datasets/ktgg/dev.json'</span>, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>)</span><br><span class="line">    fr_chongqing = open(<span class="string">r'../../datasets/ktgg/train_chongqing.json'</span>, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>)</span><br><span class="line">    fr_beijing = open(<span class="string">r'../../datasets/ktgg/train_beijing.json'</span>, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>)</span><br><span class="line">    <span class="keyword">for</span> fr <span class="keyword">in</span> [fr_chongqing, fr_beijing]:</span><br><span class="line">        data_list = fr.readlines()</span><br><span class="line">        length = len(data_list)</span><br><span class="line">        test_list = random.sample(range(length), round(length*<span class="number">0.1</span>))</span><br><span class="line">        dev_list = random.sample(range(length), round(length*<span class="number">0.1</span>))</span><br><span class="line">        <span class="keyword">for</span> i, each <span class="keyword">in</span> enumerate(data_list):</span><br><span class="line">            <span class="keyword">if</span> i <span class="keyword">in</span> test_list:</span><br><span class="line">                fw_test.write(each)</span><br><span class="line">            <span class="keyword">elif</span> i <span class="keyword">in</span> dev_list:</span><br><span class="line">                fw_dev.write(each)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                fw_train.write(each)</span><br><span class="line">    fw_train.close()</span><br><span class="line">    fw_test.close()</span><br><span class="line">    fw_dev.close()</span><br><span class="line">    fr_beijing.close()</span><br><span class="line">    fr_chongqing.close()</span><br></pre></td></tr></table></figure></p>
+<p>实体种类：<br>court（法院名称）、reason（案由）、number（案号）、time（开庭时间）、tribunal（开庭地点）、plaintiff（原告）、defendant（被告）、litigant（当事人）、origin_third（原审第三人）、third（第三人）、appellant（上诉人）、appellee（被上诉人）、accused（被告人）、appellant_c（申请人）、appellee_c（被申请人）、defendant_c（被告单位）、criminal（罪犯）、origin_defendant（原审被告）、origin_appellant（原审上诉人）</p>
+<p><em>不确定label2id.json中的标签顺序是否有影响？</em></p>
+<p>label2id.json的内容<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="attr">"O"</span>: <span class="number">0</span>, <span class="attr">"B-accused"</span>: <span class="number">1</span>, <span class="attr">"I-accused"</span>: <span class="number">2</span>, <span class="attr">"B-appellant"</span>: <span class="number">3</span>, <span class="attr">"I-appellant"</span>: <span class="number">4</span>, <span class="attr">"B-appellant_c"</span>: <span class="number">5</span>, <span class="attr">"I-appellant_c"</span>: <span class="number">6</span>, <span class="attr">"B-appellee"</span>: <span class="number">7</span>, <span class="attr">"I-appellee"</span>: <span class="number">8</span>, <span class="attr">"B-appellee_c"</span>: <span class="number">9</span>, <span class="attr">"I-appellee_c"</span>: <span class="number">10</span>, <span class="attr">"B-court"</span>: <span class="number">11</span>, <span class="attr">"I-court"</span>: <span class="number">12</span>, <span class="attr">"B-criminal"</span>: <span class="number">13</span>, <span class="attr">"I-criminal"</span>: <span class="number">14</span>, <span class="attr">"B-defendant"</span>: <span class="number">15</span>, <span class="attr">"I-defendant"</span>: <span class="number">16</span>, <span class="attr">"B-defendant_c"</span>: <span class="number">17</span>, <span class="attr">"I-defendant_c"</span>: <span class="number">18</span>, <span class="attr">"B-litigant"</span>: <span class="number">19</span>, <span class="attr">"I-litigant"</span>: <span class="number">20</span>, <span class="attr">"B-number"</span>: <span class="number">21</span>, <span class="attr">"I-number"</span>: <span class="number">22</span>, <span class="attr">"B-origin_appellant"</span>: <span class="number">23</span>, <span class="attr">"I-origin_appellant"</span>: <span class="number">24</span>, <span class="attr">"B-origin_defendant"</span>: <span class="number">25</span>, <span class="attr">"I-origin_defendant"</span>: <span class="number">26</span>, <span class="attr">"B-origin_third"</span>: <span class="number">27</span>, <span class="attr">"I-origin_third"</span>: <span class="number">28</span>, <span class="attr">"B-plaintiff"</span>: <span class="number">29</span>, <span class="attr">"I-plaintiff"</span>: <span class="number">30</span>, <span class="attr">"B-reason"</span>: <span class="number">31</span>, <span class="attr">"I-reason"</span>: <span class="number">32</span>, <span class="attr">"B-third"</span>: <span class="number">33</span>, <span class="attr">"I-third"</span>: <span class="number">34</span>, <span class="attr">"B-time"</span>: <span class="number">35</span>, <span class="attr">"I-time"</span>: <span class="number">36</span>, <span class="attr">"B-tribunal"</span>: <span class="number">37</span>, <span class="attr">"I-tribunal"</span>: <span class="number">38</span>&#125;</span><br></pre></td></tr></table></figure></p>
+<p>目前在数据这块还存在一些问题：</p>
+<ol>
+<li>存在一些结构化提取存在问题的数据，后期需要人工校正；<br>如案由提取出错，当事人角色提取错误<br>当前已经见过的案例：<br>申请宣告<br>尚海与中国社会科学院民族学与人类学研究所人事争议</li>
+<li>数据集划分或许有更科学合理的划分方法；</li>
+<li>还不能覆盖所有情况的数据，比如当事人角色除此之外还有更多。</li>
+</ol>
+<p>不过当前属于试错期，先使用一批数据试试效果如何，如果效果好，再去提高数据集的质量。</p>
+<h3 id="finetune与测试"><a href="#finetune与测试" class="headerlink" title="finetune与测试"></a>finetune与测试</h3><p>在训练开始前还有个重要的超参数需要调整，<strong>在UER中就是seq_length，其默认值为128</strong>，虽然BERT的word embedding的max_seq_length是512，但是针对一些短文本的任务，句子长度并没有达到512，所以在构建词向量时，可以根据句子长度的范围来设置seq_length，这样可以减少一定的计算量，我这里的数据集存在大量长度超过128的句子，如果使用seq_length=128进行训练，超过长度的部分是无法进行预测的，这一点实际上也是我训练过一次之后在做模型测试的时候发现的。所以这里我先看一下我的数据集句子长度分布，从而寻找一个合适的seq_length值。</p>
+<p><img src="/2022/10/13/nlp-ktgg_ner1/数据分布.png" alt></p>
+<p>图中可以看到绝大部分的数据长度都分布在&lt;=250的区间，图片看不出来实际上&gt;250的区间上也存在少量数据，约几十条。所以这里，为了尽可能覆盖数据集并且保持性能在一个不错的水平，可以将seq_length设置为256。</p>
+<p>训练集总共169566条数据，验证集总共18850条数据，一开始我在自己的电脑上训练（无GPU）且CPU也很垃圾，训练三轮花了两天半，后来换到一台有两张<code>NVIDIA GeForce RTX 2080 Ti</code>显卡的机器训练，同时用两张卡训练，训练一轮约需要1个小时，速度快的飞起！</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">2022</span><span class="number">-07</span><span class="number">-14</span> <span class="number">11</span>:<span class="number">38</span>:<span class="number">52</span>,<span class="number">151</span> INFO] Report precision, recall, <span class="keyword">and</span> f1:</span><br><span class="line">[<span class="number">2022</span><span class="number">-07</span><span class="number">-14</span> <span class="number">11</span>:<span class="number">38</span>:<span class="number">52</span>,<span class="number">151</span> INFO] <span class="number">0.998</span>, <span class="number">0.998</span>, <span class="number">0.998</span></span><br></pre></td></tr></table></figure>
+<p>根据precision、recall和f1的值，我们看到效果好像还是相当不错的，损失值也围绕在0.000~0.002区间（有的批次是全部正确的）波动，推测那些预测不准确的极有可能是因为长度超过256的，下面我要在测试集上去实际测试下提取的效果。</p>
+<p>分为两个步骤：</p>
+<ol>
+<li>将测试集转换为tsv格式，使用模型预测得到prediction.tsv；</li>
+<li>处理prediction.tsv，跟测试集中的标签进行对比，计算准确率。</li>
+</ol>
+<p>测试集转换为tsv格式，直接使用上篇文章的方法即可<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">convert_no_label_data(<span class="string">"test.json"</span>, <span class="string">"test_nolabel.tsv"</span>)</span><br></pre></td></tr></table></figure></p>
+<p>得到的prediction.tsv的数据形式为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">B-court I-court I-court I-court I-court I-court I-court I-court I-court I-court O O B-time I-time I-time I-time I-time I-time I-time I-time I-time I-time I-time I-time I-time I-time I-time I-time O O O O O O O B-tribunal I-tribunal I-tribunal I-tribunal I-tribunal O O O O B-number I-number I-number I-number I-number I-number I-number I-number I-number I-number I-number I-number I-number I-number I-number I-number I-number I-number O O B-plaintiff I-plaintiff I-plaintiff I-plaintiff I-plaintiff I-plaintiff I-plaintiff I-plaintiff I-plaintiff I-plaintiff I-plaintiff I-plaintiff O O O B-defendant I-defendant I-defendant O B-defendant I-defendant I-defendant B-reason I-reason I-reason I-reason I-reason I-reason I-reason I-reason O O</span><br></pre></td></tr></table></figure></p>
+<p>预测一条数据的时间小于0.01s，不过这个速度也是与你的机器配置有关。</p>
+<p>我们需要开发相关的评估方法，评估方法可以分为三种</p>
+<ol>
+<li>最严格的评估方法，对比实体边界和实体类别是否均提取正确以及实体是否均被提取出来了；</li>
+<li>准确率，针对提取出来的实体是否边界和类别均提取正确；</li>
+<li>召回率，针对测试集中所有的实体是否边界和种类均正确提取了出来。</li>
+</ol>
+<p>以上的方法均以单条数据为一个样本，并非以单个实体为单个样本。</p>
+<p>现在我们的测试集数据格式为<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="string">"text"</span>: <span class="string">"重庆市江北区人民法院定于二零一六年六月二十三日09:20到11:00在第十审判庭开庭审理（2016）渝0105民初7407号原告重庆澄海物业管理有限公司诉被告石以强,陶克群物业服务合同纠纷一案"</span>, <span class="string">"label"</span>: &#123;<span class="string">"reason"</span>: &#123;<span class="string">"物业服务合同纠纷"</span>: [[<span class="number">86</span>, <span class="number">93</span>]]&#125;, <span class="string">"number"</span>: &#123;<span class="string">"（2016）渝0105民初7407号"</span>: [[<span class="number">44</span>, <span class="number">61</span>]]&#125;, <span class="string">"tribunal"</span>: &#123;<span class="string">"第十审判庭"</span>: [[<span class="number">35</span>, <span class="number">39</span>]]&#125;, <span class="string">"court"</span>: &#123;<span class="string">"重庆市江北区人民法院"</span>: [[<span class="number">0</span>, <span class="number">9</span>]]&#125;, <span class="string">"time"</span>: &#123;<span class="string">"二零一六年六月二十三日09:20"</span>: [[<span class="number">12</span>, <span class="number">27</span>]]&#125;, <span class="string">"plaintiff"</span>: &#123;<span class="string">"重庆澄海物业管理有限公司"</span>: [[<span class="number">64</span>, <span class="number">75</span>]]&#125;, <span class="string">"defendant"</span>: &#123;<span class="string">"石以强"</span>: [[<span class="number">79</span>, <span class="number">81</span>]], <span class="string">"陶克群"</span>: [[<span class="number">83</span>, <span class="number">85</span>]]&#125;&#125;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我们可以直接也把标签转为prediction.tsv的格式，然后直接逐行对比两个文件即可</p>
+<p>严格评估<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">evaluate_strict</span><span class="params">()</span>:</span></span><br><span class="line">    fr_label = open(<span class="string">r'../../datasets/ktgg/test_label.tsv'</span>, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>)</span><br><span class="line">    fr_prediction = open(<span class="string">r'../../datasets/ktgg/prediction.tsv'</span>, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>)</span><br><span class="line">    labels = fr_label.readlines()</span><br><span class="line">    predictions = fr_prediction.readlines()</span><br><span class="line">    total = <span class="number">0</span></span><br><span class="line">    correct = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> label, prediction <span class="keyword">in</span> zip(labels, predictions):</span><br><span class="line">        label = label.strip()</span><br><span class="line">        prediction = prediction.strip()</span><br><span class="line">        <span class="keyword">if</span> label == <span class="string">"label"</span>:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        total += <span class="number">1</span></span><br><span class="line">        label = label.split(<span class="string">' '</span>)</span><br><span class="line">        prediction = prediction.split(<span class="string">' '</span>)</span><br><span class="line">        <span class="keyword">if</span> label == prediction:</span><br><span class="line">            correct += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    fr_label.close()</span><br><span class="line">    fr_prediction.close()</span><br><span class="line">    print(<span class="string">f'correct/total: <span class="subst">&#123;correct&#125;</span>/<span class="subst">&#123;total&#125;</span>'</span>)</span><br><span class="line">    print(<span class="string">f'accuracy: <span class="subst">&#123;correct/total&#125;</span>'</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">correct/total: <span class="number">20801</span>/<span class="number">20935</span></span><br><span class="line">accuracy: <span class="number">0.9935992357296394</span></span><br></pre></td></tr></table></figure></p>
+<p>测试集20935条数据，仅134条预测有问题，按照最严格的评估准确率高于99.3%</p>
+<p>评估准确率<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">evaluate_precision</span><span class="params">()</span>:</span></span><br><span class="line">    fr_label = open(<span class="string">r'../../datasets/ktgg/test_label.tsv'</span>, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>)</span><br><span class="line">    fr_prediction = open(<span class="string">r'../../datasets/ktgg/prediction.tsv'</span>, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>)</span><br><span class="line">    labels = fr_label.readlines()</span><br><span class="line">    predictions = fr_prediction.readlines()</span><br><span class="line">    total = <span class="number">0</span></span><br><span class="line">    error = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> label, prediction <span class="keyword">in</span> zip(labels, predictions):</span><br><span class="line">        label = label.strip()</span><br><span class="line">        prediction = prediction.strip()</span><br><span class="line">        <span class="keyword">if</span> label == <span class="string">"label"</span>:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        total += <span class="number">1</span></span><br><span class="line">        label = label.split(<span class="string">' '</span>)</span><br><span class="line">        prediction = prediction.split(<span class="string">' '</span>)</span><br><span class="line">        <span class="keyword">for</span> i, p <span class="keyword">in</span> enumerate(prediction):</span><br><span class="line">            <span class="keyword">if</span> p == <span class="string">'O'</span>:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">if</span> label[i] != p:</span><br><span class="line">                error += <span class="number">1</span></span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">    fr_label.close()</span><br><span class="line">    fr_prediction.close()</span><br><span class="line">    print(<span class="string">f'correct/total: <span class="subst">&#123;total-error&#125;</span>/<span class="subst">&#123;total&#125;</span>'</span>)</span><br><span class="line">    print(<span class="string">f'precision: <span class="subst">&#123;(total-error)/total&#125;</span>'</span>)</span><br><span class="line"></span><br><span class="line">correct/total: <span class="number">20826</span>/<span class="number">20935</span></span><br><span class="line">precision: <span class="number">0.9947934081681394</span></span><br></pre></td></tr></table></figure></p>
+<p>如果仅评估预测结果中得到的实体边界和类别是否正确，仅有109条预测结果有问题。</p>
+<p>评估召回率<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">evaluate_recall</span><span class="params">()</span>:</span></span><br><span class="line">    fr_label = open(<span class="string">r'../../datasets/ktgg/test_label.tsv'</span>, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>)</span><br><span class="line">    fr_prediction = open(<span class="string">r'../../datasets/ktgg/prediction.tsv'</span>, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>)</span><br><span class="line">    labels = fr_label.readlines()</span><br><span class="line">    predictions = fr_prediction.readlines()</span><br><span class="line">    total = <span class="number">0</span></span><br><span class="line">    error = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> label, prediction <span class="keyword">in</span> zip(labels, predictions):</span><br><span class="line">        label = label.strip()</span><br><span class="line">        prediction = prediction.strip()</span><br><span class="line">        <span class="keyword">if</span> label == <span class="string">"label"</span>:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        total += <span class="number">1</span></span><br><span class="line">        label = label.split(<span class="string">' '</span>)</span><br><span class="line">        prediction = prediction.split(<span class="string">' '</span>)</span><br><span class="line">        <span class="keyword">for</span> i, p <span class="keyword">in</span> enumerate(label):</span><br><span class="line">            <span class="keyword">if</span> p == <span class="string">'O'</span>:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">if</span> i &gt; <span class="number">255</span>:</span><br><span class="line">                error += <span class="number">1</span></span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">if</span> prediction[i] != p:</span><br><span class="line">                error += <span class="number">1</span></span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">    fr_label.close()</span><br><span class="line">    fr_prediction.close()</span><br><span class="line">    print(<span class="string">f'correct/total: <span class="subst">&#123;total-error&#125;</span>/<span class="subst">&#123;total&#125;</span>'</span>)</span><br><span class="line">    print(<span class="string">f'precision: <span class="subst">&#123;(total-error)/total&#125;</span>'</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">correct/total: <span class="number">20820</span>/<span class="number">20935</span></span><br><span class="line">precision: <span class="number">0.9945068067828995</span></span><br></pre></td></tr></table></figure></p>
+<p>如果仅评估召回率，有115条未被正确召回，召回率在99.4%。</p>
+<p>现在总体看来，在测试集上的效果也是不错的，现在主要就是来看下预测有问题的这些数据的情况。我把出错的情形主要分为以下几类</p>
+<ol>
+<li>案由提取出错或未提取出来，推测原因为训练数据中未覆盖到该类案由；</li>
+<li>当事人提取出错，一般最后一个当事人出错的情况较多，与案由未正确提取有较大关联；</li>
+<li>当事人遗漏，因母公司与分公司名称存在重合导致的遗漏情况较多；</li>
+<li>时间未提取出来，推测原因为训练数据中未覆盖到该类时间格式；</li>
+<li>法庭未提取出来，推测原因为训练数据中未覆盖到该类法庭形式；</li>
+<li>法院提取错误；</li>
+<li>当事人角色提取有问题，如被告人，推测是缺乏此类训练数据；</li>
+<li>存在一些特殊数据。</li>
+</ol>
+<p>第1、2点样例数据（为了方便看数据，对预测结果做了格式上的转化）：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"（2016）渝0116民初7329号本院定于二〇一六年八月二十九日14:00到17:30在第十五审判法庭开庭审理（2016）渝0116民初7329号原告陈华辉诉被告王洪春,何向东企业出售合同纠纷一案。江津区人民法院承办人：文学清\n"</span>,</span><br><span class="line">    <span class="attr">"（2016）渝0116民初7329号"</span>: <span class="string">"number"</span>,</span><br><span class="line">    <span class="attr">"二〇一六年八月二十九日14:00"</span>: <span class="string">"time"</span>,</span><br><span class="line">    <span class="attr">"第十五审判法庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"陈华辉"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"王洪春"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"何向东企业出售合同纠纷"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"江津区人民法院"</span>: <span class="string">"court"</span></span><br><span class="line">&#125; <span class="comment">// 案由和当事人提取出错</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"重庆市北碚区人民法院定于二零一六年六月二十三日09:00到10:30在第四审判庭开庭审理（2016）渝0109民初3986号原告刘支玉,刘支均诉被告刘之华,刘一光,郑惠遗嘱继承纠纷一案\n"</span>,</span><br><span class="line">    <span class="attr">"重庆市北碚区人民法院"</span>: <span class="string">"court"</span>,</span><br><span class="line">    <span class="attr">"二零一六年六月二十三日09:00"</span>: <span class="string">"time"</span>,</span><br><span class="line">    <span class="attr">"第四审判庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"（2016）渝0109民初3986号"</span>: <span class="string">"number"</span>,</span><br><span class="line">    <span class="attr">"刘支玉"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"刘支均"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"刘之华"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"刘一光"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"郑惠遗嘱"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"继承纠纷"</span>: <span class="string">"reason"</span></span><br><span class="line">&#125; <span class="comment">// 案由和当事人提取出错</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"（2016）渝05民终6720号本院定于二〇一六年十月十八日14:30到15:10在主楼2016询问室开庭审理（2016）渝05民终6720号原告重庆诚捍律师事务所诉被告刘军法律服务合同纠纷一案。重庆市第五中级人民法院承办人：熊学庆\n"</span>,</span><br><span class="line">    <span class="attr">"（2016）渝05民终6720号"</span>: <span class="string">"number"</span>,</span><br><span class="line">    <span class="attr">"二〇一六年十月十八日14:30"</span>: <span class="string">"time"</span>,</span><br><span class="line">    <span class="attr">"重庆诚捍律师事务所"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"刘军法律服务合同纠纷"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"重庆市第五中级人民法院"</span>: <span class="string">"court"</span></span><br><span class="line">&#125; <span class="comment">// 案由和当事人提取出错，且开庭地点未提取出</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"（2016）渝0106民初9434号本院定于二〇一六年八月二十九日09:30到11:00在第十审判庭开庭审理（2016）渝0106民初9434号原告黄昌志诉被告重庆海丰建设工程集团有限公司劳动争议一案。重庆市沙坪坝区人民法院承办人：辛灵\n"</span>,</span><br><span class="line">    <span class="attr">"（2016）渝0106民初9434号"</span>: <span class="string">"number"</span>,</span><br><span class="line">    <span class="attr">"二〇一六年八月二十九日09:30"</span>: <span class="string">"time"</span>,</span><br><span class="line">    <span class="attr">"第十审判庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"黄昌志"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"重庆海丰建设工程集团有限"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"劳"</span>: <span class="string">"reason"</span>,</span><br><span class="line">    <span class="attr">"重庆市沙坪坝区人民法院"</span>: <span class="string">"court"</span></span><br><span class="line">&#125;<span class="comment">// 案由和当事人提取出错</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"（2016）渝0110民初6283号本院定于二〇一六年九月二十一日09:30到12:00在第八审判庭开庭审理（2016）渝0110民初6283号原告张翼诉被告重庆立立房地产开发有限公司建设工程价款优先受偿权纠纷一案。綦江区人民法院承办人：兰云星\n"</span>,</span><br><span class="line">    <span class="attr">"（2016）渝0110民初6283号"</span>: <span class="string">"number"</span>,</span><br><span class="line">    <span class="attr">"二〇一六年九月二十一日09:30"</span>: <span class="string">"time"</span>,</span><br><span class="line">    <span class="attr">"第八审判庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"张翼"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"重庆立立房地产开发有限公司"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"建设工程价"</span>: <span class="string">"reason"</span>,</span><br><span class="line">    <span class="attr">"綦江区人民法院"</span>: <span class="string">"court"</span></span><br><span class="line">&#125; <span class="comment">//案由提取出错</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"本院定于二〇一八年六月七日下午十五时整在（北区）第11法庭公开开庭审理罗星梦、王扬、李淑云、缪晋荣、北京华雷联盟资本管理中心（有限合伙）借款合同纠纷一案。\n"</span>,</span><br><span class="line">    <span class="attr">"第11法庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"罗星梦"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"王扬"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"李淑云"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"缪晋荣"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"北京华雷联盟资本管理中心"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"借款合同纠纷"</span>: <span class="string">"reason"</span></span><br><span class="line">&#125;<span class="comment">// 当事人提取不完整，北京华雷联盟资本管理中心（有限合伙）</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"（2016）渝0234民初2481号本院定于二〇一六年十一月二十三日09:00到12:00在第七法庭开庭审理（2016）渝0234民初2481号原告重庆大帝集团房地产开发有限公司诉被告重庆华润万家生活超市有限公司,华润万家有限公司房屋租赁合同纠纷一案。开州区人民法院承办人：魏久江\n"</span>,</span><br><span class="line">    <span class="attr">"（2016）渝0234民初2481号"</span>: <span class="string">"number"</span>,</span><br><span class="line">    <span class="attr">"二〇一六年十一月二十三日09:00"</span>: <span class="string">"time"</span>,</span><br><span class="line">    <span class="attr">"第七法庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"重庆大帝集团房地产开发有限公司"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"重庆"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"华润万家生活超市有限公司"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"房屋租赁合同纠纷"</span>: <span class="string">"reason"</span>,</span><br><span class="line">    <span class="attr">"开州区人民法院"</span>: <span class="string">"court"</span></span><br><span class="line">&#125;  <span class="comment">// 当事人提错一个，遗漏一个</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"（2017）渝0120民初605号本院定于二〇一七年二月十七日10:30到11:10在第十一审判庭开庭审理（2017）渝0120民初605号原告张兴梅诉被告重庆鼎翌建筑设备租赁有限公司,王芳合伙协议纠纷一案。璧山区人民法院承办人：陈秀超\n"</span>,</span><br><span class="line">    <span class="attr">"（2017）渝0120民初605号"</span>: <span class="string">"number"</span>,</span><br><span class="line">    <span class="attr">"二〇一七年二月十七日10:30"</span>: <span class="string">"time"</span>,</span><br><span class="line">    <span class="attr">"第十一审判庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"张兴梅"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"重庆鼎翌"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"建筑设备租赁"</span>: <span class="string">"reason"</span>,</span><br><span class="line">    <span class="attr">"合伙协议"</span>: <span class="string">"reason"</span>,</span><br><span class="line">    <span class="attr">"璧山区人民法院"</span>: <span class="string">"court"</span></span><br><span class="line">&#125; <span class="comment">// 公司提取出错，将公司中包含的案由提取了出来</span></span><br></pre></td></tr></table></figure>
+<p>第3点样例数据：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"（2016）渝0113民初11915号本院定于二〇一六年十一月十五日09:30到10:30在第五审判庭开庭审理（2016）渝0113民初11915号原告曾利,陈路诉被告陈利抚养费纠纷一案。重庆市巴南区人民法院承办人：曾文峰\n"</span>,</span><br><span class="line">    <span class="attr">"（2016）渝0113民初11915号"</span>: <span class="string">"number"</span>,</span><br><span class="line">    <span class="attr">"二〇一六年十一月十五日09:30"</span>: <span class="string">"time"</span>,</span><br><span class="line">    <span class="attr">"第五审判庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"曾利"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"陈路"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"抚养费纠纷"</span>: <span class="string">"reason"</span>,</span><br><span class="line">    <span class="attr">"重庆市巴南区人民法院"</span>: <span class="string">"court"</span></span><br><span class="line">&#125;  <span class="comment">// 当事人提取少了（陈利未提取出来）</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"（2017）渝04民终177号本院定于二〇一七年二月二十二日14:30到18:00在第三审判庭开庭审理（2017）渝04民终177号原告彭水县茂林矿业开发有限公司朱山洞三号煤矿诉被告陈佐刚,彭水县茂林矿业开发有限公司劳动争议一案。重庆市第四中级人民法院承办人：王军峰\n"</span>,</span><br><span class="line">    <span class="attr">"（2017）渝04民终177号"</span>: <span class="string">"number"</span>,</span><br><span class="line">    <span class="attr">"二〇一七年二月二十二日14:30"</span>: <span class="string">"time"</span>,</span><br><span class="line">    <span class="attr">"第三审判庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"彭水县茂林矿业开发有限公司朱山洞三号煤矿"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"陈佐刚"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"劳动争议"</span>: <span class="string">"reason"</span>,</span><br><span class="line">    <span class="attr">"重庆市第四中级人民法院"</span>: <span class="string">"court"</span></span><br><span class="line">&#125;<span class="comment">// 当事人提取少了（分公司与母公司部分名称重合）</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"（2016）渝0230民初1718号本院定于二〇一六年十月二十六日09:30到11:00在社坛法庭开庭审理（2016）渝0230民初1718号原告湛国顺诉被告广东省电白县第四建筑工程有限公司南宁分公司,广东省电白县第四建筑工程公司民间借贷纠纷一案。丰都县人民法院承办人：蒋春霞\n"</span>,</span><br><span class="line">    <span class="attr">"（2016）渝0230民初1718号"</span>: <span class="string">"number"</span>,</span><br><span class="line">    <span class="attr">"二〇一六年十月二十六日09:30"</span>: <span class="string">"time"</span>,</span><br><span class="line">    <span class="attr">"湛国顺"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"广东省电白县第四建筑工程有限公司南宁分公司"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"民间借贷纠纷"</span>: <span class="string">"reason"</span>,</span><br><span class="line">    <span class="attr">"丰都县人民法院"</span>: <span class="string">"court"</span></span><br><span class="line">&#125; <span class="comment">// 当事人提取少了（分公司与母公司部分名称重合）</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"（2016）渝0116民初8108号本院定于二〇一六年十月十日09:30到12:00在第五审判法庭开庭审理（2016）渝0116民初8108号原告钟良伟诉被告重庆市帅升建筑劳务有限公司宁夏分公司,重庆帅升建筑劳务有限公司合伙协议纠纷一案。江津区人民法院承办人：叶鸣\n"</span>,</span><br><span class="line">    <span class="attr">"（2016）渝0116民初8108号"</span>: <span class="string">"number"</span>,</span><br><span class="line">    <span class="attr">"二〇一六年十月十日09:30"</span>: <span class="string">"time"</span>,</span><br><span class="line">    <span class="attr">"第五审判法庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"钟良伟"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"重庆市帅升建筑劳务有限公司宁夏分公司"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"合伙协议纠纷"</span>: <span class="string">"reason"</span>,</span><br><span class="line">    <span class="attr">"江津区人民法院"</span>: <span class="string">"court"</span></span><br><span class="line">&#125; <span class="comment">// 分公司问题</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"（2017）渝01民终48号本院定于二〇一七年二月十六日11:30到12:00在第九审判庭开庭审理（2017）渝01民终48号原告安盛天平财产保险股份有限公司重庆分公司诉被告彭之德,黄洪玉,彭之平,胡祥模,彭知文机动车交通事故责任纠纷一案。重庆市第一中级人民法院承办人：彭松涛\n"</span>,</span><br><span class="line">    <span class="attr">"（2017）渝01民终48号"</span>: <span class="string">"number"</span>,</span><br><span class="line">    <span class="attr">"二〇一七年二月十六日11:30"</span>: <span class="string">"time"</span>,</span><br><span class="line">    <span class="attr">"第九审判庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"安盛天平财产保险股份有限公司重庆分公司"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"彭之德"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"黄洪玉"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"胡祥模"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"彭知文"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"机动车交通事故责任纠纷"</span>: <span class="string">"reason"</span>,</span><br><span class="line">    <span class="attr">"重庆市第一中级人民法院"</span>: <span class="string">"court"</span></span><br><span class="line">&#125; <span class="comment">// 少提了一个人：彭之平，与彭之德名字比较像</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"我院定于二〇一七年四月二十七日上午九时三十分，在本院12法庭依法公开开庭审理国家开发银行股份有限公司诉香港皇冠船舶有限公司（CROWNSHIPLIMITED）、春和集团有限公司、江苏太平洋造船集团股份有限公司、梁光夫合同纠纷一案。\n"</span>,</span><br><span class="line">    <span class="attr">"12法庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"国家开发银行股份有限公司"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"春和集团有限公司"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"江苏太平洋造船集团股份有限公司"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"合同纠纷"</span>: <span class="string">"reason"</span></span><br><span class="line">&#125;<span class="comment">// 带有英文企业名的当事人未提取出来(香港皇冠船舶有限公司（CROWNSHIPLIMITED）)</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"我院定于二〇一八年八月九日上午九时三十分,在本院第一法庭依法公开开庭审理原告上海东软载波微电子有限公司与被告国家知识产权局专利复审委员会、第三人密克罗奇普技术公司其他一案。\n"</span>,</span><br><span class="line">    <span class="attr">"第一法庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"上海东软载波微电子有限公司"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"国家知识产权局专利复审委员会"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"其他"</span>: <span class="string">"reason"</span></span><br><span class="line">&#125;<span class="comment">// 第三人未提取出来（密克罗奇普技术公司）</span></span><br></pre></td></tr></table></figure>
+<p>第4点样例数据：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"我院定于二〇一九年九月十八日上午十时三十分，在本院第十八法庭依法公开开庭审理北京朝电长虹电力设备有限公司与北京华瑞欣曼电力设备安装公司买卖合同纠纷一案。\n"</span>,</span><br><span class="line">    <span class="attr">"第十八法庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"北京朝电长虹电力设备有限公司"</span>: <span class="string">"litigant"</span>,</span><br><span class="line">    <span class="attr">"北京华瑞欣曼电力设备安装公司"</span>: <span class="string">"litigant"</span>,</span><br><span class="line">    <span class="attr">"买卖合同纠纷"</span>: <span class="string">"reason"</span></span><br><span class="line">&#125; <span class="comment">// 时间未提取出来</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"我院定于二〇一九年十月二十二日下午十四时整，在本院东1-5法庭依法公开开庭审理北京东方中青投资发展有限公司与北京市工商局行政管理东城分局其他一案。\n"</span>,</span><br><span class="line">    <span class="attr">"东1-5法庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"北京东方中青投资发展有限公司"</span>: <span class="string">"litigant"</span>,</span><br><span class="line">    <span class="attr">"北京市工商局行政管理东城分局"</span>: <span class="string">"litigant"</span>,</span><br><span class="line">    <span class="attr">"其他"</span>: <span class="string">"reason"</span></span><br><span class="line">&#125;  <span class="comment">// 时间未提取出来</span></span><br></pre></td></tr></table></figure></p>
+<p>第5点样例数据：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"我院定于二零一六年十月十三日上午九时整，在北京市高级人民法院12法庭依法公开开庭审理王朝阳与中地不动产评估有限公司、尤孝明、钱海滨、王朝霞损害公司利益责任纠纷上诉一案。\n"</span>,</span><br><span class="line">    <span class="attr">"时整，在北京市高级人民法院12法庭"</span>: <span class="string">"court"</span>,</span><br><span class="line">    <span class="attr">"王朝阳"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"中地不动产评估有限公司"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"尤孝明"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"钱海滨"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"王朝霞"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"损害公司利益责任纠纷上诉"</span>: <span class="string">"reason"</span></span><br><span class="line">&#125; <span class="comment">// 12法庭</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"我院定于二〇一七年二月二十八日上午九时三十五分,在本院三区第4法庭依法公开开庭审理原告温德乙与被告证监会其他一案。\n"</span>,</span><br><span class="line">    <span class="attr">"温德乙"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"证监会"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"其他"</span>: <span class="string">"reason"</span></span><br><span class="line">&#125; <span class="comment">// 三区第4法庭</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"我院原定于二零一六年七月十四日下午十四时整，在北京市东城区人民法院（北区）第11法庭依法公开开庭审理广发银行股份有限公司北京分行与张树长金融借款合同纠纷一案，现取消开庭。\n"</span>,</span><br><span class="line">    <span class="attr">"时整，在北京市东城区人民法院（北区）第11法庭"</span>: <span class="string">"court"</span>,</span><br><span class="line">    <span class="attr">"广发银行股份有限公司北京分行"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"张树长"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"金融借款"</span>: <span class="string">"reason"</span>,</span><br><span class="line">    <span class="attr">"现"</span>: <span class="string">"reason"</span></span><br><span class="line">&#125;<span class="comment">// 时间、法院、法庭、案由</span></span><br></pre></td></tr></table></figure></p>
+<p>第6点样例数据：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"我院定于二零一六年十月二十日上午十时整，在北京市第一中级人民法院三区第19法庭依法公开开庭审理原告达马股份有限公司与被告中华人民共和国国家工商行政管理总局商标评审委员会、第三人香港星光大道文化艺术传播有限公司其他一案。\n"</span>,</span><br><span class="line">    <span class="attr">"时整，在北京市第一中级人民法院三区第19法庭"</span>: <span class="string">"court"</span>,</span><br><span class="line">    <span class="attr">"达马股份有限公司"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"中华人民共和国国家工商行政管理总局商标评审委员会"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"第三人香港星光大道文化艺术传播有限公司"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"其他"</span>: <span class="string">"reason"</span></span><br><span class="line">&#125; <span class="comment">// 法院提取有问题，当事人提取有问题</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"我院定于二零一六年八月九日上午九时整，在北京市东城区人民法院（北区）第28法庭依法公开开庭审理满毅与北京首都开发股份有限公司北京圣泽宏房地产经纪有限公司、杨佳茗房屋买卖合同纠纷一案。\n"</span>,</span><br><span class="line">    <span class="attr">"时整，在北京市东城区人民法院（北区）第28法庭"</span>: <span class="string">"court"</span>,</span><br><span class="line">    <span class="attr">"满毅"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"北京首都开发股份有限公司北京圣泽宏房地产经纪有限公司"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"房屋买卖合同纠纷"</span>: <span class="string">"reason"</span></span><br><span class="line">&#125;<span class="comment">// 法院名称提取有问题</span></span><br></pre></td></tr></table></figure></p>
+<p>第7点样例数据：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"（2016）渝0151刑初167号本院定于二〇一六年九月二十七日09:30到10:10在第二审判庭开庭审理（2016）渝0151刑初167号被告人周容川,谭昌健涉嫌犯故意毁坏财物罪一案。铜梁区人民法院承办人：贾兆强\n"</span>,</span><br><span class="line">    <span class="attr">"（2016）渝0151刑初167号"</span>: <span class="string">"number"</span>,</span><br><span class="line">    <span class="attr">"二〇一六年九月二十七日09:30"</span>: <span class="string">"time"</span>,</span><br><span class="line">    <span class="attr">"第二审判庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"人周容川"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"谭昌健涉嫌犯故意毁坏财物罪"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"铜梁区人民法院"</span>: <span class="string">"court"</span></span><br><span class="line">&#125; <span class="comment">// 角色(被告人)、当事人、案由提取都有问题</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"（2017）渝0153刑初362号本院定于二〇一七年八月二十四日09:00到10:00在第十四法庭开庭审理（2017）渝0153刑初362号被告人徐继英,欧孟华,娄方南,张华涉嫌犯伪造、变造、买卖国家机关公文、证件、印章罪一案。荣昌区人民法院承办人：黄常菊\n"</span>,</span><br><span class="line">    <span class="attr">"（2017）渝0153刑初362号"</span>: <span class="string">"number"</span>,</span><br><span class="line">    <span class="attr">"二〇一七年八月二十四日09:00"</span>: <span class="string">"time"</span>,</span><br><span class="line">    <span class="attr">"第十四法庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"人徐继英"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"欧孟华"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"娄方南"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"张华"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"伪造、变造、买卖国家机关公文、证件、印章罪"</span>: <span class="string">"reason"</span>,</span><br><span class="line">    <span class="attr">"荣昌区人民法院"</span>: <span class="string">"court"</span></span><br><span class="line">&#125; <span class="comment">// 被告人角色问题</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"（2017）渝0153刑初335号本院定于二〇一七年八月二十八日16:00到17:30在第十四法庭开庭审理（2017）渝0153刑初335号被告人刘从卓,黄体栋,邹家文涉嫌犯盗窃罪一案。荣昌区人民法院承办人：王小辉\n"</span>,</span><br><span class="line">    <span class="attr">"（2017）渝0153刑初335号"</span>: <span class="string">"number"</span>,</span><br><span class="line">    <span class="attr">"二〇一七年八月二十八日16:00"</span>: <span class="string">"time"</span>,</span><br><span class="line">    <span class="attr">"第十四法庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"人"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"刘从卓"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"黄体栋"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"邹家文"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"涉嫌犯盗窃罪"</span>: <span class="string">"reason"</span>,</span><br><span class="line">    <span class="attr">"荣昌区人民法院"</span>: <span class="string">"court"</span></span><br><span class="line">&#125; <span class="comment">// 被告人问题</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"我院定于二〇一六年十一月九日上午九时三十分，在本院15法庭依法公开开庭审理上诉人中国医药保健品有限公司、上诉人上海咸池实业有限公司与被上诉人北京御盛隆堂科技发展有限公司、被上诉人大庆乳品厂有限责任公司、原审第三人北京中宇金达贸易有限公司委托合同纠纷上诉一案。\n"</span>,</span><br><span class="line">    <span class="attr">"15法庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"上诉人中国医药保健品有限公司"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"上诉人上海咸池实业有限公司"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"被上"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"被上诉人大庆乳品厂有限责任公司"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"北京中宇金达贸易有限公司"</span>: <span class="string">"origin_third"</span>,</span><br><span class="line">    <span class="attr">"委托合同纠纷上诉"</span>: <span class="string">"reason"</span></span><br><span class="line">&#125;  <span class="comment">// 当事人和案由提取都有问题</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"我院定于二〇一八年六月二十日下午十五时三十分，在本院第六法庭依法公开开庭审理英大泰和财产保险股份有限公司北京分公司与苑延忠保险人代位求偿权纠纷一案。\n"</span>,</span><br><span class="line">    <span class="attr">"第六法庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"英大泰和财产保险股份有限公司北京分公司"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"苑延忠"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"保险人代位求偿权纠纷"</span>: <span class="string">"reason"</span></span><br><span class="line">&#125;  <span class="comment">// 角色(应该是当事人)</span></span><br></pre></td></tr></table></figure></p>
+<p>第8点特殊数据：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"我院定于二〇一八年三月六日上午九时三十分，在本院（北区）第4法庭依法公开开庭审理王杰组织、领导传销活动罪、张丽艳组织、领导传销活动罪一案。\n"</span>,</span><br><span class="line">    <span class="attr">"第4法庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"王杰组织、"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"领导传销活动罪"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"张丽艳"</span>: <span class="string">"defendant"</span></span><br><span class="line">&#125; <span class="comment">// 每个当事人后面跟着一个案由</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"我院定于二〇一八年三月二十二日下午十六时四十五分,在本院第二十七法庭依法公开开庭审理原告惠普慧与集团有限责任公司与被告国家工商行政管理总局商标评审委员会其他一案。\n"</span>,</span><br><span class="line">    <span class="attr">"第二十七法庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"惠普慧"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"集团有限责任公司"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"国家"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"工商行政管理"</span>: <span class="string">"reason"</span></span><br><span class="line">&#125; <span class="comment">// 每个当事人后面跟着一个案由</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"我院定于二〇一八年三月二十一日上午九时整，在本院一区第22法庭依法公开开庭审理李灵虚开增值税专用发票、用于骗取出口退税、抵扣税款发票罪、李维虚开增值税专用发票、用于骗取出口退税、抵扣税款发票罪、王茹莹虚开增值税专用发票、用于骗取出口退税、抵扣税款发票罪、周昊虚开增值税专用发票、用于骗取出口退税、抵扣税款发票罪、赖斌全虚开增值税专用发票、用于骗取出口退税、抵扣税款发票罪、王光辉虚开增值税专用发票、用于骗取出口退税、抵扣税款发票罪、北京辉创盈科信息技术有限公司虚开增值税专用发票、用于骗取出口退税、抵扣税款发票罪一案。\n"</span>,</span><br><span class="line">    <span class="attr">"第22法庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"李灵"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"虚开增值税专用发票、"</span>: <span class="string">"reason"</span>,</span><br><span class="line">    <span class="attr">"用于骗取出口退税、"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"抵扣税款发票罪"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"李维"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"王茹莹"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"周昊"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"赖斌全"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"王光辉"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"北京辉创盈科信息技术有限公司"</span>: <span class="string">"defendant"</span></span><br><span class="line">&#125; <span class="comment">// 这个数据比较特殊</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"我院定于二〇一八年三月二十三日上午九时整，在本院一区第22法庭依法公开开庭审理李灵虚开增值税专用发票、用于骗取出口退税、抵扣税款发票罪、李维虚开增值税专用发票、用于骗取出口退税、抵扣税款发票罪、王茹莹虚开增值税专用发票、用于骗取出口退税、抵扣税款发票罪、周昊虚开增值税专用发票、用于骗取出口退税、抵扣税款发票罪、赖斌全虚开增值税专用发票、用于骗取出口退税、抵扣税款发票罪、王光辉虚开增值税专用发票、用于骗取出口退税、抵扣税款发票罪、北京辉创盈科信息技术有限公司虚开增值税专用发票、用于骗取出口退税、抵扣税款发票罪一案。\n"</span>,</span><br><span class="line">    <span class="attr">"第22法庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"李灵"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"虚开增值税专用发票、"</span>: <span class="string">"reason"</span>,</span><br><span class="line">    <span class="attr">"用于骗取出口退税、"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"抵扣税款发票罪"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"李维"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"王茹莹"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"周昊"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"赖斌全"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"王光辉"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"北京辉创盈科信息技术有限公司"</span>: <span class="string">"defendant"</span></span><br><span class="line">&#125; <span class="comment">// 特殊数据</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"我院定于二〇一八年三月十四日下午十四时整，在本院第十三法庭（北区）依法公开开庭审理朱文翔盗窃罪、吴倩掩饰、隐瞒犯罪所得、犯罪所得收益罪一案。\n"</span>,</span><br><span class="line">    <span class="attr">"第十三法庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"朱文翔"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"吴倩"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"掩饰、隐瞒犯罪所得、犯罪所得收益罪"</span>: <span class="string">"reason"</span></span><br><span class="line">&#125; <span class="comment">// 特殊数据</span></span><br></pre></td></tr></table></figure></p>
+<p>另外还有几个有趣的问题</p>
+<p>1、一个句子中有两个案号（案号内容一致，位置不同）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">（2016）渝0104民初2238号本院定于二〇一六年八月二十四日15:30到17:30在第十五审判庭开庭审理（2016）渝0104民初2238号原告黎淑梅诉被告重庆茂园物业管理有限公司,重庆金字塔房地产开发有限公司房屋租赁合同纠纷一案。重庆市大渡口区人民法院承办人：刘冰颖</span><br></pre></td></tr></table></figure></p>
+<p>这段文本中实际是有两个案号的，但是在训练数据集中并没有两处都给标注，预测的时候也确实没有把第二处作为案号提取（这有点不科学），如果尝试删掉最开始的案号再次预测，可以提取到第二处的案号，但是会导致法院提取出错，<strong>好像模型只是记住了一些位置信息，有可能是数据集太多，导致了模型过拟合？</strong></p>
+<p>2、存在比较多，标注数据错误，但是模型预测正确的情况。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">测试集数据</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"重庆市渝中区人民法院定于二零一六年六月二十三日10:15到10:30在第十三审判庭开庭审理（2016）渝0103民初6196号原告王倩诉被告安诚保险销售有限公司福利待遇纠纷一案"</span>, </span><br><span class="line">    <span class="attr">"label"</span>: &#123;</span><br><span class="line">        <span class="attr">"reason"</span>: &#123;<span class="attr">"纠纷"</span>: [[<span class="number">84</span>, <span class="number">85</span>]]&#125;, </span><br><span class="line">        <span class="attr">"number"</span>: &#123;<span class="attr">"（2016）渝0103民初6196号"</span>: [[<span class="number">45</span>, <span class="number">62</span>]]&#125;, </span><br><span class="line">        <span class="attr">"tribunal"</span>: &#123;<span class="attr">"第十三审判庭"</span>: [[<span class="number">35</span>, <span class="number">40</span>]]&#125;, </span><br><span class="line">        <span class="attr">"court"</span>: &#123;<span class="attr">"重庆市渝中区人民法院"</span>: [[<span class="number">0</span>, <span class="number">9</span>]]&#125;, </span><br><span class="line">        <span class="attr">"time"</span>: &#123;<span class="attr">"二零一六年六月二十三日10:15"</span>: [[<span class="number">12</span>, <span class="number">27</span>]]&#125;, </span><br><span class="line">        <span class="attr">"plaintiff"</span>: &#123;<span class="attr">"王倩"</span>: [[<span class="number">65</span>, <span class="number">66</span>]]&#125;, </span><br><span class="line">        <span class="attr">"defendant"</span>: &#123;<span class="attr">"安诚保险销售有限公司福利待遇"</span>: [[<span class="number">70</span>, <span class="number">83</span>]]&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>预测的结果<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"重庆市渝中区人民法院定于二零一六年六月二十三日10:15到10:30在第十三审判庭开庭审理（2016）渝0103民初6196号原告王倩诉被告安诚保险销售有限公司福利待遇纠纷一案\n"</span>,</span><br><span class="line">    <span class="attr">"重庆市渝中区人民法院"</span>: <span class="string">"court"</span>,</span><br><span class="line">    <span class="attr">"二零一六年六月二十三日10:15"</span>: <span class="string">"time"</span>,</span><br><span class="line">    <span class="attr">"第十三审判庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"（2016）渝0103民初6196号"</span>: <span class="string">"number"</span>,</span><br><span class="line">    <span class="attr">"王倩"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"安诚保险销售有限公司"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"福利待遇纠纷"</span>: <span class="string">"reason"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>针对以上问题，我们要做的是去查看训练数据集是否存在这样的问题，导致这样了预测结果，一开始我们也说了训练集存在一些问题，后续是需要修正和扩充的，现在第一步只是测试此方案是否可行，经过测试可以训练达到99%的准确率(基于当前数据集)，表明方案可行，所以<strong>后面的重点工作是尽可能的保证训练数据集的准确，并且尽可能的涵盖各种类型的数据，以提高模型的泛化性。</strong></p>
+<p>另外还有这种情况也需要在数据集中解决，存在<strong>少量名称重合</strong>，导致的标注错误。<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 测试集数据</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"（2016）渝0114民初6340号本院定于二〇一六年十一月十日14:30到17:30在第四审判庭开庭审理（2016）渝0114民初6340号原告魏民诉被告卢小曼,重庆叶丹商贸有限公司,郑晓永,李清兰,郑晓勇,叶丹民间借贷纠纷一案。黔江区人民法院承办人：孙文敏"</span>, </span><br><span class="line">    <span class="attr">"label"</span>: &#123;</span><br><span class="line">        <span class="attr">"reason"</span>: &#123;<span class="attr">"民间借贷纠纷"</span>: [[<span class="number">107</span>, <span class="number">112</span>]]&#125;, </span><br><span class="line">        <span class="attr">"number"</span>: &#123;<span class="attr">"（2016）渝0114民初6340号"</span>: [[<span class="number">0</span>, <span class="number">17</span>]]&#125;, </span><br><span class="line">        <span class="attr">"tribunal"</span>: &#123;<span class="attr">"第四审判庭"</span>: [[<span class="number">44</span>, <span class="number">48</span>]]&#125;, </span><br><span class="line">        <span class="attr">"court"</span>: &#123;<span class="attr">"黔江区人民法院"</span>: [[<span class="number">116</span>, <span class="number">122</span>]]&#125;, </span><br><span class="line">        <span class="attr">"time"</span>: &#123;<span class="attr">"二〇一六年十一月十日14:30"</span>: [[<span class="number">22</span>, <span class="number">36</span>]]&#125;, </span><br><span class="line">        <span class="attr">"plaintiff"</span>: &#123;<span class="attr">"魏民"</span>: [[<span class="number">73</span>, <span class="number">74</span>]]&#125;, </span><br><span class="line">        <span class="attr">"defendant"</span>: &#123;</span><br><span class="line">            <span class="attr">"卢小曼"</span>: [[<span class="number">78</span>, <span class="number">80</span>]], </span><br><span class="line">            <span class="attr">"重庆叶丹商贸有限公司"</span>: [[<span class="number">82</span>, <span class="number">91</span>]], </span><br><span class="line">            <span class="attr">"郑晓永"</span>: [[<span class="number">93</span>, <span class="number">95</span>]], </span><br><span class="line">            <span class="attr">"李清兰"</span>: [[<span class="number">97</span>, <span class="number">99</span>]], </span><br><span class="line">            <span class="attr">"郑晓勇"</span>: [[<span class="number">101</span>, <span class="number">103</span>]], </span><br><span class="line">            <span class="attr">"叶丹"</span>: [[<span class="number">84</span>, <span class="number">85</span>]]  <span class="comment">// 这里标注错误</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 预测数据：正确</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"text"</span>: <span class="string">"（2016）渝0114民初6340号本院定于二〇一六年十一月十日14:30到17:30在第四审判庭开庭审理（2016）渝0114民初6340号原告魏民诉被告卢小曼,重庆叶丹商贸有限公司,郑晓永,李清兰,郑晓勇,叶丹民间借贷纠纷一案。黔江区人民法院承办人：孙文敏\n"</span>,</span><br><span class="line">    <span class="attr">"（2016）渝0114民初6340号"</span>: <span class="string">"number"</span>,</span><br><span class="line">    <span class="attr">"二〇一六年十一月十日14:30"</span>: <span class="string">"time"</span>,</span><br><span class="line">    <span class="attr">"第四审判庭"</span>: <span class="string">"tribunal"</span>,</span><br><span class="line">    <span class="attr">"魏民"</span>: <span class="string">"plaintiff"</span>,</span><br><span class="line">    <span class="attr">"卢小曼"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"重庆叶丹商贸有限公司"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"郑晓永"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"李清兰"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"郑晓勇"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"叶丹"</span>: <span class="string">"defendant"</span>,</span><br><span class="line">    <span class="attr">"民间借贷纠纷"</span>: <span class="string">"reason"</span>,</span><br><span class="line">    <span class="attr">"黔江区人民法院"</span>: <span class="string">"court"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>针对上述问题，我排查了问题原因，关于法院提取出错的问题，经过核查实际是数据集中出现了类似的标注错误，所以造成了这样的错误预测结果；时间未提取出来的问题，实际上是训练数据中有类似的时间，却没有标注出来；母公司与分公司的问题，大概率也是存在重复文本时的标注程序有bug。</p>
+<p>当前很明确的可以进行以下优化：</p>
+<ol>
+<li>优化法院标注；</li>
+<li>优化时间标注；</li>
+<li>优化一段文本中包含多个案号的标注逻辑；</li>
+<li>优化存在重复文本时的标注逻辑；</li>
+<li>增加其他种类案由的训练数据；</li>
+<li>增加其他当事人角色的训练数据；</li>
+<li>增加其他法庭形式的训练数据。</li>
+</ol>
+<p>如果继续针对真实数据去做标注优化，这些点就是之后的优化方向，但是根据我的个人经验萌生一个想法，自己生成训练数据，根据一定的规则排列时间、角色、当事人名称、案由、案号、法院和法庭，然后加上一些其他的介词、标点符号等，在生成数据的时候直接获取标注数据，可以基本解决上述所有的待优化问题，并且大大提高效率。</p>
+<p>另外使用当前的NER方法来做这个任务，我也发现了一些非常重要问题：</p>
+<ol>
+<li>对于当事人来说，既可以划分为不同的角色，又可以分为个人、公司、组织机构等类型，没办法表示其多重身份，比如“甘肃金创绿丰环境技术有限公司”，既是被告，也是公司，这里只能把其分类到被告；</li>
+<li>少量句子长度特别长，达到1000~2000字，如果后续扩展到裁判文书，那这种长度的文本更是比比皆是，所以针对长文本如何抽取也是问题所在。</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/nlp/" rel="tag"># nlp</a>
+          
+            <a href="/tags/NER/" rel="tag"># NER</a>
+          
+            <a href="/tags/UER/" rel="tag"># UER</a>
+          
+            <a href="/tags/司法文书/" rel="tag"># 司法文书</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/10/06/nlp-UER-cluener/" rel="next" title="CLUE命名实体识别">
+                <i class="fa fa-chevron-left"></i> CLUE命名实体识别
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/10/20/nlp-ktgg_ner2/" rel="prev" title="使用UER进行开庭公告命名实体识别-续1">
+                使用UER进行开庭公告命名实体识别-续1 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">93</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">181</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用UER进行开庭公告命名实体识别"><span class="nav-text">使用UER进行开庭公告命名实体识别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#项目概述"><span class="nav-text">项目概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据预处理"><span class="nav-text">数据预处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#finetune与测试"><span class="nav-text">finetune与测试</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
