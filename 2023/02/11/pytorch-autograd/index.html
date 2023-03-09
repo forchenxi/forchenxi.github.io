@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="pytorch,autograd,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="PyTorch的自动微分(autograd)计算图计算图是用来描述运算的有向无环图计算图有两个主要元素：结点（Node）和边（Edge）结点表示数据，如向量、矩阵、张量边表示运算，如加减乘除卷积等 用计算图表示：y = (x + w)  (w + 1)令 a = x + w，b = w + 1则 y = a  b 用计算图来表示这一计算过程： 使用计算图可以更方便的求导">
+<meta name="keywords" content="pytorch,autograd">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PyTorch的自动微分">
+<meta property="og:url" content="http://yoursite.com/2023/02/11/pytorch-autograd/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="PyTorch的自动微分(autograd)计算图计算图是用来描述运算的有向无环图计算图有两个主要元素：结点（Node）和边（Edge）结点表示数据，如向量、矩阵、张量边表示运算，如加减乘除卷积等 用计算图表示：y = (x + w)  (w + 1)令 a = x + w，b = w + 1则 y = a  b 用计算图来表示这一计算过程： 使用计算图可以更方便的求导">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2023/02/11/pytorch-autograd/p1.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/11/pytorch-autograd/p2.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/11/pytorch-autograd/grad.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/11/pytorch-autograd/jacobian.png">
+<meta property="og:updated_time" content="2023-03-09T13:59:28.078Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PyTorch的自动微分">
+<meta name="twitter:description" content="PyTorch的自动微分(autograd)计算图计算图是用来描述运算的有向无环图计算图有两个主要元素：结点（Node）和边（Edge）结点表示数据，如向量、矩阵、张量边表示运算，如加减乘除卷积等 用计算图表示：y = (x + w)  (w + 1)令 a = x + w，b = w + 1则 y = a  b 用计算图来表示这一计算过程： 使用计算图可以更方便的求导">
+<meta name="twitter:image" content="http://yoursite.com/2023/02/11/pytorch-autograd/p1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2023/02/11/pytorch-autograd/">
+
+
+
+
+
+  <title>PyTorch的自动微分 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2023/02/11/pytorch-autograd/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">PyTorch的自动微分</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-02-11T17:45:05+08:00">
+                2023-02-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/pytorch/" itemprop="url" rel="index">
+                    <span itemprop="name">pytorch</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="PyTorch的自动微分-autograd"><a href="#PyTorch的自动微分-autograd" class="headerlink" title="PyTorch的自动微分(autograd)"></a>PyTorch的自动微分(autograd)</h2><h3 id="计算图"><a href="#计算图" class="headerlink" title="计算图"></a>计算图</h3><p><strong>计算图是用来描述运算的有向无环图</strong><br>计算图有两个主要元素：结点（Node）和边（Edge）<br><strong>结点表示数据</strong>，如向量、矩阵、张量<br><strong>边表示运算</strong>，如加减乘除卷积等</p>
+<p>用计算图表示：y = (x + w) <em> (w + 1)<br>令 a = x + w，b = w + 1<br>则 y = a </em> b</p>
+<p>用计算图来表示这一计算过程：<br><img src="/2023/02/11/pytorch-autograd/p1.png" alt></p>
+<p>使用计算图可以更方便的求导</p>
+<a id="more"></a>
+<p><img src="/2023/02/11/pytorch-autograd/p2.png" alt><br>在计算图中，y对w求导，就是找到所有y到w的边，然后分别进行求导。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">w = torch.tensor([<span class="number">1.</span>], requires_grad=<span class="literal">True</span>)</span><br><span class="line">x = torch.tensor([<span class="number">2.</span>], requires_grad=<span class="literal">True</span>)</span><br><span class="line">a = torch.add(w, x)</span><br><span class="line">b = torch.add(w, <span class="number">1</span>)</span><br><span class="line">y = torch.mul(a, b)</span><br><span class="line">y.backward()</span><br><span class="line">print(w.grad)</span><br><span class="line">tensor([<span class="number">5.</span>])</span><br></pre></td></tr></table></figure>
+<p><strong>叶子节点</strong>：用户创建的结点成为叶子结点，如X与W<br>is_leaf：指示张量是否为叶子结点</p>
+<p>叶子结点的作用：<strong>节省内存，非叶子结点的梯度会被释放</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">print(<span class="string">"is_leaf:\n"</span>, w.is_leaf, x.is_leaf, a.is_leaf, b.is_leaf, y.is_leaf)</span><br><span class="line">is_leaf:</span><br><span class="line"><span class="literal">True</span> <span class="literal">True</span> <span class="literal">False</span> <span class="literal">False</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line">print(<span class="string">"gradient:\n"</span>, w.grad, x.grad, a.grad, b.grad, y.grad)</span><br><span class="line">gradient:</span><br><span class="line"> tensor([<span class="number">5.</span>]) tensor([<span class="number">2.</span>]) <span class="literal">None</span> <span class="literal">None</span> <span class="literal">None</span></span><br></pre></td></tr></table></figure>
+<p>如果想要保存非叶子结点的梯度，需要在反向传播前前，使用a.retain_grad()(以张量a为例)</p>
+<p>grad_fn：记录创建该张量时所用的方法（函数）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">print(<span class="string">"grad_fn:\n"</span>, w.grad_fn, x.grad_fn, a.grad_fn, b.grad_fn, y.grad_fn)</span><br><span class="line">grad_fn:</span><br><span class="line"> <span class="literal">None</span> <span class="literal">None</span> &lt;AddBackward0 object at <span class="number">0x00000254C1C6C7B8</span>&gt; &lt;AddBackward0 object at <span class="number">0x00000254C334DDD8</span>&gt; &lt;MulBackward0 object at <span class="number">0x00000254C334D828</span>&gt;</span><br></pre></td></tr></table></figure>
+<p>这里w和x是用户创建的，所以grad_fn为None，a、b、y都是有grad_fn的，其grad_fn的作用主要是在求导时，可以知道其是使用哪种计算方式得到的，以便确认求导法则。</p>
+<h3 id="动态图-VS-静态图"><a href="#动态图-VS-静态图" class="headerlink" title="动态图 VS 静态图"></a>动态图 VS 静态图</h3><p>根据计算图搭建方式，可将计算图分为动态图和静态图<br>动态图：运算和搭建同时进行，特点：灵活，易调解，以pytorch为代表<br>静态图：先搭建图，后运算，特点：高效，但不灵活，以tensorflow为代表</p>
+<h3 id="autograd–自动求导系统"><a href="#autograd–自动求导系统" class="headerlink" title="autograd–自动求导系统"></a><code>autograd</code>–自动求导系统</h3><h4 id="torch-autograd-backward方法介绍"><a href="#torch-autograd-backward方法介绍" class="headerlink" title="torch.autograd.backward方法介绍"></a><code>torch.autograd.backward</code>方法介绍</h4><p><code>torch.autograd.backward</code>：自动求取梯度，参数</p>
+<ul>
+<li>inputs：用于求导的张量，如loss</li>
+<li>retain_graph：保存计算图</li>
+<li>create_graph：创建导数计算图，用于高阶求导</li>
+<li>gradient：多梯度权重</li>
+</ul>
+<p><code>tensor.backward()</code>调用的就是<code>torch.autograd.backward()</code></p>
+<p>在梯度求导之后，计算图会被释放，无法执行两次backward(),要想执行两次backward(),就需要将retain_graph设置为True。<br><strong>一般中间结点会遇到需要多次backward的情况</strong></p>
+<p>下面代码解释<strong>多梯度权重</strong><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">w = torch.tensor([<span class="number">1.</span>], requires_grad=<span class="literal">True</span>)</span><br><span class="line">x = torch.tensor([<span class="number">2.</span>], requires_grad=<span class="literal">True</span>)</span><br><span class="line">a = torch.add(w, x)</span><br><span class="line">b = torch.add(w, <span class="number">1</span>)</span><br><span class="line">y = torch.mul(a ,b)</span><br><span class="line">y1 = torch.add(a, b)  <span class="comment"># dy1/dw = 2</span></span><br><span class="line">loss = torch.cat([y, y1], dim=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">grad_tensors = torch.tensor([<span class="number">1</span>, <span class="number">1</span>])</span><br><span class="line">loss.backward(gradient=grad_tensors)</span><br><span class="line">print(w.grad)</span><br><span class="line">tensor([<span class="number">7.</span>])</span><br></pre></td></tr></table></figure></p>
+<p>这里同时求了<code>dy/dw</code>和<code>dy1/dw</code>，<code>w.grad=(1 x dy/dw) + (1 x dy1/dw) = 5+2</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">grad_tensors = torch.tensor([<span class="number">1</span>, <span class="number">2</span>])</span><br><span class="line">loss.backward(gradient=grad_tensors)</span><br><span class="line">print(w.grad)</span><br><span class="line">tensor([<span class="number">7.</span>])</span><br></pre></td></tr></table></figure>
+<p><code>w.grad = (1 x dy/dw) + (2 x dy1/dw) = 5 + 2x2 = 9</code></p>
+<h4 id="torch-autograd-grad-方法介绍"><a href="#torch-autograd-grad-方法介绍" class="headerlink" title="torch.autograd.grad()方法介绍"></a><code>torch.autograd.grad()</code>方法介绍</h4><p><code>torch.autograd.grad()</code>：求取梯度</p>
+<ul>
+<li>outputs：用于求导的张量，如loss</li>
+<li>inputs：需要梯度的张量</li>
+<li>create_graph：创建导数计算图，用于高阶求导</li>
+<li>retain_graph：保存计算图</li>
+<li>grad_outputs：多梯度权重</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># x需要设置requires_grad=True才可以后续求导</span></span><br><span class="line">x = torch.tensor([<span class="number">3.</span>], requires_grad=<span class="literal">True</span>)</span><br><span class="line">y = torch.pow(x, <span class="number">2</span>)</span><br><span class="line"><span class="comment"># 创建导数计算图，用于高阶求导，即后续可以求二阶导数</span></span><br><span class="line">grad_1 = torch.autograd.grad(y, x, create_graph=<span class="literal">True</span>)</span><br><span class="line">print(grad_1)</span><br><span class="line">(tensor([<span class="number">6.</span>], grad_fn=&lt;MulBackward0&gt;),)</span><br><span class="line"><span class="comment"># 求2阶导数</span></span><br><span class="line">grad_2 = torch.autograd.grad(grad_1[<span class="number">0</span>], x)</span><br><span class="line">print(grad_2)</span><br><span class="line">(tensor([<span class="number">2.</span>]),)</span><br></pre></td></tr></table></figure>
+<p><code>autograd</code>小贴士：</p>
+<ol>
+<li>梯度不会自动清零（比如w会一直叠加），手动清零：<code>w.grad.zero_()</code>；</li>
+<li>依赖于叶子结点的结点(比如a, b, y)，其requires_grad=True；</li>
+<li>叶子结点不可以执行in-place操作（原地操作，在原始内存地址中改变数据）。</li>
+</ol>
+<h4 id="自动求导系统实现"><a href="#自动求导系统实现" class="headerlink" title="自动求导系统实现"></a>自动求导系统实现</h4><p><code>torch.Tensor</code> 是包的核心类。如果将其属性 .requires_grad 设置为 True，则会开始跟踪针对 tensor 的所有操作。完成计算后，您可以调用 .backward() 来自动计算所有梯度。该张量的梯度将累积到 .grad 属性中。 </p>
+<p>如果你想计算导数，你可以调用 <code>Tensor.backward()</code>。如果 Tensor 是标量（即它包含一个元素数据），则不需要指定任何参数backward()，但是如果它有更多元素，则需要指定一个gradient 参数 来指定张量的形状。 </p>
+<p>这两段话非常重要，我们借助下面这个例子来帮助理解</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"></span><br><span class="line">x = torch.ones(<span class="number">2</span>, <span class="number">2</span>, requires_grad=<span class="literal">True</span>)</span><br><span class="line">print(x)</span><br><span class="line"></span><br><span class="line">tensor([[<span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line"> [<span class="number">1.</span>, <span class="number">1.</span>]], requires_grad=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">y = x + <span class="number">2</span></span><br><span class="line">print(y)</span><br><span class="line"></span><br><span class="line">tensor([[<span class="number">3.</span>, <span class="number">3.</span>],</span><br><span class="line"> [<span class="number">3.</span>, <span class="number">3.</span>]], grad_fn=&lt;AddBackward0&gt;)</span><br><span class="line"></span><br><span class="line">print(x.grad_fn)  <span class="comment"># None</span></span><br><span class="line">print(y.grad_fn)  <span class="comment"># y 作为操作的结果被创建，所以它有 grad_fn </span></span><br><span class="line"></span><br><span class="line"><span class="literal">None</span></span><br><span class="line">&lt;AddBackward0 object at <span class="number">0x000001F7739B1BB0</span>&gt;</span><br></pre></td></tr></table></figure>
+<p><em>每个张量都有一个 <code>.grad_fn</code>属性保存着创建了张量的 Function 的引用，（如果用户自己创建张量，则<code>grad_fn</code> 是 None ）。</em></p>
+<p>针对y做更多的操作</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">z = y*y*<span class="number">3</span></span><br><span class="line">out = z.mean()</span><br><span class="line">print(z)</span><br><span class="line">print(out)</span><br><span class="line">print(out.backward())  <span class="comment"># 这里是没有返回值的</span></span><br><span class="line">print(x.grad)  <span class="comment"># 需要先backward，才能得到x的grad</span></span><br><span class="line"></span><br><span class="line">tensor([[<span class="number">27.</span>, <span class="number">27.</span>],</span><br><span class="line">        [<span class="number">27.</span>, <span class="number">27.</span>]], grad_fn=&lt;MulBackward0&gt;)</span><br><span class="line">tensor(<span class="number">27.</span>, grad_fn=&lt;MeanBackward0&gt;)</span><br><span class="line"><span class="literal">None</span></span><br><span class="line">tensor([[<span class="number">4.5000</span>, <span class="number">4.5000</span>],</span><br><span class="line">        [<span class="number">4.5000</span>, <span class="number">4.5000</span>]])</span><br></pre></td></tr></table></figure>
+<p>这里的重点是<code>x.grad</code>的计算</p>
+<p><img src="/2023/02/11/pytorch-autograd/grad.png" alt></p>
+<p>通过这个例子，理解上面的两段话就是，这里x的requires_grad 属性为True，后续跟踪针对x的所有操作，之后调用backward自动计算所有梯度，x的梯度累积到.grad属性中。</p>
+<p>接下来我们再看一个<code>pytorch</code>自动微分的例子，如果对于张量手动计算梯度的话，代码是这样的：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">dtype = torch.float</span><br><span class="line">device = torch.device(<span class="string">"cpu"</span>)</span><br><span class="line"><span class="comment"># device = torch.device("cuda:0")  # 取消注释以在GPU上运行</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># N是批量大小，D_in是输入维度，H是隐藏层维度，D_out是输出维度</span></span><br><span class="line">N, D_in, H, D_out = <span class="number">64</span>, <span class="number">1000</span>, <span class="number">100</span>, <span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建随机输入和输出数据</span></span><br><span class="line">x = torch.randn(N, D_in, device=device, dtype=dtype)</span><br><span class="line">y = torch.randn(N, D_out, device=device, dtype=dtype)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 随机初始化权重</span></span><br><span class="line">w1 = torch.randn(D_in, H, device=device, dtype=dtype)</span><br><span class="line">w2 = torch.randn(H, D_out, device=device, dtype=dtype)</span><br><span class="line"></span><br><span class="line">learning_rate = <span class="number">1e-6</span></span><br><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> range(<span class="number">500</span>):</span><br><span class="line">    <span class="comment"># 前向传递：计算预测y</span></span><br><span class="line">    h = x.mm(w1)  <span class="comment"># mm表示tensor相乘</span></span><br><span class="line">    <span class="comment"># 将输入input张量的每个元素夹紧到区间[min, max]</span></span><br><span class="line">    h_relu = h.clamp(min=<span class="number">0</span>)</span><br><span class="line">    y_pred = h_relu.mm(w2)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 计算和打印损失</span></span><br><span class="line">    loss = (y_pred - y).pow(<span class="number">2</span>).sum().item()  <span class="comment"># 求平方和</span></span><br><span class="line">    print(t, loss)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Backprop计算w1和w2相对于损耗的梯度</span></span><br><span class="line">    grad_y_pred = <span class="number">2.0</span> * (y_pred - y)</span><br><span class="line">    grad_w2 = h_relu.t().mm(grad_y_pred)</span><br><span class="line">    grad_h_relu = grad_y_pred.mm(w2.t())</span><br><span class="line">    grad_h = grad_h_relu.clone()</span><br><span class="line">    grad_h[h &lt; <span class="number">0</span>] = <span class="number">0</span></span><br><span class="line">    grad_w1 = x.t().mm(grad_h)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 使用梯度下降更新权重</span></span><br><span class="line">    w1 -= learning_rate * grad_w1</span><br><span class="line">    w2 -= learning_rate * grad_w2</span><br></pre></td></tr></table></figure>
+<p>这段代码最核心的点在于<code>Backprop</code>部分，首先根据</p>
+<p><code>loss=(y_pred-y)^2</code></p>
+<p>容易到loss对于<code>y_pred</code>的偏导数，即<code>grad_y_pred</code></p>
+<p>而loss对于<code>w2</code>的偏导数，即<code>grad_w2</code>就稍复杂一些，涉及到矩阵求导、雅可比矩阵和链式法则。</p>
+<p>根据在网上查阅资料得到，查到一个矩阵求导相关的文章：</p>
+<p><a href="https://blog.sina.com.cn/s/blog_51c4baac0100xuww.html" target="_blank" rel="noopener">https://blog.sina.com.cn/s/blog_51c4baac0100xuww.html</a></p>
+<p>说实话没怎么看懂，以前没有学过矩阵求导。</p>
+<p>关于雅可比矩阵和链式法则：</p>
+<p><img src="/2023/02/11/pytorch-autograd/jacobian.png" alt></p>
+<p>上面的内容简而言之，雅可比矩阵是一阶偏导数以一定方式排列成的矩阵，根据求导的链式法则，(y对x的偏导)x(l对y的偏导) = (l对x的偏导)。</p>
+<p>现在可以想到</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">grad_w2 = y_pred对w2的偏导 x loss对y_pred的偏导</span><br><span class="line"></span><br><span class="line">y_pred对w2的偏导 = h_relu的转置</span><br><span class="line"></span><br><span class="line">即 grad_w2 = h_relu.t().mm(grad_y_pred)</span><br><span class="line">这里两个矩阵的前后顺序我不知道有没有什么规则，但是根据其size可以pytorch官方文档给出前后顺序是合理的</span><br><span class="line">h_relue.t()的size是(100, 64)</span><br><span class="line">grad_y_pred的size是(64, 10)</span><br><span class="line"></span><br><span class="line">grad_h_relu = loss对y_pred的偏导 x y_pred对h_relu的偏导</span><br><span class="line">y_pred对h_relue的偏导 = w2的转置</span><br><span class="line">即grad_h_relue = grad_y_pred.mm(w2.t())</span><br><span class="line">而且你看，这里相乘的两个矩阵顺序调整了，调整的原因是因为</span><br><span class="line">grad_y_pred的size是(64, 10)</span><br><span class="line">w2.t()的size是(10, 100)</span><br><span class="line">只有按照给出的位置才能得到相乘，而且正好得到(64, 100)的grad_h_relu</span><br></pre></td></tr></table></figure>
+<p>同理对于<code>loss</code>对于<code>w1</code>的偏导</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">grad_w1 = h_relu对于w1的偏导 x y_pred对h_relu的偏导 x loss对y_pred的偏导</span><br><span class="line">后两项的乘积就是grad_h_relu</span><br><span class="line">h_relue对w1的偏导 = x.t()</span><br><span class="line">而x.t()的size为(1000, 64)</span><br><span class="line">所以grad_w1 = x.t().mm(grad_h)</span><br></pre></td></tr></table></figure>
+<p>现在我们已经理解了上述求导和反向传播的过程，如果使用pytorch的自动求导，则可以利用下述方式来实现。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">dtype = torch.float</span><br><span class="line">device = torch.device(<span class="string">"cpu"</span>)</span><br><span class="line"><span class="comment"># device = torch.device("cuda:0")  # 取消注释以在GPU上运行</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># N是批量大小，D_in是输入维度，H是隐藏层维度，D_out是输出维度</span></span><br><span class="line">N, D_in, H, D_out = <span class="number">64</span>, <span class="number">1000</span>, <span class="number">100</span>, <span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建随机输入和输出数据</span></span><br><span class="line">x = torch.randn(N, D_in, device=device, dtype=dtype)</span><br><span class="line">y = torch.randn(N, D_out, device=device, dtype=dtype)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 随机初始化权重</span></span><br><span class="line">w1 = torch.randn(D_in, H, device=device, dtype=dtype, requires_grad=<span class="literal">True</span>)</span><br><span class="line">w2 = torch.randn(H, D_out, device=device, dtype=dtype, requires_grad=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">learning_rate = <span class="number">1e-6</span></span><br><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> range(<span class="number">500</span>):</span><br><span class="line">    <span class="comment"># 前向传播：使用tensors上的操作计算预测值y;</span></span><br><span class="line">    <span class="comment"># 由于w1和w2有requires_grad=True，涉及这些张量的操作将让PyTorch构建计算图，</span></span><br><span class="line">    <span class="comment"># 从而允许自动计算梯度。由于我们不再手工实现反向传播，所以不需要保留中间值的引用。</span></span><br><span class="line">    y_pred = x.mm(w1).clamp(min=<span class="number">0</span>).mm(w2)</span><br><span class="line">    <span class="comment"># 使用Tensors上的操作计算和打印丢失。</span></span><br><span class="line">    <span class="comment"># loss是一个形状为(1,)的张量</span></span><br><span class="line">    <span class="comment"># loss.item() 得到这个张量对应的python数值</span></span><br><span class="line">    loss = (y_pred - y).pow(<span class="number">2</span>).sum()</span><br><span class="line">    print(t, loss.item())</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 使用autograd计算反向传播。这个调用将计算loss对所有requires_grad=True的tensor的梯度。</span></span><br><span class="line">    <span class="comment"># 这次调用后，w1.grad和w2.grad将分别是loss对w1和w2的梯度张量。</span></span><br><span class="line">    loss.backward()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 使用梯度下降更新权重。对于这一步，我们只想对w1和w2的值进行原地改变；不想为更新阶段构建计算图，</span></span><br><span class="line">    <span class="comment"># 所以我们使用torch.no_grad()上下文管理器防止PyTorch为更新构建计算图</span></span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        w1 -= learning_rate * w1.grad</span><br><span class="line">        w2 -= learning_rate * w2.grad</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 反向传播后手动将梯度设置为零</span></span><br><span class="line">        w1.grad.zero_()</span><br><span class="line">        w2.grad.zero_()</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/pytorch/" rel="tag"># pytorch</a>
+          
+            <a href="/tags/autograd/" rel="tag"># autograd</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2023/02/04/pytorch-tensor/" rel="next" title="Pytorch中的张量学习">
+                <i class="fa fa-chevron-left"></i> Pytorch中的张量学习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2023/02/18/pytorch-loss/" rel="prev" title="Pytorch中权值初始化和损失函数">
+                Pytorch中权值初始化和损失函数 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">103</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">197</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#PyTorch的自动微分-autograd"><span class="nav-text">PyTorch的自动微分(autograd)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#计算图"><span class="nav-text">计算图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#动态图-VS-静态图"><span class="nav-text">动态图 VS 静态图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#autograd–自动求导系统"><span class="nav-text">autograd–自动求导系统</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#torch-autograd-backward方法介绍"><span class="nav-text">torch.autograd.backward方法介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#torch-autograd-grad-方法介绍"><span class="nav-text">torch.autograd.grad()方法介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#自动求导系统实现"><span class="nav-text">自动求导系统实现</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

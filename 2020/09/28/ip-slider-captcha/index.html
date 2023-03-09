@@ -97,7 +97,7 @@
 <meta property="og:image" content="http://yoursite.com/2020/09/28/ip-slider-captcha/three.png">
 <meta property="og:image" content="http://yoursite.com/2020/09/28/ip-slider-captcha/four.png">
 <meta property="og:image" content="http://yoursite.com/2020/09/28/ip-slider-captcha/five.png">
-<meta property="og:updated_time" content="2022-03-11T11:57:11.455Z">
+<meta property="og:updated_time" content="2023-03-07T13:31:57.425Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Python图像处理识别滑动验证码缺口">
 <meta name="twitter:description" content="Python图像处理识别滑动验证码缺口参考文章 OpenCV_Python模板匹配 网易易盾模板匹配近期在破解网易易盾的滑动验证码，涉及到缺口识别的问题时，由于没有经验，上网查了一些资料，发现一个比较火的方式是利用opencv的模板匹配。 模板匹配是一种在较大图像中搜索和查找模板图像位置的方法。OpenCV提供了一个函数cv2.matchTemplate()。它只是在输入图像上滑动模板图像（如在2">
@@ -372,7 +372,7 @@
 <ul>
 <li>函数使用方式：</li>
 </ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line">cv2.matchTemplata(img_big,img_temp,cv2.method)</span><br><span class="line"></span><br><span class="line">img_big:在该图上查找图像</span><br><span class="line">img_temp:待查找的图像，模板图像</span><br><span class="line">method: 模板匹配的方法</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line">cv2.matchTemplate(img_big,img_temp,cv2.method)</span><br><span class="line"></span><br><span class="line">img_big:在该图上查找图像</span><br><span class="line">img_temp:待查找的图像，模板图像</span><br><span class="line">method: 模板匹配的方法</span><br></pre></td></tr></table></figure>
 <ul>
 <li>参数method</li>
 </ul>
@@ -421,7 +421,7 @@
 <p>后来有遇到过另一个网站的图片，发现用上面的方法无法正常检测到滑块的位置，检测结果是这样的：</p>
 <p><img src="/2020/09/28/ip-slider-captcha/test2.png" alt></p>
 <p>后来从大佬那里学习到，在模板匹配之前，将图片进行一个边缘检测处理，能够提高检测的效果</p>
-<p>edges = cv.Canny( image, threshold1, threshold2[, apertureSize[, L2gradient]])</p>
+<p>edges = cv2.Canny( image, threshold1, threshold2[, apertureSize[, L2gradient]])</p>
 <p>edges 为计算得到的边缘图像。</p>
 <ul>
 <li>image 为 8 位输入图像。</li>
@@ -595,7 +595,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">97</span>
+                  <span class="site-state-item-count">103</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -606,7 +606,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -617,7 +617,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">187</span>
+                  <span class="site-state-item-count">197</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -688,7 +688,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

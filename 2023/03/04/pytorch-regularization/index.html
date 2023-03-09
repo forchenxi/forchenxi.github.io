@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="pytorch,Batch Normalization,Dropout,weight decay,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="PyTorch正则化和批标准化Regularization-正则化：减小方差的策略 误差可分为解为：偏差，方差与噪声之和，即误差=偏差+方差+噪声之和； 偏差：度量了学习算法的期望预测与真实结果的偏离程度，即刻画了学习算法本身的拟合能力；方差：度量了同样大小的训练集的变动所导致的学习性能的变化，即刻画了数据扰动所造成的影响；噪声：表达了在当前任务上任何学习算法所能达到的期望泛化误差的下界。 简而言">
+<meta name="keywords" content="pytorch,Batch Normalization,Dropout,weight decay">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PyTorch正则化和批标准化">
+<meta property="og:url" content="http://yoursite.com/2023/03/04/pytorch-regularization/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="PyTorch正则化和批标准化Regularization-正则化：减小方差的策略 误差可分为解为：偏差，方差与噪声之和，即误差=偏差+方差+噪声之和； 偏差：度量了学习算法的期望预测与真实结果的偏离程度，即刻画了学习算法本身的拟合能力；方差：度量了同样大小的训练集的变动所导致的学习性能的变化，即刻画了数据扰动所造成的影响；噪声：表达了在当前任务上任何学习算法所能达到的期望泛化误差的下界。 简而言">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2023/03/04/pytorch-regularization/p1.png">
+<meta property="og:image" content="http://yoursite.com/2023/03/04/pytorch-regularization/p2.png">
+<meta property="og:image" content="http://yoursite.com/2023/03/04/pytorch-regularization/p3.png">
+<meta property="og:image" content="http://yoursite.com/2023/03/04/pytorch-regularization/p4.png">
+<meta property="og:image" content="http://yoursite.com/2023/03/04/pytorch-regularization/p5.png">
+<meta property="og:image" content="http://yoursite.com/2023/03/04/pytorch-regularization/p6.png">
+<meta property="og:image" content="http://yoursite.com/2023/03/04/pytorch-regularization/p7.png">
+<meta property="og:image" content="http://yoursite.com/2023/03/04/pytorch-regularization/p8.png">
+<meta property="og:image" content="http://yoursite.com/2023/03/04/pytorch-regularization/p7.png">
+<meta property="og:image" content="http://yoursite.com/2023/03/04/pytorch-regularization/p9.png">
+<meta property="og:updated_time" content="2023-03-09T14:08:05.276Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PyTorch正则化和批标准化">
+<meta name="twitter:description" content="PyTorch正则化和批标准化Regularization-正则化：减小方差的策略 误差可分为解为：偏差，方差与噪声之和，即误差=偏差+方差+噪声之和； 偏差：度量了学习算法的期望预测与真实结果的偏离程度，即刻画了学习算法本身的拟合能力；方差：度量了同样大小的训练集的变动所导致的学习性能的变化，即刻画了数据扰动所造成的影响；噪声：表达了在当前任务上任何学习算法所能达到的期望泛化误差的下界。 简而言">
+<meta name="twitter:image" content="http://yoursite.com/2023/03/04/pytorch-regularization/p1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2023/03/04/pytorch-regularization/">
+
+
+
+
+
+  <title>PyTorch正则化和批标准化 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2023/03/04/pytorch-regularization/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">PyTorch正则化和批标准化</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-03-04T13:08:05+08:00">
+                2023-03-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/pytorch/" itemprop="url" rel="index">
+                    <span itemprop="name">pytorch</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="PyTorch正则化和批标准化"><a href="#PyTorch正则化和批标准化" class="headerlink" title="PyTorch正则化和批标准化"></a><code>PyTorch</code>正则化和批标准化</h2><p>Regularization-正则化：<strong>减小方差的策略</strong></p>
+<p>误差可分为解为：偏差，方差与噪声之和，即误差=偏差+方差+噪声之和；</p>
+<p><strong>偏差</strong>：度量了学习算法的期望预测与真实结果的偏离程度，即刻画了学习算法本身的拟合能力；<br><strong>方差</strong>：度量了同样大小的训练集的变动所导致的学习性能的变化，即刻画了数据扰动所造成的影响；<br><strong>噪声</strong>：表达了在当前任务上任何学习算法所能达到的期望泛化误差的下界。</p>
+<p>简而言之，偏差是指在<strong>所有训练数据</strong>上训练得到的模型性能和在真实数据上表现的差异，方差是指模型在<strong>训练集和验证集（测试集）上的差异</strong>，方差重点在于不同数据集；噪声则是指给定的数据集（其可能存在噪声），那么当前数据集的数据质量已经决定了学习性能的上限，学习的目标就是尽可能的接近这个上限。</p>
+<a id="more"></a>
+<p>举个简单的例子，我们使用一个复杂的函数去拟合下面的数据点集<br><img src="/2023/03/04/pytorch-regularization/p1.png" alt></p>
+<p>其能够完美的拟合所有训练集的点，但是测试集表现非常差，这就是高方差的典型例子，正则化就是为了降低方差。</p>
+<h3 id="L1和L2正则项"><a href="#L1和L2正则项" class="headerlink" title="L1和L2正则项"></a>L1和L2正则项</h3><p>前面我们已经知道：目标函数=代价函数+正则项<br><img src="/2023/03/04/pytorch-regularization/p2.png" alt><br>那么当我们想要优化目标函数时（使目标函数最小），同时也要优化正则项的值，L1和L2的正则化方式就是权重值计算方式不同，这里为了使得正则项的值尽可能小，所以要求权重矩阵的值也会尽可能的小，从而使得模型不会过于复杂。</p>
+<p>L2正则项：weight decay（权值衰减）<br><img src="/2023/03/04/pytorch-regularization/p3.png" alt></p>
+<p>在pytorch中，加入L2正则项后的权重值的更新与不带正则项相比，会先对w乘以(1-λ)，而0&lt;λ&lt;1，所以相当于对权重进行了一个缩小的操作，所以L2正则项被叫做权值衰减。</p>
+<p>下面我们用代码展示一下使用weight_decay和不使用的区别<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">n_hidden = <span class="number">200</span></span><br><span class="line">max_iter = <span class="number">2000</span></span><br><span class="line">disp_interval = <span class="number">200</span></span><br><span class="line">lr_init = <span class="number">0.01</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">gen_data</span><span class="params">(num_data=<span class="number">10</span>, x_range=<span class="params">(<span class="number">-1</span>, <span class="number">1</span>)</span>)</span>:</span></span><br><span class="line">    w = <span class="number">1.5</span></span><br><span class="line">    train_x = torch.linspace(*x_range, num_data).unsqueeze_(<span class="number">1</span>)</span><br><span class="line">    train_y = w*train_x + torch.normal(<span class="number">0</span>, <span class="number">0.5</span>, size=train_x.size())</span><br><span class="line">    test_x = torch.linspace(*x_range, num_data).unsqueeze_(<span class="number">1</span>)</span><br><span class="line">    test_y = w*test_x + torch.normal(<span class="number">0</span>, <span class="number">0.3</span>, size=test_x.size())</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> train_x, train_y, test_x, test_y</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">train_x, train_y, test_x, test_y = gen_data(x_range=(<span class="number">-1</span>, <span class="number">1</span>))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MLP</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, neural_num)</span>:</span></span><br><span class="line">        super(MLP, self).__init__()</span><br><span class="line">        self.linears = nn.Sequential(</span><br><span class="line">            nn.Linear(<span class="number">1</span>, neural_num),</span><br><span class="line">            nn.ReLU(inplace=<span class="literal">True</span>),</span><br><span class="line">            nn.Linear(neural_num, neural_num),</span><br><span class="line">            nn.ReLU(inplace=<span class="literal">True</span>),</span><br><span class="line">            nn.Linear(neural_num, neural_num),</span><br><span class="line">            nn.ReLU(inplace=<span class="literal">True</span>),</span><br><span class="line">            nn.Linear(neural_num, <span class="number">1</span>),</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.linears(x)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">net_normal = MLP(neural_num=n_hidden)</span><br><span class="line">net_weight_decay = MLP(neural_num=n_hidden)</span><br><span class="line"></span><br><span class="line">optim_normal = torch.optim.SGD(net_normal.parameters(), lr=lr_init, momentum=<span class="number">0.9</span>)</span><br><span class="line"><span class="comment"># 区别就在于weight_decay参数，λ=1e-2</span></span><br><span class="line">optim_wdecay = torch.optim.SGD(net_weight_decay.parameters(), lr=lr_init, momentum=<span class="number">0.9</span>, weight_decay=<span class="number">1e-2</span>)</span><br><span class="line"></span><br><span class="line">loss_func = torch.nn.MSELoss()</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> range(max_iter):</span><br><span class="line">    <span class="comment"># forward</span></span><br><span class="line">    pred_normal, pred_wdecay = net_normal(train_x), net_weight_decay(train_x)</span><br><span class="line">    loss_normal, loss_wdecay = loss_func(pred_normal, train_y), loss_func(pred_wdecay, train_y)</span><br><span class="line"></span><br><span class="line">    optim_normal.zero_grad()</span><br><span class="line">    optim_wdecay.zero_grad()</span><br><span class="line"></span><br><span class="line">    loss_normal.backward()</span><br><span class="line">    loss_wdecay.backward()</span><br><span class="line"></span><br><span class="line">    optim_normal.step()</span><br><span class="line">    optim_wdecay.step()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (epoch + <span class="number">1</span>) % disp_interval == <span class="number">0</span>:</span><br><span class="line"></span><br><span class="line">        test_pred_normal, test_pred_wdecay = net_normal(test_x), net_weight_decay(test_x)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 绘图</span></span><br><span class="line">        plt.scatter(train_x.data.numpy(), train_y.data.numpy(), c=<span class="string">'blue'</span>, s=<span class="number">50</span>, alpha=<span class="number">0.3</span>, label=<span class="string">'train'</span>)</span><br><span class="line">        plt.scatter(test_y.data.numpy(), test_y.data.numpy(), c=<span class="string">'red'</span>, s=<span class="number">50</span>, alpha=<span class="number">0.3</span>, label=<span class="string">'test'</span>)</span><br><span class="line">        plt.plot(test_x.data.numpy(), test_pred_normal.data.numpy(), <span class="string">'r-'</span>, lw=<span class="number">3</span>, label=<span class="string">'no weight decay'</span>)</span><br><span class="line">        plt.plot(test_x.data.numpy(), test_pred_wdecay.data.numpy(), <span class="string">'b--'</span>, lw=<span class="number">3</span>, label=<span class="string">'weight decay'</span>)</span><br><span class="line">        plt.text(<span class="number">-0.25</span>, <span class="number">-0.15</span>, <span class="string">'no weight decay loss=&#123;:.6f&#125;'</span>.format(loss_normal.item()),</span><br><span class="line">                 fontdict=&#123;<span class="string">'size'</span>: <span class="number">15</span>, <span class="string">'color'</span>: <span class="string">'red'</span>&#125;)</span><br><span class="line">        plt.text(<span class="number">-0.25</span>, <span class="number">-2</span>, <span class="string">'weight decay loss=&#123;:.6f&#125;'</span>.format(loss_wdecay.item()),</span><br><span class="line">                 fontdict=&#123;<span class="string">'size'</span>: <span class="number">15</span>, <span class="string">'color'</span>: <span class="string">'red'</span>&#125;)</span><br><span class="line"></span><br><span class="line">        plt.ylim(<span class="number">-2.5</span>, <span class="number">2.5</span>)</span><br><span class="line">        plt.legend(loc=<span class="string">'upper left'</span>)</span><br><span class="line">        plt.title(<span class="string">"Epoch: &#123;&#125;"</span>.format(epoch+<span class="number">1</span>))</span><br><span class="line">        plt.show()</span><br><span class="line">        plt.close()</span><br></pre></td></tr></table></figure></p>
+<p><img src="/2023/03/04/pytorch-regularization/p4.png" alt><br>可以看到如果不使用weight decay，损失降到一个非常非常小的值，已经过拟合了，在测试集上效果并不好；而加了weight decay之后，损失相比之前略大一些，但是在这个例子中依然是过拟合的，不过相比之前略有缓解，蓝色的曲线相比红色也稍微平缓一些，也就是说仅靠weight decay并不是都能显著的优化所有问题。</p>
+<h3 id="Dropout：随机失活"><a href="#Dropout：随机失活" class="headerlink" title="Dropout：随机失活"></a>Dropout：随机失活</h3><p>功能：避免结果过度依赖某个神经元。通过设置参数p，确定网络中被舍弃的神经元数量，如p=0.3,有30%的神经元会失活（被舍弃）。</p>
+<p>参考文献：<code>《Dropout：A simple way to prevent neural networks from overfitting》</code><br>在以前的这一篇博客中也有对正则化进行解释：<a href="https://forchenxi.github.io/2021/01/26/dl-basics/" target="_blank" rel="noopener">https://forchenxi.github.io/2021/01/26/dl-basics/</a></p>
+<p>在这片博客中也有记录，由于训练时使用了dropout， 而测试时没有单元被舍弃，而该层的输出值需要<strong>按 dropout 比率缩小</strong>，因为这时比训练时有更多的单元被激活，需要加以平衡。 </p>
+<p>比如p=0.3，那么需要将输出值乘以(1-p)=0.7才可以与训练时一致，而<code>pytorch</code>实际实现时，在训练时权重均乘以[1/(1-p)]，即除以(1-p)来增大权重，从而在测试时不需要再乘以(1-p)。</p>
+<p>下面我们通过代码来观察<code>pytorch</code>中这一实现细节</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Net</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, neural_num, d_prob=<span class="number">0.5</span>)</span>:</span></span><br><span class="line">        super(Net, self).__init__()</span><br><span class="line">        self.linears = nn.Sequential(</span><br><span class="line">            nn.Dropout(d_prob),</span><br><span class="line">            nn.Linear(neural_num, <span class="number">1</span>, bias=<span class="literal">False</span>),</span><br><span class="line">            nn.ReLU(inplace=<span class="literal">True</span>)</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.linears(x)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">input_num = <span class="number">10000</span></span><br><span class="line">x = torch.ones((input_num, ), dtype=torch.float32)</span><br><span class="line"></span><br><span class="line">net = Net(input_num, d_prob=<span class="number">0.5</span>)</span><br><span class="line">net.linears[<span class="number">1</span>].weight.detach().fill_(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">net.train()</span><br><span class="line">y = net(x)</span><br><span class="line">print(<span class="string">"output in training mode"</span>, y)</span><br><span class="line"></span><br><span class="line">net.eval()</span><br><span class="line">y = net(x)</span><br><span class="line">print(<span class="string">"output in eval mode"</span>, y)</span><br><span class="line"></span><br><span class="line">output <span class="keyword">in</span> training mode tensor([<span class="number">9994.</span>], grad_fn=&lt;ReluBackward1&gt;)</span><br><span class="line">output <span class="keyword">in</span> eval mode tensor([<span class="number">10000.</span>], grad_fn=&lt;ReluBackward1&gt;)</span><br></pre></td></tr></table></figure>
+<p>这里面的输入x是1万个1（相当于1万个神经元），并且权重也为1，输入到线性层前就先dropout(0.5)，那么理论上有5000个神经元失去活性，训练的输出应该为5000，但是实际为9994（约为1万，每次运行都会变化），这就是因为<code>pytorch</code>在使得部分神经元失去活性时，将权重值增加了二倍（这里是除以(1-0.5)，等价于乘以2）。</p>
+<p>下面是对比使用dropout和不使用模型结果，与weight decay效果类似。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">n_hidden = <span class="number">200</span></span><br><span class="line">max_iter = <span class="number">2000</span></span><br><span class="line">disp_interval = <span class="number">200</span></span><br><span class="line">lr_init = <span class="number">0.01</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">gen_data</span><span class="params">(num_data=<span class="number">10</span>, x_range=<span class="params">(<span class="number">-1</span>, <span class="number">1</span>)</span>)</span>:</span></span><br><span class="line">    w = <span class="number">1.5</span></span><br><span class="line">    train_x = torch.linspace(*x_range, num_data).unsqueeze_(<span class="number">1</span>)</span><br><span class="line">    train_y = w*train_x + torch.normal(<span class="number">0</span>, <span class="number">0.5</span>, size=train_x.size())</span><br><span class="line">    test_x = torch.linspace(*x_range, num_data).unsqueeze_(<span class="number">1</span>)</span><br><span class="line">    test_y = w*test_x + torch.normal(<span class="number">0</span>, <span class="number">0.3</span>, size=test_x.size())</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> train_x, train_y, test_x, test_y</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">train_x, train_y, test_x, test_y = gen_data(x_range=(<span class="number">-1</span>, <span class="number">1</span>))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MLP</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, neural_num, d_prob=<span class="number">0.5</span>)</span>:</span></span><br><span class="line">        super(MLP, self).__init__()</span><br><span class="line">        self.linears = nn.Sequential(</span><br><span class="line">            nn.Linear(<span class="number">1</span>, neural_num),</span><br><span class="line">            nn.ReLU(inplace=<span class="literal">True</span>),</span><br><span class="line"></span><br><span class="line">            nn.Dropout(d_prob),</span><br><span class="line">            nn.Linear(neural_num, neural_num),</span><br><span class="line">            nn.ReLU(inplace=<span class="literal">True</span>),</span><br><span class="line"></span><br><span class="line">            nn.Dropout(d_prob),</span><br><span class="line">            nn.Linear(neural_num, neural_num),</span><br><span class="line">            nn.ReLU(inplace=<span class="literal">True</span>),</span><br><span class="line"></span><br><span class="line">            nn.Dropout(d_prob),</span><br><span class="line">            nn.Linear(neural_num, <span class="number">1</span>),</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.linears(x)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">net_normal = MLP(neural_num=n_hidden, d_prob=<span class="number">0</span>)</span><br><span class="line">net_dropout = MLP(neural_num=n_hidden, d_prob=<span class="number">0.5</span>)</span><br><span class="line"></span><br><span class="line">optim_normal = torch.optim.SGD(net_normal.parameters(), lr=lr_init, momentum=<span class="number">0.9</span>)</span><br><span class="line">optim_dropout = torch.optim.SGD(net_dropout.parameters(), lr=lr_init, momentum=<span class="number">0.9</span>)</span><br><span class="line"></span><br><span class="line">loss_func = torch.nn.MSELoss()</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> range(max_iter):</span><br><span class="line">    <span class="comment"># forward</span></span><br><span class="line">    pred_normal, pred_dropout = net_normal(train_x), net_dropout(train_x)</span><br><span class="line">    loss_normal, loss_dropout = loss_func(pred_normal, train_y), loss_func(pred_dropout, train_y)</span><br><span class="line"></span><br><span class="line">    optim_normal.zero_grad()</span><br><span class="line">    optim_dropout.zero_grad()</span><br><span class="line"></span><br><span class="line">    loss_normal.backward()</span><br><span class="line">    loss_dropout.backward()</span><br><span class="line"></span><br><span class="line">    optim_normal.step()</span><br><span class="line">    optim_dropout.step()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (epoch + <span class="number">1</span>) % disp_interval == <span class="number">0</span>:</span><br><span class="line">        net_normal.eval()</span><br><span class="line">        net_dropout.eval()</span><br><span class="line"></span><br><span class="line">        test_pred_normal, test_pred_wdecay = net_normal(test_x), net_dropout(test_x)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 绘图</span></span><br><span class="line">        plt.scatter(train_x.data.numpy(), train_y.data.numpy(), c=<span class="string">'blue'</span>, s=<span class="number">50</span>, alpha=<span class="number">0.3</span>, label=<span class="string">'train'</span>)</span><br><span class="line">        plt.scatter(test_y.data.numpy(), test_y.data.numpy(), c=<span class="string">'red'</span>, s=<span class="number">50</span>, alpha=<span class="number">0.3</span>, label=<span class="string">'test'</span>)</span><br><span class="line">        plt.plot(test_x.data.numpy(), test_pred_normal.data.numpy(), <span class="string">'r-'</span>, lw=<span class="number">3</span>, label=<span class="string">'no dropout'</span>)</span><br><span class="line">        plt.plot(test_x.data.numpy(), test_pred_wdecay.data.numpy(), <span class="string">'b--'</span>, lw=<span class="number">3</span>, label=<span class="string">'dropout'</span>)</span><br><span class="line">        plt.text(<span class="number">-0.25</span>, <span class="number">-0.15</span>, <span class="string">'no dropout loss=&#123;:.6f&#125;'</span>.format(loss_normal.item()),</span><br><span class="line">                 fontdict=&#123;<span class="string">'size'</span>: <span class="number">15</span>, <span class="string">'color'</span>: <span class="string">'red'</span>&#125;)</span><br><span class="line">        plt.text(<span class="number">-0.25</span>, <span class="number">-2</span>, <span class="string">'dropout loss=&#123;:.6f&#125;'</span>.format(loss_dropout.item()),</span><br><span class="line">                 fontdict=&#123;<span class="string">'size'</span>: <span class="number">15</span>, <span class="string">'color'</span>: <span class="string">'red'</span>&#125;)</span><br><span class="line"></span><br><span class="line">        plt.ylim(<span class="number">-2.5</span>, <span class="number">2.5</span>)</span><br><span class="line">        plt.legend(loc=<span class="string">'upper left'</span>)</span><br><span class="line">        plt.title(<span class="string">"Epoch: &#123;&#125;"</span>.format(epoch+<span class="number">1</span>))</span><br><span class="line">        plt.show()</span><br><span class="line">        plt.close()</span><br><span class="line"></span><br><span class="line">        net_normal.train()</span><br><span class="line">        net_dropout.train()</span><br></pre></td></tr></table></figure>
+<p>这里的注意点：</p>
+<ol>
+<li>dropout加在激活函数层之后，下一层网络层之前；</li>
+<li>最后一层输出之前要看情况增加dropout，对于简单的任务可以添加，复杂的任务可以不加；</li>
+<li>务必使用<code>net.eval()</code>和<code>net.train()</code>区分模型测试和训练。</li>
+</ol>
+<p><img src="/2023/03/04/pytorch-regularization/p5.png" alt></p>
+<h3 id="Batch-Normalization"><a href="#Batch-Normalization" class="headerlink" title="Batch Normalization"></a>Batch Normalization</h3><p>批：一批数据，通常为mini-batch</p>
+<p>标准化：0均值，1方差</p>
+<p>优点：</p>
+<ol>
+<li>可以用更大学习率，加速模型收敛；</li>
+<li>可以不用精心设计权值初始化；</li>
+<li>可以不用dropout或使用较小的dropout；</li>
+<li>可以不用<code>L2</code>或者使用较小的weight decay；</li>
+<li>可以不用<code>LRN</code>（local response normalization）。</li>
+</ol>
+<p>参考论文：《Batch Normalization Accelerating Deep Network Training by Reducing Internal Covariate Shift》</p>
+<p>在<code>Pytorch</code>中Batch Normalization的实现方式</p>
+<p>affine transform是指公式中增加了γ和β的计算方式</p>
+<p><img src="/2023/03/04/pytorch-regularization/p6.png" alt></p>
+<p>通过提出Batch Normalization的论文标题，我们可以知道其是为了解决<code>ICS</code>问题，我们在权值初始化部分就已经了解到：</p>
+<p>下一层神经元的输出值方差与三个因素有关，(1)每一层神经元的数量；(2)输入值x的方差；(3)权重矩阵W的方差。</p>
+<p>如果想要<strong>控制神经元的输出值方差为1</strong>，我们可以保证X的方差为1，若想要消掉n，那就是要W的方差为1/n。</p>
+<p>而这里面通过增加Batch Normalization层，可以直接将每一层的输出进行归一化，从而无需精心设计权值初始化。但是其不仅解决了这一问题，还带来了其他优点。</p>
+<p>下面我们通过代码来观察<code>BN</code>层的效果，还记得在权值初始化的部分，我们使用一个一百层的网络，并且加上激活函数，假设激活函数为<code>Relu</code>，如果我们不进行权值初始化，那么随着网络的加深，输出值会变成无穷小，如果我们对权值初始化的方法是将均值设置为0，方差设置为1，那么随着网络的加深，输出值会变成无穷大。解决这一问题是使用<code>Kaiming</code>初始化方法。那么如果我们直接使用<code>BN</code>层，结果会怎么样呢？</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MLP</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, neural_num, layers)</span>:</span></span><br><span class="line">        super(MLP, self).__init__()</span><br><span class="line">        self.linears = nn.ModuleList([nn.Linear(neural_num, neural_num, bias=<span class="literal">False</span>) <span class="keyword">for</span> i <span class="keyword">in</span> range(layers)])</span><br><span class="line">        self.bns = nn.ModuleList([nn.BatchNorm1d(neural_num) <span class="keyword">for</span> i <span class="keyword">in</span> range(layers)])</span><br><span class="line">        self.neural_num = neural_num</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x)</span>:</span></span><br><span class="line">        <span class="keyword">for</span> (i, linear), bn <span class="keyword">in</span> zip(enumerate(self.linears), self.bns):</span><br><span class="line">            x = linear(x)</span><br><span class="line">            x = bn(x)</span><br><span class="line">            x = torch.relu(x)</span><br><span class="line"></span><br><span class="line">            print(<span class="string">"layer:&#123;&#125;, std:&#123;&#125;"</span>.format(i, x.std().item()))</span><br><span class="line">            <span class="keyword">if</span> torch.isnan(x.std()):</span><br><span class="line">                print(<span class="string">"output is nan in &#123;&#125; layers"</span>.format(i))</span><br><span class="line">        <span class="keyword">return</span> x</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">initialize</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">for</span> m <span class="keyword">in</span> self.modules():</span><br><span class="line">            <span class="keyword">if</span> isinstance(m, nn.Linear):</span><br><span class="line">                nn.init.normal_(m.weight.data, std=<span class="number">1</span>)  <span class="comment"># 权值初始化，normal：mean=0, std=1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">layer_nums = <span class="number">100</span></span><br><span class="line">neural_nums = <span class="number">256</span></span><br><span class="line">batch_size = <span class="number">16</span></span><br><span class="line"></span><br><span class="line">net = MLP(neural_nums, layer_nums)</span><br><span class="line"><span class="comment"># net.initialize()</span></span><br><span class="line"></span><br><span class="line">inputs = torch.randn((batch_size, neural_nums))  <span class="comment"># normal:mean=0, std=1</span></span><br><span class="line"></span><br><span class="line">output = net(inputs)</span><br><span class="line">print(output)</span><br><span class="line"></span><br><span class="line">layer:<span class="number">0</span>, std:<span class="number">0.5796152353286743</span></span><br><span class="line">layer:<span class="number">1</span>, std:<span class="number">0.5745875239372253</span></span><br><span class="line">layer:<span class="number">2</span>, std:<span class="number">0.5795402526855469</span></span><br><span class="line">layer:<span class="number">3</span>, std:<span class="number">0.5850275754928589</span></span><br><span class="line">layer:<span class="number">4</span>, std:<span class="number">0.5842188000679016</span></span><br><span class="line">layer:<span class="number">5</span>, std:<span class="number">0.5847610235214233</span></span><br><span class="line">layer:<span class="number">6</span>, std:<span class="number">0.5782239437103271</span></span><br><span class="line">layer:<span class="number">7</span>, std:<span class="number">0.581341028213501</span></span><br><span class="line">layer:<span class="number">8</span>, std:<span class="number">0.5796911120414734</span></span><br><span class="line">layer:<span class="number">9</span>, std:<span class="number">0.5714531540870667</span></span><br><span class="line">layer:<span class="number">10</span>, std:<span class="number">0.5831667184829712</span></span><br><span class="line">layer:<span class="number">11</span>, std:<span class="number">0.5859699845314026</span></span><br><span class="line">layer:<span class="number">12</span>, std:<span class="number">0.5871317386627197</span></span><br><span class="line">layer:<span class="number">13</span>, std:<span class="number">0.5875120162963867</span></span><br><span class="line">layer:<span class="number">14</span>, std:<span class="number">0.5781294703483582</span></span><br><span class="line">layer:<span class="number">15</span>, std:<span class="number">0.5813595056533813</span></span><br><span class="line">layer:<span class="number">16</span>, std:<span class="number">0.5856006741523743</span></span><br><span class="line">layer:<span class="number">17</span>, std:<span class="number">0.5829628705978394</span></span><br><span class="line">layer:<span class="number">18</span>, std:<span class="number">0.583267331123352</span></span><br><span class="line">layer:<span class="number">19</span>, std:<span class="number">0.5759429335594177</span></span><br><span class="line">layer:<span class="number">20</span>, std:<span class="number">0.5787518620491028</span></span><br><span class="line">layer:<span class="number">21</span>, std:<span class="number">0.578492283821106</span></span><br><span class="line">layer:<span class="number">22</span>, std:<span class="number">0.5798740983009338</span></span><br><span class="line">layer:<span class="number">23</span>, std:<span class="number">0.5826079845428467</span></span><br><span class="line">layer:<span class="number">24</span>, std:<span class="number">0.579326331615448</span></span><br><span class="line">layer:<span class="number">25</span>, std:<span class="number">0.5835700035095215</span></span><br><span class="line">layer:<span class="number">26</span>, std:<span class="number">0.5793125629425049</span></span><br><span class="line">layer:<span class="number">27</span>, std:<span class="number">0.5870218276977539</span></span><br><span class="line">layer:<span class="number">28</span>, std:<span class="number">0.5808523893356323</span></span><br><span class="line">layer:<span class="number">29</span>, std:<span class="number">0.5779549479484558</span></span><br><span class="line">layer:<span class="number">30</span>, std:<span class="number">0.5786218643188477</span></span><br><span class="line">layer:<span class="number">31</span>, std:<span class="number">0.5852407813072205</span></span><br><span class="line">layer:<span class="number">32</span>, std:<span class="number">0.5794293284416199</span></span><br><span class="line">layer:<span class="number">33</span>, std:<span class="number">0.5772526264190674</span></span><br><span class="line">layer:<span class="number">34</span>, std:<span class="number">0.5792600512504578</span></span><br><span class="line">layer:<span class="number">35</span>, std:<span class="number">0.57660973072052</span></span><br><span class="line">layer:<span class="number">36</span>, std:<span class="number">0.5861477255821228</span></span><br><span class="line">layer:<span class="number">37</span>, std:<span class="number">0.5828843712806702</span></span><br><span class="line">layer:<span class="number">38</span>, std:<span class="number">0.5732689499855042</span></span><br><span class="line">layer:<span class="number">39</span>, std:<span class="number">0.5755131244659424</span></span><br><span class="line">layer:<span class="number">40</span>, std:<span class="number">0.5850638747215271</span></span><br><span class="line">layer:<span class="number">41</span>, std:<span class="number">0.5886902809143066</span></span><br><span class="line">layer:<span class="number">42</span>, std:<span class="number">0.5821707248687744</span></span><br><span class="line">layer:<span class="number">43</span>, std:<span class="number">0.5828768610954285</span></span><br><span class="line">layer:<span class="number">44</span>, std:<span class="number">0.580696165561676</span></span><br><span class="line">layer:<span class="number">45</span>, std:<span class="number">0.5808108448982239</span></span><br><span class="line">layer:<span class="number">46</span>, std:<span class="number">0.5827391147613525</span></span><br><span class="line">layer:<span class="number">47</span>, std:<span class="number">0.5824262499809265</span></span><br><span class="line">layer:<span class="number">48</span>, std:<span class="number">0.588381290435791</span></span><br><span class="line">layer:<span class="number">49</span>, std:<span class="number">0.5857555270195007</span></span><br><span class="line">layer:<span class="number">50</span>, std:<span class="number">0.5782690048217773</span></span><br><span class="line">layer:<span class="number">51</span>, std:<span class="number">0.5782979130744934</span></span><br><span class="line">layer:<span class="number">52</span>, std:<span class="number">0.5855977535247803</span></span><br><span class="line">layer:<span class="number">53</span>, std:<span class="number">0.5771430134773254</span></span><br><span class="line">layer:<span class="number">54</span>, std:<span class="number">0.5811037421226501</span></span><br><span class="line">layer:<span class="number">55</span>, std:<span class="number">0.5774182081222534</span></span><br><span class="line">layer:<span class="number">56</span>, std:<span class="number">0.576210081577301</span></span><br><span class="line">layer:<span class="number">57</span>, std:<span class="number">0.5849117636680603</span></span><br><span class="line">layer:<span class="number">58</span>, std:<span class="number">0.5800071358680725</span></span><br><span class="line">layer:<span class="number">59</span>, std:<span class="number">0.5711342096328735</span></span><br><span class="line">layer:<span class="number">60</span>, std:<span class="number">0.5826748013496399</span></span><br><span class="line">layer:<span class="number">61</span>, std:<span class="number">0.5790402889251709</span></span><br><span class="line">layer:<span class="number">62</span>, std:<span class="number">0.5807961821556091</span></span><br><span class="line">layer:<span class="number">63</span>, std:<span class="number">0.5845107436180115</span></span><br><span class="line">layer:<span class="number">64</span>, std:<span class="number">0.5811431407928467</span></span><br><span class="line">layer:<span class="number">65</span>, std:<span class="number">0.5827465653419495</span></span><br><span class="line">layer:<span class="number">66</span>, std:<span class="number">0.574585497379303</span></span><br><span class="line">layer:<span class="number">67</span>, std:<span class="number">0.5787656307220459</span></span><br><span class="line">layer:<span class="number">68</span>, std:<span class="number">0.5741402506828308</span></span><br><span class="line">layer:<span class="number">69</span>, std:<span class="number">0.5793603658676147</span></span><br><span class="line">layer:<span class="number">70</span>, std:<span class="number">0.5839018821716309</span></span><br><span class="line">layer:<span class="number">71</span>, std:<span class="number">0.5750216841697693</span></span><br><span class="line">layer:<span class="number">72</span>, std:<span class="number">0.5750212073326111</span></span><br><span class="line">layer:<span class="number">73</span>, std:<span class="number">0.5816949009895325</span></span><br><span class="line">layer:<span class="number">74</span>, std:<span class="number">0.5811253190040588</span></span><br><span class="line">layer:<span class="number">75</span>, std:<span class="number">0.5786153078079224</span></span><br><span class="line">layer:<span class="number">76</span>, std:<span class="number">0.5847783088684082</span></span><br><span class="line">layer:<span class="number">77</span>, std:<span class="number">0.5907210111618042</span></span><br><span class="line">layer:<span class="number">78</span>, std:<span class="number">0.5834577083587646</span></span><br><span class="line">layer:<span class="number">79</span>, std:<span class="number">0.582155168056488</span></span><br><span class="line">layer:<span class="number">80</span>, std:<span class="number">0.580101728439331</span></span><br><span class="line">layer:<span class="number">81</span>, std:<span class="number">0.5777758955955505</span></span><br><span class="line">layer:<span class="number">82</span>, std:<span class="number">0.5898699164390564</span></span><br><span class="line">layer:<span class="number">83</span>, std:<span class="number">0.5831481218338013</span></span><br><span class="line">layer:<span class="number">84</span>, std:<span class="number">0.5863946080207825</span></span><br><span class="line">layer:<span class="number">85</span>, std:<span class="number">0.5819058418273926</span></span><br><span class="line">layer:<span class="number">86</span>, std:<span class="number">0.581623911857605</span></span><br><span class="line">layer:<span class="number">87</span>, std:<span class="number">0.5792952179908752</span></span><br><span class="line">layer:<span class="number">88</span>, std:<span class="number">0.5813907384872437</span></span><br><span class="line">layer:<span class="number">89</span>, std:<span class="number">0.5782536268234253</span></span><br><span class="line">layer:<span class="number">90</span>, std:<span class="number">0.5813661813735962</span></span><br><span class="line">layer:<span class="number">91</span>, std:<span class="number">0.5820697546005249</span></span><br><span class="line">layer:<span class="number">92</span>, std:<span class="number">0.5799959301948547</span></span><br><span class="line">layer:<span class="number">93</span>, std:<span class="number">0.582518994808197</span></span><br><span class="line">layer:<span class="number">94</span>, std:<span class="number">0.5747638940811157</span></span><br><span class="line">layer:<span class="number">95</span>, std:<span class="number">0.5797438621520996</span></span><br><span class="line">layer:<span class="number">96</span>, std:<span class="number">0.5727812051773071</span></span><br><span class="line">layer:<span class="number">97</span>, std:<span class="number">0.5827062726020813</span></span><br><span class="line">layer:<span class="number">98</span>, std:<span class="number">0.579717755317688</span></span><br><span class="line">layer:<span class="number">99</span>, std:<span class="number">0.5822470188140869</span></span><br><span class="line">tensor([[<span class="number">0.0000</span>, <span class="number">0.6569</span>, <span class="number">0.0000</span>,  ..., <span class="number">0.0000</span>, <span class="number">0.0689</span>, <span class="number">0.0000</span>],</span><br><span class="line">        [<span class="number">0.0000</span>, <span class="number">0.0000</span>, <span class="number">0.0000</span>,  ..., <span class="number">1.5117</span>, <span class="number">0.1704</span>, <span class="number">0.6553</span>],</span><br><span class="line">        [<span class="number">0.0000</span>, <span class="number">1.0320</span>, <span class="number">0.0000</span>,  ..., <span class="number">0.0000</span>, <span class="number">0.1096</span>, <span class="number">0.3853</span>],</span><br><span class="line">        ...,</span><br><span class="line">        [<span class="number">0.0000</span>, <span class="number">0.6230</span>, <span class="number">0.5919</span>,  ..., <span class="number">1.2431</span>, <span class="number">0.0000</span>, <span class="number">1.3492</span>],</span><br><span class="line">        [<span class="number">0.9983</span>, <span class="number">1.6383</span>, <span class="number">0.0000</span>,  ..., <span class="number">0.0000</span>, <span class="number">0.6400</span>, <span class="number">2.0306</span>],</span><br><span class="line">        [<span class="number">0.5393</span>, <span class="number">1.0941</span>, <span class="number">0.0000</span>,  ..., <span class="number">0.0000</span>, <span class="number">0.0000</span>, <span class="number">0.0857</span>]],</span><br><span class="line">       grad_fn=&lt;ReluBackward0&gt;)</span><br></pre></td></tr></table></figure>
+<p>通过结果可以发现，无论是否对权值进行初始化，或者怎么样的初始化方法，只要使用了<code>BN</code>层，网络的输出方差就会处于一个非常稳定的值。</p>
+<h4 id="Pytorch中的-BatchNorm"><a href="#Pytorch中的-BatchNorm" class="headerlink" title="Pytorch中的_BatchNorm"></a><code>Pytorch</code>中的<code>_BatchNorm</code></h4><ul>
+<li><code>nn.BatchNorm1d</code></li>
+<li><code>nn.BatchNorm2d</code></li>
+<li><p><code>nn.BatchNorm3d</code></p>
+<p>参数：</p>
+</li>
+<li><p><code>num_features</code>：一个样本特征数量（最重要）</p>
+</li>
+<li><code>eps</code>：分母修正项</li>
+<li>momentum：指数加权平均估计当前mean/var</li>
+<li>affine：是否需要affine transform</li>
+<li>track_running_stats：是训练状态，还是测试状态</li>
+</ul>
+<p>主要属性：</p>
+<ul>
+<li>running_mean：均值</li>
+<li>running_var：方差</li>
+<li><code>weight</code>：affine transform中的gamma（γ）</li>
+<li><code>bias</code>：affine transform中的beta（β）</li>
+</ul>
+<p><img src="/2023/03/04/pytorch-regularization/p7.png" alt></p>
+<p>这里的weight和bias是在训练中学习的，均值和方差在测试时，为当前的统计值，在训练时采用指数加权平均计算：</p>
+<p><code>running_mean = (1-momentum) * pre_running_mean + momentum * mean_t</code></p>
+<p><code>running_var = (1-momentum) * pre_running_var + momentum * var_t</code></p>
+<p><code>pre_running_mean</code>表示上一时刻的均值，<code>mean_t</code>表示当前时刻的均值。</p>
+<p><code>1d</code>、<code>2d</code>和<code>3d</code>的区别和使用</p>
+<p><img src="/2023/03/04/pytorch-regularization/p8.png" alt></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># nn.BatchNorm1d</span></span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">batch_size = <span class="number">3</span>  <span class="comment"># 一个批次三个样本</span></span><br><span class="line">num_features = <span class="number">5</span>  <span class="comment"># 每个样本有5个特征</span></span><br><span class="line">momentum = <span class="number">0.3</span></span><br><span class="line"></span><br><span class="line">features_shape = (<span class="number">1</span>)  <span class="comment"># 每个特征是1d的张量，且长度为1</span></span><br><span class="line"></span><br><span class="line">feature_map = torch.ones(features_shape)</span><br><span class="line">feature_maps = torch.stack([feature_map*(i+<span class="number">1</span>) <span class="keyword">for</span> i <span class="keyword">in</span> range(num_features)], dim=<span class="number">0</span>)</span><br><span class="line">feature_maps_bs = torch.stack([feature_maps <span class="keyword">for</span> i <span class="keyword">in</span> range(batch_size)], dim=<span class="number">0</span>)</span><br><span class="line">print(<span class="string">"input data: \n&#123;&#125; shape is &#123;&#125;"</span>.format(feature_maps_bs, feature_maps_bs.shape))</span><br><span class="line"></span><br><span class="line">bn = nn.BatchNorm1d(num_features, momentum=momentum)</span><br><span class="line">running_mean, running_var = <span class="number">0</span>, <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">2</span>):</span><br><span class="line">    outputs = bn(feature_maps_bs)</span><br><span class="line">    print(<span class="string">"\niteration: &#123;&#125;, running mean: &#123;&#125;"</span>.format(i, bn.running_mean))</span><br><span class="line">    print(<span class="string">"iteration: &#123;&#125;, running var: &#123;&#125;"</span>.format(i, bn.running_var))</span><br><span class="line"></span><br><span class="line">    mean_t, var_t = <span class="number">2</span>, <span class="number">0</span></span><br><span class="line">    running_mean = (<span class="number">1</span>-momentum) * running_mean + momentum * mean_t</span><br><span class="line">    running_var = (<span class="number">1</span>-momentum) * running_var + momentum * var_t</span><br><span class="line"></span><br><span class="line">    print(<span class="string">"iteration: &#123;&#125;, 第二个特征的running mean: &#123;&#125;"</span>.format(i, running_mean))</span><br><span class="line">    print(<span class="string">"iteration: &#123;&#125;, 第二个特征的running var: &#123;&#125;"</span>.format(i, running_var))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">input data: </span><br><span class="line">tensor([[[<span class="number">1.</span>],</span><br><span class="line">         [<span class="number">2.</span>],</span><br><span class="line">         [<span class="number">3.</span>],</span><br><span class="line">         [<span class="number">4.</span>],</span><br><span class="line">         [<span class="number">5.</span>]],</span><br><span class="line"></span><br><span class="line">        [[<span class="number">1.</span>],</span><br><span class="line">         [<span class="number">2.</span>],</span><br><span class="line">         [<span class="number">3.</span>],</span><br><span class="line">         [<span class="number">4.</span>],</span><br><span class="line">         [<span class="number">5.</span>]],</span><br><span class="line"></span><br><span class="line">        [[<span class="number">1.</span>],</span><br><span class="line">         [<span class="number">2.</span>],</span><br><span class="line">         [<span class="number">3.</span>],</span><br><span class="line">         [<span class="number">4.</span>],</span><br><span class="line">         [<span class="number">5.</span>]]]) shape <span class="keyword">is</span> torch.Size([<span class="number">3</span>, <span class="number">5</span>, <span class="number">1</span>])</span><br><span class="line"></span><br><span class="line">iteration: <span class="number">0</span>, running mean: tensor([<span class="number">0.3000</span>, <span class="number">0.6000</span>, <span class="number">0.9000</span>, <span class="number">1.2000</span>, <span class="number">1.5000</span>])</span><br><span class="line">iteration: <span class="number">0</span>, running var: tensor([<span class="number">0.7000</span>, <span class="number">0.7000</span>, <span class="number">0.7000</span>, <span class="number">0.7000</span>, <span class="number">0.7000</span>])</span><br><span class="line">iteration: <span class="number">0</span>, 第二个特征的running mean: <span class="number">0.6</span></span><br><span class="line">iteration: <span class="number">0</span>, 第二个特征的running var: <span class="number">0.7</span></span><br><span class="line"></span><br><span class="line">iteration: <span class="number">1</span>, running mean: tensor([<span class="number">0.5100</span>, <span class="number">1.0200</span>, <span class="number">1.5300</span>, <span class="number">2.0400</span>, <span class="number">2.5500</span>])</span><br><span class="line">iteration: <span class="number">1</span>, running var: tensor([<span class="number">0.4900</span>, <span class="number">0.4900</span>, <span class="number">0.4900</span>, <span class="number">0.4900</span>, <span class="number">0.4900</span>])</span><br><span class="line">iteration: <span class="number">1</span>, 第二个特征的running mean: <span class="number">1.02</span></span><br><span class="line">iteration: <span class="number">1</span>, 第二个特征的running var: <span class="number">0.48999999999999994</span></span><br></pre></td></tr></table></figure>
+<p>这里计算均值和方差时，<strong>将同一批次样本的同一特征在一起计算</strong>，iteration=0时，每个样本的第一个特征值均为1，所以其均值为1，方差为0，而且因为是第一轮迭代，所以上一时刻的均值和方差默认值为0，1</p>
+<p>所以iteration=0时，第一个特征的均值 =<code>(1-momentum) * 0 + momentum* 1 = 0.3</code></p>
+<p>iteration=0时，第一个特征的方差= <code>(1-momentum) * 1 + momentum * 0 = 0.7</code></p>
+<p>iteration=0时，三个样本第二个特征的均值为2，方差为0，所以</p>
+<p>第二个特征的均值=<code>(1-momentum) * 0 + momentum * 2 = 0.6</code></p>
+<p>第二个特征的方差=<code>(1-momentum) * 1 + momentum * 0 = 0.7</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># BatchNorm2d</span></span><br><span class="line">batch_size = <span class="number">3</span></span><br><span class="line">num_features = <span class="number">3</span>  <span class="comment"># 每个样本有三个特征</span></span><br><span class="line">momentum = <span class="number">0.3</span></span><br><span class="line"></span><br><span class="line">features_shape = (<span class="number">2</span>, <span class="number">2</span>)  <span class="comment"># 每个特征是2d张量</span></span><br><span class="line">feature_map = torch.ones(features_shape)</span><br><span class="line">feature_maps = torch.stack([feature_map * (i + <span class="number">1</span>) <span class="keyword">for</span> i <span class="keyword">in</span> range(num_features)], dim=<span class="number">0</span>)</span><br><span class="line">feature_maps_bs = torch.stack([feature_maps <span class="keyword">for</span> i <span class="keyword">in</span> range(batch_size)], dim=<span class="number">0</span>)</span><br><span class="line">print(<span class="string">"input data: \n&#123;&#125; shape is &#123;&#125;"</span>.format(feature_maps_bs, feature_maps_bs.shape))</span><br><span class="line"></span><br><span class="line">bn = nn.BatchNorm2d(num_features, momentum=momentum)</span><br><span class="line">running_mean, running_var = <span class="number">0</span>, <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">2</span>):</span><br><span class="line">    outputs = bn(feature_maps_bs)</span><br><span class="line">    print(<span class="string">"\niteration: &#123;&#125;, running mean: &#123;&#125;"</span>.format(i, bn.running_mean.shape))</span><br><span class="line">    print(<span class="string">"iteration: &#123;&#125;, running var: &#123;&#125;"</span>.format(i, bn.running_var.shape))</span><br><span class="line">    print(<span class="string">"iteration: &#123;&#125;, weight.shape: &#123;&#125;"</span>.format(i, bn.weight.shape))</span><br><span class="line">    print(<span class="string">"iteration: &#123;&#125;, bias.shape: &#123;&#125;"</span>.format(i, bn.bias.shape))</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">input data: </span><br><span class="line">tensor([[[[<span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">          [<span class="number">1.</span>, <span class="number">1.</span>]],</span><br><span class="line"></span><br><span class="line">         [[<span class="number">2.</span>, <span class="number">2.</span>],</span><br><span class="line">          [<span class="number">2.</span>, <span class="number">2.</span>]],</span><br><span class="line"></span><br><span class="line">         [[<span class="number">3.</span>, <span class="number">3.</span>],</span><br><span class="line">          [<span class="number">3.</span>, <span class="number">3.</span>]]],</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        [[[<span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">          [<span class="number">1.</span>, <span class="number">1.</span>]],</span><br><span class="line"></span><br><span class="line">         [[<span class="number">2.</span>, <span class="number">2.</span>],</span><br><span class="line">          [<span class="number">2.</span>, <span class="number">2.</span>]],</span><br><span class="line"></span><br><span class="line">         [[<span class="number">3.</span>, <span class="number">3.</span>],</span><br><span class="line">          [<span class="number">3.</span>, <span class="number">3.</span>]]],</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        [[[<span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">          [<span class="number">1.</span>, <span class="number">1.</span>]],</span><br><span class="line"></span><br><span class="line">         [[<span class="number">2.</span>, <span class="number">2.</span>],</span><br><span class="line">          [<span class="number">2.</span>, <span class="number">2.</span>]],</span><br><span class="line"></span><br><span class="line">         [[<span class="number">3.</span>, <span class="number">3.</span>],</span><br><span class="line">          [<span class="number">3.</span>, <span class="number">3.</span>]]]]) shape <span class="keyword">is</span> torch.Size([<span class="number">3</span>, <span class="number">3</span>, <span class="number">2</span>, <span class="number">2</span>])</span><br><span class="line"></span><br><span class="line">iteration: <span class="number">0</span>, running mean: torch.Size([<span class="number">3</span>])</span><br><span class="line">iteration: <span class="number">0</span>, running var: torch.Size([<span class="number">3</span>])</span><br><span class="line">iteration: <span class="number">0</span>, weight.shape: torch.Size([<span class="number">3</span>])</span><br><span class="line">iteration: <span class="number">0</span>, bias.shape: torch.Size([<span class="number">3</span>])</span><br><span class="line"></span><br><span class="line">iteration: <span class="number">1</span>, running mean: torch.Size([<span class="number">3</span>])</span><br><span class="line">iteration: <span class="number">1</span>, running var: torch.Size([<span class="number">3</span>])</span><br><span class="line">iteration: <span class="number">1</span>, weight.shape: torch.Size([<span class="number">3</span>])</span><br><span class="line">iteration: <span class="number">1</span>, bias.shape: torch.Size([<span class="number">3</span>])</span><br></pre></td></tr></table></figure>
+<p>可以看到这里均值，方差，权重以及偏置的维度都是3，因为<code>BN</code>是将不同样本的同一特征一起算均值等，所以维度与特征数一致。</p>
+<h3 id="常见的Normalization-in-DL"><a href="#常见的Normalization-in-DL" class="headerlink" title="常见的Normalization in DL"></a>常见的Normalization in <code>DL</code></h3><ul>
+<li><code>Batch Normalization(BN)</code></li>
+<li><code>Layer Normalization(LN)</code></li>
+<li><code>Instance Normalization(IN)</code></li>
+<li><p><code>Group Normalization(GN)</code></p>
+<p>他们进行Normalization的方式均是如下方式</p>
+</li>
+</ul>
+<p><img src="/2023/03/04/pytorch-regularization/p7.png" alt></p>
+<p><strong>不同的点在于均值和方差的求取方式</strong></p>
+<h4 id="Layer-Normalization"><a href="#Layer-Normalization" class="headerlink" title="Layer Normalization"></a>Layer Normalization</h4><p>起因：<code>BN</code>不适用于变长的网络，如<code>RNN</code></p>
+<p>思路：<strong>逐层</strong>计算均值和方差</p>
+<p>注意事项：</p>
+<ol>
+<li>不再有running_mean和running_var</li>
+<li>gamma和beta为逐元素的</li>
+</ol>
+<p><code>nn.LayerNorm</code></p>
+<p>主要参数：</p>
+<ul>
+<li><code>normalized_shape</code>：该层特征形状</li>
+<li><code>eps</code>: 分母修正项</li>
+<li><code>elementwise_affine</code>：是否需要affine transform</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Layer Normalization</span></span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">batch_size = <span class="number">2</span></span><br><span class="line">num_features = <span class="number">3</span></span><br><span class="line"></span><br><span class="line">features_shape = (<span class="number">2</span>, <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">feature_map = torch.ones(features_shape)</span><br><span class="line">feature_maps = torch.stack([feature_map * (i + <span class="number">1</span>) <span class="keyword">for</span> i <span class="keyword">in</span> range(num_features)], dim=<span class="number">0</span>)</span><br><span class="line">feature_maps_bs = torch.stack([feature_maps <span class="keyword">for</span> i <span class="keyword">in</span> range(batch_size)], dim=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># B * C * H * W（传入除了批次大小之外的size）</span></span><br><span class="line">ln = nn.LayerNorm(feature_maps_bs.size()[<span class="number">1</span>:], elementwise_affine=<span class="literal">True</span>)</span><br><span class="line"><span class="comment"># 如果elementwise_affine设置为False，则不存在bias和weight</span></span><br><span class="line"><span class="comment"># ln = nn.LayerNorm(feature_maps_bs.size()[1:], elementwise_affine=False)</span></span><br><span class="line">output = ln(feature_maps_bs)</span><br><span class="line"></span><br><span class="line">print(<span class="string">"Layer Normalization"</span>)</span><br><span class="line">print(ln.weight.shape)</span><br><span class="line">print(ln.bias.shape)</span><br><span class="line">print(feature_maps_bs[<span class="number">0</span>, ...])</span><br><span class="line">print(output[<span class="number">0</span>, ...])</span><br><span class="line"></span><br><span class="line">Layer Normalization</span><br><span class="line">torch.Size([<span class="number">3</span>, <span class="number">2</span>, <span class="number">2</span>])</span><br><span class="line">torch.Size([<span class="number">3</span>, <span class="number">2</span>, <span class="number">2</span>])</span><br><span class="line">tensor([[[<span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">         [<span class="number">1.</span>, <span class="number">1.</span>]],</span><br><span class="line"></span><br><span class="line">        [[<span class="number">2.</span>, <span class="number">2.</span>],</span><br><span class="line">         [<span class="number">2.</span>, <span class="number">2.</span>]],</span><br><span class="line"></span><br><span class="line">        [[<span class="number">3.</span>, <span class="number">3.</span>],</span><br><span class="line">         [<span class="number">3.</span>, <span class="number">3.</span>]]])</span><br><span class="line">tensor([[[<span class="number">-1.2247</span>, <span class="number">-1.2247</span>],</span><br><span class="line">         [<span class="number">-1.2247</span>, <span class="number">-1.2247</span>]],</span><br><span class="line"></span><br><span class="line">        [[ <span class="number">0.0000</span>,  <span class="number">0.0000</span>],</span><br><span class="line">         [ <span class="number">0.0000</span>,  <span class="number">0.0000</span>]],</span><br><span class="line"></span><br><span class="line">        [[ <span class="number">1.2247</span>,  <span class="number">1.2247</span>],</span><br><span class="line">         [ <span class="number">1.2247</span>,  <span class="number">1.2247</span>]]], grad_fn=&lt;SelectBackward&gt;)</span><br></pre></td></tr></table></figure>
+<p>这里weight和bias的size都是(3, 2, 2)，因为每个样本都有3个特征且每个特征图为(2, 2)，所以看出来<code>LayerNorm</code>更像是逐元素的计算均值和方差。(其实没咋搞懂每层的概念)</p>
+<h4 id="Instance-Normalization"><a href="#Instance-Normalization" class="headerlink" title="Instance Normalization"></a>Instance Normalization</h4><p>起因：<code>BN</code>在图像生成（Image Generation）中不适用</p>
+<p>思路：<strong>逐Instance（channel）计算均值和方差</strong></p>
+<p><code>nn.InstanceNorm</code></p>
+<p>主要参数：</p>
+<ul>
+<li><code>num_features</code>：一个样本特征数量（最重要）</li>
+<li><code>eps</code>：分母修正项</li>
+<li>momentum：指数加权平均估计当前mean/var</li>
+<li>affine：是否需要affine transform</li>
+<li>track_running_stats：是训练状态，还是测试状态</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment"># Instance Norm</span></span><br><span class="line">batch_size = <span class="number">3</span></span><br><span class="line">num_features = <span class="number">3</span></span><br><span class="line">momentum = <span class="number">0.3</span></span><br><span class="line"></span><br><span class="line">features_shape = (<span class="number">2</span>, <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">feature_map = torch.ones(features_shape)</span><br><span class="line">feature_maps = torch.stack([feature_map * (i + <span class="number">1</span>) <span class="keyword">for</span> i <span class="keyword">in</span> range(num_features)], dim=<span class="number">0</span>)</span><br><span class="line">feature_maps_bs = torch.stack([feature_maps <span class="keyword">for</span> i <span class="keyword">in</span> range(batch_size)], dim=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">print(<span class="string">"Instance Normalization"</span>)</span><br><span class="line">print(<span class="string">"input data: \n &#123;&#125; shape is &#123;&#125;"</span>.format(feature_maps_bs, feature_maps_bs.shape))</span><br><span class="line"><span class="comment"># 和BatchNorm一样，分为1d、2d和3d</span></span><br><span class="line">instance_n = nn.InstanceNorm2d(num_features=num_features, momentum=momentum, affine=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>):</span><br><span class="line">    outputs = instance_n(feature_maps_bs)</span><br><span class="line">    print(outputs)</span><br><span class="line">    print(instance_n.weight.shape)</span><br><span class="line">    print(instance_n.bias.shape)</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    Instance Normalization</span><br><span class="line">input data: </span><br><span class="line"> tensor([[[[<span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">          [<span class="number">1.</span>, <span class="number">1.</span>]],</span><br><span class="line"></span><br><span class="line">         [[<span class="number">2.</span>, <span class="number">2.</span>],</span><br><span class="line">          [<span class="number">2.</span>, <span class="number">2.</span>]],</span><br><span class="line"></span><br><span class="line">         [[<span class="number">3.</span>, <span class="number">3.</span>],</span><br><span class="line">          [<span class="number">3.</span>, <span class="number">3.</span>]]],</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        [[[<span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">          [<span class="number">1.</span>, <span class="number">1.</span>]],</span><br><span class="line"></span><br><span class="line">         [[<span class="number">2.</span>, <span class="number">2.</span>],</span><br><span class="line">          [<span class="number">2.</span>, <span class="number">2.</span>]],</span><br><span class="line"></span><br><span class="line">         [[<span class="number">3.</span>, <span class="number">3.</span>],</span><br><span class="line">          [<span class="number">3.</span>, <span class="number">3.</span>]]],</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        [[[<span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">          [<span class="number">1.</span>, <span class="number">1.</span>]],</span><br><span class="line"></span><br><span class="line">         [[<span class="number">2.</span>, <span class="number">2.</span>],</span><br><span class="line">          [<span class="number">2.</span>, <span class="number">2.</span>]],</span><br><span class="line"></span><br><span class="line">         [[<span class="number">3.</span>, <span class="number">3.</span>],</span><br><span class="line">          [<span class="number">3.</span>, <span class="number">3.</span>]]]]) shape <span class="keyword">is</span> torch.Size([<span class="number">3</span>, <span class="number">3</span>, <span class="number">2</span>, <span class="number">2</span>])</span><br><span class="line">tensor([[[[<span class="number">0.</span>, <span class="number">0.</span>],</span><br><span class="line">          [<span class="number">0.</span>, <span class="number">0.</span>]],</span><br><span class="line"></span><br><span class="line">         [[<span class="number">0.</span>, <span class="number">0.</span>],</span><br><span class="line">          [<span class="number">0.</span>, <span class="number">0.</span>]],</span><br><span class="line"></span><br><span class="line">         [[<span class="number">0.</span>, <span class="number">0.</span>],</span><br><span class="line">          [<span class="number">0.</span>, <span class="number">0.</span>]]],</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        [[[<span class="number">0.</span>, <span class="number">0.</span>],</span><br><span class="line">          [<span class="number">0.</span>, <span class="number">0.</span>]],</span><br><span class="line"></span><br><span class="line">         [[<span class="number">0.</span>, <span class="number">0.</span>],</span><br><span class="line">          [<span class="number">0.</span>, <span class="number">0.</span>]],</span><br><span class="line"></span><br><span class="line">         [[<span class="number">0.</span>, <span class="number">0.</span>],</span><br><span class="line">          [<span class="number">0.</span>, <span class="number">0.</span>]]],</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        [[[<span class="number">0.</span>, <span class="number">0.</span>],</span><br><span class="line">          [<span class="number">0.</span>, <span class="number">0.</span>]],</span><br><span class="line"></span><br><span class="line">         [[<span class="number">0.</span>, <span class="number">0.</span>],</span><br><span class="line">          [<span class="number">0.</span>, <span class="number">0.</span>]],</span><br><span class="line"></span><br><span class="line">         [[<span class="number">0.</span>, <span class="number">0.</span>],</span><br><span class="line">          [<span class="number">0.</span>, <span class="number">0.</span>]]]], grad_fn=&lt;ViewBackward&gt;)</span><br><span class="line">torch.Size([<span class="number">3</span>])</span><br><span class="line">torch.Size([<span class="number">3</span>])</span><br></pre></td></tr></table></figure>
+<p><code>BatchNorm2d</code>会将同一批次的同一特征，比如这里3个样本的第一个特征合并计算均值和方差，而Instance Normalization，会每个样本的每个特征图单独计算均值和方差。</p>
+<h4 id="Group-Normalization"><a href="#Group-Normalization" class="headerlink" title="Group Normalization"></a>Group Normalization</h4><p>起因：小batch样本中，<code>BN</code>估计的值不准</p>
+<p>思路：数据不够，通道来凑</p>
+<p>注意事项：</p>
+<ol>
+<li>不再有running_mean和running_var</li>
+<li>gamma和beta为逐通道（channel）的</li>
+</ol>
+<p>应用场景：大模型（小batch size）任务</p>
+<p><code>nn.GroupNorm</code></p>
+<p>主要参数：</p>
+<ul>
+<li><code>num_groups</code>：分组数</li>
+<li><code>num_channels</code>：通道数（特征数）</li>
+<li><code>eps</code>：分母修正项</li>
+<li><code>affine</code>：是否需要affine transform</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># group norm</span></span><br><span class="line">batch_size = <span class="number">2</span></span><br><span class="line">num_features = <span class="number">4</span></span><br><span class="line">num_groups = <span class="number">2</span></span><br><span class="line">features_shape = (<span class="number">2</span>, <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">feature_map = torch.ones(features_shape)</span><br><span class="line">feature_maps = torch.stack([feature_map * (i + <span class="number">1</span>) <span class="keyword">for</span> i <span class="keyword">in</span> range(num_features)], dim=<span class="number">0</span>)</span><br><span class="line">feature_maps_bs = torch.stack([feature_maps <span class="keyword">for</span> i <span class="keyword">in</span> range(batch_size)], dim=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">gn = nn.GroupNorm(num_groups, num_features)</span><br><span class="line">outputs = gn(feature_maps_bs)</span><br><span class="line"></span><br><span class="line">print(<span class="string">"Group Normalization"</span>)</span><br><span class="line">print(gn.weight.shape)</span><br><span class="line">print(outputs[<span class="number">0</span>])</span><br><span class="line"></span><br><span class="line">Group Normalization</span><br><span class="line">torch.Size([<span class="number">4</span>])</span><br><span class="line">tensor([[[<span class="number">-1.0000</span>, <span class="number">-1.0000</span>],</span><br><span class="line">         [<span class="number">-1.0000</span>, <span class="number">-1.0000</span>]],</span><br><span class="line"></span><br><span class="line">        [[ <span class="number">1.0000</span>,  <span class="number">1.0000</span>],</span><br><span class="line">         [ <span class="number">1.0000</span>,  <span class="number">1.0000</span>]],</span><br><span class="line"></span><br><span class="line">        [[<span class="number">-1.0000</span>, <span class="number">-1.0000</span>],</span><br><span class="line">         [<span class="number">-1.0000</span>, <span class="number">-1.0000</span>]],</span><br><span class="line"></span><br><span class="line">        [[ <span class="number">1.0000</span>,  <span class="number">1.0000</span>],</span><br><span class="line">         [ <span class="number">1.0000</span>,  <span class="number">1.0000</span>]]], grad_fn=&lt;SelectBackward&gt;)</span><br></pre></td></tr></table></figure>
+<p><img src="/2023/03/04/pytorch-regularization/p9.png" alt></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/pytorch/" rel="tag"># pytorch</a>
+          
+            <a href="/tags/Batch-Normalization/" rel="tag"># Batch Normalization</a>
+          
+            <a href="/tags/Dropout/" rel="tag"># Dropout</a>
+          
+            <a href="/tags/weight-decay/" rel="tag"># weight decay</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2023/02/25/pytorch-optim/" rel="next" title="Pytorch中的优化器Optimizer">
+                <i class="fa fa-chevron-left"></i> Pytorch中的优化器Optimizer
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">103</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">197</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#PyTorch正则化和批标准化"><span class="nav-text">PyTorch正则化和批标准化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#L1和L2正则项"><span class="nav-text">L1和L2正则项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dropout：随机失活"><span class="nav-text">Dropout：随机失活</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Batch-Normalization"><span class="nav-text">Batch Normalization</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Pytorch中的-BatchNorm"><span class="nav-text">Pytorch中的_BatchNorm</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常见的Normalization-in-DL"><span class="nav-text">常见的Normalization in DL</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Layer-Normalization"><span class="nav-text">Layer Normalization</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Instance-Normalization"><span class="nav-text">Instance Normalization</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Group-Normalization"><span class="nav-text">Group Normalization</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

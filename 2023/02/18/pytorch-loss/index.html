@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="pytorch,CrossEntropyLoss,Kaiming,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Pytorch中权值初始化和损失函数权值初始化梯度消失与爆炸 针对上面这个两个隐藏层的神经网络，我们求w2的梯度  可以发现，w2的梯度与H1（上一层网络的输出）有很大的关系，当h1趋近于0时，w2的梯度也趋近于0，当h1趋近于无穷大时，w2的梯度也趋近于无穷大。">
+<meta name="keywords" content="pytorch,CrossEntropyLoss,Kaiming">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pytorch中权值初始化和损失函数">
+<meta property="og:url" content="http://yoursite.com/2023/02/18/pytorch-loss/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="Pytorch中权值初始化和损失函数权值初始化梯度消失与爆炸 针对上面这个两个隐藏层的神经网络，我们求w2的梯度  可以发现，w2的梯度与H1（上一层网络的输出）有很大的关系，当h1趋近于0时，w2的梯度也趋近于0，当h1趋近于无穷大时，w2的梯度也趋近于无穷大。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2023/02/18/pytorch-loss/p1.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/18/pytorch-loss/p2.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/18/pytorch-loss/p3.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/18/pytorch-loss/p4.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/18/pytorch-loss/p5.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/18/pytorch-loss/p6.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/18/pytorch-loss/p7.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/18/pytorch-loss/p8.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/18/pytorch-loss/p9.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/18/pytorch-loss/p10.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/18/pytorch-loss/p11.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/18/pytorch-loss/p12.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/18/pytorch-loss/p13.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/18/pytorch-loss/p14.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/18/pytorch-loss/p15.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/18/pytorch-loss/p16.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/18/pytorch-loss/p17.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/18/pytorch-loss/p18.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/18/pytorch-loss/p19.png">
+<meta property="og:updated_time" content="2023-03-09T14:02:51.795Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Pytorch中权值初始化和损失函数">
+<meta name="twitter:description" content="Pytorch中权值初始化和损失函数权值初始化梯度消失与爆炸 针对上面这个两个隐藏层的神经网络，我们求w2的梯度  可以发现，w2的梯度与H1（上一层网络的输出）有很大的关系，当h1趋近于0时，w2的梯度也趋近于0，当h1趋近于无穷大时，w2的梯度也趋近于无穷大。">
+<meta name="twitter:image" content="http://yoursite.com/2023/02/18/pytorch-loss/p1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2023/02/18/pytorch-loss/">
+
+
+
+
+
+  <title>Pytorch中权值初始化和损失函数 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2023/02/18/pytorch-loss/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Pytorch中权值初始化和损失函数</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-02-18T14:07:05+08:00">
+                2023-02-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/pytorch/" itemprop="url" rel="index">
+                    <span itemprop="name">pytorch</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Pytorch中权值初始化和损失函数"><a href="#Pytorch中权值初始化和损失函数" class="headerlink" title="Pytorch中权值初始化和损失函数"></a>Pytorch中权值初始化和损失函数</h2><h3 id="权值初始化"><a href="#权值初始化" class="headerlink" title="权值初始化"></a>权值初始化</h3><h4 id="梯度消失与爆炸"><a href="#梯度消失与爆炸" class="headerlink" title="梯度消失与爆炸"></a>梯度消失与爆炸</h4><p><img src="/2023/02/18/pytorch-loss/p1.png" alt></p>
+<p>针对上面这个两个隐藏层的神经网络，我们求<code>w2</code>的梯度</p>
+<p><img src="/2023/02/18/pytorch-loss/p2.png" alt></p>
+<p>可以发现，<code>w2</code>的梯度与<code>H1</code>（上一层网络的输出）有很大的关系，当<code>h1</code>趋近于0时，<code>w2</code>的梯度也趋近于0，当<code>h1</code>趋近于无穷大时，<code>w2</code>的梯度也趋近于无穷大。</p>
+<a id="more"></a>
+<p>一旦发生梯度消失或梯度爆炸，那么网络将无法训练，为了避免梯度消失或梯度爆炸的出现，需要控制网络输出值的范围（不能太大也不能太小）</p>
+<p>使用下述代码举例，可以发现网络在第30层时，网络的输出值就达到了无穷大</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MLP</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, neural_num, layers)</span>:</span></span><br><span class="line">        super(MLP, self).__init__()</span><br><span class="line">        self.linears = nn.ModuleList([nn.Linear(neural_num, neural_num, bias=<span class="literal">False</span>) <span class="keyword">for</span> i <span class="keyword">in</span> range(layers)])</span><br><span class="line">        self.neural_num = neural_num</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x)</span>:</span></span><br><span class="line">        <span class="keyword">for</span> (i, linear) <span class="keyword">in</span> enumerate(self.linears):</span><br><span class="line">            x = linear(x)</span><br><span class="line"></span><br><span class="line">            print(<span class="string">"layer:&#123;&#125;, std:&#123;&#125;"</span>.format(i, x.std()))</span><br><span class="line">            <span class="keyword">if</span> torch.isnan(x.std()):</span><br><span class="line">                print(<span class="string">"output is nan in &#123;&#125; layers"</span>.format(i))</span><br><span class="line">        <span class="keyword">return</span> x</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">initialize</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">for</span> m <span class="keyword">in</span> self.modules():</span><br><span class="line">            <span class="keyword">if</span> isinstance(m, nn.Linear):</span><br><span class="line">                nn.init.normal_(m.weight.data)  <span class="comment"># 权值初始化，normal：mean=0, std=1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">layer_nums = <span class="number">100</span></span><br><span class="line">neural_nums = <span class="number">256</span></span><br><span class="line">batch_size = <span class="number">16</span></span><br><span class="line"></span><br><span class="line">net = MLP(neural_nums, layer_nums)</span><br><span class="line">net.initialize()</span><br><span class="line"></span><br><span class="line">inputs = torch.randn((batch_size, neural_nums))  <span class="comment"># normal:mean=0, std=1</span></span><br><span class="line"></span><br><span class="line">output = net(inputs)</span><br><span class="line">print(output)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">layer:<span class="number">0</span>, std:<span class="number">16.192399978637695</span></span><br><span class="line">layer:<span class="number">1</span>, std:<span class="number">257.58282470703125</span></span><br><span class="line">layer:<span class="number">2</span>, std:<span class="number">4023.779296875</span></span><br><span class="line">layer:<span class="number">3</span>, std:<span class="number">63778.1484375</span></span><br><span class="line">layer:<span class="number">4</span>, std:<span class="number">1018549.25</span></span><br><span class="line">layer:<span class="number">5</span>, std:<span class="number">16114499.0</span></span><br><span class="line">layer:<span class="number">6</span>, std:<span class="number">261527760.0</span></span><br><span class="line">layer:<span class="number">7</span>, std:<span class="number">4343016960.0</span></span><br><span class="line">layer:<span class="number">8</span>, std:<span class="number">68217614336.0</span></span><br><span class="line">layer:<span class="number">9</span>, std:<span class="number">1059127361536.0</span></span><br><span class="line">layer:<span class="number">10</span>, std:<span class="number">16691895468032.0</span></span><br><span class="line">layer:<span class="number">11</span>, std:<span class="number">273129754591232.0</span></span><br><span class="line">layer:<span class="number">12</span>, std:<span class="number">4324333061144576.0</span></span><br><span class="line">layer:<span class="number">13</span>, std:<span class="number">6.819728172725043e+16</span></span><br><span class="line">layer:<span class="number">14</span>, std:<span class="number">1.0919447200341688e+18</span></span><br><span class="line">layer:<span class="number">15</span>, std:<span class="number">1.7315714945123353e+19</span></span><br><span class="line">layer:<span class="number">16</span>, std:<span class="number">2.7080612511527574e+20</span></span><br><span class="line">layer:<span class="number">17</span>, std:<span class="number">4.2597083154501536e+21</span></span><br><span class="line">layer:<span class="number">18</span>, std:<span class="number">6.901826777180292e+22</span></span><br><span class="line">layer:<span class="number">19</span>, std:<span class="number">1.0874986135399613e+24</span></span><br><span class="line">layer:<span class="number">20</span>, std:<span class="number">1.7336039095836894e+25</span></span><br><span class="line">layer:<span class="number">21</span>, std:<span class="number">2.721772446955186e+26</span></span><br><span class="line">layer:<span class="number">22</span>, std:<span class="number">4.3424048756579536e+27</span></span><br><span class="line">layer:<span class="number">23</span>, std:<span class="number">6.735045216945116e+28</span></span><br><span class="line">layer:<span class="number">24</span>, std:<span class="number">1.0334125335235665e+30</span></span><br><span class="line">layer:<span class="number">25</span>, std:<span class="number">1.6612993331149975e+31</span></span><br><span class="line">layer:<span class="number">26</span>, std:<span class="number">2.564641346528178e+32</span></span><br><span class="line">layer:<span class="number">27</span>, std:<span class="number">4.073855480726675e+33</span></span><br><span class="line">layer:<span class="number">28</span>, std:<span class="number">6.289443501272203e+34</span></span><br><span class="line">layer:<span class="number">29</span>, std:<span class="number">1.002706158037316e+36</span></span><br><span class="line">layer:<span class="number">30</span>, std:nan</span><br><span class="line">output <span class="keyword">is</span> nan <span class="keyword">in</span> <span class="number">30</span> layers</span><br></pre></td></tr></table></figure>
+<p>下面我们通过方差公式推导这一现象出现的原因：</p>
+<p><img src="/2023/02/18/pytorch-loss/p3.png" alt></p>
+<p>X和Y表示相互独立的两个变量，且符合均值为0（期望也为0），标准差为1的分布；E表示期望，D表示方差。</p>
+<p>关于均值和期望的关系参考文章：<a href="https://mp.weixin.qq.com/s?__biz=MzI2MjE3OTA1MA==&amp;mid=2247490449&amp;idx=1&amp;sn=76d7ebb344c1f866308324c0e88bea2a&amp;chksm=ea4e4a14dd39c302d6ad1a559532248466505fc01f099b71a5f7932595cba3bada08e9687077&amp;scene=27" target="_blank" rel="noopener">https://mp.weixin.qq.com/s?__biz=MzI2MjE3OTA1MA==&amp;mid=2247490449&amp;idx=1&amp;sn=76d7ebb344c1f866308324c0e88bea2a&amp;chksm=ea4e4a14dd39c302d6ad1a559532248466505fc01f099b71a5f7932595cba3bada08e9687077&amp;scene=27</a></p>
+<p>关于图中公式的推导参考文章：<a href="https://zhuanlan.zhihu.com/p/546502658" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/546502658</a></p>
+<p>最后的结论是：两个独立的变量X和Y，他们乘积的方差/标准差=各自的方差/标准差的乘积。</p>
+<p>那么我们把这个结论运用到神经网络隐藏层的神经元运算中</p>
+<p><img src="/2023/02/18/pytorch-loss/p4.png" style="zoom:50%;"></p>
+<p>第一个的隐藏层的神经元输出值的方差为输入值的n倍（n是输入层神经元数量），第二隐藏层的方差则是第一隐藏层的n倍，以此类推。</p>
+<p>其实通过公式推导我们发现，下一层神经元的输出值方差与三个因素有关，(1)每一层神经元的数量；(2)输入值x的方差；(3)权重矩阵W的方差。</p>
+<p>如果想要<strong>控制神经元的输出值方差为1</strong>，我们可以保证X的方差为1，若想要消掉n，那就是要W的方差为1/n。</p>
+<p><img src="/2023/02/18/pytorch-loss/p5.png" style="zoom:50%;"></p>
+<p>我们在代码中加上这一操作</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">initialize</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="keyword">for</span> m <span class="keyword">in</span> self.modules():</span><br><span class="line">        <span class="keyword">if</span> isinstance(m, nn.Linear):</span><br><span class="line">            <span class="comment"># 权值初始化，自定义std</span></span><br><span class="line">            nn.init.normal_(</span><br><span class="line">                m.weight.data, </span><br><span class="line">                std=np.sqrt(<span class="number">1</span>/self.neural_num))</span><br></pre></td></tr></table></figure>
+<p>这时候每一层的网络输出值就会是1左右，不会变成无限大了。</p>
+<h4 id="Xavier初始化"><a href="#Xavier初始化" class="headerlink" title="Xavier初始化"></a>Xavier初始化</h4><p>在上述例子中，我们并未考虑到激活函数，假设我们在forward中添加激活函数再来观察输出。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x)</span>:</span></span><br><span class="line">    <span class="keyword">for</span> (i, linear) <span class="keyword">in</span> enumerate(self.linears):</span><br><span class="line">        x = linear(x)</span><br><span class="line">        x = torch.tanh(x)  <span class="comment"># 增加激活函数</span></span><br><span class="line"></span><br><span class="line">        print(<span class="string">"layer:&#123;&#125;, std:&#123;&#125;"</span>.format(i, x.std()))</span><br><span class="line">        <span class="keyword">if</span> torch.isnan(x.std()):</span><br><span class="line">            print(<span class="string">"output is nan in &#123;&#125; layers"</span>.format(i))</span><br><span class="line">            <span class="keyword">return</span> x</span><br><span class="line"></span><br><span class="line">layer:<span class="number">0</span>, std:<span class="number">0.6318830251693726</span></span><br><span class="line">layer:<span class="number">1</span>, std:<span class="number">0.4880196452140808</span></span><br><span class="line">layer:<span class="number">2</span>, std:<span class="number">0.40823400020599365</span></span><br><span class="line">layer:<span class="number">3</span>, std:<span class="number">0.35683006048202515</span></span><br><span class="line">layer:<span class="number">4</span>, std:<span class="number">0.32039204239845276</span></span><br><span class="line">layer:<span class="number">5</span>, std:<span class="number">0.29256343841552734</span></span><br><span class="line">layer:<span class="number">6</span>, std:<span class="number">0.2630252242088318</span></span><br><span class="line">layer:<span class="number">7</span>, std:<span class="number">0.24065028131008148</span></span><br><span class="line">layer:<span class="number">8</span>, std:<span class="number">0.22322414815425873</span></span><br><span class="line">layer:<span class="number">9</span>, std:<span class="number">0.21111507713794708</span></span><br><span class="line">layer:<span class="number">10</span>, std:<span class="number">0.20253409445285797</span></span><br><span class="line">layer:<span class="number">11</span>, std:<span class="number">0.19049973785877228</span></span><br><span class="line">layer:<span class="number">12</span>, std:<span class="number">0.18213757872581482</span></span><br><span class="line">layer:<span class="number">13</span>, std:<span class="number">0.17290166020393372</span></span><br><span class="line">layer:<span class="number">14</span>, std:<span class="number">0.16851326823234558</span></span><br><span class="line">layer:<span class="number">15</span>, std:<span class="number">0.16633261740207672</span></span><br><span class="line">layer:<span class="number">16</span>, std:<span class="number">0.16150619089603424</span></span><br><span class="line">layer:<span class="number">17</span>, std:<span class="number">0.1597711145877838</span></span><br><span class="line">layer:<span class="number">18</span>, std:<span class="number">0.15324054658412933</span></span><br><span class="line">layer:<span class="number">19</span>, std:<span class="number">0.14867177605628967</span></span><br><span class="line">layer:<span class="number">20</span>, std:<span class="number">0.14502786099910736</span></span><br><span class="line">layer:<span class="number">21</span>, std:<span class="number">0.1448216736316681</span></span><br><span class="line">layer:<span class="number">22</span>, std:<span class="number">0.14160095155239105</span></span><br><span class="line">layer:<span class="number">23</span>, std:<span class="number">0.13859443366527557</span></span><br><span class="line">layer:<span class="number">24</span>, std:<span class="number">0.13385061919689178</span></span><br><span class="line">layer:<span class="number">25</span>, std:<span class="number">0.1346007138490677</span></span><br><span class="line">layer:<span class="number">26</span>, std:<span class="number">0.13504254817962646</span></span><br><span class="line">layer:<span class="number">27</span>, std:<span class="number">0.1350996196269989</span></span><br><span class="line">layer:<span class="number">28</span>, std:<span class="number">0.1332106590270996</span></span><br><span class="line">layer:<span class="number">29</span>, std:<span class="number">0.12846721708774567</span></span><br><span class="line">layer:<span class="number">30</span>, std:<span class="number">0.12505297362804413</span></span><br><span class="line">layer:<span class="number">31</span>, std:<span class="number">0.12073405832052231</span></span><br><span class="line">layer:<span class="number">32</span>, std:<span class="number">0.11842075735330582</span></span><br><span class="line">layer:<span class="number">33</span>, std:<span class="number">0.11658370494842529</span></span><br><span class="line">layer:<span class="number">34</span>, std:<span class="number">0.11572407186031342</span></span><br><span class="line">layer:<span class="number">35</span>, std:<span class="number">0.11303886771202087</span></span><br><span class="line">layer:<span class="number">36</span>, std:<span class="number">0.11429551243782043</span></span><br><span class="line">layer:<span class="number">37</span>, std:<span class="number">0.11426541954278946</span></span><br><span class="line">layer:<span class="number">38</span>, std:<span class="number">0.11300574988126755</span></span><br><span class="line">layer:<span class="number">39</span>, std:<span class="number">0.11152201145887375</span></span><br><span class="line">layer:<span class="number">40</span>, std:<span class="number">0.10923638194799423</span></span><br><span class="line">layer:<span class="number">41</span>, std:<span class="number">0.10787928104400635</span></span><br><span class="line">layer:<span class="number">42</span>, std:<span class="number">0.10703520476818085</span></span><br><span class="line">layer:<span class="number">43</span>, std:<span class="number">0.10629639029502869</span></span><br><span class="line">layer:<span class="number">44</span>, std:<span class="number">0.10549120604991913</span></span><br><span class="line">layer:<span class="number">45</span>, std:<span class="number">0.10611333698034286</span></span><br><span class="line">layer:<span class="number">46</span>, std:<span class="number">0.10380613058805466</span></span><br><span class="line">layer:<span class="number">47</span>, std:<span class="number">0.1001860573887825</span></span><br><span class="line">layer:<span class="number">48</span>, std:<span class="number">0.10112475603818893</span></span><br><span class="line">layer:<span class="number">49</span>, std:<span class="number">0.10452902317047119</span></span><br><span class="line">layer:<span class="number">50</span>, std:<span class="number">0.09833698719739914</span></span><br><span class="line">layer:<span class="number">51</span>, std:<span class="number">0.09790389239788055</span></span><br><span class="line">layer:<span class="number">52</span>, std:<span class="number">0.09508907794952393</span></span><br><span class="line">layer:<span class="number">53</span>, std:<span class="number">0.09656200557947159</span></span><br><span class="line">layer:<span class="number">54</span>, std:<span class="number">0.0947883278131485</span></span><br><span class="line">layer:<span class="number">55</span>, std:<span class="number">0.09480524808168411</span></span><br><span class="line">layer:<span class="number">56</span>, std:<span class="number">0.09200789779424667</span></span><br><span class="line">layer:<span class="number">57</span>, std:<span class="number">0.09230732917785645</span></span><br><span class="line">layer:<span class="number">58</span>, std:<span class="number">0.08696289360523224</span></span><br><span class="line">layer:<span class="number">59</span>, std:<span class="number">0.09009458869695663</span></span><br><span class="line">layer:<span class="number">60</span>, std:<span class="number">0.08880645036697388</span></span><br><span class="line">layer:<span class="number">61</span>, std:<span class="number">0.08703707903623581</span></span><br><span class="line">layer:<span class="number">62</span>, std:<span class="number">0.08517660945653915</span></span><br><span class="line">layer:<span class="number">63</span>, std:<span class="number">0.08439849317073822</span></span><br><span class="line">layer:<span class="number">64</span>, std:<span class="number">0.08625492453575134</span></span><br><span class="line">layer:<span class="number">65</span>, std:<span class="number">0.08220728486776352</span></span><br><span class="line">layer:<span class="number">66</span>, std:<span class="number">0.08385007828474045</span></span><br><span class="line">layer:<span class="number">67</span>, std:<span class="number">0.08285364508628845</span></span><br><span class="line">layer:<span class="number">68</span>, std:<span class="number">0.08406919986009598</span></span><br><span class="line">layer:<span class="number">69</span>, std:<span class="number">0.08500999212265015</span></span><br><span class="line">layer:<span class="number">70</span>, std:<span class="number">0.08161619305610657</span></span><br><span class="line">layer:<span class="number">71</span>, std:<span class="number">0.0800199881196022</span></span><br><span class="line">layer:<span class="number">72</span>, std:<span class="number">0.08104747533798218</span></span><br><span class="line">layer:<span class="number">73</span>, std:<span class="number">0.0785975530743599</span></span><br><span class="line">layer:<span class="number">74</span>, std:<span class="number">0.07538190484046936</span></span><br><span class="line">layer:<span class="number">75</span>, std:<span class="number">0.07322362065315247</span></span><br><span class="line">layer:<span class="number">76</span>, std:<span class="number">0.07350381463766098</span></span><br><span class="line">layer:<span class="number">77</span>, std:<span class="number">0.07264978438615799</span></span><br><span class="line">layer:<span class="number">78</span>, std:<span class="number">0.07152769714593887</span></span><br><span class="line">layer:<span class="number">79</span>, std:<span class="number">0.07120327651500702</span></span><br><span class="line">layer:<span class="number">80</span>, std:<span class="number">0.06596919149160385</span></span><br><span class="line">layer:<span class="number">81</span>, std:<span class="number">0.0668891966342926</span></span><br><span class="line">layer:<span class="number">82</span>, std:<span class="number">0.06439171731472015</span></span><br><span class="line">layer:<span class="number">83</span>, std:<span class="number">0.06410669535398483</span></span><br><span class="line">layer:<span class="number">84</span>, std:<span class="number">0.061894405633211136</span></span><br><span class="line">layer:<span class="number">85</span>, std:<span class="number">0.06584163010120392</span></span><br><span class="line">layer:<span class="number">86</span>, std:<span class="number">0.06323011219501495</span></span><br><span class="line">layer:<span class="number">87</span>, std:<span class="number">0.06158079952001572</span></span><br><span class="line">layer:<span class="number">88</span>, std:<span class="number">0.06081564351916313</span></span><br><span class="line">layer:<span class="number">89</span>, std:<span class="number">0.059615038335323334</span></span><br><span class="line">layer:<span class="number">90</span>, std:<span class="number">0.05910872295498848</span></span><br><span class="line">layer:<span class="number">91</span>, std:<span class="number">0.05939367786049843</span></span><br><span class="line">layer:<span class="number">92</span>, std:<span class="number">0.060215458273887634</span></span><br><span class="line">layer:<span class="number">93</span>, std:<span class="number">0.05801717936992645</span></span><br><span class="line">layer:<span class="number">94</span>, std:<span class="number">0.05556991696357727</span></span><br><span class="line">layer:<span class="number">95</span>, std:<span class="number">0.054911285638809204</span></span><br><span class="line">layer:<span class="number">96</span>, std:<span class="number">0.05629248172044754</span></span><br><span class="line">layer:<span class="number">97</span>, std:<span class="number">0.0547030083835125</span></span><br><span class="line">layer:<span class="number">98</span>, std:<span class="number">0.054839838296175</span></span><br><span class="line">layer:<span class="number">99</span>, std:<span class="number">0.0540759414434433</span></span><br><span class="line">tensor([[<span class="number">-0.0336</span>, <span class="number">-0.0339</span>, <span class="number">-0.0456</span>,  ...,  <span class="number">0.0345</span>,  <span class="number">0.0104</span>, <span class="number">-0.0351</span>],</span><br><span class="line">        [ <span class="number">0.0679</span>, <span class="number">-0.0226</span>, <span class="number">-0.0500</span>,  ...,  <span class="number">0.1172</span>,  <span class="number">0.0275</span>, <span class="number">-0.0002</span>],</span><br><span class="line">        [<span class="number">-0.0187</span>, <span class="number">-0.0416</span>,  <span class="number">0.0445</span>,  ..., <span class="number">-0.0295</span>,  <span class="number">0.0222</span>, <span class="number">-0.0506</span>],</span><br><span class="line">        ...,</span><br><span class="line">        [ <span class="number">0.0124</span>, <span class="number">-0.0121</span>,  <span class="number">0.0108</span>,  ...,  <span class="number">0.0376</span>,  <span class="number">0.0176</span>,  <span class="number">0.0237</span>],</span><br><span class="line">        [<span class="number">-0.0248</span>, <span class="number">-0.1184</span>, <span class="number">-0.0842</span>,  ...,  <span class="number">0.0893</span>, <span class="number">-0.0364</span>, <span class="number">-0.0314</span>],</span><br><span class="line">        [ <span class="number">0.0041</span>,  <span class="number">0.0016</span>, <span class="number">-0.0335</span>,  ..., <span class="number">-0.0084</span>, <span class="number">-0.0525</span>,  <span class="number">0.0149</span>]],</span><br><span class="line">       grad_fn=&lt;TanhBackward&gt;)</span><br></pre></td></tr></table></figure>
+<p>可以看到随便网络的增加，其输出值越来越小，最终可能会导致梯度的消失。Xavier初始化方法就是针对有激活函数时，网络应该如何初始化，是的每一层网络层的输出值方差为1。</p>
+<p><img src="/2023/02/18/pytorch-loss/p6.png" alt></p>
+<p>n(i)表示第i层网络神经元的个数，n(i+1)表示第i+1层网络神经元的个数；</p>
+<p>权重矩阵W符合均匀分布，其分布的范围是[-a, a]，方差等于(下限-上限)的平方除以12，从而最终可以用神经元个数来表示a。</p>
+<p>我们下面在代码中来实现这一初始化方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">initialize</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="keyword">for</span> m <span class="keyword">in</span> self.modules():</span><br><span class="line">        <span class="keyword">if</span> isinstance(m, nn.Linear):</span><br><span class="line">            a = np.sqrt(<span class="number">6</span> / (self.neural_num+self.neural_num))</span><br><span class="line">            <span class="comment"># 数据输入到激活函数后，标准差的变化叫做增益</span></span><br><span class="line">            tanh_gain = nn.init.calculate_gain(<span class="string">'tanh'</span>)</span><br><span class="line">            a *= tanh_gain</span><br><span class="line">            nn.init.uniform_(m.weight.data, -a, a)</span><br><span class="line"></span><br><span class="line">            </span><br><span class="line">layer:<span class="number">0</span>, std:<span class="number">0.7615973949432373</span></span><br><span class="line">layer:<span class="number">1</span>, std:<span class="number">0.6943124532699585</span></span><br><span class="line">layer:<span class="number">2</span>, std:<span class="number">0.6680195331573486</span></span><br><span class="line">layer:<span class="number">3</span>, std:<span class="number">0.6616125702857971</span></span><br><span class="line">layer:<span class="number">4</span>, std:<span class="number">0.6516215205192566</span></span><br><span class="line">layer:<span class="number">5</span>, std:<span class="number">0.6495921015739441</span></span><br><span class="line">layer:<span class="number">6</span>, std:<span class="number">0.6488803625106812</span></span><br><span class="line">layer:<span class="number">7</span>, std:<span class="number">0.6540157794952393</span></span><br><span class="line">layer:<span class="number">8</span>, std:<span class="number">0.646391749382019</span></span><br><span class="line">layer:<span class="number">9</span>, std:<span class="number">0.6458406448364258</span></span><br><span class="line">layer:<span class="number">10</span>, std:<span class="number">0.6466742753982544</span></span><br><span class="line">layer:<span class="number">11</span>, std:<span class="number">0.6506401896476746</span></span><br><span class="line">layer:<span class="number">12</span>, std:<span class="number">0.6521316170692444</span></span><br><span class="line">layer:<span class="number">13</span>, std:<span class="number">0.6497370600700378</span></span><br><span class="line">layer:<span class="number">14</span>, std:<span class="number">0.658663809299469</span></span><br><span class="line">layer:<span class="number">15</span>, std:<span class="number">0.6492193341255188</span></span><br><span class="line">layer:<span class="number">16</span>, std:<span class="number">0.6506857872009277</span></span><br><span class="line">layer:<span class="number">17</span>, std:<span class="number">0.6571136116981506</span></span><br><span class="line">layer:<span class="number">18</span>, std:<span class="number">0.6543422341346741</span></span><br><span class="line">layer:<span class="number">19</span>, std:<span class="number">0.6448935270309448</span></span><br><span class="line">layer:<span class="number">20</span>, std:<span class="number">0.6494017839431763</span></span><br><span class="line">layer:<span class="number">21</span>, std:<span class="number">0.6532899141311646</span></span><br><span class="line">layer:<span class="number">22</span>, std:<span class="number">0.6565069556236267</span></span><br><span class="line">layer:<span class="number">23</span>, std:<span class="number">0.6580100655555725</span></span><br><span class="line">layer:<span class="number">24</span>, std:<span class="number">0.6577017903327942</span></span><br><span class="line">layer:<span class="number">25</span>, std:<span class="number">0.6545795202255249</span></span><br><span class="line">layer:<span class="number">26</span>, std:<span class="number">0.6551402807235718</span></span><br><span class="line">layer:<span class="number">27</span>, std:<span class="number">0.6509148478507996</span></span><br><span class="line">layer:<span class="number">28</span>, std:<span class="number">0.6431369185447693</span></span><br><span class="line">layer:<span class="number">29</span>, std:<span class="number">0.6456488966941833</span></span><br><span class="line">layer:<span class="number">30</span>, std:<span class="number">0.6511232852935791</span></span><br><span class="line">layer:<span class="number">31</span>, std:<span class="number">0.6506320834159851</span></span><br><span class="line">layer:<span class="number">32</span>, std:<span class="number">0.657880425453186</span></span><br><span class="line">layer:<span class="number">33</span>, std:<span class="number">0.6485406160354614</span></span><br><span class="line">layer:<span class="number">34</span>, std:<span class="number">0.6527261734008789</span></span><br><span class="line">layer:<span class="number">35</span>, std:<span class="number">0.6500911712646484</span></span><br><span class="line">layer:<span class="number">36</span>, std:<span class="number">0.6485082507133484</span></span><br><span class="line">layer:<span class="number">37</span>, std:<span class="number">0.6504502296447754</span></span><br><span class="line">layer:<span class="number">38</span>, std:<span class="number">0.6503177285194397</span></span><br><span class="line">layer:<span class="number">39</span>, std:<span class="number">0.6530241370201111</span></span><br><span class="line">layer:<span class="number">40</span>, std:<span class="number">0.6510095000267029</span></span><br><span class="line">layer:<span class="number">41</span>, std:<span class="number">0.6553965210914612</span></span><br><span class="line">layer:<span class="number">42</span>, std:<span class="number">0.6578318476676941</span></span><br><span class="line">layer:<span class="number">43</span>, std:<span class="number">0.6548779010772705</span></span><br><span class="line">layer:<span class="number">44</span>, std:<span class="number">0.6529809236526489</span></span><br><span class="line">layer:<span class="number">45</span>, std:<span class="number">0.6459652185440063</span></span><br><span class="line">layer:<span class="number">46</span>, std:<span class="number">0.6443103551864624</span></span><br><span class="line">layer:<span class="number">47</span>, std:<span class="number">0.6450513601303101</span></span><br><span class="line">layer:<span class="number">48</span>, std:<span class="number">0.6509076952934265</span></span><br><span class="line">layer:<span class="number">49</span>, std:<span class="number">0.6491323709487915</span></span><br><span class="line">layer:<span class="number">50</span>, std:<span class="number">0.6418401598930359</span></span><br><span class="line">layer:<span class="number">51</span>, std:<span class="number">0.6513242125511169</span></span><br><span class="line">layer:<span class="number">52</span>, std:<span class="number">0.6482289433479309</span></span><br><span class="line">layer:<span class="number">53</span>, std:<span class="number">0.6528448462486267</span></span><br><span class="line">layer:<span class="number">54</span>, std:<span class="number">0.6462175846099854</span></span><br><span class="line">layer:<span class="number">55</span>, std:<span class="number">0.6517780423164368</span></span><br><span class="line">layer:<span class="number">56</span>, std:<span class="number">0.6513189077377319</span></span><br><span class="line">layer:<span class="number">57</span>, std:<span class="number">0.6553127765655518</span></span><br><span class="line">layer:<span class="number">58</span>, std:<span class="number">0.65123450756073</span></span><br><span class="line">layer:<span class="number">59</span>, std:<span class="number">0.6539309620857239</span></span><br><span class="line">layer:<span class="number">60</span>, std:<span class="number">0.6495435237884521</span></span><br><span class="line">layer:<span class="number">61</span>, std:<span class="number">0.6426352858543396</span></span><br><span class="line">layer:<span class="number">62</span>, std:<span class="number">0.6444136500358582</span></span><br><span class="line">layer:<span class="number">63</span>, std:<span class="number">0.6402761936187744</span></span><br><span class="line">layer:<span class="number">64</span>, std:<span class="number">0.6394422650337219</span></span><br><span class="line">layer:<span class="number">65</span>, std:<span class="number">0.645153820514679</span></span><br><span class="line">layer:<span class="number">66</span>, std:<span class="number">0.6502895951271057</span></span><br><span class="line">layer:<span class="number">67</span>, std:<span class="number">0.6531378030776978</span></span><br><span class="line">layer:<span class="number">68</span>, std:<span class="number">0.6562566161155701</span></span><br><span class="line">layer:<span class="number">69</span>, std:<span class="number">0.6443695425987244</span></span><br><span class="line">layer:<span class="number">70</span>, std:<span class="number">0.6488083600997925</span></span><br><span class="line">layer:<span class="number">71</span>, std:<span class="number">0.6533599495887756</span></span><br><span class="line">layer:<span class="number">72</span>, std:<span class="number">0.6547467708587646</span></span><br><span class="line">layer:<span class="number">73</span>, std:<span class="number">0.6615341901779175</span></span><br><span class="line">layer:<span class="number">74</span>, std:<span class="number">0.6614145040512085</span></span><br><span class="line">layer:<span class="number">75</span>, std:<span class="number">0.6613060235977173</span></span><br><span class="line">layer:<span class="number">76</span>, std:<span class="number">0.660208523273468</span></span><br><span class="line">layer:<span class="number">77</span>, std:<span class="number">0.6468278765678406</span></span><br><span class="line">layer:<span class="number">78</span>, std:<span class="number">0.6502286791801453</span></span><br><span class="line">layer:<span class="number">79</span>, std:<span class="number">0.6533133387565613</span></span><br><span class="line">layer:<span class="number">80</span>, std:<span class="number">0.6569879055023193</span></span><br><span class="line">layer:<span class="number">81</span>, std:<span class="number">0.6568872332572937</span></span><br><span class="line">layer:<span class="number">82</span>, std:<span class="number">0.6558345556259155</span></span><br><span class="line">layer:<span class="number">83</span>, std:<span class="number">0.6482976675033569</span></span><br><span class="line">layer:<span class="number">84</span>, std:<span class="number">0.650995671749115</span></span><br><span class="line">layer:<span class="number">85</span>, std:<span class="number">0.6492160558700562</span></span><br><span class="line">layer:<span class="number">86</span>, std:<span class="number">0.6520841717720032</span></span><br><span class="line">layer:<span class="number">87</span>, std:<span class="number">0.6460869908332825</span></span><br><span class="line">layer:<span class="number">88</span>, std:<span class="number">0.647861123085022</span></span><br><span class="line">layer:<span class="number">89</span>, std:<span class="number">0.65528404712677</span></span><br><span class="line">layer:<span class="number">90</span>, std:<span class="number">0.6476141214370728</span></span><br><span class="line">layer:<span class="number">91</span>, std:<span class="number">0.6491571664810181</span></span><br><span class="line">layer:<span class="number">92</span>, std:<span class="number">0.6430511474609375</span></span><br><span class="line">layer:<span class="number">93</span>, std:<span class="number">0.6462271809577942</span></span><br><span class="line">layer:<span class="number">94</span>, std:<span class="number">0.6526939272880554</span></span><br><span class="line">layer:<span class="number">95</span>, std:<span class="number">0.6551517248153687</span></span><br><span class="line">layer:<span class="number">96</span>, std:<span class="number">0.6510483026504517</span></span><br><span class="line">layer:<span class="number">97</span>, std:<span class="number">0.6543874144554138</span></span><br><span class="line">layer:<span class="number">98</span>, std:<span class="number">0.6469560265541077</span></span><br><span class="line">layer:<span class="number">99</span>, std:<span class="number">0.6513620018959045</span></span><br><span class="line">tensor([[ <span class="number">0.9357</span>, <span class="number">-0.8044</span>,  <span class="number">0.8998</span>,  ...,  <span class="number">0.6191</span>, <span class="number">-0.1190</span>,  <span class="number">0.1825</span>],</span><br><span class="line">        [<span class="number">-0.4456</span>,  <span class="number">0.0576</span>, <span class="number">-0.8589</span>,  ...,  <span class="number">0.5687</span>,  <span class="number">0.7564</span>,  <span class="number">0.6264</span>],</span><br><span class="line">        [ <span class="number">0.8476</span>,  <span class="number">0.5074</span>, <span class="number">-0.8241</span>,  ...,  <span class="number">0.9002</span>,  <span class="number">0.3679</span>,  <span class="number">0.9717</span>],</span><br><span class="line">        ...,</span><br><span class="line">        [<span class="number">-0.6614</span>, <span class="number">-0.4797</span>, <span class="number">-0.5896</span>,  ...,  <span class="number">0.0804</span>, <span class="number">-0.5856</span>, <span class="number">-0.1211</span>],</span><br><span class="line">        [ <span class="number">0.8042</span>,  <span class="number">0.8957</span>,  <span class="number">0.8567</span>,  ..., <span class="number">-0.0121</span>,  <span class="number">0.1311</span>, <span class="number">-0.9198</span>],</span><br><span class="line">        [ <span class="number">0.1697</span>, <span class="number">-0.4975</span>, <span class="number">-0.8746</span>,  ...,  <span class="number">0.1754</span>, <span class="number">-0.4630</span>, <span class="number">-0.6850</span>]],</span><br><span class="line">       grad_fn=&lt;TanhBackward&gt;)</span><br></pre></td></tr></table></figure>
+<p>现在每一层网络的输出值就不会越来越小了。</p>
+<p><code>pytorch</code>中提供了进行Xavier初始化的方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nn.init.xavier_uniform_(m.weight.data, gain=tanh_gain)</span><br></pre></td></tr></table></figure>
+<h4 id="Kaiming初始化"><a href="#Kaiming初始化" class="headerlink" title="Kaiming初始化"></a><code>Kaiming</code>初始化</h4><p>Xavier只适合于饱和激活函数，而非饱和激活函数如<code>relu</code>则不适用</p>
+<p>假设针对上面的代码，我们把激活函数换成<code>relu</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x)</span>:</span></span><br><span class="line">    <span class="keyword">for</span> (i, linear) <span class="keyword">in</span> enumerate(self.linears):</span><br><span class="line">        x = linear(x)</span><br><span class="line">        <span class="comment"># 激活函数换成relu</span></span><br><span class="line">        x = torch.relu(x)</span><br><span class="line"></span><br><span class="line">        print(<span class="string">"layer:&#123;&#125;, std:&#123;&#125;"</span>.format(i, x.std()))</span><br><span class="line">        <span class="keyword">if</span> torch.isnan(x.std()):</span><br><span class="line">            print(<span class="string">"output is nan in &#123;&#125; layers"</span>.format(i))</span><br><span class="line">            <span class="keyword">return</span> x</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">layer:<span class="number">0</span>, std:<span class="number">0.9736467599868774</span></span><br><span class="line">layer:<span class="number">1</span>, std:<span class="number">1.1656721830368042</span></span><br><span class="line">layer:<span class="number">2</span>, std:<span class="number">1.4657647609710693</span></span><br><span class="line">layer:<span class="number">3</span>, std:<span class="number">1.7342147827148438</span></span><br><span class="line">layer:<span class="number">4</span>, std:<span class="number">1.9326763153076172</span></span><br><span class="line">layer:<span class="number">5</span>, std:<span class="number">2.3239614963531494</span></span><br><span class="line">layer:<span class="number">6</span>, std:<span class="number">2.8289241790771484</span></span><br><span class="line">layer:<span class="number">7</span>, std:<span class="number">3.27266263961792</span></span><br><span class="line">layer:<span class="number">8</span>, std:<span class="number">3.999720573425293</span></span><br><span class="line">layer:<span class="number">9</span>, std:<span class="number">4.30142068862915</span></span><br><span class="line">layer:<span class="number">10</span>, std:<span class="number">5.378474235534668</span></span><br><span class="line">layer:<span class="number">11</span>, std:<span class="number">5.945633411407471</span></span><br><span class="line">layer:<span class="number">12</span>, std:<span class="number">7.611734867095947</span></span><br><span class="line">layer:<span class="number">13</span>, std:<span class="number">8.23315143585205</span></span><br><span class="line">layer:<span class="number">14</span>, std:<span class="number">9.557497024536133</span></span><br><span class="line">layer:<span class="number">15</span>, std:<span class="number">11.985333442687988</span></span><br><span class="line">layer:<span class="number">16</span>, std:<span class="number">13.370684623718262</span></span><br><span class="line">layer:<span class="number">17</span>, std:<span class="number">14.82516860961914</span></span><br><span class="line">layer:<span class="number">18</span>, std:<span class="number">16.142274856567383</span></span><br><span class="line">layer:<span class="number">19</span>, std:<span class="number">20.275897979736328</span></span><br><span class="line">layer:<span class="number">20</span>, std:<span class="number">21.284557342529297</span></span><br><span class="line">layer:<span class="number">21</span>, std:<span class="number">23.966691970825195</span></span><br><span class="line">layer:<span class="number">22</span>, std:<span class="number">27.94208526611328</span></span><br><span class="line">layer:<span class="number">23</span>, std:<span class="number">30.947021484375</span></span><br><span class="line">layer:<span class="number">24</span>, std:<span class="number">34.0330810546875</span></span><br><span class="line">layer:<span class="number">25</span>, std:<span class="number">41.57271194458008</span></span><br><span class="line">layer:<span class="number">26</span>, std:<span class="number">50.857303619384766</span></span><br><span class="line">layer:<span class="number">27</span>, std:<span class="number">55.795127868652344</span></span><br><span class="line">layer:<span class="number">28</span>, std:<span class="number">61.40922546386719</span></span><br><span class="line">layer:<span class="number">29</span>, std:<span class="number">65.00013732910156</span></span><br><span class="line">layer:<span class="number">30</span>, std:<span class="number">88.00929260253906</span></span><br><span class="line">layer:<span class="number">31</span>, std:<span class="number">111.04611206054688</span></span><br><span class="line">layer:<span class="number">32</span>, std:<span class="number">124.12654876708984</span></span><br><span class="line">layer:<span class="number">33</span>, std:<span class="number">147.9998779296875</span></span><br><span class="line">layer:<span class="number">34</span>, std:<span class="number">183.37405395507812</span></span><br><span class="line">layer:<span class="number">35</span>, std:<span class="number">246.94544982910156</span></span><br><span class="line">layer:<span class="number">36</span>, std:<span class="number">300.00946044921875</span></span><br><span class="line">layer:<span class="number">37</span>, std:<span class="number">383.9361267089844</span></span><br><span class="line">layer:<span class="number">38</span>, std:<span class="number">487.6725769042969</span></span><br><span class="line">layer:<span class="number">39</span>, std:<span class="number">600.6978759765625</span></span><br><span class="line">layer:<span class="number">40</span>, std:<span class="number">716.6215209960938</span></span><br><span class="line">layer:<span class="number">41</span>, std:<span class="number">953.6651611328125</span></span><br><span class="line">layer:<span class="number">42</span>, std:<span class="number">1133.579833984375</span></span><br><span class="line">layer:<span class="number">43</span>, std:<span class="number">1312.9854736328125</span></span><br><span class="line">layer:<span class="number">44</span>, std:<span class="number">1593.806396484375</span></span><br><span class="line">layer:<span class="number">45</span>, std:<span class="number">1823.689208984375</span></span><br><span class="line">layer:<span class="number">46</span>, std:<span class="number">2410.478515625</span></span><br><span class="line">layer:<span class="number">47</span>, std:<span class="number">3021.795166015625</span></span><br><span class="line">layer:<span class="number">48</span>, std:<span class="number">3830.048828125</span></span><br><span class="line">layer:<span class="number">49</span>, std:<span class="number">4210.138671875</span></span><br><span class="line">layer:<span class="number">50</span>, std:<span class="number">4821.57373046875</span></span><br><span class="line">layer:<span class="number">51</span>, std:<span class="number">6131.04248046875</span></span><br><span class="line">layer:<span class="number">52</span>, std:<span class="number">7420.24853515625</span></span><br><span class="line">layer:<span class="number">53</span>, std:<span class="number">8933.3251953125</span></span><br><span class="line">layer:<span class="number">54</span>, std:<span class="number">10330.2490234375</span></span><br><span class="line">layer:<span class="number">55</span>, std:<span class="number">10835.60546875</span></span><br><span class="line">layer:<span class="number">56</span>, std:<span class="number">11556.45703125</span></span><br><span class="line">layer:<span class="number">57</span>, std:<span class="number">14248.263671875</span></span><br><span class="line">layer:<span class="number">58</span>, std:<span class="number">16818.216796875</span></span><br><span class="line">layer:<span class="number">59</span>, std:<span class="number">19947.498046875</span></span><br><span class="line">layer:<span class="number">60</span>, std:<span class="number">26884.26953125</span></span><br><span class="line">layer:<span class="number">61</span>, std:<span class="number">30824.623046875</span></span><br><span class="line">layer:<span class="number">62</span>, std:<span class="number">37823.87109375</span></span><br><span class="line">layer:<span class="number">63</span>, std:<span class="number">42357.39453125</span></span><br><span class="line">layer:<span class="number">64</span>, std:<span class="number">50901.15234375</span></span><br><span class="line">layer:<span class="number">65</span>, std:<span class="number">61428.8515625</span></span><br><span class="line">layer:<span class="number">66</span>, std:<span class="number">81561.578125</span></span><br><span class="line">layer:<span class="number">67</span>, std:<span class="number">110124.4375</span></span><br><span class="line">layer:<span class="number">68</span>, std:<span class="number">115554.2265625</span></span><br><span class="line">layer:<span class="number">69</span>, std:<span class="number">140480.390625</span></span><br><span class="line">layer:<span class="number">70</span>, std:<span class="number">156277.6875</span></span><br><span class="line">layer:<span class="number">71</span>, std:<span class="number">188532.859375</span></span><br><span class="line">layer:<span class="number">72</span>, std:<span class="number">218894.390625</span></span><br><span class="line">layer:<span class="number">73</span>, std:<span class="number">265436.46875</span></span><br><span class="line">layer:<span class="number">74</span>, std:<span class="number">280642.125</span></span><br><span class="line">layer:<span class="number">75</span>, std:<span class="number">317877.53125</span></span><br><span class="line">layer:<span class="number">76</span>, std:<span class="number">374410.90625</span></span><br><span class="line">layer:<span class="number">77</span>, std:<span class="number">467014.0</span></span><br><span class="line">layer:<span class="number">78</span>, std:<span class="number">581226.0625</span></span><br><span class="line">layer:<span class="number">79</span>, std:<span class="number">748015.75</span></span><br><span class="line">layer:<span class="number">80</span>, std:<span class="number">1023228.25</span></span><br><span class="line">layer:<span class="number">81</span>, std:<span class="number">1199279.625</span></span><br><span class="line">layer:<span class="number">82</span>, std:<span class="number">1498950.875</span></span><br><span class="line">layer:<span class="number">83</span>, std:<span class="number">1649968.25</span></span><br><span class="line">layer:<span class="number">84</span>, std:<span class="number">2011411.875</span></span><br><span class="line">layer:<span class="number">85</span>, std:<span class="number">2473448.25</span></span><br><span class="line">layer:<span class="number">86</span>, std:<span class="number">2742399.5</span></span><br><span class="line">layer:<span class="number">87</span>, std:<span class="number">2971178.75</span></span><br><span class="line">layer:<span class="number">88</span>, std:<span class="number">3524154.5</span></span><br><span class="line">layer:<span class="number">89</span>, std:<span class="number">3989879.75</span></span><br><span class="line">layer:<span class="number">90</span>, std:<span class="number">4953882.5</span></span><br><span class="line">layer:<span class="number">91</span>, std:<span class="number">5743866.5</span></span><br><span class="line">layer:<span class="number">92</span>, std:<span class="number">6304035.5</span></span><br><span class="line">layer:<span class="number">93</span>, std:<span class="number">7455818.5</span></span><br><span class="line">layer:<span class="number">94</span>, std:<span class="number">8783134.0</span></span><br><span class="line">layer:<span class="number">95</span>, std:<span class="number">11827082.0</span></span><br><span class="line">layer:<span class="number">96</span>, std:<span class="number">13226204.0</span></span><br><span class="line">layer:<span class="number">97</span>, std:<span class="number">17922894.0</span></span><br><span class="line">layer:<span class="number">98</span>, std:<span class="number">19208862.0</span></span><br><span class="line">layer:<span class="number">99</span>, std:<span class="number">23558832.0</span></span><br><span class="line">tensor([[<span class="number">45271512.</span>, <span class="number">12699174.</span>,        <span class="number">0.</span>,  ..., <span class="number">16133147.</span>, <span class="number">70351472.</span>,</span><br><span class="line">         <span class="number">50286560.</span>],</span><br><span class="line">        [<span class="number">45883780.</span>, <span class="number">13033413.</span>,        <span class="number">0.</span>,  ..., <span class="number">16280076.</span>, <span class="number">68406784.</span>,</span><br><span class="line">         <span class="number">49523924.</span>],</span><br><span class="line">        [<span class="number">36918948.</span>,  <span class="number">9552099.</span>,        <span class="number">0.</span>,  ..., <span class="number">13450978.</span>, <span class="number">56660272.</span>,</span><br><span class="line">         <span class="number">40777116.</span>],</span><br><span class="line">        ...,</span><br><span class="line">        [<span class="number">50119664.</span>, <span class="number">14681072.</span>,        <span class="number">0.</span>,  ..., <span class="number">18321080.</span>, <span class="number">74405592.</span>,</span><br><span class="line">         <span class="number">54920220.</span>],</span><br><span class="line">        [<span class="number">39083596.</span>, <span class="number">11305603.</span>,        <span class="number">0.</span>,  ..., <span class="number">14831032.</span>, <span class="number">59826176.</span>,</span><br><span class="line">         <span class="number">44137924.</span>],</span><br><span class="line">        [<span class="number">58225608.</span>, <span class="number">16406362.</span>,        <span class="number">0.</span>,  ..., <span class="number">21336580.</span>, <span class="number">88127248.</span>,</span><br><span class="line">         <span class="number">64016336.</span>]], grad_fn=&lt;ReluBackward0&gt;)</span><br></pre></td></tr></table></figure>
+<p>可以看到网络的输出值不断增大，有可能会导致梯度爆炸。</p>
+<p><code>Kaiming</code>初始化方法则是用来解决非激活函数。</p>
+<p><img src="/2023/02/18/pytorch-loss/p7.png" alt></p>
+<p>其中a是针对<code>relu</code>的变种其负半轴的斜率。</p>
+<p>针对上述代码，我们改用<code>Kaiming</code>初始化</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Kaiming初始化</span></span><br><span class="line">nn.init.normal_(m.weight.data, std=np.sqrt(<span class="number">2</span>/self.neural_num))</span><br><span class="line"></span><br><span class="line">layer:<span class="number">0</span>, std:<span class="number">0.8256813883781433</span></span><br><span class="line">layer:<span class="number">1</span>, std:<span class="number">0.8159489631652832</span></span><br><span class="line">layer:<span class="number">2</span>, std:<span class="number">0.8242867588996887</span></span><br><span class="line">layer:<span class="number">3</span>, std:<span class="number">0.7728303074836731</span></span><br><span class="line">layer:<span class="number">4</span>, std:<span class="number">0.7587776780128479</span></span><br><span class="line">layer:<span class="number">5</span>, std:<span class="number">0.7840063571929932</span></span><br><span class="line">layer:<span class="number">6</span>, std:<span class="number">0.812754213809967</span></span><br><span class="line">layer:<span class="number">7</span>, std:<span class="number">0.8468071222305298</span></span><br><span class="line">layer:<span class="number">8</span>, std:<span class="number">0.750910222530365</span></span><br><span class="line">layer:<span class="number">9</span>, std:<span class="number">0.7862679958343506</span></span><br><span class="line">layer:<span class="number">10</span>, std:<span class="number">0.8471992015838623</span></span><br><span class="line">layer:<span class="number">11</span>, std:<span class="number">0.8358661532402039</span></span><br><span class="line">layer:<span class="number">12</span>, std:<span class="number">0.8365052938461304</span></span><br><span class="line">layer:<span class="number">13</span>, std:<span class="number">0.941089391708374</span></span><br><span class="line">layer:<span class="number">14</span>, std:<span class="number">0.8334775567054749</span></span><br><span class="line">layer:<span class="number">15</span>, std:<span class="number">0.7378053665161133</span></span><br><span class="line">layer:<span class="number">16</span>, std:<span class="number">0.7786925435066223</span></span><br><span class="line">layer:<span class="number">17</span>, std:<span class="number">0.7801215052604675</span></span><br><span class="line">layer:<span class="number">18</span>, std:<span class="number">0.744530975818634</span></span><br><span class="line">layer:<span class="number">19</span>, std:<span class="number">0.7729376554489136</span></span><br><span class="line">layer:<span class="number">20</span>, std:<span class="number">0.7996224164962769</span></span><br><span class="line">layer:<span class="number">21</span>, std:<span class="number">0.7438898682594299</span></span><br><span class="line">layer:<span class="number">22</span>, std:<span class="number">0.8052859306335449</span></span><br><span class="line">layer:<span class="number">23</span>, std:<span class="number">0.8013993501663208</span></span><br><span class="line">layer:<span class="number">24</span>, std:<span class="number">0.8458987474441528</span></span><br><span class="line">layer:<span class="number">25</span>, std:<span class="number">0.9109481573104858</span></span><br><span class="line">layer:<span class="number">26</span>, std:<span class="number">0.8329163789749146</span></span><br><span class="line">layer:<span class="number">27</span>, std:<span class="number">0.7938662171363831</span></span><br><span class="line">layer:<span class="number">28</span>, std:<span class="number">0.7818281650543213</span></span><br><span class="line">layer:<span class="number">29</span>, std:<span class="number">0.7433196306228638</span></span><br><span class="line">layer:<span class="number">30</span>, std:<span class="number">0.8786559700965881</span></span><br><span class="line">layer:<span class="number">31</span>, std:<span class="number">0.8984055519104004</span></span><br><span class="line">layer:<span class="number">32</span>, std:<span class="number">0.7985660433769226</span></span><br><span class="line">layer:<span class="number">33</span>, std:<span class="number">0.9004362225532532</span></span><br><span class="line">layer:<span class="number">34</span>, std:<span class="number">0.8771427273750305</span></span><br><span class="line">layer:<span class="number">35</span>, std:<span class="number">0.8327329158782959</span></span><br><span class="line">layer:<span class="number">36</span>, std:<span class="number">0.7529121041297913</span></span><br><span class="line">layer:<span class="number">37</span>, std:<span class="number">0.7560306191444397</span></span><br><span class="line">layer:<span class="number">38</span>, std:<span class="number">0.7768694758415222</span></span><br><span class="line">layer:<span class="number">39</span>, std:<span class="number">0.7229365706443787</span></span><br><span class="line">layer:<span class="number">40</span>, std:<span class="number">0.6847150921821594</span></span><br><span class="line">layer:<span class="number">41</span>, std:<span class="number">0.6917332410812378</span></span><br><span class="line">layer:<span class="number">42</span>, std:<span class="number">0.7432793974876404</span></span><br><span class="line">layer:<span class="number">43</span>, std:<span class="number">0.7119105458259583</span></span><br><span class="line">layer:<span class="number">44</span>, std:<span class="number">0.723327100276947</span></span><br><span class="line">layer:<span class="number">45</span>, std:<span class="number">0.692399263381958</span></span><br><span class="line">layer:<span class="number">46</span>, std:<span class="number">0.7096500992774963</span></span><br><span class="line">layer:<span class="number">47</span>, std:<span class="number">0.7403143644332886</span></span><br><span class="line">layer:<span class="number">48</span>, std:<span class="number">0.7733916640281677</span></span><br><span class="line">layer:<span class="number">49</span>, std:<span class="number">0.7756217122077942</span></span><br><span class="line">layer:<span class="number">50</span>, std:<span class="number">0.8285183906555176</span></span><br><span class="line">layer:<span class="number">51</span>, std:<span class="number">0.811735987663269</span></span><br><span class="line">layer:<span class="number">52</span>, std:<span class="number">0.766518771648407</span></span><br><span class="line">layer:<span class="number">53</span>, std:<span class="number">0.8102941513061523</span></span><br><span class="line">layer:<span class="number">54</span>, std:<span class="number">0.7746390104293823</span></span><br><span class="line">layer:<span class="number">55</span>, std:<span class="number">0.8069944977760315</span></span><br><span class="line">layer:<span class="number">56</span>, std:<span class="number">0.8859500288963318</span></span><br><span class="line">layer:<span class="number">57</span>, std:<span class="number">0.8730546236038208</span></span><br><span class="line">layer:<span class="number">58</span>, std:<span class="number">0.8584580421447754</span></span><br><span class="line">layer:<span class="number">59</span>, std:<span class="number">0.8817113041877747</span></span><br><span class="line">layer:<span class="number">60</span>, std:<span class="number">0.8609682321548462</span></span><br><span class="line">layer:<span class="number">61</span>, std:<span class="number">0.6981067657470703</span></span><br><span class="line">layer:<span class="number">62</span>, std:<span class="number">0.6881256103515625</span></span><br><span class="line">layer:<span class="number">63</span>, std:<span class="number">0.7074345350265503</span></span><br><span class="line">layer:<span class="number">64</span>, std:<span class="number">0.8192773461341858</span></span><br><span class="line">layer:<span class="number">65</span>, std:<span class="number">0.7355524301528931</span></span><br><span class="line">layer:<span class="number">66</span>, std:<span class="number">0.7250872254371643</span></span><br><span class="line">layer:<span class="number">67</span>, std:<span class="number">0.7580576539039612</span></span><br><span class="line">layer:<span class="number">68</span>, std:<span class="number">0.6964988112449646</span></span><br><span class="line">layer:<span class="number">69</span>, std:<span class="number">0.752277135848999</span></span><br><span class="line">layer:<span class="number">70</span>, std:<span class="number">0.7253941893577576</span></span><br><span class="line">layer:<span class="number">71</span>, std:<span class="number">0.6531673073768616</span></span><br><span class="line">layer:<span class="number">72</span>, std:<span class="number">0.6727007627487183</span></span><br><span class="line">layer:<span class="number">73</span>, std:<span class="number">0.6199373006820679</span></span><br><span class="line">layer:<span class="number">74</span>, std:<span class="number">0.5950634479522705</span></span><br><span class="line">layer:<span class="number">75</span>, std:<span class="number">0.61208176612854</span></span><br><span class="line">layer:<span class="number">76</span>, std:<span class="number">0.6338782906532288</span></span><br><span class="line">layer:<span class="number">77</span>, std:<span class="number">0.6784136891365051</span></span><br><span class="line">layer:<span class="number">78</span>, std:<span class="number">0.6899406313896179</span></span><br><span class="line">layer:<span class="number">79</span>, std:<span class="number">0.7904988527297974</span></span><br><span class="line">layer:<span class="number">80</span>, std:<span class="number">0.74302738904953</span></span><br><span class="line">layer:<span class="number">81</span>, std:<span class="number">0.8214826583862305</span></span><br><span class="line">layer:<span class="number">82</span>, std:<span class="number">0.9201915264129639</span></span><br><span class="line">layer:<span class="number">83</span>, std:<span class="number">0.8273651599884033</span></span><br><span class="line">layer:<span class="number">84</span>, std:<span class="number">0.8774834275245667</span></span><br><span class="line">layer:<span class="number">85</span>, std:<span class="number">0.7430731654167175</span></span><br><span class="line">layer:<span class="number">86</span>, std:<span class="number">0.8204286694526672</span></span><br><span class="line">layer:<span class="number">87</span>, std:<span class="number">0.7464808821678162</span></span><br><span class="line">layer:<span class="number">88</span>, std:<span class="number">0.7037572860717773</span></span><br><span class="line">layer:<span class="number">89</span>, std:<span class="number">0.7689121961593628</span></span><br><span class="line">layer:<span class="number">90</span>, std:<span class="number">0.6902880668640137</span></span><br><span class="line">layer:<span class="number">91</span>, std:<span class="number">0.68663489818573</span></span><br><span class="line">layer:<span class="number">92</span>, std:<span class="number">0.6811012029647827</span></span><br><span class="line">layer:<span class="number">93</span>, std:<span class="number">0.7253351807594299</span></span><br><span class="line">layer:<span class="number">94</span>, std:<span class="number">0.7396165132522583</span></span><br><span class="line">layer:<span class="number">95</span>, std:<span class="number">0.786566436290741</span></span><br><span class="line">layer:<span class="number">96</span>, std:<span class="number">0.8232990503311157</span></span><br><span class="line">layer:<span class="number">97</span>, std:<span class="number">0.8759231567382812</span></span><br><span class="line">layer:<span class="number">98</span>, std:<span class="number">0.8548166155815125</span></span><br><span class="line">layer:<span class="number">99</span>, std:<span class="number">0.8607176542282104</span></span><br><span class="line">tensor([[<span class="number">0.0000</span>, <span class="number">0.0000</span>, <span class="number">1.0538</span>,  ..., <span class="number">0.9840</span>, <span class="number">0.0000</span>, <span class="number">0.0000</span>],</span><br><span class="line">        [<span class="number">0.0000</span>, <span class="number">0.0000</span>, <span class="number">0.9070</span>,  ..., <span class="number">0.8981</span>, <span class="number">0.0000</span>, <span class="number">0.0000</span>],</span><br><span class="line">        [<span class="number">0.0000</span>, <span class="number">0.0000</span>, <span class="number">1.0179</span>,  ..., <span class="number">1.0203</span>, <span class="number">0.0000</span>, <span class="number">0.0000</span>],</span><br><span class="line">        ...,</span><br><span class="line">        [<span class="number">0.0000</span>, <span class="number">0.0000</span>, <span class="number">0.7957</span>,  ..., <span class="number">0.6951</span>, <span class="number">0.0000</span>, <span class="number">0.0000</span>],</span><br><span class="line">        [<span class="number">0.0000</span>, <span class="number">0.0000</span>, <span class="number">0.9696</span>,  ..., <span class="number">0.8639</span>, <span class="number">0.0000</span>, <span class="number">0.0000</span>],</span><br><span class="line">        [<span class="number">0.0000</span>, <span class="number">0.0000</span>, <span class="number">0.9062</span>,  ..., <span class="number">0.8373</span>, <span class="number">0.0000</span>, <span class="number">0.0000</span>]],</span><br><span class="line">       grad_fn=&lt;ReluBackward0&gt;)</span><br></pre></td></tr></table></figure>
+<p><code>pytorch</code>中同样有直接<code>Kaiming</code>初始化的方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nn.init.kaiming_normal_(m.weight.data)</span><br></pre></td></tr></table></figure>
+<h4 id="nn-init-calculate-gain"><a href="#nn-init-calculate-gain" class="headerlink" title="nn.init.calculate_gain"></a>nn.init.calculate_gain</h4><p>主要功能：计算激活函数的方差变化尺度</p>
+<p>主要参数：</p>
+<ul>
+<li>nonlinearity：激活函数名称</li>
+<li><code>param</code>：激活函数的参数，如<code>Leaky Relu</code>的negative_slop</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">x = torch.randn(<span class="number">10000</span>)</span><br><span class="line">out = torch.tanh(x)</span><br><span class="line"></span><br><span class="line">gain = x.std() / out.std()</span><br><span class="line">print(<span class="string">'gain:&#123;&#125;'</span>.format(gain))</span><br><span class="line"></span><br><span class="line">tanh_gain = nn.init.calculate_gain(<span class="string">'tanh'</span>)</span><br><span class="line">print(<span class="string">'tanh_gain in PyTorch:'</span>, tanh_gain)</span><br><span class="line"></span><br><span class="line">gain:<span class="number">1.5917036533355713</span></span><br><span class="line">tanh_gain <span class="keyword">in</span> PyTorch: <span class="number">1.6666666666666667</span></span><br></pre></td></tr></table></figure>
+<p>也就是说数据经过<code>tanh</code>之后，其标准差会减小1.6倍左右。</p>
+<h3 id="损失函数"><a href="#损失函数" class="headerlink" title="损失函数"></a>损失函数</h3><h4 id="损失函数概念"><a href="#损失函数概念" class="headerlink" title="损失函数概念"></a>损失函数概念</h4><p>衡量模型输出与真实标签的差异</p>
+<p><img src="/2023/02/18/pytorch-loss/p8.png" alt></p>
+<p>损失函数一般指单个样本，而代价函数则是所有样本，目标函数既包括代价函数（尽可能的小），也包括一个正则项，也就是避免过拟合。</p>
+<p>pytorch中的loss</p>
+<p><img src="/2023/02/18/pytorch-loss/p9.png" alt></p>
+<p>size_average和reduce参数即将废弃，不要使用。</p>
+<h4 id="nn-CrossEntropyLoss"><a href="#nn-CrossEntropyLoss" class="headerlink" title="nn.CrossEntropyLoss"></a><code>nn.CrossEntropyLoss</code></h4><p>功能：<code>nn.LogSoftmax()</code>与<code>nn.NLLLoss()</code>结合，进行交叉熵计算</p>
+<p>参数：</p>
+<ul>
+<li>weight：各类别的loss设置权值</li>
+<li>ignore_index：忽略某个类别</li>
+<li>reduction：计算模式，可为none/sum/mean</li>
+</ul>
+<p>none：逐元素计算</p>
+<p>sum：所有元素求和，返回标量</p>
+<p>mean：加权平均，返回标量</p>
+<p><img src="/2023/02/18/pytorch-loss/p10.png" alt></p>
+<p>P表示训练集标签，Q表示预测值标签；</p>
+<p>熵就是对自信息求期望。H(P)表示训练集标签的熵，其为定值。</p>
+<p><img src="/2023/02/18/pytorch-loss/p11.png" alt></p>
+<p>这里x是神经元的输出，class表示该输出所对应的类别。</p>
+<p>第一个式子是未设置weight参数的形式，第二个式子是设置了weight的形式。</p>
+<p><code>Pytorch</code>代码（未设置weight）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">inputs = torch.tensor([[<span class="number">1</span>, <span class="number">2</span>], [<span class="number">1</span>, <span class="number">3</span>], [<span class="number">1</span>, <span class="number">3</span>]], dtype=torch.float)</span><br><span class="line">target = torch.tensor([<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>], dtype=torch.long)</span><br><span class="line"></span><br><span class="line">loss_f_none = nn.CrossEntropyLoss(weight=<span class="literal">None</span>, reduction=<span class="string">'none'</span>)</span><br><span class="line">loss_f_sum = nn.CrossEntropyLoss(weight=<span class="literal">None</span>, reduction=<span class="string">'sum'</span>)</span><br><span class="line">loss_f_mean = nn.CrossEntropyLoss(weight=<span class="literal">None</span>, reduction=<span class="string">'mean'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># forward</span></span><br><span class="line">loss_none = loss_f_none(inputs, target)</span><br><span class="line">loss_sum = loss_f_sum(inputs, target)</span><br><span class="line">loss_mean = loss_f_mean(inputs, target)</span><br><span class="line"></span><br><span class="line"><span class="comment"># view</span></span><br><span class="line">print(<span class="string">"Cross Entropy Loss:\n"</span>, loss_none, loss_sum, loss_mean)</span><br><span class="line"></span><br><span class="line"><span class="comment"># compute by hand</span></span><br><span class="line">idx = <span class="number">0</span></span><br><span class="line">input_1 = inputs.detach().numpy()[idx]  <span class="comment"># [1, 2]</span></span><br><span class="line">target_1 = target.numpy()[idx]          <span class="comment"># 0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 第一项</span></span><br><span class="line">x_class = input_1[target_1]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 第二项</span></span><br><span class="line">sigma_exp_x = np.sum(list(map(np.exp, input_1)))</span><br><span class="line">log_sigma_exp_x = np.log(sigma_exp_x)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出loss</span></span><br><span class="line">loss_1 = -x_class + log_sigma_exp_x</span><br><span class="line">print(<span class="string">"第一个样本的loss：&#123;&#125;"</span>.format(loss_1))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Cross Entropy Loss:</span><br><span class="line"> tensor([<span class="number">1.3133</span>, <span class="number">0.1269</span>, <span class="number">0.1269</span>]) tensor(<span class="number">1.5671</span>) tensor(<span class="number">0.5224</span>)</span><br><span class="line">第一个样本的loss：<span class="number">1.3132617473602295</span></span><br></pre></td></tr></table></figure>
+<p><code>Pytorch</code>代码（设置weight）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">weights = torch.tensor([<span class="number">1</span>, <span class="number">2</span>], dtype=torch.float)</span><br><span class="line"></span><br><span class="line">loss_f_none_w = nn.CrossEntropyLoss(weight=weights, reduction=<span class="string">'none'</span>)</span><br><span class="line">loss_f_sum_w = nn.CrossEntropyLoss(weight=weights, reduction=<span class="string">'sum'</span>)</span><br><span class="line">loss_f_mean_w = nn.CrossEntropyLoss(weight=weights, reduction=<span class="string">'mean'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># forward</span></span><br><span class="line">loss_none_w = loss_f_none_w(inputs, target)</span><br><span class="line">loss_sum_w = loss_f_sum_w(inputs, target)</span><br><span class="line">loss_mean_w = loss_f_mean_w(inputs, target)</span><br><span class="line"></span><br><span class="line"><span class="comment"># view</span></span><br><span class="line">print(<span class="string">"\nweights: "</span>, weights)</span><br><span class="line">print(loss_none_w, loss_sum_w, loss_mean_w)</span><br><span class="line"></span><br><span class="line">weights:  tensor([<span class="number">1.</span>, <span class="number">2.</span>])</span><br><span class="line">tensor([<span class="number">1.3133</span>, <span class="number">0.2539</span>, <span class="number">0.2539</span>]) tensor(<span class="number">1.8210</span>) tensor(<span class="number">0.3642</span>)</span><br></pre></td></tr></table></figure>
+<p>因为给不同的类别设置了权重，这里类别0的权重为1，类别1的权重设置为2，所以针对第一个输出值的类别为0，其损失乘以1，依然是1.3133;第二、三个输出值的类别为1，其损失乘以2。</p>
+<p>当reduction=’sum’时，就是把这几些损失加在一起；</p>
+<p>当reduction=’mean’时，求和之后除以总份数（1+2+2=5）。</p>
+<p>如果将weight改为[0.7, 0.3]，输出则为</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">weights:  tensor([<span class="number">0.7000</span>, <span class="number">0.3000</span>])</span><br><span class="line">tensor([<span class="number">0.9193</span>, <span class="number">0.0381</span>, <span class="number">0.0381</span>]) tensor(<span class="number">0.9954</span>) tensor(<span class="number">0.7657</span>)</span><br><span class="line"><span class="comment"># 0.9954/(0.7+0.3+0.3) = 0.7657</span></span><br></pre></td></tr></table></figure>
+<p>对于none和sum的形式，weight是比较好理解的，对于mean的形式，我们来手动计算一下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># compute by hand</span></span><br><span class="line">weights = torch.tensor([<span class="number">1</span>, <span class="number">2</span>], dtype=torch.float)</span><br><span class="line"><span class="comment"># 按照权重计算总共有多少份 target[0, 1, 1] --&gt; sum([1, 2, 2]) = 5</span></span><br><span class="line">weights_all = np.sum(list(map(<span class="keyword">lambda</span> x: weights.numpy()[x], target.numpy())))</span><br><span class="line"></span><br><span class="line">mean = <span class="number">0</span></span><br><span class="line"><span class="comment"># 借助之前的loss_none:tensor([1.3133, 0.2539, 0.2539])</span></span><br><span class="line">loss_sep = loss_none.detach().numpy()</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(target.shape[<span class="number">0</span>]):</span><br><span class="line">    x_class = target.numpy()[i]</span><br><span class="line">    tmp = loss_sep[i] * (weights.numpy()[x_class]/weights_all)</span><br><span class="line">    mean += tmp</span><br><span class="line"></span><br><span class="line">print(mean)</span><br><span class="line"></span><br><span class="line"><span class="number">0.3641947731375694</span></span><br></pre></td></tr></table></figure>
+<h4 id="nn-NLLLoss"><a href="#nn-NLLLoss" class="headerlink" title="nn.NLLLoss"></a><code>nn.NLLLoss</code></h4><p>功能：实现负对数似然函数中的<strong>负号功能</strong></p>
+<p>主要参数：</p>
+<ul>
+<li>weight：各类别的loss设置权值</li>
+<li>ignore_index：忽略某个类别</li>
+<li>reduction：计算模式，可为none/sum/mean</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment"># NLLLoss</span></span><br><span class="line">inputs = torch.tensor([[<span class="number">1</span>, <span class="number">2</span>], [<span class="number">1</span>, <span class="number">3</span>], [<span class="number">1</span>, <span class="number">3</span>]], dtype=torch.float)</span><br><span class="line">target = torch.tensor([<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>], dtype=torch.long)</span><br><span class="line"></span><br><span class="line">weights = torch.tensor([<span class="number">1</span>, <span class="number">1</span>], dtype=torch.float)</span><br><span class="line">loss_f_none_w = nn.NLLLoss(weight=weights, reduction=<span class="string">'none'</span>)</span><br><span class="line">loss_f_sum_w = nn.NLLLoss(weight=weights, reduction=<span class="string">'sum'</span>)</span><br><span class="line">loss_f_mean_w = nn.NLLLoss(weight=weights, reduction=<span class="string">'mean'</span>)</span><br><span class="line"></span><br><span class="line">loss_none_w = loss_f_none_w(inputs, target)</span><br><span class="line">loss_sum_w = loss_f_sum_w(inputs, target)</span><br><span class="line">loss_mean_w = loss_f_mean_w(inputs, target)</span><br><span class="line"></span><br><span class="line"><span class="comment"># view</span></span><br><span class="line">print(<span class="string">"\n weights:"</span>, weights)</span><br><span class="line">print(<span class="string">"NLL Loss"</span>, loss_none_w, loss_sum_w, loss_mean_w)</span><br><span class="line"></span><br><span class="line"> weights: tensor([<span class="number">1.</span>, <span class="number">1.</span>])</span><br><span class="line">NLL Loss tensor([<span class="number">-1.</span>, <span class="number">-3.</span>, <span class="number">-3.</span>]) tensor(<span class="number">-7.</span>) tensor(<span class="number">-2.3333</span>)</span><br></pre></td></tr></table></figure>
+<p>这里神经网络的输出分别为<code>x1=[1, 2]、x2=[1, 3]、x3=[1, 3]</code>，其中第一个输出对应类别为0，所以loss是对其<code>x1[0]</code>取反，得到-1;同理第二、三个输出对应类别为1，所以loss是对其<code>x2[1]</code>和<code>x3[1]</code>取反，得到-3。</p>
+<p><strong>注意：这里的只有两个类别0和1，所以输出的x长度也是为2，这是互相对应的，如果有三类，则输出x的长度为3。</strong></p>
+<p>这里<code>x1、x2、x3</code>可以看作是不同样本输出，而<code>x1</code>内部的[1,2]可以看作是不同神经元的输出。</p>
+<h4 id="nn-BCELoss"><a href="#nn-BCELoss" class="headerlink" title="nn.BCELoss"></a><code>nn.BCELoss</code></h4><p>功能：二分类交叉熵，<strong>输入值取值在[0,1]</strong></p>
+<p>主要参数：</p>
+<ul>
+<li>weight：各类别的loss设置权值</li>
+<li>ignore_index：忽略某个类别</li>
+<li>reduction：计算模式，可为none/sum/mean</li>
+</ul>
+<p><img src="/2023/02/18/pytorch-loss/p12.png" alt></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># BCELoss</span></span><br><span class="line">inputs = torch.tensor([[<span class="number">1</span>, <span class="number">2</span>], [<span class="number">2</span>, <span class="number">2</span>], [<span class="number">3</span>, <span class="number">4</span>], [<span class="number">4</span>, <span class="number">5</span>]], dtype=torch.float)</span><br><span class="line"><span class="comment"># 这里计算Loss，是计算每个神经元的loss，而不是整个样本的loss</span></span><br><span class="line">target = torch.tensor([[<span class="number">1</span>, <span class="number">0</span>], [<span class="number">1</span>, <span class="number">0</span>], [<span class="number">0</span>, <span class="number">1</span>], [<span class="number">0</span>, <span class="number">1</span>]], dtype=torch.float)</span><br><span class="line"></span><br><span class="line">target_bce = target</span><br><span class="line"><span class="comment"># 输入值范围为[0, 1]</span></span><br><span class="line">inputs = torch.sigmoid(inputs)</span><br><span class="line">weights = torch.tensor([<span class="number">1</span>, <span class="number">1</span>])</span><br><span class="line"></span><br><span class="line">loss_f_none_w = nn.BCELoss(weight=weights, reduction=<span class="string">'none'</span>)</span><br><span class="line">loss_f_sum_w = nn.BCELoss(weight=weights, reduction=<span class="string">'sum'</span>)</span><br><span class="line">loss_f_mean_w = nn.BCELoss(weight=weights, reduction=<span class="string">'mean'</span>)</span><br><span class="line"></span><br><span class="line">loss_none_w = loss_f_none_w(inputs, target_bce)</span><br><span class="line">loss_sum_w = loss_f_sum_w(inputs, target_bce)</span><br><span class="line">loss_mean_w = loss_f_mean_w(inputs, target_bce)</span><br><span class="line"></span><br><span class="line">print(<span class="string">"\n weights:"</span>, weights)</span><br><span class="line">print(<span class="string">"BCELoss Loss"</span>, loss_none_w, loss_sum_w, loss_mean_w)</span><br><span class="line"></span><br><span class="line">weights: tensor([<span class="number">1</span>, <span class="number">1</span>])</span><br><span class="line">BCELoss Loss tensor([[<span class="number">0.3133</span>, <span class="number">2.1269</span>],</span><br><span class="line">        [<span class="number">0.1269</span>, <span class="number">2.1269</span>],</span><br><span class="line">        [<span class="number">3.0486</span>, <span class="number">0.0181</span>],</span><br><span class="line">        [<span class="number">4.0181</span>, <span class="number">0.0067</span>]]) tensor(<span class="number">11.7856</span>) tensor(<span class="number">1.4732</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># compute by hand</span></span><br><span class="line">idx = <span class="number">0</span></span><br><span class="line">x_i = inputs.detach().numpy()[idx, idx]</span><br><span class="line">y_i = target.numpy()[idx, idx]</span><br><span class="line"></span><br><span class="line">l_i = -y_i * np.log(x_i) <span class="keyword">if</span> y_i <span class="keyword">else</span> -(<span class="number">1</span>-y_i) * np.log(<span class="number">1</span> - x_i)</span><br><span class="line">print(<span class="string">"BCE inputs:"</span>, inputs)</span><br><span class="line">print(<span class="string">"第一个Loss为:"</span>, l_i)</span><br><span class="line"></span><br><span class="line">BCE inputs: tensor([[<span class="number">0.7311</span>, <span class="number">0.8808</span>],</span><br><span class="line">        [<span class="number">0.8808</span>, <span class="number">0.8808</span>],</span><br><span class="line">        [<span class="number">0.9526</span>, <span class="number">0.9820</span>],</span><br><span class="line">        [<span class="number">0.9820</span>, <span class="number">0.9933</span>]])</span><br><span class="line">第一个Loss为: <span class="number">0.31326166</span></span><br></pre></td></tr></table></figure>
+<h4 id="nn-BCEWithLogitsLoss"><a href="#nn-BCEWithLogitsLoss" class="headerlink" title="nn.BCEWithLogitsLoss"></a><code>nn.BCEWithLogitsLoss</code></h4><p>功能：结合Sigmoid与二分类交叉熵</p>
+<p>注意事项：网络最后不加sigmoid函数</p>
+<p>主要参数：</p>
+<ul>
+<li><code>pos_weight</code>：正样本的权值(正样本的数量乘以<code>pos_weight</code>)</li>
+<li>weight：各类别的loss设置权值</li>
+<li>ignore_index：忽略某个类别</li>
+<li>reduction：计算模式，可为none/sum/mean</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># BCE with logis Loss</span></span><br><span class="line">inputs = torch.tensor([[<span class="number">1</span>, <span class="number">2</span>], [<span class="number">2</span>, <span class="number">2</span>], [<span class="number">3</span>, <span class="number">4</span>], [<span class="number">4</span>, <span class="number">5</span>]], dtype=torch.float)</span><br><span class="line">target = torch.tensor([[<span class="number">1</span>, <span class="number">0</span>], [<span class="number">1</span>, <span class="number">0</span>], [<span class="number">0</span>, <span class="number">1</span>], [<span class="number">0</span>, <span class="number">1</span>]], dtype=torch.float)</span><br><span class="line"></span><br><span class="line">target_bce = target</span><br><span class="line">weights = torch.tensor([<span class="number">1</span>, <span class="number">1</span>], dtype=torch.float)</span><br><span class="line"></span><br><span class="line">loss_f_none_w = nn.BCEWithLogitsLoss(weight=weights, reduction=<span class="string">'none'</span>)</span><br><span class="line">loss_f_sum_w = nn.BCEWithLogitsLoss(weight=weights, reduction=<span class="string">'sum'</span>)</span><br><span class="line">loss_f_mean_w = nn.BCEWithLogitsLoss(weight=weights, reduction=<span class="string">'mean'</span>)</span><br><span class="line"></span><br><span class="line">loss_none_w = loss_f_none_w(inputs, target_bce)</span><br><span class="line">loss_sum_w = loss_f_sum_w(inputs, target_bce)</span><br><span class="line">loss_mean_w = loss_f_mean_w(inputs, target_bce)</span><br><span class="line"></span><br><span class="line"><span class="comment"># view</span></span><br><span class="line">print(<span class="string">"\nweight: "</span>, weights)</span><br><span class="line">print(loss_none_w, loss_sum_w, loss_mean_w)</span><br><span class="line"></span><br><span class="line">weight:  tensor([<span class="number">1.</span>, <span class="number">1.</span>])</span><br><span class="line">tensor([[<span class="number">0.3133</span>, <span class="number">2.1269</span>],</span><br><span class="line">        [<span class="number">0.1269</span>, <span class="number">2.1269</span>],</span><br><span class="line">        [<span class="number">3.0486</span>, <span class="number">0.0181</span>],</span><br><span class="line">        [<span class="number">4.0181</span>, <span class="number">0.0067</span>]]) tensor(<span class="number">11.7856</span>) tensor(<span class="number">1.4732</span>)</span><br></pre></td></tr></table></figure>
+<p>可以看到这里与<code>BCELoss</code>相比，输入并没有进行sigmoid，最后计算的损失是与<code>BCELoss</code>一致的。</p>
+<p>下面是关于<code>pos_weight</code>参数的理解</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># BCE with logis Loss</span></span><br><span class="line">inputs = torch.tensor([[<span class="number">1</span>, <span class="number">2</span>], [<span class="number">2</span>, <span class="number">2</span>], [<span class="number">3</span>, <span class="number">4</span>], [<span class="number">4</span>, <span class="number">5</span>]], dtype=torch.float)</span><br><span class="line">target = torch.tensor([[<span class="number">1</span>, <span class="number">0</span>], [<span class="number">1</span>, <span class="number">0</span>], [<span class="number">0</span>, <span class="number">1</span>], [<span class="number">0</span>, <span class="number">1</span>]], dtype=torch.float)</span><br><span class="line"></span><br><span class="line">target_bce = target</span><br><span class="line">weights = torch.tensor([<span class="number">1</span>, <span class="number">1</span>], dtype=torch.float)</span><br><span class="line">pos_w = torch.tensor([<span class="number">3</span>], dtype=torch.float)</span><br><span class="line"></span><br><span class="line">loss_f_none_w = nn.BCEWithLogitsLoss(weight=weights, reduction=<span class="string">'none'</span>, pos_weight=pos_w)</span><br><span class="line">loss_f_sum_w = nn.BCEWithLogitsLoss(weight=weights, reduction=<span class="string">'sum'</span>, pos_weight=pos_w)</span><br><span class="line">loss_f_mean_w = nn.BCEWithLogitsLoss(weight=weights, reduction=<span class="string">'mean'</span>, pos_weight=pos_w)</span><br><span class="line"></span><br><span class="line">loss_none_w = loss_f_none_w(inputs, target_bce)</span><br><span class="line">loss_sum_w = loss_f_sum_w(inputs, target_bce)</span><br><span class="line">loss_mean_w = loss_f_mean_w(inputs, target_bce)</span><br><span class="line"></span><br><span class="line"><span class="comment"># view</span></span><br><span class="line">print(<span class="string">"\nweight: "</span>, weights)</span><br><span class="line">print(<span class="string">"pos_weights: "</span>, pos_w)</span><br><span class="line">print(loss_none_w, loss_sum_w, loss_mean_w)</span><br><span class="line"></span><br><span class="line">weight:  tensor([<span class="number">1.</span>, <span class="number">1.</span>])</span><br><span class="line">pos_weights:  tensor([<span class="number">3.</span>])</span><br><span class="line">tensor([[<span class="number">0.9398</span>, <span class="number">2.1269</span>],</span><br><span class="line">        [<span class="number">0.3808</span>, <span class="number">2.1269</span>],</span><br><span class="line">        [<span class="number">3.0486</span>, <span class="number">0.0544</span>],</span><br><span class="line">        [<span class="number">4.0181</span>, <span class="number">0.0201</span>]]) tensor(<span class="number">12.7158</span>) tensor(<span class="number">1.5895</span>)</span><br></pre></td></tr></table></figure>
+<p>这里第1个样本、第2个样本的第1个神经元，第3个样本、第4个样本的第2个神经元的输出类别为1（正样本），所以其损失值会乘以<code>pos_weight</code>的值，即<code>0.3133 * 3 = 0.9398</code>。</p>
+<h4 id="nn-L1Loss"><a href="#nn-L1Loss" class="headerlink" title="nn.L1Loss"></a><code>nn.L1Loss</code></h4><p>功能：计算inputs与target之差的绝对值</p>
+<h4 id="nn-MSELoss"><a href="#nn-MSELoss" class="headerlink" title="nn.MSELoss"></a><code>nn.MSELoss</code></h4><p>功能：计算inputs与target之差的平方</p>
+<h4 id="nn-SmoothL1Loss"><a href="#nn-SmoothL1Loss" class="headerlink" title="nn.SmoothL1Loss"></a><code>nn.SmoothL1Loss</code></h4><p>功能：平滑的L1Loss</p>
+<p><img src="/2023/02/18/pytorch-loss/p13.png" alt></p>
+<p><img src="/2023/02/18/pytorch-loss/p14.png" alt></p>
+<h4 id="nn-PoissonNLLLoss"><a href="#nn-PoissonNLLLoss" class="headerlink" title="nn.PoissonNLLLoss"></a><code>nn.PoissonNLLLoss</code></h4><p>功能：泊松分布的负对数似然损失函数</p>
+<h4 id="nn-KLDivLoss"><a href="#nn-KLDivLoss" class="headerlink" title="nn.KLDivLoss"></a><code>nn.KLDivLoss</code></h4><h4 id="nn-MarginRankingLoss"><a href="#nn-MarginRankingLoss" class="headerlink" title="nn.MarginRankingLoss"></a><code>nn.MarginRankingLoss</code></h4><p>功能：计算两个向量之间的相似度，用于排序任务</p>
+<p>特别说明：该方法计算两组数据之间的差异，返回一个n*n的loss矩阵</p>
+<p>主要参数：</p>
+<ul>
+<li>margin：边界值，x1与x2之间的差异值</li>
+<li>reduction：计算模式，可为none/sum/mean</li>
+</ul>
+<p>y=1时，希望<code>x1</code>比<code>x2</code>大，当<code>x1</code>&gt;<code>x2</code>时，不产生loss</p>
+<p>y=-1时，希望<code>x2</code>比<code>x1</code>大，当<code>x2</code>&gt;<code>x1</code>时，不产生loss</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Margin Ranking Loss</span></span><br><span class="line"></span><br><span class="line">x1 = torch.tensor([[<span class="number">1</span>], [<span class="number">2</span>], [<span class="number">3</span>]], dtype=torch.float)</span><br><span class="line">x2 = torch.tensor([[<span class="number">2</span>], [<span class="number">2</span>], [<span class="number">2</span>]], dtype=torch.float)</span><br><span class="line"></span><br><span class="line">target = torch.tensor([<span class="number">1</span>, <span class="number">1</span>, <span class="number">-1</span>], dtype=torch.float)</span><br><span class="line">loss_f_none = nn.MarginRankingLoss(margin=<span class="number">0</span>, reduction=<span class="string">'none'</span>)</span><br><span class="line">loss = loss_f_none(x1, x2, target)</span><br><span class="line">print(loss)</span><br><span class="line"></span><br><span class="line">tensor([[<span class="number">1.</span>, <span class="number">1.</span>, <span class="number">0.</span>],</span><br><span class="line">        [<span class="number">0.</span>, <span class="number">0.</span>, <span class="number">0.</span>],</span><br><span class="line">        [<span class="number">0.</span>, <span class="number">0.</span>, <span class="number">1.</span>]])</span><br></pre></td></tr></table></figure>
+<p>这里损失函数分别计算<code>x1</code>每个元素与<code>x2</code>所有元素之间的损失，所以得到一个<code>3x3</code>的矩阵，当<code>x1</code>的第一个元素[1]与<code>x2</code>计算损失时，y分别为[1, 1, -1]，即1&lt;2，与期望的<code>x1&gt;x2</code>不符，损失=2-1=1，与期望<code>x1&lt;x2</code>相符时，则不产生损失（损失为0）。</p>
+<h4 id="nn-MultiLabelMarginLoss"><a href="#nn-MultiLabelMarginLoss" class="headerlink" title="nn.MultiLabelMarginLoss"></a><code>nn.MultiLabelMarginLoss</code></h4><p>多标签：一个样本可能对应多个类别</p>
+<p>功能：多标签边界损失函数</p>
+<h4 id="nn-SoftMarginLoss"><a href="#nn-SoftMarginLoss" class="headerlink" title="nn.SoftMarginLoss"></a><code>nn.SoftMarginLoss</code></h4><p>功能：计算二分类的logistic损失</p>
+<p><img src="/2023/02/18/pytorch-loss/p15.png" alt></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># SoftMargin Loss</span></span><br><span class="line"></span><br><span class="line">inputs = torch.tensor([[<span class="number">0.3</span>, <span class="number">0.7</span>], [<span class="number">0.5</span>, <span class="number">0.5</span>]], dtype=torch.float)</span><br><span class="line">target = torch.tensor([[<span class="number">-1</span>, <span class="number">1</span>], [<span class="number">1</span>, <span class="number">-1</span>]], dtype=torch.float)</span><br><span class="line"></span><br><span class="line">loss_f_none = nn.SoftMarginLoss(reduction=<span class="string">'none'</span>)</span><br><span class="line">loss = loss_f_none(inputs, target)</span><br><span class="line">print(<span class="string">"SoftMargin: "</span>, loss)</span><br><span class="line"></span><br><span class="line">SoftMargin:  tensor([[<span class="number">0.8544</span>, <span class="number">0.4032</span>],</span><br><span class="line">        [<span class="number">0.4741</span>, <span class="number">0.9741</span>]])</span><br></pre></td></tr></table></figure>
+<h4 id="nn-MultiLabelSoftMarginLoss"><a href="#nn-MultiLabelSoftMarginLoss" class="headerlink" title="nn.MultiLabelSoftMarginLoss"></a><code>nn.MultiLabelSoftMarginLoss</code></h4><p>功能：<code>SoftMarginLoss</code>多标签版本</p>
+<h4 id="nn-MultiMarginLoss"><a href="#nn-MultiMarginLoss" class="headerlink" title="nn.MultiMarginLoss"></a><code>nn.MultiMarginLoss</code></h4><p>功能：计算多分类的折页损失</p>
+<h4 id="nn-TripletMarginLoss"><a href="#nn-TripletMarginLoss" class="headerlink" title="nn.TripletMarginLoss"></a><code>nn.TripletMarginLoss</code></h4><p>功能：计算三元组损失，人脸验证中常用</p>
+<p><img src="/2023/02/18/pytorch-loss/p16.png" alt></p>
+<p>主要是为了使anchor与positive离得更近，anchor与negative离得更远。</p>
+<p><img src="/2023/02/18/pytorch-loss/p17.png" alt></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Triplet Margin Loss</span></span><br><span class="line">anchor = torch.tensor([[<span class="number">1.</span>]])</span><br><span class="line">pos = torch.tensor([[<span class="number">2.</span>]])</span><br><span class="line">neg = torch.tensor([[<span class="number">0.5</span>]])</span><br><span class="line"></span><br><span class="line">loss_f = nn.TripletMarginLoss(margin=<span class="number">1.0</span>, p=<span class="number">1</span>)</span><br><span class="line">loss = loss_f(anchor, pos, neg)</span><br><span class="line">print(<span class="string">"Triplet Margin Loss"</span>, loss)</span><br><span class="line"></span><br><span class="line"><span class="comment"># dap=1, dan=0.5, loss = max(1-0.5+1, 0) = 1.5</span></span><br><span class="line">Triplet Margin Loss tensor(<span class="number">1.5000</span>)</span><br></pre></td></tr></table></figure>
+<h4 id="nn-HingeEmbeddingLoss"><a href="#nn-HingeEmbeddingLoss" class="headerlink" title="nn.HingeEmbeddingLoss"></a><code>nn.HingeEmbeddingLoss</code></h4><p>功能：计算两个输入的相似性，常用于非线性embedding和半监督学习</p>
+<p>特别注意：输入x应为两个输入之差的绝对值</p>
+<p><img src="/2023/02/18/pytorch-loss/p18.png" alt></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Hinge Embedding Loss</span></span><br><span class="line">inputs = torch.tensor([[<span class="number">1.</span>, <span class="number">0.8</span>, <span class="number">0.5</span>]])</span><br><span class="line">target = torch.tensor([[<span class="number">1</span>, <span class="number">1</span>, <span class="number">-1</span>]])</span><br><span class="line">loss_f = nn.HingeEmbeddingLoss(margin=<span class="number">1</span>, reduction=<span class="string">'none'</span>)</span><br><span class="line">loss = loss_f(inputs, target)</span><br><span class="line">print(<span class="string">"Hinge Embedding Loss: "</span>, loss)</span><br><span class="line"></span><br><span class="line">Hinge Embedding Loss:  tensor([[<span class="number">1.0000</span>, <span class="number">0.8000</span>, <span class="number">0.5000</span>]])</span><br></pre></td></tr></table></figure>
+<p>三角号代表margin参数</p>
+<h4 id="nn-CosineEmbeddingLoss"><a href="#nn-CosineEmbeddingLoss" class="headerlink" title="nn.CosineEmbeddingLoss"></a><code>nn.CosineEmbeddingLoss</code></h4><p>功能：采用余弦相似度计算两个输入的相似性</p>
+<p>主要参数：</p>
+<ul>
+<li>margin：可取值[-1, 1]，推荐为[0, 0.5]</li>
+<li>reduction：计算模式，可为none/sum/mean</li>
+</ul>
+<p><img src="/2023/02/18/pytorch-loss/p19.png" alt></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Cosine Embedding Loss</span></span><br><span class="line">x1 = torch.tensor([[<span class="number">0.3</span>, <span class="number">0.5</span>, <span class="number">0.7</span>], [<span class="number">0.3</span>, <span class="number">0.5</span>, <span class="number">0.7</span>]])</span><br><span class="line">x2 = torch.tensor([[<span class="number">0.1</span>, <span class="number">0.3</span>, <span class="number">0.5</span>], [<span class="number">0.1</span>, <span class="number">0.3</span>, <span class="number">0.5</span>]])</span><br><span class="line">target = torch.tensor([<span class="number">1</span>, <span class="number">-1</span>], dtype=torch.float)</span><br><span class="line"></span><br><span class="line">loss_f = nn.CosineEmbeddingLoss(margin=<span class="number">0</span>, reduction=<span class="string">'none'</span>)</span><br><span class="line"></span><br><span class="line">loss = loss_f(x1, x2, target)</span><br><span class="line">print(loss)</span><br><span class="line"></span><br><span class="line">tensor([<span class="number">0.0167</span>, <span class="number">0.9833</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># compute by hand</span></span><br><span class="line">margin = <span class="number">0</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cosine</span><span class="params">(a, b)</span>:</span></span><br><span class="line">    numerator = torch.dot(a, b)</span><br><span class="line">    denominator = torch.norm(a, <span class="number">2</span>) * torch.norm(b, <span class="number">2</span>)</span><br><span class="line">    <span class="keyword">return</span> float(numerator/denominator)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">l_1 = <span class="number">1</span> - (cosine(x1[<span class="number">0</span>], x2[<span class="number">0</span>]))</span><br><span class="line">l_2 = max(<span class="number">0</span>, cosine(x1[<span class="number">0</span>], x2[<span class="number">0</span>]) - margin)</span><br><span class="line">print(l_1, l_2)</span><br><span class="line"></span><br><span class="line"><span class="number">0.016662120819091797</span> <span class="number">0.9833378791809082</span></span><br></pre></td></tr></table></figure>
+<h4 id="nn-CTCLoss"><a href="#nn-CTCLoss" class="headerlink" title="nn.CTCLoss"></a><code>nn.CTCLoss</code></h4><p>功能：计算<code>CTC(Connectionist Temporal Classification)</code>损失，解决时序类数据的分类(比如OCR)。</p>
+<p>主要参数：</p>
+<ul>
+<li><code>blank</code>：<code>blank label</code></li>
+<li>zero_infinity：无穷大的值或梯度置0</li>
+<li>reduction：计算模式，可为none/sum/mean</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/pytorch/" rel="tag"># pytorch</a>
+          
+            <a href="/tags/CrossEntropyLoss/" rel="tag"># CrossEntropyLoss</a>
+          
+            <a href="/tags/Kaiming/" rel="tag"># Kaiming</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2023/02/11/pytorch-autograd/" rel="next" title="PyTorch的自动微分">
+                <i class="fa fa-chevron-left"></i> PyTorch的自动微分
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2023/02/25/pytorch-optim/" rel="prev" title="Pytorch中的优化器Optimizer">
+                Pytorch中的优化器Optimizer <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">103</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">197</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Pytorch中权值初始化和损失函数"><span class="nav-text">Pytorch中权值初始化和损失函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#权值初始化"><span class="nav-text">权值初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#梯度消失与爆炸"><span class="nav-text">梯度消失与爆炸</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Xavier初始化"><span class="nav-text">Xavier初始化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Kaiming初始化"><span class="nav-text">Kaiming初始化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nn-init-calculate-gain"><span class="nav-text">nn.init.calculate_gain</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#损失函数"><span class="nav-text">损失函数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#损失函数概念"><span class="nav-text">损失函数概念</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nn-CrossEntropyLoss"><span class="nav-text">nn.CrossEntropyLoss</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nn-NLLLoss"><span class="nav-text">nn.NLLLoss</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nn-BCELoss"><span class="nav-text">nn.BCELoss</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nn-BCEWithLogitsLoss"><span class="nav-text">nn.BCEWithLogitsLoss</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nn-L1Loss"><span class="nav-text">nn.L1Loss</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nn-MSELoss"><span class="nav-text">nn.MSELoss</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nn-SmoothL1Loss"><span class="nav-text">nn.SmoothL1Loss</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nn-PoissonNLLLoss"><span class="nav-text">nn.PoissonNLLLoss</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nn-KLDivLoss"><span class="nav-text">nn.KLDivLoss</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nn-MarginRankingLoss"><span class="nav-text">nn.MarginRankingLoss</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nn-MultiLabelMarginLoss"><span class="nav-text">nn.MultiLabelMarginLoss</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nn-SoftMarginLoss"><span class="nav-text">nn.SoftMarginLoss</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nn-MultiLabelSoftMarginLoss"><span class="nav-text">nn.MultiLabelSoftMarginLoss</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nn-MultiMarginLoss"><span class="nav-text">nn.MultiMarginLoss</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nn-TripletMarginLoss"><span class="nav-text">nn.TripletMarginLoss</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nn-HingeEmbeddingLoss"><span class="nav-text">nn.HingeEmbeddingLoss</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nn-CosineEmbeddingLoss"><span class="nav-text">nn.CosineEmbeddingLoss</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#nn-CTCLoss"><span class="nav-text">nn.CTCLoss</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
