@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="pytorch,crnn,cnn+rnn,LSTM,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="CRNN参考文章：https://xiaobaibubai.blog.csdn.net/article/details/115862743 GitHub项目：https://github.com/meijieru/crnn.pytorch 预训练模型下载地址：https://pan.baidu.com/s/1pLbeCND CRNN 全称为 Convolutional Recurrent Neur">
+<meta name="keywords" content="pytorch,crnn,cnn+rnn,LSTM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="利用CRNN进行文字识别">
+<meta property="og:url" content="http://yoursite.com/2021/08/28/dl-crnn/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="CRNN参考文章：https://xiaobaibubai.blog.csdn.net/article/details/115862743 GitHub项目：https://github.com/meijieru/crnn.pytorch 预训练模型下载地址：https://pan.baidu.com/s/1pLbeCND CRNN 全称为 Convolutional Recurrent Neur">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2021/08/28/dl-crnn/1.jpg">
+<meta property="og:image" content="http://yoursite.com/2021/08/28/dl-crnn/2.jpg">
+<meta property="og:updated_time" content="2022-01-10T02:46:12.070Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="利用CRNN进行文字识别">
+<meta name="twitter:description" content="CRNN参考文章：https://xiaobaibubai.blog.csdn.net/article/details/115862743 GitHub项目：https://github.com/meijieru/crnn.pytorch 预训练模型下载地址：https://pan.baidu.com/s/1pLbeCND CRNN 全称为 Convolutional Recurrent Neur">
+<meta name="twitter:image" content="http://yoursite.com/2021/08/28/dl-crnn/1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2021/08/28/dl-crnn/">
+
+
+
+
+
+  <title>利用CRNN进行文字识别 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/08/28/dl-crnn/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">利用CRNN进行文字识别</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-28T16:32:14+08:00">
+                2021-08-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="CRNN"><a href="#CRNN" class="headerlink" title="CRNN"></a>CRNN</h2><p>参考文章：<a href="https://xiaobaibubai.blog.csdn.net/article/details/115862743" target="_blank" rel="noopener">https://xiaobaibubai.blog.csdn.net/article/details/115862743</a></p>
+<p>GitHub项目：<a href="https://github.com/meijieru/crnn.pytorch" target="_blank" rel="noopener">https://github.com/meijieru/crnn.pytorch</a></p>
+<p>预训练模型下载地址：<a href="https://pan.baidu.com/s/1pLbeCND" target="_blank" rel="noopener">https://pan.baidu.com/s/1pLbeCND</a></p>
+<p>CRNN 全称为 Convolutional Recurrent Neural Network，主要用于<strong>端到端地对不定长的文本序列进行识别，不用先对单个文字进行切割，而是将文本识别转化为时序依赖的序列学习问题，就是基于图像的序列识别</strong>。</p>
+<p>该算法出自<code>An End-to-End Trainable Neural Network for Image-based Sequence Recognition and Its Application to Secene Text Recognition</code>,这篇文章来自华中科技大学白翔团队，并在2017年被人工智能顶级期刊《TPAMI》收录。</p>
+<h3 id="CRNN网络架构示意图"><a href="#CRNN网络架构示意图" class="headerlink" title="CRNN网络架构示意图"></a>CRNN网络架构示意图</h3><a id="more"></a>
+<p><img src="/2021/08/28/dl-crnn/1.jpg" style="zoom:40%;"></p>
+<p>CRNN模型主要分为两个部分：一部分为<strong>特征提取</strong>，由多个卷积层、池化和非线性层组成；另一部分为<strong>序列预测</strong>，由RNN＋CTC模型组成。RNN部分主要用于学习和建模CNN中提取到的隐藏状态以及空间特征之间的联系，最后预测初步的序列结果。粗糙的预测序列可能存在字母重复的情况，通过<strong>CTC模块</strong>对RNN的序列进行整合，可以对序列进行去重操作。</p>
+<p>CRNN接收灰度图或RGB彩色图作为输入，<strong>CNN作为编码器</strong>来提取与图片中对应的中间层特征。经过变形后整理成T个时间步的输入送入随后的<strong>解码器RNN</strong>，从而预测出初步的序列。初步的序列经过CTC整流处理，去除冗余的字符后得到最终的预测结果。</p>
+<h3 id="CRNN参数设置"><a href="#CRNN参数设置" class="headerlink" title="CRNN参数设置"></a>CRNN参数设置</h3><p><img src="/2021/08/28/dl-crnn/2.jpg" style="zoom:50%;"></p>
+<p>这里的结构主要借鉴VGG结构，但是做了一些调整；<strong>有一个很精彩的改动，一共有四个最大池化层，但是最后两个池化层的窗口尺寸由 2x2 改为 1x2，也就是图片的高度减半了四次（变为原来的1/16），而宽度则只减半了两次（变为原来的1/4）</strong>，这是因为文本图像多数都是高较小而宽较长，所以其feature map也是这种高小宽长的矩形形状，如果使用1×2的池化窗口可以尽量保证不丢失在宽度方向的信息，更适合英文字母识别（比如区分i和l）。</p>
+<p>CRNN 还引入了BatchNormalization模块，加速模型收敛，缩短训练过程。</p>
+<p>输入图像为灰度图像（单通道）；高度为32，这是固定的，图片通过 CNN 后，高度就变为1，这点很重要；宽度为160，宽度也可以为其他的值，但需要统一，所以输入CNN的数据尺寸为 (channel, height, width)=(1, 32, 160)。</p>
+<p>CNN的输出尺寸为 (512, 1, 39)。即 CNN 最后得到512个特征图，每个特征图的高度为1，宽度为39。</p>
+<p><strong>注意</strong>：最后的卷积层是一个2*2,s=1,<strong>p=0(无填充)</strong>的卷积，这样<strong>会将feature map的高和宽分别减少1</strong>,所以当输入的h是32时，最后CNN输出的featuremap的高度为1（32四次除以2得到2，然后再减去1）。（但是并不是整个CNN层将图像的h放缩为原来的1/32，有很多资料这里都说是1/32，我觉得并不准确，比如当h为64时，得到的结果为3，虽然这里是限制了输入为32，但是也可以更改限制）。</p>
+<p>同理，初始宽度160经过两次最大池化，变为40，然后经过最后一层卷积后，宽度减少1，最后变成39。</p>
+<h3 id="CRNN模型的实现"><a href="#CRNN模型的实现" class="headerlink" title="CRNN模型的实现"></a>CRNN模型的实现</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> torch <span class="keyword">import</span> nn</span><br><span class="line"></span><br><span class="line"><span class="comment"># 构建CRNN模型</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CRNN</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, img_h, nc, n_class, nh, n_rnn=<span class="number">2</span>, leakyRelu=False)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        :param img_h: 图片高度(会经过五次除以2)</span></span><br><span class="line"><span class="string">        :param nc: 初始输入图片的channels</span></span><br><span class="line"><span class="string">        :param n_class: 多少个分类（共有多少不同的字符）</span></span><br><span class="line"><span class="string">        :param nh:</span></span><br><span class="line"><span class="string">        :param n_rnn:</span></span><br><span class="line"><span class="string">        :param leakyRelu: 控制激活函数使用relu还是leakyrelu</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        super(CRNN, self).__init__()</span><br><span class="line">        <span class="keyword">assert</span> img_h % <span class="number">16</span> == <span class="number">0</span>, <span class="string">'img_h has to be a multiple of 16'</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 模型共7层卷积，4层池化</span></span><br><span class="line">        ks = [<span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">2</span>]  <span class="comment"># kernel</span></span><br><span class="line">        ps = [<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>]  <span class="comment"># padding</span></span><br><span class="line">        ss = [<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>]  <span class="comment"># stride</span></span><br><span class="line">        nm = [<span class="number">64</span>, <span class="number">128</span>, <span class="number">256</span>, <span class="number">256</span>, <span class="number">512</span>, <span class="number">512</span>, <span class="number">512</span>]  <span class="comment"># channel</span></span><br><span class="line"></span><br><span class="line">        cnn = nn.Sequential()</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">def</span> <span class="title">conv_relu</span><span class="params">(i, batch_normalization=False)</span>:</span></span><br><span class="line">            <span class="comment"># batchNormalization用于确定是否需要BN（批规范化）</span></span><br><span class="line">            n_in = nc <span class="keyword">if</span> i == <span class="number">0</span> <span class="keyword">else</span> nm[i<span class="number">-1</span>]</span><br><span class="line">            n_out = nm[i]</span><br><span class="line">            <span class="comment"># 每调用一次，添加一层卷积</span></span><br><span class="line">            cnn.add_module(<span class="string">'conv&#123;0&#125;'</span>.format(i), nn.Conv2d(n_in, n_out, ks[i], ss[i], ps[i]))</span><br><span class="line">            <span class="comment"># 根据参数确定是否添加批规范化层</span></span><br><span class="line">            <span class="keyword">if</span> batch_normalization:</span><br><span class="line">                cnn.add_module(<span class="string">'batchnorm&#123;0&#125;'</span>.format(i), nn.BatchNorm2d(n_out))</span><br><span class="line">            <span class="comment"># 根据参数确定激活函数</span></span><br><span class="line">            <span class="keyword">if</span> leakyRelu:</span><br><span class="line">                cnn.add_module(<span class="string">'relu&#123;0&#125;'</span>.format(i), nn.LeakyReLU(<span class="number">0.2</span>, inplace=<span class="literal">True</span>))</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                cnn.add_module(<span class="string">'relu&#123;0&#125;'</span>.format(i), nn.ReLU(<span class="literal">True</span>))</span><br><span class="line"></span><br><span class="line">        <span class="comment"># conv+relu+max_pooling</span></span><br><span class="line">        conv_relu(<span class="number">0</span>)</span><br><span class="line">        cnn.add_module(<span class="string">'pooling&#123;0&#125;'</span>.format(<span class="number">0</span>), nn.MaxPool2d(kernel_size=<span class="number">2</span>, stride=<span class="number">2</span>))  <span class="comment"># 64x16x80(假设输入高度为16，宽度为160)</span></span><br><span class="line"></span><br><span class="line">        conv_relu(<span class="number">1</span>)</span><br><span class="line">        cnn.add_module(<span class="string">'pooling&#123;0&#125;'</span>.format(<span class="number">1</span>), nn.MaxPool2d(kernel_size=<span class="number">2</span>, stride=<span class="number">2</span>))  <span class="comment"># 128x8x40</span></span><br><span class="line"></span><br><span class="line">        conv_relu(<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">        conv_relu(<span class="number">3</span>)  <span class="comment"># 256x8x40</span></span><br><span class="line">        <span class="comment"># 最大池化 window：1x2, s:2</span></span><br><span class="line">        cnn.add_module(<span class="string">'pooling&#123;0&#125;'</span>.format(<span class="number">2</span>),</span><br><span class="line">                       nn.MaxPool2d(kernel_size=(<span class="number">2</span>, <span class="number">1</span>), stride=(<span class="number">2</span>, <span class="number">1</span>), padding=(<span class="number">0</span>, <span class="number">0</span>)))  <span class="comment"># 256x4x40</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># conv+bn+relu</span></span><br><span class="line">        conv_relu(<span class="number">4</span>, <span class="literal">True</span>)  <span class="comment"># 512x4x40</span></span><br><span class="line"></span><br><span class="line">        conv_relu(<span class="number">5</span>, <span class="literal">True</span>)  <span class="comment"># 512x4x40</span></span><br><span class="line"></span><br><span class="line">        cnn.add_module(<span class="string">'pooling&#123;0&#125;'</span>.format(<span class="number">3</span>),</span><br><span class="line">                       nn.MaxPool2d(kernel_size=(<span class="number">2</span>, <span class="number">1</span>), stride=(<span class="number">2</span>, <span class="number">1</span>), padding=(<span class="number">0</span>, <span class="number">0</span>)))  <span class="comment"># 512x2x40</span></span><br><span class="line"></span><br><span class="line">        conv_relu(<span class="number">6</span>)  <span class="comment"># 512x1x39</span></span><br><span class="line">        self.cnn = cnn</span><br><span class="line">        self.rnn = nn.Sequential(</span><br><span class="line">            BidirectionalLSTM(<span class="number">512</span>, nh, nh),</span><br><span class="line">            BidirectionalLSTM(nh, nh, n_class)</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, n_input)</span>:</span></span><br><span class="line">        <span class="comment"># conv features</span></span><br><span class="line">        conv = self.cnn(n_input)</span><br><span class="line">        <span class="comment"># b批量大小，c channel，h高度，w 宽度</span></span><br><span class="line">        b, c, h, w = conv.size()</span><br><span class="line">        <span class="comment"># 这里限制了输入h必须为32</span></span><br><span class="line">        <span class="keyword">assert</span> h == <span class="number">1</span>, <span class="string">"the height of conv must be 1"</span></span><br><span class="line">        <span class="comment"># squeeze()函数删除单维度条目</span></span><br><span class="line">        conv = conv.squeeze(<span class="number">2</span>)</span><br><span class="line">        <span class="comment"># 将tensor的维度换位</span></span><br><span class="line">        conv = conv.permute(<span class="number">2</span>, <span class="number">0</span>, <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># run features</span></span><br><span class="line">        output = self.rnn(conv)</span><br><span class="line">        <span class="keyword">return</span> output</span><br></pre></td></tr></table></figure>
+<p>(这里重点介绍关于CNN模块的实现，RNN模块也就是双向LSTM略过了，后面会有文章着重介绍)</p>
+<p>重点代码解释：</p>
+<ul>
+<li>最后两层池化：<code>nn.MaxPool2d(kernel_size=(2, 1), stride=(2, 1), padding=(0, 0))</code></li>
+</ul>
+<p>​        h高度方向，kernel_size=2,stride=2,会使得h减小一半，w宽度方向，kernel_size=1,stride=1，w不变。</p>
+<ul>
+<li><p><code>squeeze(axis = None)</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1）a表示输入的数组；</span><br><span class="line">2）axis用于指定需要删除的维度，但是指定的维度必须为单维度，否则将会报错；</span><br><span class="line">3）axis的取值可为None 或 int 或 tuple of ints, 可选。若axis为空，则删除所有单维度的条目；</span><br><span class="line">4）返回值：数组</span><br><span class="line">5) 不会修改原数组；</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>permute(),将tensor的维度换位(改变维度排列)</p>
+<p>参数：参数是一系列的整数，代表原来张量的维度。比如三维就有0，1，2这些dimension</p>
+</li>
+</ul>
+<p>利用pytorch实现完成该模型后，下载预训练模型crnn.pth然后进行测试，却遇到了报错：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">RuntimeError: Error(s) <span class="keyword">in</span> loading state_dict <span class="keyword">for</span> CRNN:</span><br><span class="line">	Missing key(s) <span class="keyword">in</span> state_dict: <span class="string">"cnn.batchnorm5.weight"</span>, <span class="string">"cnn.batchnorm5.bias"</span>, <span class="string">"cnn.batchnorm5.running_mean"</span>, <span class="string">"cnn.batchnorm5.running_var"</span>. </span><br><span class="line">	Unexpected key(s) <span class="keyword">in</span> state_dict: <span class="string">"cnn.batchnorm2.weight"</span>, <span class="string">"cnn.batchnorm2.bias"</span>, <span class="string">"cnn.batchnorm2.running_mean"</span>, <span class="string">"cnn.batchnorm2.running_var"</span>, <span class="string">"cnn.batchnorm6.weight"</span>, <span class="string">"cnn.batchnorm6.bias"</span>, <span class="string">"cnn.batchnorm6.running_mean"</span>, <span class="string">"cnn.batchnorm6.running_var"</span>.</span><br></pre></td></tr></table></figure>
+<p>通过代码分析，我们上面的模型代码创建的批规范化层分别为：”batchnorm4”、”batchnorm5”;这里报出的问题是，加载的预训练模型中没有”batchnorm5”层，然后预训练模型中”batchnorm2”和”batchnorm6”层，我们的模型中也没有，所以加载失败了。</p>
+<p>这里就与github项目里的模型代码对应上了，一开始看了项目中给出的代码，总感觉与模型有点出入，实际上可能是为了与预训练模型对应上，这里具体的原因是啥我也无法搞清楚。（究竟是预训练生成的模型本身就写错了，还是进行了一些改进。）</p>
+<p>改动点：改变batch_norm层的位置和次数，即在第2、4、6层后面分别添加批规范化层：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">conv_relu(<span class="number">2</span>, <span class="literal">True</span>)</span><br><span class="line">conv_relu(<span class="number">4</span>, <span class="literal">True</span>)</span><br><span class="line">conv_relu(<span class="number">6</span>, <span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<p>这样更改完成之后，运行demo（预测demo.png）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"><span class="keyword">from</span> torch.autograd <span class="keyword">import</span> Variable</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> dataset</span><br><span class="line"><span class="keyword">import</span> utils</span><br><span class="line"><span class="keyword">from</span> models <span class="keyword">import</span> crnn</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">model_path = <span class="string">'./data/crnn.pth'</span>  <span class="comment"># 预训练模型权重（需自行下载）</span></span><br><span class="line">img_path = <span class="string">'./data/demo.png'</span></span><br><span class="line">alphabet = <span class="string">'0123456789abcdefghijklmnopqrstuvwxyz'</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># classes为什么是len(alphabet)+1,因为后面又添加了字符'-'，可能是用来表示空格</span></span><br><span class="line">model = crnn.CRNN(<span class="number">32</span>, <span class="number">1</span>, len(alphabet)+<span class="number">1</span>, <span class="number">256</span>)</span><br><span class="line"><span class="comment"># GPU加速相关</span></span><br><span class="line"><span class="keyword">if</span> torch.cuda.is_available():</span><br><span class="line">    model = model.cuda()</span><br><span class="line"></span><br><span class="line">print(<span class="string">f'loading pretrained model from <span class="subst">&#123;model_path&#125;</span>'</span>)</span><br><span class="line"></span><br><span class="line">model.load_state_dict(torch.load(model_path))  <span class="comment"># 加载模型</span></span><br><span class="line">converter = utils.strLabelConverter(alphabet)</span><br><span class="line"></span><br><span class="line">transformer = dataset.resizeNormalize((<span class="number">100</span>, <span class="number">32</span>))</span><br><span class="line"></span><br><span class="line">image = Image.open(img_path).convert(<span class="string">'L'</span>)  <span class="comment"># 转化为灰度图</span></span><br><span class="line"></span><br><span class="line">image = transformer(image)  <span class="comment"># resize和归一化--&gt;(1, 32, 100)</span></span><br><span class="line"><span class="keyword">if</span> torch.cuda.is_available():</span><br><span class="line">    image = image.cuda()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 相当于是在原来的张量基础上又增加了一维(大概是批次的意思？)</span></span><br><span class="line">image = image.view(<span class="number">1</span>, *image.size())   <span class="comment"># (1, 1, 32, 100)</span></span><br><span class="line">image = Variable(image)</span><br><span class="line">model.eval()  <span class="comment"># 表示网络接下来要开始预测</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 传入网络预测</span></span><br><span class="line">preds = model(image)  <span class="comment"># (26, 1, 37)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取类别概率最大值的索引</span></span><br><span class="line">_, preds = preds.max(<span class="number">2</span>)</span><br><span class="line">preds = preds.transpose(<span class="number">1</span>, <span class="number">0</span>).contiguous().view(<span class="number">-1</span>)</span><br><span class="line"></span><br><span class="line">preds_size = Variable(torch.IntTensor([preds.size(<span class="number">0</span>)]))  <span class="comment"># 计算预测得到的长度（通俗理解就是有多少个字符，包含空格）</span></span><br><span class="line">raw_pred = converter.decode(preds.data, preds_size.data, raw=<span class="literal">True</span>)</span><br><span class="line">sim_pred = converter.decode(preds.data, preds_size.data, raw=<span class="literal">False</span>)</span><br><span class="line">print(<span class="string">f'<span class="subst">&#123;raw_pred&#125;</span>  <span class="subst">&#123;sim_pred&#125;</span>'</span>)</span><br></pre></td></tr></table></figure>
+<p>（这里一些引用的辅助方法都没写，具体要看GitHub源代码）</p>
+<p>预测结果有点小问题，预测得到的结果为：</p>
+<p>—–v——–a-b–l-e–  vable</p>
+<p>而实际结果为variable，所以肯定是哪里实现不对，经过仔细研究发现关于后两层的最大池化实现方式与GitHub源代码不一样，这部分还在上面重点介绍了，理论上我的实现方式与论文中是一致的，而GitHub源代码中是这样实现的：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cnn.add_module(<span class="string">'pooling&#123;0&#125;'</span>.format(<span class="number">2</span>),</span><br><span class="line">               nn.MaxPool2d((<span class="number">2</span>, <span class="number">2</span>), (<span class="number">2</span>, <span class="number">1</span>), (<span class="number">0</span>, <span class="number">1</span>)))</span><br></pre></td></tr></table></figure>
+<p>MaxPool2d方法的前三个参数分别是kernel_size、stride、padding，这里把kernel_size设置为（2, 2）就与论文不符，但是仔细观察，发现实现的功能是一样的，即<strong>高度减半，宽度不变</strong>。我认为按照我的写法训练一个模型应该也是没问题的，只不过为了能和这个预训练模型的权重文件保持一致，就采用这一种池化写法，果然经过这样的调整后就正确的预测了结果。</p>
+<h2 id="文字识别"><a href="#文字识别" class="headerlink" title="文字识别"></a>文字识别</h2><p>文字识别属于OCR技术范畴，CNN＋RNN＋CTC是目前比较流行的识别模型，所以去学习了一下，在这里记录了一下，而且按照开头给出的GitHub项目，又从头到尾<strong>抄</strong>了一遍，研究了下部分代码的含义，但是因为缺乏足够的数据集，暂时还没有开始训练。</p>
+<p>假设2500个文字，每张图片4个字，按照每个文字有100个样本需要250000个样本，也就是62500张图片，这基本是一个最低限度的数据量了，因为文字一般结构复杂，100个样本可能远不够，如果500个样本的话，那就是需要约30万张图片。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/pytorch/" rel="tag"># pytorch</a>
+          
+            <a href="/tags/crnn/" rel="tag"># crnn</a>
+          
+            <a href="/tags/cnn-rnn/" rel="tag"># cnn+rnn</a>
+          
+            <a href="/tags/LSTM/" rel="tag"># LSTM</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/08/14/dl-word-click/" rel="next" title="关于中文点选验证码的识别">
+                <i class="fa fa-chevron-left"></i> 关于中文点选验证码的识别
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/09/10/nlp-word-order/" rel="prev" title="中文点选验证码——语序">
+                中文点选验证码——语序 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">104</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">198</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#CRNN"><span class="nav-text">CRNN</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CRNN网络架构示意图"><span class="nav-text">CRNN网络架构示意图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CRNN参数设置"><span class="nav-text">CRNN参数设置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CRNN模型的实现"><span class="nav-text">CRNN模型的实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文字识别"><span class="nav-text">文字识别</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

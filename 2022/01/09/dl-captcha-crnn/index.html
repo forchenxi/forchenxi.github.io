@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="pytorch,crnn,cnn+rnn,LSTM,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="CRNN项目实战之前写过一篇文章利用CRNN进行文字识别，当时重点讲的CRNN网络结构和CNN部分的代码实现，因为缺少文字数据集没有进行真正的训练，这次正好有一批不定长的字符验证码，正好CRNN主要就是用于端到端地对不定长的文本序列进行识别，当然是字符和文字都是可以用的，所以这里进行了一次实战。 主要是参考github项目：https://github.com/meijieru/crnn.pyto">
+<meta name="keywords" content="pytorch,crnn,cnn+rnn,LSTM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CRNN项目实践">
+<meta property="og:url" content="http://yoursite.com/2022/01/09/dl-captcha-crnn/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="CRNN项目实战之前写过一篇文章利用CRNN进行文字识别，当时重点讲的CRNN网络结构和CNN部分的代码实现，因为缺少文字数据集没有进行真正的训练，这次正好有一批不定长的字符验证码，正好CRNN主要就是用于端到端地对不定长的文本序列进行识别，当然是字符和文字都是可以用的，所以这里进行了一次实战。 主要是参考github项目：https://github.com/meijieru/crnn.pyto">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2022-01-10T02:45:41.554Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CRNN项目实践">
+<meta name="twitter:description" content="CRNN项目实战之前写过一篇文章利用CRNN进行文字识别，当时重点讲的CRNN网络结构和CNN部分的代码实现，因为缺少文字数据集没有进行真正的训练，这次正好有一批不定长的字符验证码，正好CRNN主要就是用于端到端地对不定长的文本序列进行识别，当然是字符和文字都是可以用的，所以这里进行了一次实战。 主要是参考github项目：https://github.com/meijieru/crnn.pyto">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2022/01/09/dl-captcha-crnn/">
+
+
+
+
+
+  <title>CRNN项目实践 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/01/09/dl-captcha-crnn/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">CRNN项目实践</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-01-09T20:32:14+08:00">
+                2022-01-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="CRNN项目实战"><a href="#CRNN项目实战" class="headerlink" title="CRNN项目实战"></a><code>CRNN</code>项目实战</h2><p>之前写过一篇文章利用<a href="https://forchenxi.github.io/2021/08/28/dl-crnn/#more" target="_blank" rel="noopener"><code>CRNN</code>进行文字识别</a>，当时重点讲的<code>CRNN</code>网络结构和CNN部分的代码实现，因为缺少文字数据集没有进行真正的训练，这次正好有一批不定长的字符验证码，正好<code>CRNN</code>主要就是用于<strong>端到端地对不定长的文本序列进行识别</strong>，当然是字符和文字都是可以用的，所以这里进行了一次实战。</p>
+<p>主要是参考<code>github</code>项目：<a href="https://github.com/meijieru/crnn.pytorch" target="_blank" rel="noopener">https://github.com/meijieru/crnn.pytorch</a></p>
+<h3 id="关于lmdb"><a href="#关于lmdb" class="headerlink" title="关于lmdb"></a>关于<code>lmdb</code></h3><h4 id="lmdb安装"><a href="#lmdb安装" class="headerlink" title="lmdb安装"></a>lmdb安装</h4><p>首先关于lmdb这个数据库，python有两个包，一个是lmdb，另一个是python-lmdb。</p>
+<p>使用pycharm的包安装功能可以看到关于lmdb的描述</p>
+<p><code>Universal Python binding for the LMDB &#39;Lightning&#39; Database  Version 1.3.0</code></p>
+<p>关于<code>python-lmdb</code>的描述</p>
+<p><code>simple lmdb bindings written using ctypes Version 1.0.0</code></p>
+<p>所以理论上我们安装前者肯定是可以用的，但是经过亲身实践，</p>
+<p>在pip环境中使用<code>pip install lmdb</code>确实可以正常使用；</p>
+<p>但是在<code>conda</code>环境中，使用<code>conda install lmdb</code>安装完成之后却无法导入包。</p>
+<p>所以又使用：<code>conda install python-lmdb</code>安装，安装完之后却可以使用，非常奇怪。</p>
+<p>后发现原因大概率是版本问题，使用pip可以安装<code>lmdb=1.3.0</code>的最新版本，而<code>conda</code>只能安装<code>lmdb=0.9.x</code>的版本，所以目前在<code>conda</code>中只能使用<code>python-lmdb</code>暂替使用。</p>
+<h4 id="制作适用CRNN的lmdb数据集"><a href="#制作适用CRNN的lmdb数据集" class="headerlink" title="制作适用CRNN的lmdb数据集"></a>制作适用<code>CRNN</code>的<code>lmdb</code>数据集</h4><p><code>github</code>项目中关于如何训练自己的数据集写的不是很清楚，如果我们直接运行<code>train.py</code>会遇到各种问题，首先第一个问题就是数据集的问题，<code>lmdbDataset</code>中的初始化</p>
+<a id="more"></a>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">self.env = lmdb.open(</span><br><span class="line">            root,</span><br><span class="line">            max_readers=<span class="number">1</span>,</span><br><span class="line">            readonly=<span class="literal">True</span>,</span><br><span class="line">            lock=<span class="literal">False</span>,</span><br><span class="line">            readahead=<span class="literal">False</span>,</span><br><span class="line">            meminit=<span class="literal">False</span></span><br><span class="line">        )</span><br></pre></td></tr></table></figure>
+<p>这里会报错，因为这里读取的路径下需要有<code>lmdb</code>格式的数据，所以在这之前我们需要生成<code>lmdb</code>格式的数据集。</p>
+<p>相关代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> lmdb  <span class="comment"># install lmdb by "pip install lmdb"</span></span><br><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> glob</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">checkImageIsValid</span><span class="params">(imageBin)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> imageBin <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">    imageBuf = np.frombuffer(imageBin, dtype=np.uint8)</span><br><span class="line">    img = cv2.imdecode(imageBuf, cv2.IMREAD_GRAYSCALE)</span><br><span class="line">    <span class="keyword">if</span> img <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">    imgH, imgW = img.shape[<span class="number">0</span>], img.shape[<span class="number">1</span>]</span><br><span class="line">    <span class="keyword">if</span> imgH * imgW == <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">writeCache</span><span class="params">(env, cache)</span>:</span>   <span class="comment"># 在python3环境下运行</span></span><br><span class="line">    <span class="keyword">with</span> env.begin(write=<span class="literal">True</span>) <span class="keyword">as</span> txn:</span><br><span class="line">        <span class="keyword">for</span> k, v <span class="keyword">in</span> cache.items():</span><br><span class="line">            <span class="keyword">if</span> type(v) <span class="keyword">is</span> str:</span><br><span class="line">                txn.put(k.encode(), v.encode())</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            txn.put(k.encode(), v)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">createDataset</span><span class="params">(outputPath, imagePathList, labelList, lexiconList=None, checkValid=True)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    Create LMDB dataset for CRNN training.</span></span><br><span class="line"><span class="string">    ARGS:</span></span><br><span class="line"><span class="string">        outputPath    : LMDB output path</span></span><br><span class="line"><span class="string">        imagePathList : list of image path</span></span><br><span class="line"><span class="string">        labelList     : list of corresponding groundtruth texts</span></span><br><span class="line"><span class="string">        lexiconList   : (optional) list of lexicon lists</span></span><br><span class="line"><span class="string">        checkValid    : if true, check the validity of every image</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="keyword">assert</span> (len(imagePathList) == len(labelList)), <span class="string">'len(x) != len(y)'</span></span><br><span class="line">    nSamples = len(imagePathList)</span><br><span class="line">    print(<span class="string">'...................'</span>)</span><br><span class="line">    <span class="comment"># env = lmdb.open(outputPath, map_size=104857600)  # 最大100MB</span></span><br><span class="line">    env = lmdb.open(outputPath, map_size=<span class="number">10485760</span>)</span><br><span class="line"></span><br><span class="line">    cache = &#123;&#125;</span><br><span class="line">    cnt = <span class="number">1</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(nSamples):</span><br><span class="line">        imagePath = imagePathList[i]</span><br><span class="line">        label = labelList[i]</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(imagePath):</span><br><span class="line">            print(<span class="string">'%s does not exist'</span> % imagePath)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">with</span> open(imagePath, <span class="string">'rb'</span>) <span class="keyword">as</span> f:</span><br><span class="line">            imageBin = f.read()</span><br><span class="line">        <span class="keyword">if</span> checkValid:</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> checkImageIsValid(imageBin):</span><br><span class="line">                print(<span class="string">'%s is not a valid image'</span> % imagePath)</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># .mdb数据库文件保存了两种数据，一种是图片数据，一种是标签数据，它们各有其key</span></span><br><span class="line">        imageKey = <span class="string">f'image-<span class="subst">&#123;cnt&#125;</span>'</span></span><br><span class="line">        labelKey = <span class="string">f'label-<span class="subst">&#123;cnt&#125;</span>'</span></span><br><span class="line">        cache[imageKey] = imageBin</span><br><span class="line">        cache[labelKey] = label</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> lexiconList:</span><br><span class="line">            lexiconKey = <span class="string">f'lexicon-<span class="subst">&#123;cnt&#125;</span>'</span></span><br><span class="line">            cache[lexiconKey] = <span class="string">' '</span>.join(lexiconList[i])</span><br><span class="line">        <span class="keyword">if</span> cnt % <span class="number">1000</span> == <span class="number">0</span>:</span><br><span class="line">            writeCache(env, cache)</span><br><span class="line">            cache = &#123;&#125;</span><br><span class="line">            print(<span class="string">'Written %d / %d'</span> % (cnt, nSamples))</span><br><span class="line">        cnt += <span class="number">1</span></span><br><span class="line">    nSamples = cnt - <span class="number">1</span></span><br><span class="line">    cache[<span class="string">'num-samples'</span>] = str(nSamples)</span><br><span class="line">    writeCache(env, cache)</span><br><span class="line">    print(<span class="string">'Created dataset with %d samples'</span> % nSamples)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">read_text</span><span class="params">(path)</span>:</span></span><br><span class="line">    <span class="keyword">with</span> open(path) <span class="keyword">as</span> f:</span><br><span class="line">        text = f.read()</span><br><span class="line">    text = text.strip()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> text</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line"></span><br><span class="line">    <span class="comment"># lmdb 输出目录</span></span><br><span class="line">    <span class="comment"># outputPath = 'data/train/lmdb_data'  # 训练数据</span></span><br><span class="line">    outputPath = <span class="string">'data/val/lmdb_data'</span>    <span class="comment"># 验证数据</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 训练图片路径，标签是txt格式，名字跟图片名字要一致，如123.jpg对应标签需要是123.txt</span></span><br><span class="line">    <span class="comment"># input_path = 'data/train/origin_data/*.jpg'</span></span><br><span class="line">    input_path = <span class="string">'data/val/origin_data/*.jpg'</span></span><br><span class="line"></span><br><span class="line">    imagePathList = glob.glob(input_path)</span><br><span class="line">    print(<span class="string">'------------'</span>, len(imagePathList), <span class="string">'------------'</span>)</span><br><span class="line">    imgLabelLists = []</span><br><span class="line">    <span class="keyword">for</span> p <span class="keyword">in</span> imagePathList:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="comment"># imgLabelLists.append((p, read_text(p.replace('.jpg', '.txt'))))</span></span><br><span class="line">            imgLabelLists.append((p, p.split(<span class="string">'_'</span>)[<span class="number">2</span>].replace(<span class="string">'.jpg'</span>, <span class="string">''</span>)))</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> _e:</span><br><span class="line">            print(_e)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># sort by labelList</span></span><br><span class="line">    imgLabelList = sorted(imgLabelLists, key=<span class="keyword">lambda</span> x: len(x[<span class="number">1</span>]))</span><br><span class="line">    imgPaths = [p[<span class="number">0</span>] <span class="keyword">for</span> p <span class="keyword">in</span> imgLabelList]</span><br><span class="line">    txtLists = [p[<span class="number">1</span>] <span class="keyword">for</span> p <span class="keyword">in</span> imgLabelList]</span><br><span class="line"></span><br><span class="line">    createDataset(outputPath, imgPaths, txtLists, lexiconList=<span class="literal">None</span>, checkValid=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<p>代码执行完成会在相应目录下生成data.mdb、lock.mdb两个文件。代码很简单，一看就懂，因为我的原始数据集，标签包含在图片名称中，不是另外存储在txt文件中，所以对相应代码进行了改动，另外把python2相关的东西改成了可以用python3运行。</p>
+<p>另外有一点：</p>
+<p><code>env = lmdb.open(outputPath, map_size=104857600)  # 最大100MB</code></p>
+<p>map_size需要根据自己的数据集设置大小(单位是B)，运行完生成的<code>data.mdb</code>的大小就是设置的大小，如果设置的比较大造成空间的浪费，设置的比较小可能会不够用(默认应该是<code>10MB</code>)。</p>
+<p>很多资料都写这里设置<code>1T</code>，如果你的电脑硬盘空间不够，就会报错（报的错误是乱码）。</p>
+<p>另外，如果你还遇到了其他乱码报错，大概率是路径错误。</p>
+<p>参考文章：<a href="https://www.cnblogs.com/yanghailin/p/14519525.html" target="_blank" rel="noopener">https://www.cnblogs.com/yanghailin/p/14519525.html</a></p>
+<h3 id="CTCLoss"><a href="#CTCLoss" class="headerlink" title="CTCLoss"></a><code>CTCLoss</code></h3><p>在train.py中有这么一行代码，</p>
+<p><code>from warpctc_pytorch import CTCLoss</code></p>
+<p>初次使用的话一般是显示没有这个包的，而pytorch(version&gt;=1.1)其实是有CTCLoss模块的</p>
+<p><code>from torch.nn import CTCLoss</code></p>
+<p>所以如果你的pytorch版本满足，就无需额外安装warp_ctc_pytorch了，替换一下导入代码即可。如果你的版本比较低，还是需要手动安装这个包的，如果是Windows环境下，比较麻烦的就是需要安装cmake来编译文件。不再赘述。</p>
+<p>需要用到的warp_ctc_pytorch： <a href="https://github.com/SeanNaren/warp-ctc" target="_blank" rel="noopener">https://github.com/SeanNaren/warp-ctc</a></p>
+<p>参考文章：<a href="https://blog.csdn.net/weixin_40437821/article/details/105473032" target="_blank" rel="noopener">https://blog.csdn.net/weixin_40437821/article/details/105473032</a></p>
+<p>然后简单介绍下，<code>pytorch</code>中<code>CTCLoss</code>的用法。</p>
+<p>初始化</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ctc_loss = nn.CTCLoss(blank=len(CHARS)-1, reduction=&apos;mean&apos;)</span><br></pre></td></tr></table></figure>
+<p><strong>类初始化参数说明：</strong></p>
+<p><strong>blank：</strong>空白标签所在的label值，默认为0，<strong>需要根据实际的标签定义进行设定</strong>；</p>
+<p><strong>reduction：</strong>处理output losses的方式，string类型，可选’none’ 、 ‘mean’ 及 ‘sum’，’none’表示对output losses不做任何处理，’mean’ 则对output losses取平均值处理，’sum’则是对output losses求和处理，默认为’mean’ 。</p>
+<p>计算损失</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">loss = ctc_loss(log_probs, targets, input_lengths, target_lengths)</span><br></pre></td></tr></table></figure>
+<p><strong><code>CTCLoss()</code>对象调用形参说明：</strong></p>
+<p><strong><code>log_probs</code>：</strong>shape为(T, N, C)的模型输出张量，其中，T表示<code>CTCLoss</code>的输入长度也即输出序列长度，N表示训练的batch size长度，C则表示包含有空白标签的所有要预测的字符集总长度，<code>log_probs</code>一般需要经过<code>torch.nn.functional.log_softmax</code>处理后再送入到<code>CTCLoss</code>中；</p>
+<p><strong>targets：</strong>shape为(N, S) 或(sum(target_lengths))的张量，其中第一种类型，N表示训练的batch size长度，S则为标签长度，第二种类型，则为所有标签长度之和，但是需要注意的是targets不能包含有空白标签；</p>
+<p><strong>input_lengths：</strong>shape为(N)的张量或元组，但每一个元素的长度必须等于T即输出序列长度，一般来说模型输出序列固定后则该张量或元组的元素值均相同；</p>
+<p><strong>target_lengths：</strong>shape为(N)的张量或元组，其每一个元素指示每个训练输入序列的标签长度，但标签长度是可以变化的；</p>
+<p>这里最重要的就是<strong>初始化blank参数的设置和计算损失时，<code>log_probs</code>参数需要先进行<code>log_softmax</code></strong>，这也是我们在这个项目中需要调整的点，如果我们直接从<code>warp_ctc_pytorch</code>更换为<code>pytorch</code>内置的<code>CTCLoss</code>,然后其他的不改动的话，是训练不出来结果的。</p>
+<p>改动点：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">criterion = CTCLoss(blank=<span class="number">0</span>, reduction=<span class="string">'mean'</span>)  <span class="comment"># 初始化</span></span><br><span class="line"></span><br><span class="line">cost = criterion(preds.log_softmax(<span class="number">2</span>), text, preds_size, length) / batch_size  <span class="comment"># 损失计算，共有两处，训练和验证</span></span><br></pre></td></tr></table></figure>
+<p>比较巧合的是，在这个项目中，0的位置就是为空白字符预留的，而且blank的默认值也为0，所以不改动也是可以的。</p>
+<h3 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h3><p>配置训练数据路径(trainroot)、验证数据路径(valroot)、预训练权重路径(pretrained)，将lr(学习率)设置为0.001，nepoch=200。</p>
+<p>训练的过程中会报很多错误，因为这个<code>GitHub</code>项目可能部分代码写的比较粗糙，另一方面也是因为<code>python2</code>和<code>python3</code>，Linux和windows的环境问题。</p>
+<p>我遇到了以下错误：</p>
+<p>1、trainRoot，valRoot需要改下大小写</p>
+<p>2、<code>TypeError: Won&#39;t implicitly convert Unicode to bytes; use .encode()</code></p>
+<p>按照错误提示加上encode<br>txn.get(‘num-samples’.encode())<br>label_byte = txn.get(label_key.encode())<br>imgbuf = txn.get(img_key.encode())</p>
+<p>3、<code>ValueError: sampler option is mutually exclusive with shuffle</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">train_loader = torch.utils.data.DataLoader(</span><br><span class="line">    train_dataset,</span><br><span class="line">    batch_size=opt.batchSize,</span><br><span class="line">    shuffle=<span class="literal">False</span>,  <span class="comment"># sampler不为None,shuffle就需要为False</span></span><br><span class="line">    sampler=sampler,</span><br><span class="line">    num_workers=int(opt.workers),</span><br><span class="line">    collate_fn=dataset.alignCollate(imgH=opt.imgH, imgW=opt.imgW, keep_ratio=opt.keep_ratio)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>因为本来shuffle参数为True，需要更改为False。</p>
+<p>参考文章：<a href="https://blog.csdn.net/hjxu2016/article/details/111300972" target="_blank" rel="noopener">https://blog.csdn.net/hjxu2016/article/details/111300972</a></p>
+<p>4、<code>TypeError: cannot pickle &#39;Environment&#39; object</code></p>
+<p>这个是因为在windows环境下，多进程训练有问题，将workers参数设置为0即可。</p>
+<p>参考文章：<a href="https://blog.csdn.net/weixin_43272781/article/details/112757371" target="_blank" rel="noopener">https://blog.csdn.net/weixin_43272781/article/details/112757371</a></p>
+<p>5、<code>AttributeError: module &#39;torch&#39; has no attribute &#39;longTensor&#39;</code></p>
+<p>在dataset.py脚本中，应该是torch.LongTensor。</p>
+<p>6、<code>TypeError: randint() takes 3 positional arguments but 4 were given</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">random.randint(<span class="number">0</span>, len(self), self.batch_size)</span><br></pre></td></tr></table></figure>
+<p>我猜这里是笔误了，应该是len(self)-self.batch_size。</p>
+<p>7、train.py中</p>
+<p>image = torch.FloatTensor(opt.batchSize, 3, opt.imgH, opt.imgH)</p>
+<p>推测最后一个参数应该是opt.imgW。</p>
+<p>8、<code>RuntimeError: The expanded size of the tensor (64) must match the existing size (63) at non-singleton dimension 0.  Target sizes: [64].  Tensor sizes: [63]</code></p>
+<p>  嘿嘿，这个问题是因为我改了torch.range代码，因为pycharm提示说这个方法被废弃了，要求使用torch.arange</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">batch_index = random_start + torch.arange(<span class="number">0</span>, self.batch_size<span class="number">-1</span>)</span><br><span class="line">index[i * self.batch_size:(i+<span class="number">1</span>)*self.batch_size] = batch_index</span><br></pre></td></tr></table></figure>
+<p><code>torch.range(start=1, end=6)</code>的结果是会包含end的，而<code>torch.arange(start=1, end=6)</code>的结果并不包含end。所以这里就不需要减1了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">batch_index = random_start + torch.arange(<span class="number">0</span>, self.batch_size)</span><br></pre></td></tr></table></figure>
+<p>同样的，后面取末尾元素的时候也要去掉减1</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tail_index = random_start + torch.arange(<span class="number">0</span>, tail)</span><br></pre></td></tr></table></figure>
+<p>参考文章：<a href="https://blog.csdn.net/lunhuicnm/article/details/106712026" target="_blank" rel="noopener">https://blog.csdn.net/lunhuicnm/article/details/106712026</a></p>
+<p>9、<code>RuntimeError: set_sizes_contiguous is not allowed on a Tensor created from .data or .detach().</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">v.data.resize_(data.size()).copy_(data)</span><br><span class="line">v.resize_(data.size()).copy_(data)</span><br></pre></td></tr></table></figure>
+<p>将上面的替换为下面的</p>
+<p>参考文章：<a href="https://blog.csdn.net/weixin_45292103/article/details/102736742" target="_blank" rel="noopener">https://blog.csdn.net/weixin_45292103/article/details/102736742</a></p>
+<p>10、还有一个关于utils.py中编码器(encode()方法的问题)，</p>
+<p>本来有一行代码是：<code>_str = unicode(_str, &#39;utf-8&#39;)</code></p>
+<p>这是python2中的语法，python3并不需要，但是因为前面制作lmdb数据集的时候，我们的标签进行了encode()处理，也就是这一步：<code>txn.put(k.encode(), v.encode())</code></p>
+<p>导致后面训练的时候，在对标签进行编码时，标签传过来是这样一种形式:”b’jdvfl0k’”</p>
+<p>所以可以加上这行代码：<code>_str = _str.replace(&quot;b&#39;&quot;, &quot;&quot;).replace(&quot;&#39;&quot;, &#39;&#39;)</code>。</p>
+<p>11、在train.py的验证方法里，有这么一段代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">_, preds = preds.max(<span class="number">2</span>)</span><br><span class="line">preds = preds.squeeze(<span class="number">2</span>) </span><br><span class="line">preds = preds.transpose(<span class="number">1</span>, <span class="number">0</span>).contiguous().view(<span class="number">-1</span>)</span><br></pre></td></tr></table></figure>
+<p>我在实际运行时发现preds.squeeze(2)会报错，然后调试发现preds此时的shape为(26, 64)，所以应该无需squeeze，可以将这行代码注释。</p>
+<p>另外，还要根据情况配置displayInterval、valInterval、saveInterval参数</p>
+<p>displayInterval默认值是500，我这里训练不定长字符验证码，训练集总共4500张图片，batch_size=64，总共71个批次，所以设置displayInterval=10，每10个批次打印一次损失情况。其他两个参数同理，按照自己的情况调整。</p>
+<p>终于把所有问题都解决了，可以正常训练了，但是训练的过程中打印的测试数据让我感觉不太对劲，我发现在对比预测标签和真实标签时，真实标签的形式为：”b’jdvfl0k’”</p>
+<p>和上面同样的问题，需要处理下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">target = target.replace(<span class="string">"b'"</span>, <span class="string">""</span>).replace(<span class="string">"'"</span>, <span class="string">""</span>)</span><br><span class="line">gt = gt.replace(<span class="string">"b'"</span>, <span class="string">""</span>).replace(<span class="string">"'"</span>, <span class="string">""</span>)</span><br></pre></td></tr></table></figure>
+<p>因为使用的预训练权重，训练的比较快，训练过程示例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">0</span>/<span class="number">200</span>][<span class="number">10</span>/<span class="number">71</span>] Loss: <span class="number">0.07960973680019379</span></span><br><span class="line">[<span class="number">0</span>/<span class="number">200</span>][<span class="number">20</span>/<span class="number">71</span>] Loss: <span class="number">0.014807680621743202</span></span><br><span class="line">[<span class="number">0</span>/<span class="number">200</span>][<span class="number">30</span>/<span class="number">71</span>] Loss: <span class="number">0.010894499719142914</span></span><br><span class="line">Start val</span><br><span class="line">66----y----f----g----p---- =&gt; 6yfgp, gt:6yfgp</span><br><span class="line">-f-t--r---z---x---d---8--- =&gt; ftrzxd8, gt:ftpzxd8</span><br><span class="line">-k--a----y---m-----w------ =&gt; kaymw, gt:kaymw</span><br><span class="line">-n-----3-----7-----z------ =&gt; n37z, gt:n37z</span><br><span class="line">--u-------y----l----9----- =&gt; uyl9, gt:uyl9</span><br><span class="line">ss---y---8---e---l----p--- =&gt; sy8elp, gt:sy8elp</span><br><span class="line">--y--d--h--t--f--m----y--- =&gt; ydhtfmy, gt:ydtfmy</span><br><span class="line">--zz----zz----l-----1----- =&gt; zzl1, gt:zzl1</span><br><span class="line">Test loss: <span class="number">0.016945159062743187</span>, accuracy: <span class="number">0.465</span></span><br><span class="line">[<span class="number">0</span>/<span class="number">200</span>][<span class="number">40</span>/<span class="number">71</span>] Loss: <span class="number">0.007085741963237524</span></span><br><span class="line">[<span class="number">0</span>/<span class="number">200</span>][<span class="number">50</span>/<span class="number">71</span>] Loss: <span class="number">0.007241038139909506</span></span><br><span class="line">[<span class="number">0</span>/<span class="number">200</span>][<span class="number">60</span>/<span class="number">71</span>] Loss: <span class="number">0.004275097511708736</span></span><br><span class="line">[<span class="number">0</span>/<span class="number">200</span>][<span class="number">70</span>/<span class="number">71</span>] Loss: <span class="number">0.0034677726216614246</span></span><br><span class="line">Start val</span><br><span class="line">-n----n----3----k----l---- =&gt; nn3kl, gt:nn3kl</span><br><span class="line">-c---c----b---s---a---k--- =&gt; ccbsak, gt:ccbsak</span><br><span class="line">-u---v---7--k---z--s--4--- =&gt; uv7kzs4, gt:uv7kzs4</span><br><span class="line">-5----e------u------------ =&gt; 5eu, gt:5eu</span><br><span class="line">-k-----e-----v-------v---- =&gt; kevv, gt:kelbv</span><br><span class="line">--yy-d-----t--f--m----y--- =&gt; ydtfmy, gt:ydtfmy</span><br><span class="line">-5--q---h---t--m---8--q--- =&gt; 5qhtm8q, gt:5qhtm8q</span><br><span class="line">--y-----z----g-------v---- =&gt; yzgv, gt:yzgv</span><br><span class="line">Test loss: <span class="number">0.014375979080796242</span>, accuracy: <span class="number">0.66</span></span><br><span class="line">[<span class="number">1</span>/<span class="number">200</span>][<span class="number">10</span>/<span class="number">71</span>] Loss: <span class="number">0.004606468137353659</span></span><br><span class="line">[<span class="number">1</span>/<span class="number">200</span>][<span class="number">20</span>/<span class="number">71</span>] Loss: <span class="number">0.0033515722025185823</span></span><br><span class="line">[<span class="number">1</span>/<span class="number">200</span>][<span class="number">30</span>/<span class="number">71</span>] Loss: <span class="number">0.002877553692087531</span></span><br><span class="line">Start val</span><br><span class="line">-7--d----o---h----c---y--- =&gt; 7dohcy, gt:7d0hcy</span><br><span class="line">-6----y----f----g----p---- =&gt; 6yfgp, gt:6yfgp</span><br><span class="line">-1----f---j----b-----f---- =&gt; 1fjbf, gt:1fjbf</span><br><span class="line">-2---o----u---h--4----z--- =&gt; 2ouh4z, gt:2ouh4z</span><br><span class="line">--x----1---b---ww-----n--- =&gt; x1bwn, gt:x1bwn</span><br><span class="line">-j---k--------------55---- =&gt; jk5, gt:jk15</span><br><span class="line">-1---t--6---x----n----o--- =&gt; 1t6xno, gt:1t6xno</span><br><span class="line">--y---x--j---k----a----t-- =&gt; yxjkat, gt:yxjkat</span><br><span class="line">Test loss: <span class="number">0.012275747954845428</span>, accuracy: <span class="number">0.745</span></span><br><span class="line">[<span class="number">1</span>/<span class="number">200</span>][<span class="number">40</span>/<span class="number">71</span>] Loss: <span class="number">0.0018801590194925666</span></span><br><span class="line">[<span class="number">1</span>/<span class="number">200</span>][<span class="number">50</span>/<span class="number">71</span>] Loss: <span class="number">0.002281028078868985</span></span><br><span class="line">[<span class="number">1</span>/<span class="number">200</span>][<span class="number">60</span>/<span class="number">71</span>] Loss: <span class="number">0.001854069298133254</span></span><br><span class="line">[<span class="number">1</span>/<span class="number">200</span>][<span class="number">70</span>/<span class="number">71</span>] Loss: <span class="number">0.0012131230905652046</span></span><br><span class="line">Start val</span><br><span class="line">dd----y--j-c---v--y---m--- =&gt; dyjcvym, gt:dyjcvym</span><br><span class="line">-s----z---9----qq------t-- =&gt; sz9qt, gt:sz9qt</span><br><span class="line">--y--qq----qq-----t---h--- =&gt; yqqth, gt:yqqth</span><br><span class="line">-h---a----5--s----xx--o--- =&gt; ha5sxo, gt:ha5sxo</span><br><span class="line">tt----o----7----a---0----- =&gt; to7a0, gt:to4ao</span><br><span class="line">-n-----xx---f---e-----s--- =&gt; nxfes, gt:nxfes</span><br><span class="line">-1---t--6---x----n----o--- =&gt; 1t6xno, gt:1t6xno</span><br><span class="line">-c---e---d---e---c---m---- =&gt; cedecm, gt:cedecm</span><br><span class="line">Test loss: <span class="number">0.004259577952325344</span>, accuracy: <span class="number">0.815</span></span><br></pre></td></tr></table></figure>
+<p>两轮训练结束之后准确率就达到了81.5%(200个验证图片)</p>
+<p>经过35轮的训练，准确率可以稳定在97.5%左右。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/pytorch/" rel="tag"># pytorch</a>
+          
+            <a href="/tags/crnn/" rel="tag"># crnn</a>
+          
+            <a href="/tags/cnn-rnn/" rel="tag"># cnn+rnn</a>
+          
+            <a href="/tags/LSTM/" rel="tag"># LSTM</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/12/28/linux-shell/" rel="next" title="Linux shell命令">
+                <i class="fa fa-chevron-left"></i> Linux shell命令
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/01/27/python-sm4/" rel="prev" title="Python sm4加解密">
+                Python sm4加解密 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">104</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">198</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#CRNN项目实战"><span class="nav-text">CRNN项目实战</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#关于lmdb"><span class="nav-text">关于lmdb</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#lmdb安装"><span class="nav-text">lmdb安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#制作适用CRNN的lmdb数据集"><span class="nav-text">制作适用CRNN的lmdb数据集</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CTCLoss"><span class="nav-text">CTCLoss</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#训练"><span class="nav-text">训练</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="CNN,Keras Sequential,cifar10,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="安装pip install keras backend:后端引擎，import keras时会提示当前使用的是哪一个backend 注：backend现在有tensorflow、CNTK、Theano 使用以下语句可以改变当前脚本使用的backend 123import os&amp;gt;&amp;gt;&amp;gt; os.environ[&apos;KERAS_BACKEND&apos;]=&apos;theano&apos; 注：Keras API">
+<meta name="keywords" content="CNN,Keras Sequential,cifar10">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Keras简单应用cifar10">
+<meta property="og:url" content="http://yoursite.com/2020/01/01/dl-cnn-cifar10/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="安装pip install keras backend:后端引擎，import keras时会提示当前使用的是哪一个backend 注：backend现在有tensorflow、CNTK、Theano 使用以下语句可以改变当前脚本使用的backend 123import os&amp;gt;&amp;gt;&amp;gt; os.environ[&apos;KERAS_BACKEND&apos;]=&apos;theano&apos; 注：Keras API">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-09-16T02:59:35.464Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Keras简单应用cifar10">
+<meta name="twitter:description" content="安装pip install keras backend:后端引擎，import keras时会提示当前使用的是哪一个backend 注：backend现在有tensorflow、CNTK、Theano 使用以下语句可以改变当前脚本使用的backend 123import os&amp;gt;&amp;gt;&amp;gt; os.environ[&apos;KERAS_BACKEND&apos;]=&apos;theano&apos; 注：Keras API">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/01/01/dl-cnn-cifar10/">
+
+
+
+
+
+  <title>Keras简单应用cifar10 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/01/dl-cnn-cifar10/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Keras简单应用cifar10</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-01-01T16:09:54+08:00">
+                2020-01-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p><code>pip install keras</code></p>
+<p><code>backend</code>:后端引擎，<code>import keras</code>时会提示当前使用的是哪一个<code>backend</code></p>
+<p><em>注：<code>backend</code>现在有<code>tensorflow</code>、<code>CNTK</code>、<code>Theano</code></em></p>
+<p>使用以下语句可以改变当前脚本使用的<code>backend</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>os.environ[<span class="string">'KERAS_BACKEND'</span>]=<span class="string">'theano'</span></span><br></pre></td></tr></table></figure>
+<p><strong>注：<code>Keras API</code> 是<code>Tensorflow</code>的官方前端</strong></p>
+<h3 id="Example：利用CNN实现cifar10小图片分类"><a href="#Example：利用CNN实现cifar10小图片分类" class="headerlink" title="Example：利用CNN实现cifar10小图片分类"></a>Example：利用CNN实现<code>cifar10</code>小图片分类</h3><h4 id="1-先来简单了解几个问题"><a href="#1-先来简单了解几个问题" class="headerlink" title="1.先来简单了解几个问题"></a>1.先来简单了解几个问题</h4><p><strong>CNN（卷积神经网络）是什么？</strong></p>
+<p><a href="https://www.jianshu.com/p/c0215d26d20a" target="_blank" rel="noopener">从此明白了卷积神经网络</a></p>
+<p><strong>卷积层的使用</strong></p>
+<p><code>Conv2D</code>:二维卷积层，即对图像的空域卷积。该层对二维输入进行滑动窗卷积，当使用该层作为第一层时，应提供<code>input_shape</code>参数。例如<code>input_shape = (128,128,3)</code>代表128*128的彩色<code>RGB</code>图像（<code>data_format=&#39;channels_last&#39;</code>）</p>
+<p><code>model.add(Conv2D(32, (3, 3), padding=&#39;same&#39;, input_shape=(32, 32, 3)))</code></p>
+<a id="more"></a>
+<p>32表示<code>filter</code>即滤波器也就是卷积核数量，(3, 3)表示卷积核大小，这里需要重点解释下，<strong>为什么input_shape=(32, 32, 3)（即三通道），而<code>filter</code>却只是(3, 3)而不是(3, 3, 3)</strong>，其实很多文章为了易于理解可能会将filter描述为三维的（包括上面那篇讲CNN的文章），其实卷积核是二维的，假设输入图片宽度为<code>width：W</code>，高度为<code>height：H</code>,通道数为D，卷积核个数为M；则对于D个通道而言，是在每个通道上分别执行二维卷积，然后将D个通道加起来，得到该位置的二维卷积输出，对于<code>RGB</code>三通道而言，就是在R,G,B三个通道上分别使用对应的每个通道上的<code>kernel_size</code>*<code>kernel_size</code>大小的核去卷积每个通道上的W*H的图片，然后将三个通道卷积得到的输出相加，得到M个二维卷积输出结果,在有padding的情况下，能保持输出图片大小和原来的一样，因此是：output(w, h, m) 。</p>
+<p><strong>注：也就是说卷积操作完成后输出的 <code>out_channels</code> ，取决于卷积核的数量</strong></p>
+<p>相应地也就容易理解，为什么<code>keras.layers.convolutional.Conv2D</code>的参数<code>kernel_size</code>支持的传入形式为：单个整数或由两个整数构成的list/tuple，卷积核的宽度和长度。如为单个整数，则表示在各个空间维度的相同长度。</p>
+<p>相应的还有<code>Conv1D、Conv3D</code>,详情看<a href="https://keras-cn.readthedocs.io/en/latest/layers/convolutional_layer/" target="_blank" rel="noopener"><code>keras文档</code></a></p>
+<p><strong>如何设定卷积核数量，大小，步长</strong></p>
+<p><code>trail and error</code></p>
+<p><strong>为什么要有激活函数</strong></p>
+<p>如果不用激活函数，每一层输出都是上层输入的线性函数，无论神经网络有多少层，输出都是输入的线性组合，这种情况就是最原始的<a href="https://baike.baidu.com/item/感知机/12723581" target="_blank" rel="noopener">感知机</a>（<code>Perceptron</code>）。</p>
+<p>如果使用的话，激活函数给神经元引入了非线性因素，使得神经网络可以任意逼近任何非线性函数，这样神经网络就可以应用到众多的非线性模型中。</p>
+<p><strong>如何选择激活函数</strong></p>
+<p>以后再去研究，这里先给出一般性结论：</p>
+<ol>
+<li>除非在二分类问题中，否则请小心使用sigmoid函数。</li>
+<li>可以试试 <code>tanh</code>，不过大多数情况下它的效果会比不上 <code>ReLU</code>和 <code>Maxout</code>。</li>
+<li>如果你不知道应该使用哪个激活函数， 那么请优先选择<code>Relu</code>。</li>
+<li>如果你使用了<code>Relu</code>， 需要注意一下<code>Dead Relu</code>问题， 此时你需要仔细选择 <code>Learning rate</code>， 避免出现大的梯度从而导致过多的神经元 “Dead” 。</li>
+<li>如果发生了<code>Dead Relu</code>问题， 可以尝试一下<strong><code>leaky ReLU，ELU</code></strong>等<code>Relu</code>变体， 说不定会有惊喜。</li>
+</ol>
+<p><strong>为什么要有池化层</strong></p>
+<p>关于池化操作的简单过程在<a href="https://www.jianshu.com/p/c0215d26d20a" target="_blank" rel="noopener">从此明白了卷积神经网络</a>文章中有过一定介绍，目的就是在尽可能保留图片空间信息的前提下，降低图片的尺寸，增大卷积核感受野，提取高层特征，同时减少网络参数量，预防过拟合</p>
+<h4 id="2-使用Keras-Sequential顺序模型建立CNN"><a href="#2-使用Keras-Sequential顺序模型建立CNN" class="headerlink" title="2.使用Keras Sequential顺序模型建立CNN"></a>2.<strong>使用<code>Keras Sequential</code>顺序模型建立CNN</strong></h4><p><strong>指定输入数据的尺寸</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">quality_classify_model</span><span class="params">()</span>:</span></span><br><span class="line">    model = Sequential()</span><br><span class="line">    model.add(Conv2D(<span class="number">32</span>, (<span class="number">3</span>, <span class="number">3</span>), padding=<span class="string">'same'</span>, input_shape=(<span class="number">32</span>, <span class="number">32</span>, <span class="number">3</span>)))  <span class="comment"># 卷积层</span></span><br><span class="line">    model.add(Activation(<span class="string">'relu'</span>))  <span class="comment"># 激活函数</span></span><br><span class="line">    model.add(Conv2D(<span class="number">32</span>, (<span class="number">3</span>, <span class="number">3</span>)))</span><br><span class="line">    model.add(Activation(<span class="string">'relu'</span>))</span><br><span class="line">    model.add(MaxPooling2D(pool_size=(<span class="number">2</span>, <span class="number">2</span>)))  <span class="comment"># 最大池化</span></span><br><span class="line">    model.add(Dropout(<span class="number">0.25</span>))</span><br><span class="line"></span><br><span class="line">    model.add(Conv2D(<span class="number">64</span>, (<span class="number">3</span>, <span class="number">3</span>), padding=<span class="string">'same'</span>))</span><br><span class="line">    model.add(Activation(<span class="string">'relu'</span>))</span><br><span class="line">    model.add(Conv2D(<span class="number">64</span>, (<span class="number">3</span>, <span class="number">3</span>)))</span><br><span class="line">    model.add(Activation(<span class="string">'relu'</span>))</span><br><span class="line">    model.add(MaxPooling2D(pool_size=(<span class="number">2</span>, <span class="number">2</span>)))</span><br><span class="line">    model.add(Dropout(<span class="number">0.25</span>))</span><br><span class="line"></span><br><span class="line">    model.add(Flatten())  <span class="comment"># 全连接层</span></span><br><span class="line">    model.add(Dense(<span class="number">512</span>))</span><br><span class="line">    model.add(Activation(<span class="string">'relu'</span>))</span><br><span class="line">    model.add(Dropout(<span class="number">0.5</span>))  <span class="comment"># 随机抛弃一半，避免过拟合</span></span><br><span class="line">    model.add(Dense(num_classes))</span><br><span class="line">    <span class="comment"># 激活函数我们用softmax，这个函数适合多分类任务，sigmoid适合二分类任务</span></span><br><span class="line">    model.add(Activation(<span class="string">'softmax'</span>))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># initiate RMSprop optimizer</span></span><br><span class="line">    opt = keras.optimizers.RMSprop(learning_rate=<span class="number">0.0001</span>, decay=<span class="number">1e-6</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Let's train the model using RMSprop</span></span><br><span class="line">    model.compile(loss=<span class="string">'categorical_crossentropy'</span>,</span><br><span class="line">                  optimizer=opt,</span><br><span class="line">                  metrics=[<span class="string">'accuracy'</span>])</span><br><span class="line">    <span class="keyword">return</span> model</span><br></pre></td></tr></table></figure>
+<p><strong>模型编译</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">opt = keras.optimizers.rmsprop(lr=<span class="number">0.0001</span>, decay=<span class="number">1e-6</span>)</span><br><span class="line">model.compile(loss=<span class="string">'categorical_crossentropy'</span>, optimizer=opt, metrics=[<span class="string">'accuracy'</span>])</span><br></pre></td></tr></table></figure>
+<p>模型编译的代码同样在<code>quality_classify_model()</code>函数中。</p>
+<p><code>optimizer</code>优化器和<code>loss</code>损失函数是<code>keras</code>模型编译时，两个必需的参数，可以使用<code>keras</code>内置的优化器，或实例化一个优化器，自己指定参数值，厉害的话自己编写优化器。其中<code>SGD</code>（随机梯度下降优化器)，是性价比最好的算法。</p>
+<p>损失函数（loss function）是用来<strong>估量模型的预测值f(x)与真实值Y的不一致程度</strong>，它是一个非负实值函数,通常使用L(Y, f(x))来表示，损失函数越小，模型的鲁棒性就越好。</p>
+<p><strong>注意：<code>softmax</code>使用的即为交叉熵损失函数，<code>binary_cossentropy</code>为二分类交叉熵损失，<code>categorical_crossentropy</code>为多分类交叉熵损失，当使用多分类交叉熵损失函数时，标签应该为多分类模式，即使用one-hot编码的向量。</strong></p>
+<p><strong>模型训练</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">batch_size = <span class="number">64</span></span><br><span class="line">num_classes = <span class="number">10</span></span><br><span class="line">epochs = <span class="number">100</span></span><br><span class="line">data_augmentation = <span class="literal">True</span></span><br><span class="line">num_predictions = <span class="number">20</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">train</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="comment"># 数据载入</span></span><br><span class="line">    (x_train, y_train), (x_test, y_test) = cifar10.load_data()</span><br><span class="line">    <span class="comment"># x_train shape: (50000, 32, 32, 3)</span></span><br><span class="line">    print(<span class="string">'x_train shape:'</span>, x_train.shape)</span><br><span class="line">    print(x_train.shape[<span class="number">0</span>], <span class="string">'train samples'</span>)    <span class="comment"># 50000</span></span><br><span class="line">    print(x_test.shape[<span class="number">0</span>], <span class="string">'test samples'</span>)     <span class="comment"># 10000</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># to_categorical就是将类别向量转换为二进制（只有0和1）的矩阵类型表示</span></span><br><span class="line">    y_train = keras.utils.to_categorical(y_train, num_classes)</span><br><span class="line">    y_test = keras.utils.to_categorical(y_test, num_classes)</span><br><span class="line">    <span class="comment"># 生成训练数据</span></span><br><span class="line">    x_train = x_train.astype(<span class="string">'float32'</span>)</span><br><span class="line">    x_test = x_test.astype(<span class="string">'float32'</span>)</span><br><span class="line">    x_train /= <span class="number">255</span></span><br><span class="line">    x_test /= <span class="number">255</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 开始训练</span></span><br><span class="line">    model = quality_classify_model()</span><br><span class="line">    hist = model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, validation_data=(x_test, y_test), shuffle=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<p>因为使用的损失函数为多分类交叉熵损失，所以需要使用to_categorical将类别向量转换为二进制（只有0和1）的矩阵类型表示，即将原有的类别向量转换为独热编码的形式。</p>
+<p><strong>to_categorical函数</strong>功能例子如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.utils.np_utils <span class="keyword">import</span> *</span><br><span class="line"><span class="comment">#类别向量定义</span></span><br><span class="line">b = [<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>]</span><br><span class="line"><span class="comment">#调用to_categorical将b按照9个类别来进行转换</span></span><br><span class="line">b = to_categorical(b, <span class="number">9</span>)</span><br><span class="line">print(b)</span><br><span class="line"> </span><br><span class="line">执行结果如下：</span><br><span class="line">[[<span class="number">1.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span>]</span><br><span class="line"> [<span class="number">0.</span> <span class="number">1.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span>]</span><br><span class="line"> [<span class="number">0.</span> <span class="number">0.</span> <span class="number">1.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span>]</span><br><span class="line"> [<span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">1.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span>]</span><br><span class="line"> [<span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">1.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span>]</span><br><span class="line"> [<span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">1.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span>]</span><br><span class="line"> [<span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">1.</span> <span class="number">0.</span> <span class="number">0.</span>]</span><br><span class="line"> [<span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">1.</span> <span class="number">0.</span>]</span><br><span class="line"> [<span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">0.</span> <span class="number">1.</span>]]</span><br></pre></td></tr></table></figure>
+<p><strong>fit函数</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fit( x, y, batch_size=<span class="number">32</span>, epochs=<span class="number">10</span>, verbose=<span class="number">1</span>, callbacks=<span class="literal">None</span>, validation_split=<span class="number">0.0</span>, </span><br><span class="line">validation_data=<span class="literal">None</span>, shuffle=<span class="literal">True</span>, class_weight=<span class="literal">None</span>, sample_weight=<span class="literal">None</span>, initial_epoch=<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+<p>这里简单说下fit函数各个参数的含义，x是输入，y是目标（标签），<code>batch_size</code>指定进行梯度下降时每个batch包含的样本数；epochs是训练终止时的epoch值;<code>validation_data</code>形式为（X，y）的tuple，是指定的验证集；<code>shuffle</code>一般为布尔值，表示是否在训练过程中随机打乱输入样本的顺。具体可以参考<a href="https://keras.io/zh/models/model/" target="_blank" rel="noopener">官方文档</a></p>
+<p>以上训练模型训练完成后的结果是：训练集准确率：0.8232，验证集准确率：0.7981</p>
+<p><strong>简单CNN数据增强</strong></p>
+<p>由于深度学习的效果很大程度上依赖于数据量，因此如果固定模型不变，效果不佳时一个很重要的优化方案就是增加数据量，但有时候我们无法简单地获取到新的图像数据，比如这个<code>cifar10</code>数据集，就这么多数据，再找不太现实，那怎么办呢？有一种增加数据量的方法叫做数据增强。</p>
+<p><code>Keras</code>自带一种生成相似图像数据的方式，即使用<code>ImageDataGenerator</code>类。简单地说就是这个类可以对原始图像进行水平/竖直移动一定范围、水平/垂直翻转图像、放大图像一定范围等等，达到生成新的同类图像的目的，这种新生成的图像还是属于同样的类别，比如你把一张猫的图像平移15%的距离，它还是一只猫，但是与原图像又不是完全一样，因此也是提升了数据丰富程度的。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">train_new</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="comment"># 数据载入</span></span><br><span class="line">    (x_train, y_train), (x_test, y_test) = cifar10.load_data()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 多分类标签生成</span></span><br><span class="line">    y_train = keras.utils.to_categorical(y_train, num_classes)</span><br><span class="line">    y_test = keras.utils.to_categorical(y_test, num_classes)</span><br><span class="line">    <span class="comment"># 生成训练数据</span></span><br><span class="line">    x_train = x_train.astype(<span class="string">'float32'</span>)</span><br><span class="line">    x_test = x_test.astype(<span class="string">'float32'</span>)</span><br><span class="line">    x_train /= <span class="number">255</span></span><br><span class="line">    x_test /= <span class="number">255</span></span><br><span class="line"></span><br><span class="line">    train_data_gen = ImageDataGenerator(</span><br><span class="line">        width_shift_range=<span class="number">0.1</span>,</span><br><span class="line">        height_shift_range=<span class="number">0.1</span>,</span><br><span class="line">        horizontal_flip=<span class="literal">True</span>,</span><br><span class="line">    )</span><br><span class="line">    train_data_gen.fit(x_train)</span><br><span class="line">    model = quality_classify_model()</span><br><span class="line">    hist = model.fit_generator(</span><br><span class="line">        train_data_gen.flow(x_train, y_train, batch_size=batch_size),</span><br><span class="line">        epochs=epochs,</span><br><span class="line">        validation_data=(x_test, y_test),</span><br><span class="line">        workers=<span class="number">4</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 保存模型</span></span><br><span class="line">    model.save(<span class="string">'cifar10_model.h5'</span>)</span><br><span class="line">    model.save_weights(<span class="string">'cifar10_model_weight.hdf5'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 查看准确率</span></span><br><span class="line">    hist_dict = hist.history</span><br><span class="line">    print(<span class="string">'train acc:'</span>, hist_dict[<span class="string">'accuracy'</span>])</span><br><span class="line">    print(<span class="string">'validation acc:'</span>, hist_dict[<span class="string">'val_accuracy'</span>])</span><br></pre></td></tr></table></figure>
+<p>对比一下上一节的train函数，就可以发现不同点，首先，对于训练数据，我们用<code>ImageDataGenerator</code>类返回了一个<code>train_data_gen</code> ，用来生成训练的数据，这个<code>ImageDataGenerator</code>中就包含了一些变化的方式，包括标准化、旋转角度、水平移动、竖直移动等，详情看<a href="https://keras.io/zh/preprocessing/image/#imagedatagenerator_1" target="_blank" rel="noopener">官网文档</a>。</p>
+<p>需要注意的是，我们只应该对训练数据进行数据增强，对于验证集，不要去变动。</p>
+<p>在开始训练的时候，也从fit函数改成了fit_generator函数，这个函数才能接受<code>ImageDataGenerator</code>类返回的<code>train_data_gen</code>作为输入，也就是<code>train_data_gen.flow()</code>函数，其中设置了原始数据、批尺寸<code>batch_size</code>，这里同样是每一次处理的数据量，<code>epochs</code>还是原来那个<code>epochs</code>，也就是要完整训练多少轮。</p>
+<p>经过以上数据增强模型训练后，训练集准确率：0.7701，验证集准确率：0.8087。</p>
+<p>经过与上面的模型对比，训练集准确率反而下降了，但是验证集准确率有一点点提升，而且有一个显著的特点是使用数据增强后，验证集的准确率高于训练集的准确率。这里算是一个遗留的问题，后面不断学习再来解决。</p>
+<p><strong>保存模型</strong></p>
+<p>save()保存的模型结果，<strong>它既保持了模型的图结构，又保存了模型的参数</strong></p>
+<p>save_weights()保存的模型结果，<strong>它只保存了模型的参数，但并没有保存模型的图结构</strong></p>
+<p><code>HDF5</code>格式文件保存的是 ： <code>Model weights</code><br><code>H5</code> 格式文件保存的是：<code>Model stucture</code> 和<code>Model weights</code></p>
+<p>保存模型时需要使用<code>h5py</code>库，<code>Keras</code>应该是默认安装了<code>h5py</code>，所以可以直接使用。</p>
+<p><strong>关于测试</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">scores = model.evaluate(x_test, y_test, verbose=<span class="number">1</span>)</span><br><span class="line">print(<span class="string">'Test loss:'</span>, scores[<span class="number">0</span>])</span><br><span class="line">print(<span class="string">'Test accuracy:'</span>, scores[<span class="number">1</span>])</span><br></pre></td></tr></table></figure>
+<p>上面的代码中我们就有使用到<code>x_test,y_test</code>，作为<code>validation_data</code>参数值，这个参数是验证集的意思，即每轮训练之后使用该集合验证，根据验证结果程序不断调整，使得准确率越来越高。而<code>evaluate</code>函数是针对测试集的，如果验证集和测试集使用相同的集合，那得到的准确率当然也是一样的，也就说其实是没必要再进行测试的。所以当我们数据充足时，可以将数据分为三个集合，分别为：训练集、验证集和测试集。</p>
+<p>参考文章：</p>
+<p>作者：<code>Cloudox_</code><br>链接：<a href="https://www.jianshu.com/p/946bdebeb6fc" target="_blank" rel="noopener">https://www.jianshu.com/p/946bdebeb6fc</a><br>来源：简书</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/CNN/" rel="tag"># CNN</a>
+          
+            <a href="/tags/Keras-Sequential/" rel="tag"># Keras Sequential</a>
+          
+            <a href="/tags/cifar10/" rel="tag"># cifar10</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/12/28/dl-cnn-concept/" rel="next" title="如何理解卷积神经网络（CNN）">
+                <i class="fa fa-chevron-left"></i> 如何理解卷积神经网络（CNN）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/01/13/spider-market-regulation/" rel="prev" title="反爬（五）">
+                反爬（五） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">104</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">198</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装"><span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Example：利用CNN实现cifar10小图片分类"><span class="nav-text">Example：利用CNN实现cifar10小图片分类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-先来简单了解几个问题"><span class="nav-text">1.先来简单了解几个问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-使用Keras-Sequential顺序模型建立CNN"><span class="nav-text">2.使用Keras Sequential顺序模型建立CNN</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

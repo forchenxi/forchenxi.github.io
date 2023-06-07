@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="deep learning,LSTM,nlp,RNN,dot,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本文章参考《python深度学习》 理解循环神经网络密集连接网络和卷积神经网络都有一个主要特点，就是没有记忆，它们单独处理每个输入，在输入与输入之间没有保存任何状态。对于这 样的网络，要想处理数据点的序列或时间序列，你需要向网络同时展示整个序列，即将序列转换成单个数据点。例如，你在IMDB 示例中就是这么做的：将全部电影评论转换为一个大向量， 然后一次性处理。这种网络叫作前馈网络（feedforw">
+<meta name="keywords" content="deep learning,LSTM,nlp,RNN,dot">
+<meta property="og:type" content="article">
+<meta property="og:title" content="理解循环神经网络">
+<meta property="og:url" content="http://yoursite.com/2021/04/23/nlp-rnn/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="本文章参考《python深度学习》 理解循环神经网络密集连接网络和卷积神经网络都有一个主要特点，就是没有记忆，它们单独处理每个输入，在输入与输入之间没有保存任何状态。对于这 样的网络，要想处理数据点的序列或时间序列，你需要向网络同时展示整个序列，即将序列转换成单个数据点。例如，你在IMDB 示例中就是这么做的：将全部电影评论转换为一个大向量， 然后一次性处理。这种网络叫作前馈网络（feedforw">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2021/04/23/nlp-rnn/1.png">
+<meta property="og:image" content="http://yoursite.com/2021/04/23/nlp-rnn/2.png">
+<meta property="og:image" content="http://yoursite.com/2021/04/23/nlp-rnn/3.png">
+<meta property="og:image" content="http://yoursite.com/2021/04/23/nlp-rnn/4.png">
+<meta property="og:image" content="http://yoursite.com/2021/04/23/nlp-rnn/5.png">
+<meta property="og:image" content="http://yoursite.com/2021/04/23/nlp-rnn/6.png">
+<meta property="og:image" content="http://yoursite.com/2021/04/23/nlp-rnn/7.png">
+<meta property="og:updated_time" content="2022-09-21T15:03:24.126Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="理解循环神经网络">
+<meta name="twitter:description" content="本文章参考《python深度学习》 理解循环神经网络密集连接网络和卷积神经网络都有一个主要特点，就是没有记忆，它们单独处理每个输入，在输入与输入之间没有保存任何状态。对于这 样的网络，要想处理数据点的序列或时间序列，你需要向网络同时展示整个序列，即将序列转换成单个数据点。例如，你在IMDB 示例中就是这么做的：将全部电影评论转换为一个大向量， 然后一次性处理。这种网络叫作前馈网络（feedforw">
+<meta name="twitter:image" content="http://yoursite.com/2021/04/23/nlp-rnn/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2021/04/23/nlp-rnn/">
+
+
+
+
+
+  <title>理解循环神经网络 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/23/nlp-rnn/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">理解循环神经网络</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-23T18:19:54+08:00">
+                2021-04-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><em>本文章参考《python深度学习》</em></p>
+<h2 id="理解循环神经网络"><a href="#理解循环神经网络" class="headerlink" title="理解循环神经网络"></a>理解循环神经网络</h2><p>密集连接网络和卷积神经网络都有一个主要特点，就是没有记忆，它们单独处理每个输入，在输入与输入之间没有保存任何状态。对于这 样的网络，要想处理数据点的序列或时间序列，你需要向网络同时展示<strong>整个序列</strong>，即将序列转换成单个数据点。例如，你在<code>IMDB</code> 示例中就是这么做的：将全部电影评论转换为一个大向量， 然后一次性处理。这种网络叫作<strong>前馈网络</strong>（<strong><code>feedforward network</code></strong>）。</p>
+<p>与此相反，当你在阅读这个句子时，你是一个词一个词地阅读（或者说，眼睛一次扫视一 次扫视地阅读），同时会记住之前的内容。这让你能够<strong>动态理解</strong>这个句子所传达的含义。<strong>生物智能以渐进的方式处理信息</strong>，同时保存一个关于所处理内容的内部模型，这个模型是根据过去的信息构建的，并随着新信息的进入而不断更新。 </p>
+<p>循环神经网络（<code>RNN，recurrent neural network</code>）采用同样的原理，不过是一个极其简化的版本：它处理序列的方式是，<strong>遍历所有序列元素，并保存一个状态（state），其中包含与已查看内容相关的信息</strong>。实际上，<code>RNN</code> 是一类具有内部环的神经网络。</p>
+<p><img src="/2021/04/23/nlp-rnn/1.png" alt></p>
+<p>在处理两个不同的独立序列（比如两条不同的<code>IMDB</code> 评论）之间，<code>RNN</code> 状态会被重置，因此，你仍<strong>可以将一个序列看作单个数据点</strong>，即网络的单个输入。真正改变的是，数据点不再是在单个步骤中进行处理， 相反，网络内部会对序列元素进行遍历。</p>
+<p>在介绍使用<code>Numpy</code>模拟实现<code>RNN</code>的前向传递之前先补充一些<code>Numpy</code>中张量点积的知识</p>
+<a id="more"></a>
+<h3 id="np-dot-张量点积"><a href="#np-dot-张量点积" class="headerlink" title="np.dot 张量点积"></a><code>np.dot</code> 张量点积</h3><ul>
+<li><p>当两个操作数均为矩阵时，进行矩阵乘积运算</p>
+<p>两个矩阵相乘条件：前面矩阵的列数等于后面矩阵的行数</p>
+</li>
+<li><p>当两个操作数均为向量时，进行向量点积运算</p>
+<p>两个向量中的元素逐元素相乘，并求和，结果是一个标量</p>
+<p>两个向量点积的条件：两个向量元素个数相同</p>
+</li>
+<li><p>当操作数为向量和矩阵：</p>
+</li>
+</ul>
+<ol>
+<li><p><code>np.dot(x, y)</code>，左面矩阵x、右面向量y</p>
+<p>返回值是一个向量，向量元素个数与矩阵x的行数相同，且向量的每个元素是y和x的每一行之间的点积；相当于每次拿出矩阵x的一行，与y做向量点积</p>
+<p>所以要求矩阵x的每行元素的个数(列数)与向量y的元素个数相同；</p>
+</li>
+<li><p><code>np.dot(y, x)</code>左面向量y、右面矩阵x：(此种情况很少有资料介绍，事实上也是可以运算的)</p>
+<p>返回值是一个向量，向量元素个数与矩阵x的列数相同，且向量的每个元素是y和x每一列之间的点积；相当于每次拿出矩阵x的一列，与y做向量点积</p>
+<p>所以要求矩阵x的每列元素的个数(行数)与向量y的元素个数相同。</p>
+</li>
+</ol>
+<h3 id="使用Numpy模拟实现RNN的前向传递"><a href="#使用Numpy模拟实现RNN的前向传递" class="headerlink" title="使用Numpy模拟实现RNN的前向传递"></a>使用<code>Numpy</code>模拟实现<code>RNN</code>的前向传递</h3><p>为了将<strong>环（loop）和状态</strong>的概念解释清楚，我们用 <code>Numpy</code> 来实现一个简单<code>RNN</code>的前向传递。 </p>
+<p>这个 <code>RNN</code>的输入是一个张量序列，我们将其编码成大小为 (time_steps, input_features) 的二维张量。它对时间步（time_step）进行遍历，在每个时间步，它考虑 t 时刻的当前状态与 t 时刻的输入［形状为 (input_ features,)］，对二者计算得到 t 时刻的输出。然后，我们<strong>将下一个时间步的状态设置为上一个时间步的输出</strong>。对于第一个时间步，上一个时间步的输出没有定义，所以它没有当前状态。因此，你需要将状态初始化为一个全零向量，这叫作网络的<strong>初始状态</strong>（initial state）。</p>
+<!--RNN伪代码-->
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># t时刻的状态</span></span><br><span class="line">state_t = <span class="number">0</span></span><br><span class="line"><span class="comment"># 对序列元素进行遍历</span></span><br><span class="line"><span class="keyword">for</span> input_t <span class="keyword">in</span> input_sequence:</span><br><span class="line">    output_t = f(input_t, state_t)</span><br><span class="line">    <span class="comment"># 前一次输出变成下一次迭代的状态</span></span><br><span class="line">    state_t = output_t</span><br></pre></td></tr></table></figure>
+<p>你可以给出具体的函数 f：<strong>从输入和状态到输出的变换</strong>，其参数包括两个矩阵（W 和 U） 和一个偏置向量。它类似于前馈网络中密集连接层所做的变换。</p>
+<!--更详细的RNN伪代码-->
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">state_t = <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> input_t <span class="keyword">in</span> input_sequence:</span><br><span class="line">    output_t = activation(dot(W, input_t)+dot(U, state_t)+b)</span><br><span class="line">    state_t = output_t</span><br></pre></td></tr></table></figure>
+<!--简单RNN的Numpy实现-->
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输入序列的时间步数</span></span><br><span class="line">time_steps = <span class="number">100</span></span><br><span class="line"><span class="comment"># 输入特征空间的维度</span></span><br><span class="line">input_features = <span class="number">32</span></span><br><span class="line"><span class="comment"># 输出特征空间的维度</span></span><br><span class="line">output_features = <span class="number">64</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 输入数据：随机噪声，仅作为示例</span></span><br><span class="line">inputs = np.random.random((time_steps, input_features))</span><br><span class="line"><span class="comment"># 初始状态：全零向量</span></span><br><span class="line">state_t = np.zeros((output_features,))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建随机的权重矩阵</span></span><br><span class="line">W = np.random.random((output_features, input_features))</span><br><span class="line">U = np.random.random((output_features, output_features))</span><br><span class="line">b = np.random.random((output_features, ))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">successive_outputs = []</span><br><span class="line"><span class="comment"># input_t是形状为(input_features,)的向量</span></span><br><span class="line"><span class="keyword">for</span> input_t <span class="keyword">in</span> inputs:</span><br><span class="line">    <span class="comment"># 正切，将值的范围限制到[-1, 1]之间</span></span><br><span class="line">    output_t = np.tanh(np.dot(W, input_t)+np.dot(U, state_t)+b)</span><br><span class="line"></span><br><span class="line">    successive_outputs.append(output_t)</span><br><span class="line">    <span class="comment"># 更新网络的状态，用于下一个时间步</span></span><br><span class="line">    state_t = output_t</span><br><span class="line"></span><br><span class="line">print(successive_outputs)</span><br><span class="line">final_output_sequence = np.stack(successive_outputs, axis=<span class="number">0</span>)</span><br><span class="line"><span class="comment"># 最终输出是一个形状为 (timesteps, output_features) 的二维张量</span></span><br><span class="line">print(final_output_sequence)</span><br></pre></td></tr></table></figure>
+<p>总之，<code>RNN</code> 是一个 for 循环，它重复使用循环前一次迭代的计算结果。当然，你可以构建许多不同的<code>RNN</code>，它们都满足上述定义。这个例子只是最简单的<code>RNN</code>表述之一。</p>
+<p><code>RNN</code> 的特征在于其时间步函数，比如前面例子中的这个函数:</p>
+<p><code>output_t = np.tanh(np.dot(W, input_t) + np.dot(U, state_t) + b)</code></p>
+<p><img src="/2021/04/23/nlp-rnn/2.png" alt></p>
+<p><strong>注意</strong>：本例中，最终输出是一个形状为 (time_steps, output_features) 的二维张量，其中每个时间步是循环在 t 时刻的输出。<strong>输出张量中的每个时间步 t 包含输入序列中时间步 0~t 的信息，即关于全部过去的信息</strong>。因此，在多数情况下，你并不需要这个所有输出组成的序列，你<strong>只需要最后一个输出（循环结束时的 output_t），因为它已经包含了整个序列的信息</strong>。</p>
+<h3 id="Keras中的循环层"><a href="#Keras中的循环层" class="headerlink" title="Keras中的循环层"></a><code>Keras</code>中的循环层</h3><p>上面 <code>Numpy</code> 的简单实现，对应一个实际的 <code>Keras</code> 层，即 <code>SimpleRNN</code> 层。 </p>
+<p><code>from keras.layers import SimpleRNN</code></p>
+<p>二者有一点小小的区别：<code>SimpleRNN</code> 层能够像其他 <code>Keras</code> 层一样<strong>处理序列批量</strong>，而不是像 <code>Numpy</code> 示例那样只能处理单个序列。因此，它接收形状为 (batch_size, time_steps, input_features) 的输入，而不是 (time_steps, input_features)。 </p>
+<p>与 <code>Keras</code> 中的所有循环层一样，<code>SimpleRNN</code> 可以在两种不同的模式下运行：</p>
+<ol>
+<li><p><strong>返回每个时间步连续输出的完整序列</strong>，即形状为 (batch_size, time_steps, output_features) 的三维张量；</p>
+</li>
+<li><p><strong>只返回每个输入序列的最终输出</strong>，即形状为 (batch_size, output_ features) 的二维张量。这两种模式由 return_sequences 这个构造函数参数来控制。</p>
+</li>
+</ol>
+<p>我们来看一个使用 <code>SimpleRNN</code> 的例子，它只返回最后一个时间步的输出。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.models <span class="keyword">import</span> Sequential</span><br><span class="line"><span class="keyword">from</span> keras.layers <span class="keyword">import</span> Embedding, SimpleRNN</span><br><span class="line"></span><br><span class="line">model = Sequential()</span><br><span class="line">model.add(Embedding(<span class="number">10000</span>, <span class="number">32</span>))</span><br><span class="line">model.add(SimpleRNN(<span class="number">32</span>))</span><br><span class="line">model.summary()</span><br><span class="line"></span><br><span class="line">Model: <span class="string">"sequential_1"</span></span><br><span class="line">_________________________________________________________________</span><br><span class="line">Layer (type)                 Output Shape              Param <span class="comment">#   </span></span><br><span class="line">=================================================================</span><br><span class="line">embedding_1 (Embedding)      (<span class="literal">None</span>, <span class="literal">None</span>, <span class="number">32</span>)          <span class="number">320000</span>    </span><br><span class="line">_________________________________________________________________</span><br><span class="line">simple_rnn_1 (SimpleRNN)     (<span class="literal">None</span>, <span class="number">32</span>)                <span class="number">2080</span>      </span><br><span class="line">=================================================================</span><br><span class="line">Total params: <span class="number">322</span>,<span class="number">080</span></span><br><span class="line">Trainable params: <span class="number">322</span>,<span class="number">080</span></span><br><span class="line">Non-trainable params: <span class="number">0</span></span><br><span class="line">_________________________________________________________________</span><br></pre></td></tr></table></figure>
+<p>下面这个例子返回完整的状态序列</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">model = Sequential()</span><br><span class="line">model.add(Embedding(<span class="number">10000</span>, <span class="number">32</span>))</span><br><span class="line">model.add(SimpleRNN(<span class="number">32</span>, return_sequences=<span class="literal">True</span>))</span><br><span class="line">model.summary()</span><br><span class="line"></span><br><span class="line">Model: <span class="string">"sequential_1"</span></span><br><span class="line">_________________________________________________________________</span><br><span class="line">Layer (type)                 Output Shape              Param <span class="comment">#   </span></span><br><span class="line">=================================================================</span><br><span class="line">embedding_1 (Embedding)      (<span class="literal">None</span>, <span class="literal">None</span>, <span class="number">32</span>)          <span class="number">320000</span>    </span><br><span class="line">_________________________________________________________________</span><br><span class="line">simple_rnn_1 (SimpleRNN)     (<span class="literal">None</span>, <span class="literal">None</span>, <span class="number">32</span>)          <span class="number">2080</span>      </span><br><span class="line">=================================================================</span><br><span class="line">Total params: <span class="number">322</span>,<span class="number">080</span></span><br><span class="line">Trainable params: <span class="number">322</span>,<span class="number">080</span></span><br><span class="line">Non-trainable params: <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<p>为了提高网络的表示能力，将多个循环层逐个堆叠有时也是很有用的。在这种情况下，你需要让所有<strong>中间层</strong>都返回完整的输出序列。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">model = Sequential()</span><br><span class="line">model.add(Embedding(<span class="number">10000</span>, <span class="number">32</span>))</span><br><span class="line">model.add(SimpleRNN(<span class="number">32</span>, return_sequences=<span class="literal">True</span>))</span><br><span class="line">model.add(SimpleRNN(<span class="number">32</span>, return_sequences=<span class="literal">True</span>))</span><br><span class="line">model.add(SimpleRNN(<span class="number">32</span>, return_sequences=<span class="literal">True</span>))</span><br><span class="line"><span class="comment"># 最后一层仅返回最终输出</span></span><br><span class="line">model.add(SimpleRNN(<span class="number">32</span>))</span><br><span class="line">model.summary()</span><br><span class="line"></span><br><span class="line">Model: <span class="string">"sequential_1"</span></span><br><span class="line">_________________________________________________________________</span><br><span class="line">Layer (type)                 Output Shape              Param <span class="comment">#   </span></span><br><span class="line">=================================================================</span><br><span class="line">embedding_1 (Embedding)      (<span class="literal">None</span>, <span class="literal">None</span>, <span class="number">32</span>)          <span class="number">320000</span>    </span><br><span class="line">_________________________________________________________________</span><br><span class="line">simple_rnn_1 (SimpleRNN)     (<span class="literal">None</span>, <span class="literal">None</span>, <span class="number">32</span>)          <span class="number">2080</span>      </span><br><span class="line">_________________________________________________________________</span><br><span class="line">simple_rnn_2 (SimpleRNN)     (<span class="literal">None</span>, <span class="literal">None</span>, <span class="number">32</span>)          <span class="number">2080</span>      </span><br><span class="line">_________________________________________________________________</span><br><span class="line">simple_rnn_3 (SimpleRNN)     (<span class="literal">None</span>, <span class="literal">None</span>, <span class="number">32</span>)          <span class="number">2080</span>      </span><br><span class="line">_________________________________________________________________</span><br><span class="line">simple_rnn_4 (SimpleRNN)     (<span class="literal">None</span>, <span class="number">32</span>)                <span class="number">2080</span>      </span><br><span class="line">=================================================================</span><br><span class="line">Total params: <span class="number">328</span>,<span class="number">320</span></span><br><span class="line">Trainable params: <span class="number">328</span>,<span class="number">320</span></span><br><span class="line">Non-trainable params: <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<h3 id="将模型应用于IMDB电影评论分类"><a href="#将模型应用于IMDB电影评论分类" class="headerlink" title="将模型应用于IMDB电影评论分类"></a>将模型应用于<code>IMDB</code>电影评论分类</h3><p>首先，对数据进行预处理</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.datasets <span class="keyword">import</span> imdb</span><br><span class="line"><span class="keyword">from</span> keras.preprocessing <span class="keyword">import</span> sequence</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">max_features = <span class="number">10000</span></span><br><span class="line">max_len = <span class="number">500</span></span><br><span class="line">print(<span class="string">'Loading data...'</span>)</span><br><span class="line">(input_train, y_train), (input_test, y_test) = imdb.load_data(num_words=max_features)</span><br><span class="line">print(len(input_train), <span class="string">'train sequences'</span>)</span><br><span class="line">print(len(input_test), <span class="string">'test sequences'</span>)</span><br><span class="line"></span><br><span class="line">print(<span class="string">'Pad sequences (samples x time)'</span>)</span><br><span class="line">input_train = sequence.pad_sequences(input_train, maxlen=max_len)</span><br><span class="line">input_test = sequence.pad_sequences(input_test, maxlen=max_len)</span><br><span class="line">print(<span class="string">'input_train shape:'</span>, input_train.shape)</span><br><span class="line">print(<span class="string">'input_test shape:'</span>, input_test.shape)</span><br></pre></td></tr></table></figure>
+<p>使用一个Embedding层和一个<code>SimpleRNN</code>层来训练一个简单的循环网络</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.layers <span class="keyword">import</span> Dense</span><br><span class="line"></span><br><span class="line">model = Sequential()</span><br><span class="line">model.add(Embedding(max_features, <span class="number">32</span>))</span><br><span class="line">model.add(SimpleRNN(<span class="number">32</span>))</span><br><span class="line">model.add(Dense(<span class="number">1</span>, activation=<span class="string">'sigmoid'</span>))</span><br><span class="line"></span><br><span class="line">model.compile(optimizer=<span class="string">'rmsprop'</span>, loss=<span class="string">'binary_crossentropy'</span>, metrics=[<span class="string">'acc'</span>])</span><br><span class="line">history = model.fit(input_train, y_train, epochs=<span class="number">10</span>, batch_size=<span class="number">128</span>, validation_split=<span class="number">0.2</span>)</span><br></pre></td></tr></table></figure>
+<p>接下来显示训练和验证的损失和精度(代码略，前面已经出现过N次了)</p>
+<p><img src="/2021/04/23/nlp-rnn/3.png" alt></p>
+<p><img src="/2021/04/23/nlp-rnn/4.png" alt></p>
+<p>可以看到这里第4轮左右验证损失降到最低，验证准确率大概在85%，然而我们前面在处理这个数据集的第一个简单方法得到的测试精度是88%。</p>
+<p>问题的部分原因在于， 输入只考虑了前 500 个单词，而不是整个序列，因此，<code>RNN</code> 获得的信息比前面的基准模型更少。 另一部分原因在于，<strong><code>SimpleRNN</code> 不擅长处理长序列</strong>，比如文本。 其他类型的循环层的表现要好得多。</p>
+<h3 id="高级循环神经网络"><a href="#高级循环神经网络" class="headerlink" title="高级循环神经网络"></a>高级循环神经网络</h3><h4 id="长期依赖问题"><a href="#长期依赖问题" class="headerlink" title="长期依赖问题"></a>长期依赖问题</h4><p>有时候候，我们仅仅需要知道先前的信息来执行当前的任务。例如，我们有一个语言模型用来基于先前的词来预测下一个词。如果我们试着预测 “the clouds are in the sky” 最后的词，我们并不需要任何其他的上下文 —— 因此下一个词很显然就应该是 sky。在这样的场景中，相关的信息和预测的词位置之间的间隔是非常小的，<code>RNN</code> 可以学会使用先前的信息。</p>
+<p>有时候，我们仅仅需要知道先前的信息来执行当前的任务。例如，我们有一个语言模型用来基于先前的词来预测下一个词。如果我们试着预测 “the clouds are in the sky” 最后的词，我们并不需要任何其他的上下文 —— 因此下一个词很显然就应该是 sky。在这样的场景中，相关的信息和预测的词位置之间的间隔是非常小的，<code>RNN</code> 可以学会使用先前的信息。</p>
+<p>但是同样会有一些更加复杂的场景。假设我们试着去预测“I grew up in France… I speak fluent French”最后的词。当前的信息建议下一个词可能是一种语言的名字，但是如果我们需要弄清楚是什么语言，我们是需要先前提到的离当前位置很远的 France 的上下文的。这说明相关信息和当前预测位置之间的间隔就肯定变得相当的大。</p>
+<p><code>SimpleRNN</code> 的最大问题是， 在时刻 t，<strong>理论上来说，它应该能够记住许多时间步之前见过的信息，但实际上它是不可能学到这种长期依赖的</strong>。其原因在于<strong>梯度消失问题</strong>（vanishing gradient problem），这一效应类似于在层数较多的非循环网络（即前馈网络）中观察到的效应：随着层数的增加，网络最终变得无法训练。</p>
+<p><code>Hochreiter、Schmidhuber 和 Bengio</code> 在 20 世纪 90 年代初研究了这一效应的理论原因</p>
+<p>参考论文：</p>
+<p><code>BENGIO Y, SIMARD P, FRASCONI P. Learning long-term dependencies with gradient descent is difficult [C]//IEEE Transactions on Neural Networks, 1994, 5(2): 157-166.</code></p>
+<p><code>HOCHREITER S, SCHMIDHUBER J. Long short-term memory [J]. Neural Computation, 1997, 9(8): 1735-1780.</code></p>
+<h4 id="LSTM网络"><a href="#LSTM网络" class="headerlink" title="LSTM网络"></a><code>LSTM</code>网络</h4><p>长短期记忆（<code>LSTM</code>，long short-term memory）算法由 <code>Hochreiter 和 Schmidhuber</code> 在 1997 年开发 ，是二人研究梯度消失问题的重要成果。</p>
+<p><code>LSTM</code> 层是 <code>SimpleRNN</code> 层的一种变体，它增加了一种携带信息跨越多个时间步的方法。假设有一条传送带，其运行方向平行于你所处理的序列。序列中的信息可以在任意位置跳上传送带， 然后被传送到更晚的时间步，并在需要时原封不动地跳回来。这实际上就是 <code>LSTM</code> 的原理：<strong>它保存信息以便后面使用，从而防止较早期的信号在处理过程中逐渐消失</strong>。</p>
+<p>为了详细了解<code>LSTM</code>，我们先从 <code>SimpleRNN</code> 单元开始讲起。因为有许多个权重矩阵，所以对单元中的 W 和 U 两个矩阵添加下标字母 o（<code>Wo</code> 和 <code>Uo</code>），表示<strong>输出</strong>。</p>
+<p><img src="/2021/04/23/nlp-rnn/5.png" alt></p>
+<p><em>这个图和上面的<code>SimpleRNN</code>图差别仅仅是<code>Wo</code>和<code>Uo</code></em></p>
+<p>我们向这张图像中添加额外的数据流，其中携带着跨越时间步的信息。它在不同的时间步的值叫作 Ct，其中 C 表示携带（carry）。这些信息将会对单元产生以下影响：它将与输入连接和循环连接进行运算（通过一个密集变换，即与权重矩阵作点积，然后加上一个偏置，再应用 一个激活函数），从而影响传递到下一个时间步的状态（通过一个激活函数和一个乘法运算）。 从概念上来看，携带数据流是一种调节下一个输出和下一个状态的方法。</p>
+<p><img src="/2021/04/23/nlp-rnn/6.png" alt></p>
+<p>下面来看这一方法的精妙之处，即携带数据流下一个值的计算方法。它涉及三个不同的变换， 这三个变换的形式都和<code>SimpleRNN</code> 单元相同。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">y = activation(dot(state_t, U) + dot(input_t, W) + b)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">output_t = activation(dot(state_t, Uo) + dot(input_t, Wo) + dot(C_t, Vo) + bo)</span><br></pre></td></tr></table></figure>
+<p><em>相当于多了一个点积运算</em></p>
+<p>但这三个变换都具有各自的权重矩阵，我们分别用字母 i、j 和 k 作为下标。</p>
+<p>Ct的计算方式</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">i_t = activation(dot(state_t, Ui) + dot(input_t, Wi) + bi)</span><br><span class="line">f_t = activation(dot(state_t, Uf) + dot(input_t, Wf) + bf)</span><br><span class="line">k_t = activation(dot(state_t, Uk) + dot(input_t, Wk) + bk)</span><br><span class="line"></span><br><span class="line">c_t+<span class="number">1</span> = i_t * k_t + c_t * f_t</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/04/23/nlp-rnn/7.png" alt></p>
+<p>如果要更哲学一点，你还可以解释每个运算的目的。比如你可以说，将 c_t 和 f_t 相乘， 是为了故意遗忘携带数据流中的不相关信息。同时，i_t 和 k_t 都提供关于当前的信息，可以用新信息来更新携带轨道。但归根结底，<strong>这些解释并没有多大意义</strong>。</p>
+<p>因为这些运算的实际效果 是由参数化权重决定的，而权重是以端到端的方式进行学习，每次训练都要从头开始，不可能为某个运算赋予特定的目的。</p>
+<p><code>RNN</code> 单元的类型（如前所述）决定了你的假设空间，即在训练期间搜索良好模型配置的空间，但它不能决定 <code>RNN</code> 单元的作用，那是由单元权重来决定的。<strong>同一个单元具有不同的权重，可以实现完全不同的作用</strong>。</p>
+<p>因此，组成 <code>RNN</code> 单元的运算组合，最好被解释为对搜索的一组<strong>约束</strong>，而不是一种工程意义上的<strong>设计</strong>。 对于研究人员来说，这种约束的选择（即如何实现 <code>RNN</code> 单元）似乎最好是留给最优化算法 来完成（比如遗传算法或强化学习过程），而不是让人类工程师来完成。在未来，那将是我们 建网络的方式。</p>
+<p><strong>总之，你不需要理解关于 <code>LSTM</code> 单元具体架构的任何内容。作为人类，理解它不应该是你要做的。你只需要记住<code>LSTM</code> 单元的作用：允许过去的信息稍后重新进入，从而解决梯度消失问题。</strong></p>
+<p>太喜欢这句总结了，不用了解，哈哈哈~</p>
+<p>如果想详细了解<code>LSTM</code>网络究竟了做了什么，可以参考这篇博哥<a href="https://www.jianshu.com/p/9dc9f41f0b29" target="_blank" rel="noopener">理解LSTM网络</a>，原博客(英文)链接为<a href="https://colah.github.io/posts/2015-08-Understanding-LSTMs/" target="_blank" rel="noopener">Understanding-LSTMs</a>。</p>
+<p>另外，<code>LSTM</code>还有很多变体，其中比较流行的有<code>Gated Recurrent Unit (GRU)</code>等。</p>
+<h4 id="Keras中一个LSTM的具体例子"><a href="#Keras中一个LSTM的具体例子" class="headerlink" title="Keras中一个LSTM的具体例子"></a><code>Keras</code>中一个<code>LSTM</code>的具体例子</h4><p>现在我们来看一个更实际的问题：使用 <code>LSTM</code> 层来创建一个模型，然后在 <code>IMDB</code> 数据上 训练模型。这个网络与前面介绍的 <code>SimpleRNN</code> 网络类似。你只需指定 <code>LSTM</code> 层的输出维度，其他所有参数（有很多）都使用 <code>Keras</code> 默认值。<code>Keras</code> 具有很好的默认值， 无须手动调参，模型通常也能正常运行。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.layers <span class="keyword">import</span> LSTM</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">model = Sequential()</span><br><span class="line">model.add(Embedding(max_features, <span class="number">32</span>))</span><br><span class="line">model.add(LSTM(<span class="number">32</span>))</span><br><span class="line">model.add(Dense(<span class="number">1</span>, activation=<span class="string">'sigmoid'</span>))</span><br><span class="line">model.compile(optimizer=<span class="string">'rmsprop'</span>, loss=<span class="string">'binary_crossentropy'</span>, metrics=[<span class="string">'acc'</span>])</span><br><span class="line">history = model.fit(input_train, y_train, epochs=<span class="number">10</span>, batch_size=<span class="number">128</span>, validation_split=<span class="number">0.2</span>)</span><br></pre></td></tr></table></figure>
+<p>这一次，验证精度达到了<strong>89%</strong>。还不错，肯定比 <code>SimpleRNN</code> 网络好多了，这主要是因为 <code>LSTM</code> 受梯度消失问题的影响要小得多。这个结果也比上面讲的全连接网络略好，虽然使用的数据量比全连接模型要少。此处在 500 个时间步之后将序列截断，而在全连接网络读取整个序列。</p>
+<p>但对于一种计算量如此之大的方法而言，这个结果也说不上是突破性的。为什么 <code>LSTM</code> 不 能表现得更好？</p>
+<p>一个原因是你没有花力气来<strong>调节超参数</strong>，比如嵌入维度或 <code>LSTM</code> 输出维度。</p>
+<p>另一个原因可能是缺少正则化。</p>
+<p>但说实话，主要原因在于，适用于评论分析全局的长期性结构（这正是 <code>LSTM</code> 所擅长的），<strong>对情感分析问题帮助不大</strong>。对于这样的基本问题，观察每条评论中出现了哪些词及其出现频率就可以很好地解决。这也正是第一个全连接方法的做法。但还有更加困难的自然语言处理问题，特别是<strong>问答和机器翻译</strong>，这时 <code>LSTM</code> 的优势就明显了。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>本文共讲了以下内容：</p>
+<ul>
+<li>循环神经网络（<code>RNN</code>）的概念及其工作原理。</li>
+<li>长短期记忆（<code>LSTM</code>）是什么，为什么它在长序列上的效果要好于普通 <code>RNN</code>。 </li>
+<li>如何使用 <code>Keras</code> 的 <code>RNN</code> 层来处理序列数据。</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/LSTM/" rel="tag"># LSTM</a>
+          
+            <a href="/tags/nlp/" rel="tag"># nlp</a>
+          
+            <a href="/tags/RNN/" rel="tag"># RNN</a>
+          
+            <a href="/tags/dot/" rel="tag"># dot</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/03/15/nlp-vectorize/" rel="next" title="深度学习用于文本和序列">
+                <i class="fa fa-chevron-left"></i> 深度学习用于文本和序列
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/05/15/dl-bp-network/" rel="prev" title="手动推导BP网络">
+                手动推导BP网络 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">104</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">198</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#理解循环神经网络"><span class="nav-text">理解循环神经网络</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#np-dot-张量点积"><span class="nav-text">np.dot 张量点积</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用Numpy模拟实现RNN的前向传递"><span class="nav-text">使用Numpy模拟实现RNN的前向传递</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Keras中的循环层"><span class="nav-text">Keras中的循环层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#将模型应用于IMDB电影评论分类"><span class="nav-text">将模型应用于IMDB电影评论分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#高级循环神经网络"><span class="nav-text">高级循环神经网络</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#长期依赖问题"><span class="nav-text">长期依赖问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LSTM网络"><span class="nav-text">LSTM网络</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Keras中一个LSTM的具体例子"><span class="nav-text">Keras中一个LSTM的具体例子</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-text">总结</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

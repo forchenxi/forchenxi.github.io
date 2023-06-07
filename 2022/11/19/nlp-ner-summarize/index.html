@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="deep learning,nlp,NER,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="一篇基于深度学习的命名实体识别技术的研究报告本篇文章主要是自己刚接触NER领域时，研读这篇《 A Survey on Deep Learning for Named Entity Recognition 》NER综述论文时翻译的中文版，这篇综述时间是2020年，可能近两年的部分成果暂未包含，很多内容是通过百度翻译直接翻的，部分内容进行了一定的调整。有少部分内容省略了，具体可以参考原论文，所有涉及的">
+<meta name="keywords" content="deep learning,nlp,NER">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一篇基于深度学习的命名实体识别技术的研究报告">
+<meta property="og:url" content="http://yoursite.com/2022/11/19/nlp-ner-summarize/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="一篇基于深度学习的命名实体识别技术的研究报告本篇文章主要是自己刚接触NER领域时，研读这篇《 A Survey on Deep Learning for Named Entity Recognition 》NER综述论文时翻译的中文版，这篇综述时间是2020年，可能近两年的部分成果暂未包含，很多内容是通过百度翻译直接翻的，部分内容进行了一定的调整。有少部分内容省略了，具体可以参考原论文，所有涉及的">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2022/11/19/nlp-ner-summarize/p6.png">
+<meta property="og:image" content="http://yoursite.com/2022/11/19/nlp-ner-summarize/p7.png">
+<meta property="og:image" content="http://yoursite.com/2022/11/19/nlp-ner-summarize/p8.png">
+<meta property="og:image" content="http://yoursite.com/2022/11/19/nlp-ner-summarize/p9.png">
+<meta property="og:image" content="http://yoursite.com/2022/11/19/nlp-ner-summarize/p10.png">
+<meta property="og:image" content="http://yoursite.com/2022/11/19/nlp-ner-summarize/p11.png">
+<meta property="og:image" content="http://yoursite.com/2022/11/19/nlp-ner-summarize/p12.png">
+<meta property="og:image" content="http://yoursite.com/2022/11/19/nlp-ner-summarize/p13.png">
+<meta property="og:image" content="http://yoursite.com/2022/11/19/nlp-ner-summarize/p1.png">
+<meta property="og:image" content="http://yoursite.com/2022/11/19/nlp-ner-summarize/p2.png">
+<meta property="og:image" content="http://yoursite.com/2022/11/19/nlp-ner-summarize/p3.png">
+<meta property="og:image" content="http://yoursite.com/2022/11/19/nlp-ner-summarize/p4.png">
+<meta property="og:image" content="http://yoursite.com/2022/11/19/nlp-ner-summarize/p14.png">
+<meta property="og:image" content="http://yoursite.com/2022/11/19/nlp-ner-summarize/p5.png">
+<meta property="og:updated_time" content="2022-12-12T13:48:26.828Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一篇基于深度学习的命名实体识别技术的研究报告">
+<meta name="twitter:description" content="一篇基于深度学习的命名实体识别技术的研究报告本篇文章主要是自己刚接触NER领域时，研读这篇《 A Survey on Deep Learning for Named Entity Recognition 》NER综述论文时翻译的中文版，这篇综述时间是2020年，可能近两年的部分成果暂未包含，很多内容是通过百度翻译直接翻的，部分内容进行了一定的调整。有少部分内容省略了，具体可以参考原论文，所有涉及的">
+<meta name="twitter:image" content="http://yoursite.com/2022/11/19/nlp-ner-summarize/p6.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2022/11/19/nlp-ner-summarize/">
+
+
+
+
+
+  <title>一篇基于深度学习的命名实体识别技术的研究报告 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/11/19/nlp-ner-summarize/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">一篇基于深度学习的命名实体识别技术的研究报告</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-11-19T14:29:24+08:00">
+                2022-11-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="一篇基于深度学习的命名实体识别技术的研究报告"><a href="#一篇基于深度学习的命名实体识别技术的研究报告" class="headerlink" title="一篇基于深度学习的命名实体识别技术的研究报告"></a>一篇基于深度学习的命名实体识别技术的研究报告</h1><p>本篇文章主要是自己刚接触NER领域时，研读这篇《 A Survey on Deep Learning for Named Entity Recognition 》NER综述论文时翻译的中文版，这篇综述时间是2020年，可能近两年的部分成果暂未包含，很多内容是通过百度翻译直接翻的，部分内容进行了一定的调整。有少部分内容省略了，具体可以参考原论文，所有涉及的文献引用也请参考原论文。</p>
+<h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>命名实体识别（NER）是从属于预定义语义类型（如人、地点、组织等）的文本中识别固定指示符的任务；NER常作为问答系统、文本摘要和机器翻译等许多自然语言应用的基础；早期的NER系统通过消耗人力设计特定领域的特征和规则取得了巨大的成功，近年来，由连续实值向量表示和通过非线性处理的语义合成所支持的深度学习已被应用于NER系统，并产生了最先进的性能。在本文中，我们全面回顾了现有的面向NER的深度学习技术。 我们首先介绍现有的NER资源，包括已标记的NER语料库和现成的NER工具。然后，我们将NER现有的工作分为三类来进行系统的介绍：<strong>输入的分布式表示、上下文编码器和标记解码器</strong>。接下来，我们调研了在新的NER问题设置和应用上最具代表性的深度学习技术。最后，我们向读者介绍了NER系统面临的挑战和未来的研究方向。</p>
+<a id="more"></a>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>NER不仅作为一个独立的工具用于信息抽取，在各种自然语言处理应用如文本理解，信息检索，自动文本摘要，问答系统，机器翻译和知识库构建等也发挥着重要作用。</p>
+<p><strong>NER的历史发展</strong>：术语“命名实体”（NE）首次在第六届信息理解会议（MUC-6）[10]上使用，作为识别文本中组织、人员和地理位置的名称以及货币、时间和百分比表达式的任务。自MUC6以来，人们对NER的兴趣不断增加，各种科学事件（例如，CoNLL03[11]、ACE[12]、IREX[13]和TREC实体跟踪[14]）都致力于这一主题。</p>
+<p>关于问题定义，Petasis等人[15]限制了命名实体的定义：“NE是一个专有名词，用作某物或某人的名称”。语料库中专有名词的显著比例证明了这一限制的合理性。Nadeau和Sekine[1]声称，“命名”一词将任务仅限于一个或多个刚性指示符代表所指对象的实体。[16]中定义的刚性指示符包括专有名称和自然种类术语，如生物物种和物质。尽管对NEs有不同的定义，但研究人员已经就要识别的NEs类型达成了共识。<strong>我们通常将NEs分为两类：一般NEs（例如，人和地点）和特定领域的NEs（如，蛋白质、酶和基因）</strong>。在本文中，我们主要关注英语中的通用NEs。我们并不认为本文详尽无遗，也不代表所有语言的NER作品。</p>
+<p>命名实体识别相关技术主要分为以下四类<br>1）基于规则的，不需要注释，手工制定规则；<br>2）无监督学习的，基于无监督学习算法，不需要标注训练数据；<br>3）基于特征的监督学习方法，依赖于监督学习算法并且需要详细的特征工程；<br>4）深度学习方法，其以端到端的方式从原始输入中自动发现分类和/或检测所需的表示。</p>
+<p>这篇文章简述1、2、3，重点回顾基于深度学习的方法。</p>
+<p><strong>开展本次调研的动机</strong>：近年来，深度学习（DL，也称为深度神经网络）因其在各个领域的成功而引起了广泛关注。从Collbert等人[17]开始，具有最小特征工程的基于DL的NER系统已经蓬勃发展。在过去几年中，大量研究将深度学习应用于NER，并不断提升最先进的表现[17]–[21]。这一趋势促使我们进行一项调查，以报告深度学习技术在NER研究中的现状。通过比较DL架构的选择，我们旨在确定影响NER性能的因素以及问题和挑战。</p>
+<p>另一方面，尽管近几十年来，NER研究蓬勃发展，但据我们所知，迄今为止，这一领域的综述很少。可以说，最著名的是由Nadeau和Sekine[1]于2007年发布的。这篇报告概述了从手工规则到机器学习的技术趋势。马雷罗等人[22]在2013年从谬论、挑战和机遇的角度总结了NER相关工作。随后，Patawar和Potey[23]在2015年进行了简短的回顾。最近的两次简短调查分别针对新领域[24]和复杂实体[25]。总之，现有调查主要涵盖基于特征的机器学习模型，但不包括基于DL的现代NER系统。与这项工作更密切的是2018年的两项最新调查[26]和[27]。Goyal等人[27]调查了NER的发展和进展。然而，他们没有包括深度学习技术的最新进展。Yadav和Bethard[26]针对句子中单词的表示，对NER的最新进展进行了简短调查。此调查更多地关注输入的分布式表示（例如，字符和单词级嵌入），而不涉及上下文编码器和标签解码器。在NER任务上应用深度学习的最新趋势（例如，多任务学习、转移学习、强化学习和对抗性学习）也不在他们的调查范围内。</p>
+<p><strong>这篇报告的贡献</strong>：我们深入报告了深度学习技术在NER中的应用，以启发和指导这一领域的研究人员和从业者。具体而言，我们将NER语料库，现成的NER系统（来自学术界和工业界）以表格形式合并，为NER研究社区提供有用的资源。然后，我们对NER的深度学习技术进行了全面报告。为此，我们提出了一种新的分类法，它沿着三个轴系统地组织基于DL的NER方法：输入的分布式表示、上下文编码器（用于捕获标签解码器的上下文相关性）和标签解码器（用于预测给定序列中单词的标签）。此外，我们还调查了最近在新的NER问题设置和应用中应用的深度学习技术的最具代表性的方法。最后，我们向读者介绍了NER系统面临的挑战，并概述了该领域的未来方向。</p>
+<h2 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h2><p><strong>NER的定义</strong></p>
+<p>命名实体是一个单词或短语，它从一组具有相似属性的其他项目中明确标识一个项目[28]。命名实体既可以指通用领域的人名、地名、组织机构名等；也可以指特定领域，比如生物医药领域的基因、蛋白质、药物和疾病等。NER是将文本中的命名实体定位并分类为预定义实体类别的过程。形式上，给定一系列标记s=&lt;w1，w2，…，wN&gt;，NER将输出一个元组列表&lt;Is，Ie，t&gt;，每个元组都是s中提到的命名实体。这里，Is∈ [1，N]和Ie∈ [1，N]是命名实体提及的开始和结束索引；t是预定义类别集合中的实体类型。图1显示了一个NER系统从给定句子中识别三个命名实体的示例。当NER在MUC-6[10]中首次定义时，任务是识别文本中的人名、组织、地点、时间、货币和百分比表达式。请注意，该任务侧重于一组粗略的实体类型，每个命名实体一个类型。我们将这类NER任务称为粗粒度NER[10]，[11]。最近，一些细粒度的NER任务[29]–[33]集中在一组更多的实体类型上，其中提到的实体可能被分配了多个细粒度类型。<br><img src="/2022/11/19/nlp-ner-summarize/p6.png" alt></p>
+<p>NER是各种下游应用（如信息检索、问答系统、机器翻译等）的重要预处理步骤。这里，我们以语义搜索为例来说明NER在支持各种应用程序中的重要性。语义搜索是指一系列技术，这些技术使搜索引擎能够理解用户查询背后的概念、含义和意图[34]。根据[4]，大约71%的搜索查询包含至少一个命名实体。识别搜索查询中的命名实体将帮助我们更好地理解用户意图，从而提供更好的搜索结果。为了将命名实体纳入搜索中，Raviv等人[35]提出了基于实体的语言模型[34]，该模型考虑了单个术语以及注释为实体的术语序列（在文档和查询中）。也有研究利用命名实体来增强用户体验，例如查询推荐[36]、查询自动完成[37]、[38]和实体卡[39]、[40]。</p>
+<p><strong>NER资源：数据集和工具</strong><br>高质量的标注对于模型学习和评估都至关重要。在下文中，我们总结了广泛使用的英语NER数据集和现成工具，标记语料库是包含一个或多个实体类型标注的文档集合。表1列出了一些广泛使用的数据集及其数据源和实体类型（也称为标记类型）的数量。表1总结了2005年之前，数据集主要通过标注具有少量实体类型的新闻文章来开发，适用于粗粒度NER任务。之后，在各种文本源上开发了更多的数据集，包括维基百科文章、对话和用户生成的文本（例如，推文和YouTube评论以及W-NUT中的StackExchange帖子）。标签类型的数量显著增加，例如HYENA有505种。我们还列出了一些特定领域的数据集，特别是在PubMed和MEDLINE文本上开发的数据集。实体类型的数量从NCBI疾病中的1种到GENIA中的36种不等。<br><img src="/2022/11/19/nlp-ner-summarize/p7.png" alt></p>
+<p>我们注意到，许多最近的NER研究报告了它们在CoNLL03和OntoNotes数据集上的性能（见表3）。CoNLL03包含两种语言的路透社新闻标注：英语和德语。英语数据集包含大量体育新闻，其中有四种实体类型（个人、地点、组织和杂项）的标注[11]。OntoNotes项目的目标是标注一个大型语料库，包括各种类型（网络日志、新闻、脱口秀、广播、usenet新闻组和会话电话语音），其中包含结构信息（语法和谓词论证结构）和浅层语义（与本体和共指相关的词义）。从1.0版到5.0版共有5个版本。文本标注了18种实体类型。我们还列出了两个包含一些NER语料库的Github仓库。</p>
+<p>有许多在线NER工具可用于预训练模型。表2按学术界（顶部）和工业界（底部）总结了英语NER流行的工具方法。</p>
+<p><img src="/2022/11/19/nlp-ner-summarize/p8.png" alt></p>
+<p><strong>NER的评估方法</strong></p>
+<p><code>NER</code>系统通常通过与人类标注的结果对比进行评估，对比可以被划分为两种评估方式：exact-match Evaluation and relaxed match Evaluation，即精确匹配评估和宽松匹配评估。</p>
+<p><strong>Exact-match Evaluation</strong>：<br><code>NER</code>基本上涉及两个子任务：边界检测和类型识别，在“精确匹配评估”[11]、[41]、[42]中，正确识别的实例需要系统同时正确识别其边界和类型。<br>更具体地说，假阳性（FP）、假阴性（FN）和真阳性（TP）的数量用于计算精度、召回和F分数。<br>假阳性（FP）：由NER系统返回但并没有在真实标注数据中出现的实体。<br>假阴性（FN）：NER系统未返回但出现在真实标注数据中的实体。<br>真阳性（TP）：NER系统返回的实体，也出现在真实标注数据中的实体。</p>
+<p>Precision是指你的系统预测的实体结果中正确的百分比，即Precision=TP/(FP + TP)；<br>Recall是指你的系统正确预测的实体结果占总实体数的百分比，即Recall=TP/(FN + TP)<br>F-score是精度和召回率的调和平均值，F = 2*Precision*Recall / (Precision+Recall)</p>
+<p>此外，宏观平均F得分和微观平均F得分都考虑了多个实体类型的效果，<strong>宏观平均F得分独立计算不同实体类型的F得分</strong>，然后取F得分的平均值。<strong>微平均F分数汇总所有实体类型的假阴性、假阳性和真阳性，然后应用它们来获得统计数据</strong>。<br>后者会受到语料库中非常多实体类别时识别质量的严重影响。</p>
+<p><strong>Relaxed-match Evaluation</strong><br>MUC-6[10]定义了一种宽松的匹配评估：如果实体被分配了其正确的类型，无论其边界如何，只要与真实标注的边界存在重叠，就认为是正确的；或者只要边界正确，无论实体的类型分类是否正确，也认为是正确的识别。然后ACE[12]提出了一个更复杂的评估程序。它解决了一些问题，如部分匹配和错误类型，并考虑命名实体的子类型。然而，这是有问题的，因为只有当参数固定[1]，[22]，[23]时，最终得分才是可比的。复杂的评估方法不直观，使误差分析变得困难。因此，复杂的评估方法在最近的研究中没有得到广泛应用。</p>
+<h3 id="传统的NER方法"><a href="#传统的NER方法" class="headerlink" title="传统的NER方法"></a>传统的<code>NER</code>方法</h3><p>这部分不是本篇论文的重点，所以我没有全部翻译，我也相信参考这篇译文的同学们更多的是为了了解深度学习技术在NER领域的发展。</p>
+<p><strong>基于规则的方法</strong>：由于特定领域的规则和不完整的词典，这种方法一般是<strong>精确度高，召回率低</strong>，并且无法迁移到其他领域。</p>
+<p><strong>无监督学习的方法</strong>：典型的方法是聚类（clustering ），聚类的主要依据是上下文的相似性（context similarity）<br>核心思想是：在大型语料库上计算的词汇资源、词汇模式和统计数据可以用来推断提到的命名实体。</p>
+<p><strong>基于特征的监督学习方法</strong>：这种方式下，<code>NER</code>被当作多分类任务或者序列标注任务。</p>
+<p>特征工程是至关重要的，基于这些特征，很多机器学习算法可以用来做命名实体识别<br>Hidden Markov Models (HMM) 隐马尔可夫模型<br>Decision Trees 决策树<br>Maximum Entropy Models 最大熵模型<br>Support Vector Machines(SVM) 支持向量机<br>Conditional Random Fields (CRF) 条件随机场</p>
+<h2 id="基于深度学习的方法"><a href="#基于深度学习的方法" class="headerlink" title="基于深度学习的方法"></a>基于深度学习的方法</h2><p>近年来，基于DL的NER模型占据主导地位，并取得了最先进的成果。与基于特征的方法相比，深度学习有助于自动发现隐藏特征。</p>
+<p><strong>为什么将深度学习用于NER</strong><br>深度学习是机器学习的一个领域，它由多个处理层组成，以学习具有多个抽象级别的数据表示[87]。典型的层是人工神经网络，由正向传递和反向传递组成。正向传递计算前一层输入的加权和，并通过非线性函数传递结果。反向传递是通过导数链式法则计算目标函数相对于多层模块堆栈权重的梯度。深度学习的关键优势在于表征学习能力，以及向量表征和神经处理赋予的语义合成能力。这允许机器输入原始数据，并自动发现分类或检测所需的潜在表示和处理[87]。<br>应用深度学习技术于NER有三个核心优势：<strong>非线性激活函数、自动学习特征、支持端到端</strong>。</p>
+<p><strong>为什么我们在本篇报告中使用了新的分类方法</strong><br>现有的分类法[26]，[88]基于字符级编码器、单词级编码器和标签解码器。我们认为，“单词级编码器”的描述是不准确的，因为单词级信息在典型的基于DL的NER模型中使用了两次：1）单词级表示用作原始特征，2）单词级表达（连同字符级表示）用于捕获标签解码的上下文相关性。在本次调查中，我们总结了NER的最新进展，如图2所示的一般架构。输入的分布式表示考虑了单词和字符级别的嵌入，以及在基于特征的方法中有效的POS标签和地名词典等附加特征的结合。上下文编码器是使用CNN、RNN或其他网络来捕获上下文相关性。标记解码器预测输入序列中单词的标签。</p>
+<p><img src="/2022/11/19/nlp-ner-summarize/p9.png" alt></p>
+<p>From input sequence to predicted tags, a DL-based NER model consists of  distributed representations for input, context encoder, and tag decoder.<br>从输入序列到预测标签，基于DL的NER模型由输入的分布式表示、上下文编码器和标签解码器组成。</p>
+<p>输入的分布式表示：分为单词和字符级别的嵌入，以及合并其他功能，如POS标签和地名词典，这些功能在基于特征的方法中是有效的；</p>
+<p>上下文编码器：是使用 CNN、RNN 或其他网络捕获上下文依赖关系；</p>
+<p>标签解码器：预测输入序列中每个token的标记（BIO、BIESO），也就是检测实体边界并将检测到的文本范围分类为实体类型。</p>
+<h3 id="Distributed-Representations-for-Input"><a href="#Distributed-Representations-for-Input" class="headerlink" title="Distributed Representations for Input"></a>Distributed Representations for Input</h3><p>表示单词的一个简单选项是一个one-hot向量表示。在一个one-hot向量空间中，两个不同的词具有完全不同并且正交的向量表示。分布式表示代表着低维实值密集向量中的单词，其中每个维度都表示潜在特征。分布式表示从文本中自动学习，捕捉单词的语义和句法特性，而这些特性在NER的输入中并不明确存在。NER中已经使用的分布式表示分为word-level、character-level and hybrid representations（混合表示）。</p>
+<h4 id="word-level-representation"><a href="#word-level-representation" class="headerlink" title="word-level representation"></a>word-level representation</h4><p>一些研究使用了word-level的表示是在大规模的文本上使用无监督算法例如CBOW或skip-gram预训练得到，最近的研究表明这种预训练词嵌入的重要性，预训练的单词嵌入作为输入可以在NER模型训练期间固定或进一步微调，常见的word embedding 方法有Google Word2Vec, Stanford GloVe, Facebook fastText 和 SENNA。</p>
+<p>这里省略了部分内容，主要是原论文列举的一些使用word-level表示的研究论文，对这部分感兴趣的同学可以去原论文中了解这部分内容。</p>
+<h4 id="Character-level-Representation"><a href="#Character-level-Representation" class="headerlink" title="Character-level Representation"></a>Character-level Representation</h4><p>几项研究[100]、[101]结合了从端到端神经模型学习的基于字符的单词表示，而不是仅将单词级表示作为基本输入。已发现字符级表示对于利用显式子单词级信息（如前缀和后缀）很有用;另一个字符集表示的好处是可以解决out-of-vocabulary问题；因此，基于字符的模型能够推断不可见单词的表示，并共享语素水平规则的信息。<br>character-level的表示主要有两种广泛应用的结构：CNN-based and RNN-based models(如图3所示)</p>
+<p><img src="/2022/11/19/nlp-ner-summarize/p10.png" alt></p>
+<p>这里省略了部分内容，主要是原论文列举的一些使用CNN 和 RNN来进行字符级表示的研究论文，对这部分感兴趣的同学可以去原论文中了解这部分内容。</p>
+<p>在RNN-based的模型中，LSTM和GRU是基础组件的两个典型选择。</p>
+<p>使用循环神经网络进行语言建模的最新研究进展使得将语言建模为字符上的分布成为可能。Akbik 等人 [107] 的上下文字符串嵌入使用字符级神经语言模型为感知上下文中的字符串生成上下文化嵌入。一个重要的属性是嵌入由其周围的文本上下文化，这意味着同一单词根据其上下文使用具有不同的嵌入。图4说明了在句子上下文中提取单词“Washington”的上下文字符串嵌入的架构。</p>
+<p><img src="/2022/11/19/nlp-ner-summarize/p11.png" alt></p>
+<h4 id="Hybrid-Representation-（混合表示）"><a href="#Hybrid-Representation-（混合表示）" class="headerlink" title="Hybrid Representation （混合表示）"></a>Hybrid Representation （混合表示）</h4><p>一些研究还将其他信息（例如，地名词典，词汇相似性，语言依赖性和视觉特征）纳入单词的最终表示中，然后再输入上下文编码层；添加额外的信息可以提高NER模型的性能，代价是会降低这些系统的通用性。</p>
+<p>这里省略了部分内容，主要是原论文列举的一些使用混合表示的研究论文，对这部分感兴趣的同学可以去原论文中了解这部分内容。</p>
+<p>BERT使用屏蔽语言模型来实现预先训练的深度双向表示。对于给定的token，其输入表示由相应的position、segment和token embeddings相加组成。请注意，预先训练的语言模型嵌入通常需要大规模的语料库进行训练，并且本质上包含辅助嵌入（例如，position和segment嵌入）。因此，我们在本次调查中将这些上下文化语言模型嵌入归类为混合表示。</p>
+<h3 id="Context-Encoder-Architectures"><a href="#Context-Encoder-Architectures" class="headerlink" title="Context Encoder Architectures"></a>Context Encoder Architectures</h3><h4 id="Convolutional-Neural-Networks"><a href="#Convolutional-Neural-Networks" class="headerlink" title="Convolutional Neural Networks"></a>Convolutional Neural Networks</h4><p>这里省略了部分内容，主要是原论文中列举的一些使用CNN来做上下文编码器的研究论文，对这部分感兴趣的同学可以去原论文中了解这部分内容。</p>
+<h4 id="Recurrent-Neural-Networks"><a href="#Recurrent-Neural-Networks" class="headerlink" title="Recurrent Neural Networks"></a>Recurrent Neural Networks</h4><p>RNN、GRU和LSTM在序列数据模型方面已经取得了显著的成果，特别双向的循环网络更有效。</p>
+<p>这里省略了部分内容，主要是原论文中列举的一些使用RNN来做上下文编码器的研究论文，对这部分感兴趣的同学可以去原论文中了解这部分内容。</p>
+<p><img src="/2022/11/19/nlp-ner-summarize/p12.png" alt></p>
+<h4 id="Recursive-Neural-Networks"><a href="#Recursive-Neural-Networks" class="headerlink" title="Recursive Neural Networks"></a>Recursive Neural Networks</h4><p>递归神经网络是非线性自适应模型，能够通过按拓扑顺序遍历给定结构来学习深度结构化信息,命名实体与语言成分高度相关，例如名词短语[98]。然而，典型的顺序标注方法很少考虑句子的短语结构。为此，Li等人[98]建议对NER选区结构中的每个节点进行分类。该模型递归地计算每个节点的隐藏状态向量，并根据这些隐藏向量对每个节点进行分类。图8显示了如何递归计算每个节点的两个隐藏状态特征。</p>
+<p><img src="/2022/11/19/nlp-ner-summarize/p13.png" alt></p>
+<p>自下而上的方向计算每个节点的子树的语义组成，自上而下的对应方向将包含子树的语言结构传播到该节点。给定每个节点的隐藏向量，网络计算实体类型加上特殊非实体类型的概率分布。</p>
+<h4 id="Neural-Language-Models"><a href="#Neural-Language-Models" class="headerlink" title="Neural Language Models"></a>Neural Language Models</h4><p>语言模型是描述序列生成的一系列模型。给定一个标记序列 （t1， t2， . . . ， tN），前向语言模型通过给定其历史的令牌 （t1， . . . ， tk−1）的情况下计算tk 的概率。</p>
+<p><img src="/2022/11/19/nlp-ner-summarize/p1.png" alt></p>
+<p>后向语言模型类似于前向语言模型，不同之处在于它以相反的顺序运行序列，根据其未来上下文预测前一个标记。</p>
+<p><img src="/2022/11/19/nlp-ner-summarize/p2.png" alt></p>
+<p>对于神经语言模型，令牌 tk 的概率可以通过循环神经网络的输出来计算。在每个位置 k 上，我们可以获得两个上下文相关的表示（向前和向后），然后将它们组合为令牌 tk 的最终语言模型嵌入。这种语言模型增强的知识已被经验验证，有助于许多序列标记任务。</p>
+<p>LM-LSTM-CRF模型，语言模型和序列标记模型以多任务学习方式共享相同的字符级别层。来自字符级嵌入、预训练词嵌入和语言模型表示的向量被连接起来并馈送到词级 LSTM 中。实验结果表明，多任务学习是指导语言模型学习任务特定知识的有效方法。</p>
+<p>这里省略了部分内容，主要是原论文中列举的一些使用NLM来做上下文编码器的研究论文，对这部分感兴趣的同学可以去原论文中了解这部分内容。</p>
+<p>Peters等人[103]提出了ELMo表示，它是在具有字符卷积的两层双向语言模型之上计算的。这种新型的深度上下文化单词表示能够对单词使用的复杂特征（例如，语义和语法）以及跨语言上下文的用法变化（例如，多义词）进行建模。</p>
+<h4 id="Deep-Transformer"><a href="#Deep-Transformer" class="headerlink" title="Deep Transformer"></a>Deep Transformer</h4><p>神经序列标记模型通常基于复杂的卷积或循环网络，该网络由编码器和解码器组成。由Vaswani等人提出的Transformer[128]完全省去了循环和卷积。Transformer 利用堆叠的自注意力和逐点、完全连接的层来构建编码器和解码器的基本块。对各种任务的实验[128]-[130]表明，Transformer的质量更高，同时需要的训练时间明显减少。</p>
+<p>基于transformer，Radford等人[131]提出了用于语言理解任务的Generative Pretrained Transformer（GPT）。GPT 有一个两阶段的训练程序。首先，他们将语言建模目标与 Transformers 一起在无标签数据上使用，以学习初始参数。然后，他们使用监督目标将这些参数调整到目标任务，从而对预训练模型进行最小的更改。</p>
+<p>与 GPT（从左到右的架构）不同，Bidirectional Encoder Representations from Transformers （BERT） 旨在通过在所有层中对左右上下文进行联合调节来预训练深度双向transformer 。图11总结了BERT[119]、GPT[131]和ELMo[103]。此外，Baevski等人[132]提出了一种基于双向Transformer的新型完形填空驱动预训练机制，该机制使用完形填空目标进行训练，并在所有左右上下文中预测中心词。</p>
+<p><img src="/2022/11/19/nlp-ner-summarize/p3.png" alt></p>
+<p>这些使用Transformer预先训练的语言模型嵌入正在成为NER的新范式。首先，这些嵌入是上下文化的，可以用来替换传统的嵌入，如Google Word2vec和Stanford GloVe。一些研究[108]、[110]、[133]–[136]通过利用传统嵌入和语言模型嵌入的组合，取得了令人满意的性能。其次，这些语言模型嵌入可以通过一个额外的输出层或包括NER和分块在内的各种任务进一步微调。特别是，Li等人[137]，[138]将NER任务构建为机器阅读理解（MRC）问题，可以通过微调BERT模型来解决。</p>
+<h3 id="Tag-Decoder-Architectures"><a href="#Tag-Decoder-Architectures" class="headerlink" title="Tag Decoder Architectures"></a>Tag Decoder Architectures</h3><p>标签解码器是NER模型的最后阶段。它将上下文相关的表示作为输入，并生成与输入序列相对应的标签序列。图 12 总结了标签解码器的四种架构：MLP + softmax 层、条件随机场 （CRF）、递归神经网络和指针网络（pointer networks）。</p>
+<p><img src="/2022/11/19/nlp-ner-summarize/p4.png" alt></p>
+<h4 id="Multi-Layer-Perceptron-感知机-Softmax"><a href="#Multi-Layer-Perceptron-感知机-Softmax" class="headerlink" title="Multi-Layer Perceptron(感知机) + Softmax"></a>Multi-Layer Perceptron(感知机) + Softmax</h4><p>NER通常被表述为序列标记问题。以多层感知器+Softmax层作为标签解码层，将序列标注任务投射为多类分类问题。每个单词的标签都是根据上下文相关的表示独立预测的，而不考虑其邻居。<br>前面介绍的许多NER模型[91]、[98]、[116]、[119]、[139]使用MLP+Softmax作为标签解码器。作为一项特定领域的NER任务，Tomori等人[140]使用softmax作为标签解码器来预测日本国际象棋游戏中的游戏状态。他们的模型既接受文本输入，也接受棋盘输入（9×9个正方形，共有14种不同类型的40个棋子）并预测21个特定于此游戏的命名实体。文本表示和游戏状态嵌入都被馈送到softmax层，用于使用BIO标签方案预测命名实体。</p>
+<h4 id="Conditional-Random-Fields"><a href="#Conditional-Random-Fields" class="headerlink" title="Conditional Random Fields"></a>Conditional Random Fields</h4><p>条件随机场（CRF）是以观测序列为全局条件的随机场[73]。CRF已广泛用于基于特征的监督学习方法（见第2.4.3节）。许多基于深度学习的NER模型使用CRF层作为标签解码器，例如，在双向LSTM层[18]，[90]，[103]，[141]的顶部，以及CNN层的顶部[17]，[91]，[94]。如表3所显示，CRF是 tag decode最常见的选择，并且在CoNLL03和OntoNotes数据集上取得了最好的成绩。</p>
+<p>然而，CRF不能充分利用句段级信息，因为句段的内部属性不能用字级表示完全编码。Zhuo等人[142]随后提出了门控递归半马尔可夫CRF，它直接对段而不是单词进行建模，并通过门控递归卷积神经网络自动提取段级特征。最近，Ye和Ling[143]提出了用于神经序列标记的混合半马尔可夫CRF。这种方法采用段而不是单词作为特征提取和转换建模的基本单元。单词级标签用于派生句段分数。因此，这种方法能够利用单词和句段级信息进行句段分数计算。</p>
+<h4 id="Recurrent-Neural-Networks-1"><a href="#Recurrent-Neural-Networks-1" class="headerlink" title="Recurrent Neural Networks"></a>Recurrent Neural Networks</h4><p>一些研究[88]-[90]，[96]，[144]已经探索了RNN解码标签。Shen等人[88]报告说，RNN标签解码器的性能优于CRF，并且当实体类型数量很大时，训练速度更快。图 12（c） 说明了基于 RNN 的标签解码器的工作流程，这些解码器充当语言模型来贪婪地生成标签序列。</p>
+<p>……</p>
+<h4 id="Pointer-Networks"><a href="#Pointer-Networks" class="headerlink" title="Pointer Networks"></a>Pointer Networks</h4><p>指针网络应用RNN来学习输出序列的条件概率，这些元素是对应于输入序列中位置的离散标记[145]，[146]。它通过使用softmax概率分布作为“指针”来表示可变长度字典。Zhai等人[95]第一次应用指针网络来产生序列标签。如图12（d）所示，指针网络首先标识块（或段），然后对其进行标记。重复此操作，直到处理完输入序列中的所有单词。在图12（d）中，给定开始标记“＜s＞”，首先识别段“Michael Jeffery Jordan”，然后标记为“PERSON”。分割和标记可以通过指针网络中的两个单独的神经网络来完成。接下来，“Michael Jeffery Jordan”作为输入并输入指针网络。因此，段“was”被识别并标记为“O”。</p>
+<h3 id="基于深度学习的NER技术总结"><a href="#基于深度学习的NER技术总结" class="headerlink" title="基于深度学习的NER技术总结"></a>基于深度学习的NER技术总结</h3><h4 id="模型结构总结"><a href="#模型结构总结" class="headerlink" title="模型结构总结"></a>模型结构总结</h4><p>table3: 关于现阶段针对NER研究工作的总结，也就是从input、encoder、decoder分别采用不同的模型结构针对特定任务或数据集的实验效果。</p>
+<p><img src="/2022/11/19/nlp-ner-summarize/p14.png" alt></p>
+<p> 表3按其架构选择总结了最近关于神经网络NER的工作，基于深度学习的<code>NER</code>最常见的结构是 <code>BiLSTM-CRF</code>。</p>
+<p><em>state-of-the-art 最先进的，体现最高水平的</em></p>
+<p>[132]以完形填空式的方式预训练双向Transformer模型，在CoNLL03上实现了最先进的性能（93.5%）。使用BERT和dice损失[138]的工作在OntoNotes5.0上实现了最先进的性能（92.07%）。</p>
+<p>NER系统的成功很大程度上取决于其输入表示，集成或微调预训练的语言模型嵌入正在成为神经命名实体识别的新范式，当利用这些语言模型嵌入时，性能显著提高[103]，[107]，[108]，[132]–[138]。</p>
+<p>表 3 的最后一列列出了几个基准数据集上以 F 分数报告的性能。虽然在正式文档（例如，CoNLL03和OntoNotes5.0）上报告了较高的F分数，但NER的得分很高，在嘈杂数据（例如W-NUT17）上仍然具有挑战性。</p>
+<h4 id="不同模型结构的对比"><a href="#不同模型结构的对比" class="headerlink" title="不同模型结构的对比"></a>不同模型结构的对比</h4><p><strong>Input方面</strong>：关于外部知识是否应该或如何整合到基于DL的NER模型中，尚未达成共识。外部知识如果加入进去可以提升效果，缺点人工成本高或计算成本高，并且对端到端造成影响，有损通用性。</p>
+<p><strong>encoder方面</strong>：基于大型语料库进行预训练的transformer比LSTM更有效，不过如果没有经过预训练或者训练数据比较少的情况下，transformer就不行了。</p>
+<p>另外，transformer比recursive layers 更快当序列n的长度小于表示的维数d时。</p>
+<p>复杂度：self-attention O(n^2· d) and recurrent O(n · d^2)</p>
+<p><strong>decoder方面</strong>：RNN and Pointer Network decoders的缺点在于贪婪解码，这意味着当前步骤的输入需要前一步骤的输出，这种机制可能会速度产生重大影响，并且对并行化产生障碍。</p>
+<p>CRF是最常用的方法，其针对非语言模型的嵌入（如Word2Vec、Glove）时，捕获标签转换依赖项是非常有效地，当实体类型数量很大时，CRF的计算成本会很高。</p>
+<p>更重要的是，与softmax分类相比，在采用诸如BERT和ELMo等语境化语言模型嵌入时，CRF并不总能带来更好的性能。</p>
+<p>总之，选择哪种结构是你的数据和领域任务决定的，如果数据丰富，可以考虑使用从头开始RNN训练模型和微调语境化语言模型；如果数据稀缺，采用迁移策略可能是更好的选择。对于新闻领域，有很多预训练模型可用。对于特定领域（如医学和社交媒体），使用特定领域的数据微调通用语境化语言模型通常是一种有效的方法。</p>
+<p><strong>不同语言的NER</strong></p>
+<p>本文主要是介绍通用领域的英文NER任务，除了英语，还有许多关于其他语言或跨语言环境的研究。Wu等人[120]和Wang等人[149]研究了中国临床文本中的NER。Zhang和Yang[150]提出了一种用于汉语NER的格结构LSTM模型，该模型对输入字符序列以及与词典匹配的所有潜在单词进行编码。除了汉语，基于其他语言进行的研究也有很多。例子包括蒙古语[151]、捷克语[152]、阿拉伯语[153]、乌尔都语[154]、越南语[155]、印尼语[156]和日语[157]。每种语言都有自己的特点，可以理解该语言的NER任务的基本原理。还有一些研究[106]、[158]–[160]旨在通过将知识从源语言转移到目标语言（没有标签或标签很少）来解决跨语言环境下的NER问题。</p>
+<h2 id="APPLIED-DEEP-LEARNING-FOR-NER"><a href="#APPLIED-DEEP-LEARNING-FOR-NER" class="headerlink" title="APPLIED DEEP LEARNING FOR NER"></a>APPLIED DEEP LEARNING FOR NER</h2><h3 id="Deep-Multi-task-Learning-for-NER"><a href="#Deep-Multi-task-Learning-for-NER" class="headerlink" title="Deep Multi-task Learning for NER"></a>Deep Multi-task Learning for NER</h3><p>多任务学习[161]是一种一起学习一组相关任务的方法。通过考虑不同任务之间的关系，多任务学习算法有望获得比单独学习每个任务的算法更好的结果。</p>
+<p>Collbert等人[17]训练了一个窗口/句子方法网络，以联合执行POS、Chunk、NER和SRL任务。这种多任务机制允许训练算法发现对所有感兴趣的任务有用的内部表示。Yang等人[106]提出了一种多任务联合模型，以学习特定于语言的规则，联合训练用于POS、Chunk和NER任务。Rei[124]发现，通过在训练过程中包括无监督语言建模目标，序列标记模型实现了一致的性能改进。Lin等人[160]提出了一种用于低资源设置的多语言多任务架构，它可以有效地传递不同类型的知识以改进主模型。</p>
+<p>除了将NER与其他序列标记任务一起考虑外，多任务学习框架可以应用于实体和关系的联合提取[90]，[96]，或者将NER建模为两个相关的子任务：实体分割和实体类别预测[114]，[162]。在生物医学领域，由于不同数据集的差异，每个数据集上的NER被视为多任务设置中的一项任务[163]，[164]。</p>
+<p>这里的一个主要假设是，不同的数据集共享相同的字符和单词级别信息。然后应用多任务学习来更有效地使用数据，并鼓励模型学习更广义的表示。</p>
+<h3 id="Deep-Transfer-Learning-for-NER"><a href="#Deep-Transfer-Learning-for-NER" class="headerlink" title="Deep Transfer Learning for NER"></a>Deep Transfer Learning for NER</h3><p>迁移学习旨在通过利用从源域学习的知识在目标域上执行机器学习任务[165]。在NLP领域，迁移学习也叫域自适应。对于NER任务，传统方法是通过自举算法[166]-[168]。最近，针对低资源和跨域的NER任务已经提出了一些基于神经网络的方法[127]，[169]-[173]。</p>
+<p>Pan等人[169]提出了一种用于跨域NER的转移联合嵌入（TJE）方法。TJE使用标签嵌入技术将多类分类转换为低维潜在空间中的回归。Quet等人[174]观察到，相关命名实体类型通常共享词汇和上下文特征。他们的方法使用两层神经网络学习源和目标命名实体类型之间的相关性。他们的方法适用于源域具有与目标域相似（但不相同）的命名实体类型的设置。Peng和Dredze[162]在多任务学习环境中探索了迁移学习，他们考虑了两个领域：新闻和社交媒体，用于两项任务：分词和NER。</p>
+<p>在迁移学习的设置中，不同的神经模型通常在源任务和目标任务之间共享模型参数的不同部分，Yang等人[175]首先研究了不同表示层的可传递性。然后，他们针对跨领域、跨语言和跨应用场景提出了三种不同的参数共享架构。如果两个任务具有可映射的标签集，则有一个共享的CRF层，否则，每个任务学习一个单独的CRF层。实验结果表明，在低资源条件下（即，更少的可用注释），各种数据集都有显著改善。Pius和Mark[176]扩展了Yang的方法，允许对非正式语料库进行联合训练（例如，WNUT 2017），并结合句子级特征表示。他们的方法在2017年WNUT NER共享任务中获得第二名，F1得分为40.78%。Zhao等人[177]提出了一种具有领域自适应的多任务模型，其中完全连接层适用于不同的数据集，CRF特征独立计算。Zhao’s模型的一个主要优点是，在数据选择过程中过滤掉了具有不同分布和未对齐注释准则的实例。与这些参数共享架构不同，Lee等人[170]通过在源任务上训练模型并在目标任务上使用训练后的模型进行微调，在NER中应用迁移学习。最近，Lin和Lu[171]还通过引入三个神经适应层（单词适应层、句子适应层和输出适应层）提出了NER的微调方法。Beryozkin等人[178]提出了一种用于异构标签集NER设置的标签层次模型，其中在推理过程中使用层次将细粒度标签映射到目标标签集。此外，一些研究[164]、[179]、[180]探索了生物医学NER的转移学习，以减少所需的标注数据量。</p>
+<h3 id="Deep-Active-Learning-for-NER"><a href="#Deep-Active-Learning-for-NER" class="headerlink" title="Deep Active Learning for NER"></a>Deep Active Learning for NER</h3><p>主动学习背后的关键思想是，如果允许机器学习算法选择从中学习的数据，则机器学习算法可以在训练中获得的数据大大减少的情况下表现得更好[181]。深度学习需要耗费大量成本去获取所需的训练数据，所以将深度学习和主动学习联合在一起期望可以减少数据标注工作。主动学习的训练分多轮进行，但是传统的主动学习方案对于深度学习来说是昂贵的，因为在每一轮之后，它们需要新标注的样本对分类器进行完全的再训练。由于从头开始的再训练对于深度学习来说并不实用，Shen等人[88]提出使用每批新标签对NER进行增量训练。他们将新标注的样本与现有样本混合，并在新一轮查询标签之前更新少数轮次的神经网络权重。具体来说，在每一轮开始时，主动学习算法根据预定义的预算选择标注的句子。在接收到所选的标注数据后，通过对增强数据集的训练来更新模型参数，主动学习算法在选择要注释的句子时采用了不确定性采样策略[182]。实验结果表明，主动学习算法仅使用英语数据集上24.9%的训练数据和中文数据集上30.1%的训练数据，就可以实现在完整数据上训练的最佳深度学习模型的99%的性能。此外，12.0%和16.9%的训练数据足以使深度主动学习模型优于在完整训练数据上学习的浅层模型[183]。</p>
+<h3 id="Deep-Reinforcement-Learning-for-NER"><a href="#Deep-Reinforcement-Learning-for-NER" class="headerlink" title="Deep Reinforcement Learning for NER"></a>Deep Reinforcement Learning for NER</h3><p>强化学习（RL）是受行为主义心理学启发的机器学习的一个分支，它关注软件代理如何在环境中采取行动，从而最大化一些累积奖励[184]，[185]。其理念是，代理将通过与环境互动并获得执行行为的奖励，从环境中学习。具体而言，RL问题可以表述如下[186]：<strong>环境</strong>被建模为具有输入（来自代理的动作）和输出（对代理的观察和奖励）的随机有限状态机。它由三个关键组成部分组成：（i）状态转换功能，（ii）观察（即输出）功能，以及（iii）奖励功能。<strong>代理</strong>也被建模为具有输入（来自环境的观察/奖励）和输出（对环境的动作）的随机有限状态机。它由两个部分组成：（i）状态转换功能和（ii）策略/输出功能。代理的最终目标是通过尝试最大化累积回报来学习良好的状态更新功能和策略。</p>
+<p>Narasimhan等人[187]将信息提取任务建模为马尔可夫决策过程（MDP），该过程动态地结合实体预测，并提供从一组自动生成的备选方案中选择下一个搜索查询的灵活性。该过程包括发出搜索查询、从新的源中提取、核对提取的值，并且该过程重复直到获得足够的证据。为了让代理学习到一个良好的策略，他们使用深度Q网络[188]作为函数逼近器，其中状态作用值函数（即Q函数）通过使用深度神经网络来逼近。最近，Yang等人[189]利用远程监督生成的数据在新领域中执行新类型的实体识别。实例选择器基于强化学习，并从NE标签获得反馈奖励，旨在选择积极的句子以减少噪声注释的影响。</p>
+<h3 id="Deep-Adversarial-Learning-for-NER"><a href="#Deep-Adversarial-Learning-for-NER" class="headerlink" title="Deep Adversarial Learning for NER"></a>Deep Adversarial Learning for NER</h3><p>对抗性学习[190]是在对抗性示例上明确训练模型的过程。其目的是使模型对攻击更加鲁棒，或减少其在干净输入上的测试误差。对抗网络通过两层游戏学习从训练分布中生成：一个网络生成候选（生成网络），另一个网络评估候选（区分网络）。通常，生成网络学习从潜在空间映射到感兴趣的特定数据分布，而区分网络区分生成器生成的候选和来自真实世界数据分布的实例[191]。<br>对于NER，对抗性的例子通常以两种方式产生。一些研究[192]–[194]将源域中的实例视为目标域的对抗性实例，反之亦然。例如，Li等人[193]和Cao等人[194]都结合了来自其他领域的对抗性示例，以鼓励跨领域NER的领域不变特征。另一种选择是通过添加带有扰动的原始样本来准备对抗样本。例如，[195]中提出的双对抗转移网络（DATNet）旨在解决低资源NER问题。通过将原始样本与受小范数ǫ限制的扰动相加，产生对抗样本，以使损失函数最大化，如下：<br><img src="/2022/11/19/nlp-ner-summarize/p5.png" alt></p>
+<p>其中Θ是当前模型参数集，可在验证集上确定。通过<code>xadv = x + ηx</code>构造了一个对抗性示例。分类器在原始和对抗性示例的混合上进行训练，以提高泛化能力。</p>
+<h3 id="Neural-Attention-for-NER"><a href="#Neural-Attention-for-NER" class="headerlink" title="Neural Attention for NER"></a>Neural Attention for NER</h3><p>注意力机制基于人类的视觉注意力机制[196],例如，人们通常以“高分辨率”关注图像的某个区域，而以“低分辨率”感知周围区域。神经注意机制使神经网络能够专注于其输入的子集。通过应用注意力机制，NER模型可以捕捉输入中信息量最大的元素。特别是，第3.3.5节中回顾的Transformer架构完全依赖于注意力机制，以绘制输入和输出之间的全局依赖关系。<br>在NER任务中应用注意力机制还有很多其他方法。Rei等人[105]应用了一种注意力机制，以动态地决定端到端NER模型中从字符或单词级别组件中使用多少信息。Zukov Gregoric等人[197]探索了NER中的自我注意机制，其中权重取决于单个序列（而不是两个序列之间的关系）。Xu等人[198]提出了一种基于注意力的神经NER架构，以利用文档级全局信息。特别地，文档级信息是从由具有神经注意的预训练双向语言模型表示的文档中获得的。Zhang等人[1999]在推文中使用了一个自适应的共同注意力网络。该自适应共同注意力网络是一个使用共同注意过程的多模态模型。共同注意力包括视觉注意力和文本注意力，以捕捉不同模态之间的语义交互。</p>
+<h2 id="CHALLENGES-AND-FUTURE-DIRECTIONS（挑战和未来的方向）"><a href="#CHALLENGES-AND-FUTURE-DIRECTIONS（挑战和未来的方向）" class="headerlink" title="CHALLENGES AND FUTURE DIRECTIONS（挑战和未来的方向）"></a>CHALLENGES AND FUTURE DIRECTIONS（挑战和未来的方向）</h2><p>如第3.5节所述，标签解码器的可选范围没有输入的分布式表示和上下文编码器那么大，从Google Word2vec到最近的BERT模型，基于DL的NER显著受益于建模语言中预训练嵌入的进步。不需要复杂的特征工程，我们现在有机会重新审视NER任务的挑战和潜在的未来方向。</p>
+<h3 id="挑战"><a href="#挑战" class="headerlink" title="挑战"></a>挑战</h3><p>1、需要大量的标注数据，耗费人力，且特定领域的任务还需要比较专业的人士才能标注。<br>由于语言含糊不清，注释的质量和一致性都是主要问题（例如南京市长江大桥），由于数据注释的不一致性，即使两个数据集中的文档来自同一领域，在一个数据集上训练的模型也可能无法在另一个数据集中很好地工作。</p>
+<p>为了使数据注释更加复杂，Katiyar和Cardie[122]报告了<strong>嵌套实体相当常见</strong>：GENIA语料库中17%的实体嵌入另一个实体中；在ACE语料库中，30%的句子包含嵌套实体。<strong>需要开发适用于嵌套实体和细粒度实体的通用注释方案，其中一个命名实体可以分配多种类型</strong>。</p>
+<p>2、<strong>非正式文本和未显示的实体</strong>，表格3显示，在带有正式文档（例如新闻文章）的数据集上报告了不错的结果。然而，在用户生成的文本（例如WUT17数据集）上，最佳F分数略高于40%。非正式文本（如推文、评论、用户论坛）的NER比正式文本更具挑战性，因为其简短和嘈杂。许多用户生成的文本也是特定于领域的。在许多应用场景中，NER系统必须处理用户生成的文本，例如电子商务和银行业中的客户支持。</p>
+<p>评估NER系统的稳健性和有效性的另一个有趣的方面是，它能够在新出现的讨论中识别不寻常的、以前看不见的实体。对于WUT-17数据集的这一研究方向，存在一个共同的任务[200]。</p>
+<h3 id="未来的方向"><a href="#未来的方向" class="headerlink" title="未来的方向"></a>未来的方向</h3><p>随着建模语言的进步和现实应用的需求，我们预计NER将受到研究人员的更多关注。另一方面，NER通常被视为下游应用程序的预处理组件。这意味着特定的NER任务由下游应用程序的需求定义，例如，命名实体的类型以及是否需要检测嵌套实体[201]。基于本次调查中的研究，我们列出了在NER研究中需要进一步探索的以下方向。<br>1、<strong>细粒度的NER任务和边界检测</strong></p>
+<p>尽管许多现有研究[19]、[97]、[109]侧重于通用领域中的粗粒度NER，但我们期望在特定领域中对细粒度NER进行更多研究，以支持各种真实单词应用[202]。</p>
+<p>补充到之前粗粒度任务和细粒度任务的区别（根据文章定义）<br><strong>粗粒度任务：实体类型较少，且每个命名实体只有一种类型</strong><br><strong>细粒度任务：实体类型较多，且每个命名实体可以被指定为多个细粒度的类型</strong></p>
+<p>细粒度NER的挑战是NE类型的显著增加以及允许命名实体具有多个NE类型所带来的复杂性。这需要重新访问常见的NER方法，其中同时检测实体边界和类型，例如，使用B-I-E-S-（实体类型）和O作为解码标签。值得考虑的是，将命名实体边界检测定义为检测NE边界的专用任务，同时忽略NE类型。<strong>边界检测和NE类型分类的解耦使得能够在不同域之间共享边界检测的通用和鲁棒解决方案，以及NE类型分类专用的特定域方法</strong>。正确的实体边界还可以有效地减少实体链接到知识库中的错误传播。已有一些研究[95]、[203]将实体边界检测视为NER中的中间步骤（即子任务）。据我们所知，<strong>现有的工作没有单独关注实体边界检测以提供鲁棒的识别器</strong>。我们期望未来这一研究方向会有突破。</p>
+<p>2、<strong>将命名实体识别和实体链接联合起来</strong><br>实体链接（EL）也称为命名实体规范化或消歧，旨在参考知识库为文本中提到的实体分配唯一标识，例如，通用领域的维基百科和生物医学领域的统一医学语言系统（UMLS）。大多数现有工作是将NER和EL单独作为两个独立任务来解决的。我们认为成功链接的实体（例如，通过知识库中的相关实体）所承载的语义显著被丰富了[66]，[205]。也就是说，链接实体有助于成功检测实体边界和正确分类实体类型。值得探索联合执行NER和EL，甚至实体边界检测、实体类型分类和实体链接的方法，以便每个子任务从其他子任务的部分输出中受益，并减轻在管道设置中不可避免的错误传播。</p>
+<p>3、<strong>借助辅助资源的基于DL的针对非正式文本的NER</strong><br>如第5.1节所述，基于DL的NER在非正式文本或用户生成内容上的性能仍然很低。这需要在这方面进行更多的研究。特别地，我们注意到，NER的性能显著受益于辅助资源的可用性[206-[208]，例如，用户语言中的地名词典。虽然表3没有为将地名词典作为额外特征可以给通用领域的NER带来更好的性能提供强有力的证据，我们依然认为辅助资源对于更好地理解用户生成的内容是必要的。<strong>问题是如何为用户生成的内容或特定领域的文本上的NER任务获取匹配的辅助资源，以及如何有效地将辅助资源合并到基于DL的NER中。</strong></p>
+<p>4、<strong>基于DL的NER的可扩展性</strong></p>
+<p>使神经NER模型更具可扩展性仍然是一个挑战。此外，当数据大小增长时，仍需要优化参数指数增长的解决方案[209]。一些基于DL的NER模型以巨大的计算能力为代价获得了良好的性能。例如，ELMo表示用3×1024维向量表示每个单词，模型在32个GPU上训练了5周[107]。谷歌BERT在64个云TPU上进行了培训。然而，如果最终用户无法访问强大的计算资源，则无法对这些模型进行微调。研究平衡模型复杂性和可扩展性的方法将是一个有前途的方向。另一方面，模型压缩和修剪技术也是减少模型学习所需空间和计算时间的选择。</p>
+<p>5、<strong>针对NER的深度迁移学习</strong></p>
+<p>许多以实体为中心的应用程序使用现成的NER系统来识别命名实体。然而，由于语言特性的差异以及注释的差异，在一个数据集上训练的模型在其他文本上可能无法很好地工作。尽管有一些将深度迁移学习应用于NER的研究（见第4.2节），但这一问题尚未得到充分探索。未来应致力于如何通过探索以下研究问题，将知识从一个领域有效地转移到另一个领域：<br>a) 开发一个健壮的识别器，能够在不同的领域很好地工作</p>
+<p>b) 探索NER任务中的zero-shot、one-shot和few-shot learning</p>
+<p>c) 提供跨域设置中的域不匹配和标签不匹配的解决方案。</p>
+<p>6、<strong>一个易于使用的基于DL的NER工具包</strong></p>
+<p>最近，Röder等人[210]开发了GERBIL，它为研究人员、最终用户和开发人员提供了易于使用的界面，用于对实体标注工具进行基准测试，以确保可重复和可归档的实验。然而，它不涉及最近的基于DL的技术。Ott[211]提出了FAIRSEQ，这是一个快速、可扩展的序列建模工具包，特别是用于机器翻译和文本污名化。Dernoncourt等人[212]实现了一个名为NeuroNER的框架，该框架仅依赖于循环神经网络的变体。近年来，许多深度学习框架（例如TensorFlow、PyTorch和Keras）被设计为通过高级编程接口为设计、训练和验证深度神经网络提供构建块。为了重新实现表3中的体系结构，开发人员可以使用现有的深度学习框架从头开始编写代码。我们设想，一个易于使用的NER工具包可以指导开发人员使用一些标准化模块完成它：数据处理、输入表示、上下文编码器、标签解码器和有效性度量。我们认为，专家和非专家都可以从这些工具包中受益。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/nlp/" rel="tag"># nlp</a>
+          
+            <a href="/tags/NER/" rel="tag"># NER</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/11/05/nlp-ktgg_ner4/" rel="next" title="使用UER进行开庭公告命名实体识别-续3">
+                <i class="fa fa-chevron-left"></i> 使用UER进行开庭公告命名实体识别-续3
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/11/26/nlp-ner-summarize1/" rel="prev" title="NER学习和实践阶段性总结">
+                NER学习和实践阶段性总结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">104</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">198</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一篇基于深度学习的命名实体识别技术的研究报告"><span class="nav-text">一篇基于深度学习的命名实体识别技术的研究报告</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Abstract"><span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction"><span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Background"><span class="nav-text">Background</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#传统的NER方法"><span class="nav-text">传统的NER方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于深度学习的方法"><span class="nav-text">基于深度学习的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Distributed-Representations-for-Input"><span class="nav-text">Distributed Representations for Input</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#word-level-representation"><span class="nav-text">word-level representation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Character-level-Representation"><span class="nav-text">Character-level Representation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Hybrid-Representation-（混合表示）"><span class="nav-text">Hybrid Representation （混合表示）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Context-Encoder-Architectures"><span class="nav-text">Context Encoder Architectures</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Convolutional-Neural-Networks"><span class="nav-text">Convolutional Neural Networks</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Recurrent-Neural-Networks"><span class="nav-text">Recurrent Neural Networks</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Recursive-Neural-Networks"><span class="nav-text">Recursive Neural Networks</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Neural-Language-Models"><span class="nav-text">Neural Language Models</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Deep-Transformer"><span class="nav-text">Deep Transformer</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tag-Decoder-Architectures"><span class="nav-text">Tag Decoder Architectures</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Multi-Layer-Perceptron-感知机-Softmax"><span class="nav-text">Multi-Layer Perceptron(感知机) + Softmax</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Conditional-Random-Fields"><span class="nav-text">Conditional Random Fields</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Recurrent-Neural-Networks-1"><span class="nav-text">Recurrent Neural Networks</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Pointer-Networks"><span class="nav-text">Pointer Networks</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基于深度学习的NER技术总结"><span class="nav-text">基于深度学习的NER技术总结</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#模型结构总结"><span class="nav-text">模型结构总结</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不同模型结构的对比"><span class="nav-text">不同模型结构的对比</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#APPLIED-DEEP-LEARNING-FOR-NER"><span class="nav-text">APPLIED DEEP LEARNING FOR NER</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Deep-Multi-task-Learning-for-NER"><span class="nav-text">Deep Multi-task Learning for NER</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Deep-Transfer-Learning-for-NER"><span class="nav-text">Deep Transfer Learning for NER</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Deep-Active-Learning-for-NER"><span class="nav-text">Deep Active Learning for NER</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Deep-Reinforcement-Learning-for-NER"><span class="nav-text">Deep Reinforcement Learning for NER</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Deep-Adversarial-Learning-for-NER"><span class="nav-text">Deep Adversarial Learning for NER</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Neural-Attention-for-NER"><span class="nav-text">Neural Attention for NER</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CHALLENGES-AND-FUTURE-DIRECTIONS（挑战和未来的方向）"><span class="nav-text">CHALLENGES AND FUTURE DIRECTIONS（挑战和未来的方向）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#挑战"><span class="nav-text">挑战</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#未来的方向"><span class="nav-text">未来的方向</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

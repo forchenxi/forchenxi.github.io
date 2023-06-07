@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="M-P神经元,感知机,万能近似定理,BP,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="感知机与BP算法M-P 神经元模型 [McCulloch and Pitts, 1943] 输入：来自其他n个神经元传递过来的输入信号（特征值） 处理：输入信号通过带权重的连接进行传递, 神经元接受到总输入值将与神经元的阈值进行比较 输出：通过激活函数的处理以得到输出 激活函数">
+<meta name="keywords" content="M-P神经元,感知机,万能近似定理,BP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="感知机与BP算法">
+<meta property="og:url" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="感知机与BP算法M-P 神经元模型 [McCulloch and Pitts, 1943] 输入：来自其他n个神经元传递过来的输入信号（特征值） 处理：输入信号通过带权重的连接进行传递, 神经元接受到总输入值将与神经元的阈值进行比较 输出：通过激活函数的处理以得到输出 激活函数">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/1.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/2.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/4.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/5.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/6.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/7.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/8.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/9.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/10.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/11.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/12.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/13.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/14.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/15.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/17.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/18.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/19.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/20.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/21.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/22.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/23.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/24.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/25.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/29.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/26.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/27.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/28.png">
+<meta property="og:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/30.png">
+<meta property="og:updated_time" content="2022-09-21T13:22:20.998Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="感知机与BP算法">
+<meta name="twitter:description" content="感知机与BP算法M-P 神经元模型 [McCulloch and Pitts, 1943] 输入：来自其他n个神经元传递过来的输入信号（特征值） 处理：输入信号通过带权重的连接进行传递, 神经元接受到总输入值将与神经元的阈值进行比较 输出：通过激活函数的处理以得到输出 激活函数">
+<meta name="twitter:image" content="http://yoursite.com/2021/12/04/al-perceptron-and-bp/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2021/12/04/al-perceptron-and-bp/">
+
+
+
+
+
+  <title>感知机与BP算法 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/12/04/al-perceptron-and-bp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">感知机与BP算法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-12-04T10:17:05+08:00">
+                2021-12-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/算法/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="感知机与BP算法"><a href="#感知机与BP算法" class="headerlink" title="感知机与BP算法"></a>感知机与<code>BP</code>算法</h2><h3 id="M-P-神经元模型-McCulloch-and-Pitts-1943"><a href="#M-P-神经元模型-McCulloch-and-Pitts-1943" class="headerlink" title="M-P 神经元模型 [McCulloch and Pitts, 1943]"></a>M-P 神经元模型 [McCulloch and Pitts, 1943]</h3><p><img src="/2021/12/04/al-perceptron-and-bp/1.png" style="zoom:75%;"></p>
+<p>输入：来自其他<em>n</em>个神经元传递过来的输入信号（特征值）</p>
+<p>处理：输入信号通过带权重的连接进行传递, 神经元接受到总输入值将与神经元的阈值进行比较</p>
+<p>输出：通过激活函数的处理以得到输出</p>
+<h4 id="激活函数"><a href="#激活函数" class="headerlink" title="激活函数"></a>激活函数</h4><p><img src="/2021/12/04/al-perceptron-and-bp/2.png" alt></p>
+<a id="more"></a>
+<h3 id="感知机"><a href="#感知机" class="headerlink" title="感知机"></a>感知机</h3><h4 id="单层感知机（又叫单层前馈网络）"><a href="#单层感知机（又叫单层前馈网络）" class="headerlink" title="单层感知机（又叫单层前馈网络）"></a>单层感知机（又叫单层前馈网络）</h4><p>两个输入神经元的感知机网络结构示意图</p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/4.png" alt></p>
+<p>感知机（<code>Perceptron</code>）由两层神经元组成, 输入层接受外界输入信号传递给输出层, 输出层是一个或多个M-P神经元（亦称阈值逻辑单元，threshold logic unit）</p>
+<p>感知机能够容易地实现逻辑<strong>与、或、非运算</strong>，针对上面的感知机网络结构图，假设激活函数为跃迁函数，f(x) = 1, x&gt;=0；f(x) = 0, x&lt;0。</p>
+<p><strong>与运算</strong>：令<code>w1 = w2 = 1, Θ=2</code>，则<code>y = f(1*x1+1*x2-2)</code></p>
+<p>在<code>x1 = x2 = 1时，y = 1</code>；在<code>x1 = 0, x2 = 1时，y = 0</code></p>
+<p><strong>或运算</strong>：令<code>w1 = w2 = 1, Θ=0.5</code>，则<code>y = f(1*x1+1*x2-0.5)</code></p>
+<p>在<code>x1 = 1</code>或<code>x2 = 1</code>时，y = 1</p>
+<p><strong>非运算</strong>：令<code>w1 = -0.6, w2 = 0, Θ=-0.5</code>，则<code>y = f(-0.6*x1+0.5)</code></p>
+<p>在<code>x1 = 1</code>时，<code>y = 0</code>；在<code>x2 = 0</code>时，<code>y = 1</code></p>
+<p>事实上，上述<strong>与、或、非问题都是线性可分(linearly separable)的问题</strong>，可以证明，若两类模式是线性可分的，即<strong>存在一个线性超平面能将它们分开</strong>，则感知机的学习过程一定会收敛而求得适当的权向量w；否则感知机学习过程将会发生振荡，w难以稳定下来，不能求得合适解，例如感知机甚至<strong>不能解决异或这样简单的非线性可分问题</strong>。</p>
+<p><em>Minsky &amp; Papert (1969) 《Perceptron》感知器无法解决对XOR（异或）这样的分类任务</em></p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/5.png" alt></p>
+<p><em>上面这个图的数据集仅是四个点，不是平面上所有的点</em></p>
+<p>要解决非线性可分问题，需考虑多层功能神经元，如下图这个简单的<strong>两层感知机就能解决异或问题</strong>。在该图中，输出层和输入层之间的一层神经元，被称为隐层或隐含层，<strong>隐含层和输出层神经元都是有激活函数的功能神经元</strong>。</p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/6.png" alt></p>
+<p><code>x1 = 1, x2 = 1, y = 0</code> ; <code>x1 = 1, x2 = 0, y = 1</code></p>
+<h3 id="多层前馈神经网络"><a href="#多层前馈神经网络" class="headerlink" title="多层前馈神经网络"></a>多层前馈神经网络</h3><p>根据上面的两层感知机问题，可以得到更一般的多层前馈神经网络</p>
+<p>定义：每层神经元与下一层神经元全互联, 神经元之间不存在同层连接也不存在跨层连接</p>
+<p>前馈：输入层接受外界输入, 隐含层与输出层神经元对信号进行加工, 最终结果由输出层神经元输出</p>
+<p>学习：根据训练数据来调整神经元之间的“连接权”以及每个功能神经元的“阈值”</p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/7.png" style="zoom:50%;"></p>
+<p><strong>前馈并不意味着网络中的信号不能向后传，而是指网络拓扑结构上不存在环或回路</strong></p>
+<h3 id="神经网络的表示能力"><a href="#神经网络的表示能力" class="headerlink" title="神经网络的表示能力"></a>神经网络的表示能力</h3><p><strong>万能近似定理</strong></p>
+<p>只需要一个包含足够多神经元的隐层, 多层前馈神经网络就能以任意精度逼近任意复杂度的连续函数<strong>[Hornik et al. , 1989]</strong></p>
+<h3 id="误差反向传播算法（Error-BackPropagation）"><a href="#误差反向传播算法（Error-BackPropagation）" class="headerlink" title="误差反向传播算法（Error BackPropagation）"></a>误差反向传播算法（<code>Error BackPropagation</code>）</h3><p><code>BP</code>算法是最成功的训练多层前馈神经网络的学习算法，关于手动推导误差反向传播算法的过程，前面转发了一篇文章，<a href="https://forchenxi.github.io/2021/05/15/dl-bp-network/" target="_blank" rel="noopener">手动推导BP算法</a>。这里主要从例子来体验这一过程。</p>
+<p><strong>参数优化</strong> </p>
+<p><code>BP</code>是一个迭代学习算法, 在迭代的每一轮中对参数进行一次更新估计</p>
+<p><strong>前向计算</strong> </p>
+<p><code>step1</code>: 计算隐层的神经元</p>
+<p><code>step2</code>: 计算输出层的神经元</p>
+<p><code>step3</code>: 计算误差       </p>
+<p><strong>网络参数</strong></p>
+<p>参数包括：权重，阈值</p>
+<p>网络训练的过程就是参数优化的过程</p>
+<p><strong>反向计算</strong> </p>
+<p><code>step1</code>: 计算输出层的梯度</p>
+<p><code>step2</code>: 从输出层开始，循环直到最早的隐藏层</p>
+<p> 2.1: 将误差传播回前一层</p>
+<p> 2.2: 更新这两层间的权重与阈值</p>
+<p>例题1：</p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/8.png" style="zoom:67%;"></p>
+<p>目标：给出输入数据i1,i2(0.05和0.10)，使输出尽可能与原始输出o1,o2(0.01和0.99)接近;激活函数为sigmoid函数。</p>
+<h4 id="Step1-前向传播"><a href="#Step1-前向传播" class="headerlink" title="Step1 前向传播"></a>Step1 前向传播</h4><p>1.输入层—-&gt;隐含层：</p>
+<p>计算神经元h1的输入加权和：</p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/9.png" style="zoom:80%;"></p>
+<p>神经元h1的输出o1:</p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/10.png" style="zoom:80%;"></p>
+<p>同理，可计算出神经元h2的输出o2：</p>
+<p>out(h2) = 0.596884378</p>
+<p>2.隐含层—-&gt;输出层：</p>
+<p>[0.75136079 , 0.772928465]</p>
+<h4 id="Step2-反向传播"><a href="#Step2-反向传播" class="headerlink" title="Step2 反向传播"></a>Step2 反向传播</h4><p>1.计算总误差：</p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/11.png" style="zoom:80%;"></p>
+<p>分别计算o1和o2的误差，总误差为两者之和：</p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/12.png" style="zoom: 67%;"></p>
+<p>2.隐含层—-&gt;输出层的权值更新</p>
+<p>以权重参数w5为例，如果想知道w5对整体误差产生了多少影响，计算整体误差E(total)对w5的偏导值，根据链式法则：</p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/13.png" alt></p>
+<p>根据下图可以直观的看清楚误差是如何反向传播的</p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/14.png" style="zoom:80%;"></p>
+<p>现在我们来分别计算每个式子的值：</p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/15.png" style="zoom:70%;"></p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/17.png" style="zoom: 55%;"></p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/18.png" style="zoom:60%;"></p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/19.png" style="zoom:60%;"></p>
+<p>更新w5的值：（学习速率这里取0.5）</p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/20.png" alt></p>
+<p>同理，可更新其它参数w6,w7,w8，……</p>
+<p>这里E对w5的偏导实际上是：</p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/21.png" style="zoom: 67%;"></p>
+<p>这个式子有助于我们推导出一般性的结论，下面会讲。</p>
+<p>3.隐含层—-&gt;隐含层的权值更新：</p>
+<p>以权重参数w1为例，如果想知道w1对整体误差产生了多少影响，计算整体误差E(total)对w1的偏导值，根据链式法则</p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/22.png" alt></p>
+<p>计算的过程与之前的类似，不同之处：<strong>隐含层之间的权值更新时，而out(h1)会接受E(o1)和E(o2)两个地方传来的误差，所以这个地方两个都要计算</strong>。</p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/23.png" alt></p>
+<h4 id="反向传播公式推导"><a href="#反向传播公式推导" class="headerlink" title="反向传播公式推导"></a>反向传播公式推导</h4><p>§在单个样本上的平方误差定义为：</p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/24.png" style="zoom:67%;"></p>
+<p>其中，求和是对输出层的所有节点进行的；yi是真值，ai是预测值，ai=g(in(i)）= g(ΣWjiaj)</p>
+<p>g是激活函数，Wji是从前一层的第j个神经元到输出层i神经元的权重。</p>
+<p><strong>输出层的权值更新</strong>:</p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/25.png" alt></p>
+<p>这个推导的结果和上面的E对W5的偏导结果式子（蓝色字体）是一致的。把这里的▲i记为修正误差。</p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/29.png" alt></p>
+<p>所以说如果要求E对w6的偏导，只需要把aj从out(h1)改为out(h2)即可。</p>
+<p><strong>隐藏层的权值更新</strong>：</p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/26.png" style="zoom:60%;"></p>
+<p>例题2：</p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/27.png" style="zoom:80%;"></p>
+<p>训练样本<code>x={1,0,1}</code>,类标号(标签)为1,激活函数为sigmoid函数</p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/28.png" alt></p>
+<table>
+<thead>
+<tr>
+<th>X1</th>
+<th>X2</th>
+<th>X3</th>
+<th>θ4</th>
+<th>θ5</th>
+<th>θ6</th>
+<th>W14</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>-0.4</td>
+<td>0.2</td>
+<td>0.1</td>
+<td>0.2</td>
+</tr>
+<tr>
+<td>W15</td>
+<td>W24</td>
+<td>W25</td>
+<td>W34</td>
+<td>W35</td>
+<td>W46</td>
+<td>W56</td>
+</tr>
+<tr>
+<td>-0.3</td>
+<td>0.4</td>
+<td>0.1</td>
+<td>-0.5</td>
+<td>0.2</td>
+<td>-0.3</td>
+<td>-0.2</td>
+</tr>
+</tbody>
+</table>
+<p>step2 前向传播</p>
+<table>
+<thead>
+<tr>
+<th><strong>神经元</strong></th>
+<th><strong>输入 net</strong></th>
+<th><strong>输出o</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>4</strong></td>
+<td><strong>0.2*1+0.4*0+(-0.5)*1-0.4=-0.7</strong></td>
+<td><strong>1/(1+e-(-0.7))=0.332</strong></td>
+</tr>
+<tr>
+<td><strong>5</strong></td>
+<td><strong>(-0.3)*1+0.1*0+(0.2)*1-(-0.2)=0.1</strong></td>
+<td><strong>1/(1+e(-0.1))=0.525</strong></td>
+</tr>
+<tr>
+<td><strong>6</strong></td>
+<td><strong>(-0.3)*0.332+(-0.2)*0.525-(-0.1)=-0.105</strong></td>
+<td><strong>1/(1+e-(-0.105))=0.474</strong></td>
+</tr>
+</tbody>
+</table>
+<p>step2 反向传播</p>
+<p>2.1 计算修正误差</p>
+<table>
+<thead>
+<tr>
+<th><strong>神经元</strong></th>
+<th><strong>修正误差</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>6</strong></td>
+<td><strong>(1-0.474)*0.474*(1-0.474) =0.1311</strong></td>
+</tr>
+<tr>
+<td><strong>5</strong></td>
+<td><strong>(0.1311*(-0.2))*0.525*(1-0.525)=-0.0065</strong></td>
+</tr>
+<tr>
+<td><strong>4</strong></td>
+<td><strong>(0.1311*(-0.3))*0.332*(1-0.332)=-0.0087</strong></td>
+</tr>
+</tbody>
+</table>
+<p>输出层修正误差：Err(k) = Ok*(1-Ok)*(T-Ok)（T是标签输出）</p>
+<p>隐含层修正误差：Err(j) = Oj*(1-Oj) *( Σ( Err(k) * W(jk) )(与所有输出相关联的地方都要计算，这里因为只有一个输出所以比较容易积善)</p>
+<p><strong>2.2</strong> <strong>计算权重和阈值的更新</strong>(学习率α，此处取值为0.9)</p>
+<p><img src="/2021/12/04/al-perceptron-and-bp/30.png" style="zoom:70%;"></p>
+<table>
+<thead>
+<tr>
+<th><strong>w46</strong></th>
+<th><strong>-0.3+0.9*0.332*0.1311=-0.216</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>w56</strong></td>
+<td><strong>-0.2+0.9*0.525*0.1311=-0.138</strong></td>
+</tr>
+<tr>
+<td><strong>w14</strong></td>
+<td><strong>0.2+0.9*1*(-0.0087)=0.192</strong></td>
+</tr>
+<tr>
+<td><strong>w15</strong></td>
+<td><strong>-0.3+0.9*1*(-0.0065)  =-0.306</strong></td>
+</tr>
+<tr>
+<td><strong>w24</strong></td>
+<td><strong>0.4+0.9*0*(-0.0087)=0.4</strong></td>
+</tr>
+<tr>
+<td><strong>w25</strong></td>
+<td><strong>0.1+0.9<em>0\</em>(0.0065)=0.1</strong></td>
+</tr>
+<tr>
+<td><strong>w34</strong></td>
+<td><strong>-0.5+0.9*1*(-0.0087)=-0.508</strong></td>
+</tr>
+<tr>
+<td><strong>w35</strong></td>
+<td><strong>0.2+0.9*1*(-0.0065)=-0.194</strong></td>
+</tr>
+<tr>
+<td><strong>Ө6</strong></td>
+<td><strong>0.1+0.9*0.1311=0.218</strong></td>
+</tr>
+<tr>
+<td><strong>Ө5</strong></td>
+<td><strong>0.2+0.9*(-0.0065)=0.194</strong></td>
+</tr>
+<tr>
+<td><strong>Ө4</strong></td>
+<td><strong>-0.4+0.9*(-0.0087)=-0.408</strong></td>
+</tr>
+</tbody>
+</table>
+<p>这里偏置的更新公式为： θj = θj + α*Err(j)</p>
+<h3 id="深度学习"><a href="#深度学习" class="headerlink" title="深度学习"></a>深度学习</h3><p><strong>多层前馈网络局限</strong></p>
+<ol>
+<li><p>神经网络由于强大的表示能力, 经常遭遇<strong>过拟合</strong>， 表现为：训练误差持续降低, 但测试误差却可能上升</p>
+</li>
+<li><p>如何设置隐层神经元的个数仍然是个未决问题. 实际应用中通常使用<strong>“试错法”</strong>调整</p>
+</li>
+</ol>
+<p><strong>缓解过拟合的策略</strong></p>
+<ol>
+<li><p>早停：在训练过程中, 若训练误差降低, 但验证误差升高, 则停止训练 </p>
+</li>
+<li><p>正则化：在误差目标函数中增加一项描述网络复杂程度的部分, 例如连接权值与阈值的平方和</p>
+</li>
+</ol>
+<p>2006年，Hinton在《Science》上发表了论文，首次提出了“深度信念网络”的概念。</p>
+<p>与传统的训练方式不同，“深度信念网络”有一个“<strong>预训练</strong>”（pre-training）+“<strong>微调</strong>”(fine-tuning)技术来对整个网络进行优化训练。</p>
+<p>他给多层神经网络相关的学习方法赋予了一个新名词–“<strong>深度学习</strong>”。</p>
+<p><strong>增加隐层的数目比增加隐层神经元的数目更有效</strong>。这是因为增加隐层数不仅增加了拥有激活函数的神经元数目, 还增加了激活函数嵌套的层数.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/M-P神经元/" rel="tag"># M-P神经元</a>
+          
+            <a href="/tags/感知机/" rel="tag"># 感知机</a>
+          
+            <a href="/tags/万能近似定理/" rel="tag"># 万能近似定理</a>
+          
+            <a href="/tags/BP/" rel="tag"># BP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/11/27/al-decision-tree/" rel="next" title="决策树">
+                <i class="fa fa-chevron-left"></i> 决策树
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/12/11/al-clustering/" rel="prev" title="无监督学习--聚类算法">
+                无监督学习--聚类算法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">104</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">198</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#感知机与BP算法"><span class="nav-text">感知机与BP算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#M-P-神经元模型-McCulloch-and-Pitts-1943"><span class="nav-text">M-P 神经元模型 [McCulloch and Pitts, 1943]</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#激活函数"><span class="nav-text">激活函数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#感知机"><span class="nav-text">感知机</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#单层感知机（又叫单层前馈网络）"><span class="nav-text">单层感知机（又叫单层前馈网络）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多层前馈神经网络"><span class="nav-text">多层前馈神经网络</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#神经网络的表示能力"><span class="nav-text">神经网络的表示能力</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#误差反向传播算法（Error-BackPropagation）"><span class="nav-text">误差反向传播算法（Error BackPropagation）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Step1-前向传播"><span class="nav-text">Step1 前向传播</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Step2-反向传播"><span class="nav-text">Step2 反向传播</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#反向传播公式推导"><span class="nav-text">反向传播公式推导</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#深度学习"><span class="nav-text">深度学习</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

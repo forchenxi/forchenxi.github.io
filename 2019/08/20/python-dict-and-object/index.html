@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="python,dict,object,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="python字典字典初始化的N种方法 直接赋值 1a = &amp;#123;&quot;one&quot;: 1, &quot;two&quot;: 2, &quot;three&quot;: 3&amp;#125;  先新建字典对象，再动态赋值 1234b = dict()b[&quot;one&quot;] = 1b[&quot;two&quot;] = 2b[&quot;three&quot;] = 3  新建字典对象时，通过参数赋值 1c = dict(one=1, two=2, three=3)  新建字典对象时，通过">
+<meta name="keywords" content="python,dict,object">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python 字典和对象">
+<meta property="og:url" content="http://yoursite.com/2019/08/20/python-dict-and-object/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="python字典字典初始化的N种方法 直接赋值 1a = &amp;#123;&quot;one&quot;: 1, &quot;two&quot;: 2, &quot;three&quot;: 3&amp;#125;  先新建字典对象，再动态赋值 1234b = dict()b[&quot;one&quot;] = 1b[&quot;two&quot;] = 2b[&quot;three&quot;] = 3  新建字典对象时，通过参数赋值 1c = dict(one=1, two=2, three=3)  新建字典对象时，通过">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-08-22T02:02:47.080Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python 字典和对象">
+<meta name="twitter:description" content="python字典字典初始化的N种方法 直接赋值 1a = &amp;#123;&quot;one&quot;: 1, &quot;two&quot;: 2, &quot;three&quot;: 3&amp;#125;  先新建字典对象，再动态赋值 1234b = dict()b[&quot;one&quot;] = 1b[&quot;two&quot;] = 2b[&quot;three&quot;] = 3  新建字典对象时，通过参数赋值 1c = dict(one=1, two=2, three=3)  新建字典对象时，通过">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/08/20/python-dict-and-object/">
+
+
+
+
+
+  <title>python 字典和对象 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/20/python-dict-and-object/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">python 字典和对象</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-20T10:03:54+08:00">
+                2019-08-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python编程/" itemprop="url" rel="index">
+                    <span itemprop="name">python编程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="python字典"><a href="#python字典" class="headerlink" title="python字典"></a>python字典</h2><h3 id="字典初始化的N种方法"><a href="#字典初始化的N种方法" class="headerlink" title="字典初始化的N种方法"></a>字典初始化的N种方法</h3><ul>
+<li><p>直接赋值</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a = &#123;<span class="string">"one"</span>: <span class="number">1</span>, <span class="string">"two"</span>: <span class="number">2</span>, <span class="string">"three"</span>: <span class="number">3</span>&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>先新建字典对象，再动态赋值</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">b = dict()</span><br><span class="line">b[<span class="string">"one"</span>] = <span class="number">1</span></span><br><span class="line">b[<span class="string">"two"</span>] = <span class="number">2</span></span><br><span class="line">b[<span class="string">"three"</span>] = <span class="number">3</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>新建字典对象时，通过参数赋值</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">c = dict(one=<span class="number">1</span>, two=<span class="number">2</span>, three=<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>新建字典对象时，通过嵌套的元组和列表来赋值</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">d = dict([(<span class="string">"one"</span>, <span class="number">1</span>), (<span class="string">"two"</span>, <span class="number">2</span>), (<span class="string">"three"</span>, <span class="number">3</span>)])</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<a id="more"></a>
+<ul>
+<li><p>通过zip函数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">e = dict(zip([<span class="string">"one"</span>, <span class="string">"two"</span>, <span class="string">"three"</span>], [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]))</span><br><span class="line"></span><br><span class="line">list(zip([<span class="string">"one"</span>, <span class="string">"two"</span>, <span class="string">"three"</span>], [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]))</span><br><span class="line">&lt;&lt;&lt; [(<span class="string">"one"</span>, <span class="number">1</span>), (<span class="string">"two"</span>, <span class="number">2</span>), (<span class="string">"three"</span>, <span class="number">3</span>)]</span><br><span class="line">zip()函数:将对象中对应的元素打包成一个个元组，然后返回由这些元组组成的列表</span><br></pre></td></tr></table></figure>
+<p><em>在 Python 3.x 中为了减少内存，zip() 返回的是一个对象。如需展示列表，需手动 list() 转换。</em></p>
+</li>
+<li><p>新建字典对象使，直接传入字典对象作为参数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">f = dict(&#123;<span class="string">"one"</span>: <span class="number">1</span>, <span class="string">"two"</span>: <span class="number">2</span>, <span class="string">"three"</span>: <span class="number">3</span>&#125;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>利用fromkeys()为字典中所有的键赋相同的值</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">g = dict.fromkeys([<span class="string">"height"</span>, <span class="string">"weight"</span>], <span class="string">"normal"</span>)</span><br><span class="line"><span class="keyword">or</span></span><br><span class="line">g = dict.fromkeys((<span class="string">"height"</span>, <span class="string">"weight"</span>), <span class="string">"normal"</span>)</span><br><span class="line"></span><br><span class="line">print(g)</span><br><span class="line">&lt;&lt;&lt; &#123;<span class="string">'height'</span>: <span class="string">'normal'</span>, <span class="string">'weight'</span>: <span class="string">'normal'</span>&#125;</span><br></pre></td></tr></table></figure>
+<p><em>若不指定第二个参数，所有的键对应的值为None</em></p>
+</li>
+</ul>
+<h3 id="优雅的获取键值"><a href="#优雅的获取键值" class="headerlink" title="优雅的获取键值"></a>优雅的获取键值</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 字典可以这样获取到键的值</span></span><br><span class="line">info= &#123;<span class="string">'a'</span>: <span class="number">1</span>, <span class="string">'b'</span>: <span class="number">2</span>&#125;</span><br><span class="line">info[<span class="string">'a'</span>]</span><br><span class="line">&lt;&lt;&lt; <span class="number">1</span></span><br><span class="line"><span class="comment"># 以上方式如果获取不存在的键的值就会触发一个KeyError异常</span></span><br><span class="line"><span class="comment"># 字典有一个get方法，使用它可以更优雅的获取字典相应键的值</span></span><br><span class="line">info= &#123;<span class="string">'a'</span>: <span class="number">1</span>, <span class="string">'b'</span>: <span class="number">2</span>&#125;</span><br><span class="line">info.get(<span class="string">'a'</span>)</span><br><span class="line">&lt;&lt;&lt; <span class="number">1</span></span><br><span class="line">info.get(<span class="string">'c'</span>)</span><br><span class="line">&lt;&lt;&lt; <span class="literal">None</span></span><br><span class="line">info.get(<span class="string">'c'</span>, <span class="number">3</span>)</span><br><span class="line">&lt;&lt;&lt; <span class="number">3</span></span><br></pre></td></tr></table></figure>
+<h3 id="字典的更新"><a href="#字典的更新" class="headerlink" title="字典的更新"></a>字典的更新</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># update方法</span></span><br><span class="line">dict_a = &#123;<span class="string">'a'</span>: <span class="number">1</span>, <span class="string">'b'</span>: <span class="number">2</span>&#125;</span><br><span class="line">dict_b = &#123;<span class="string">'a'</span>: <span class="number">5</span>, <span class="string">'c'</span>: <span class="number">7</span>&#125;</span><br><span class="line">dict_a.update(dict_b)</span><br><span class="line">print(dict_a)</span><br><span class="line">&lt;&lt;&lt; &#123;<span class="string">'a'</span>: <span class="number">5</span>, <span class="string">'b'</span>: <span class="number">2</span>, <span class="string">'c'</span>: <span class="number">7</span>&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="删除字典键值"><a href="#删除字典键值" class="headerlink" title="删除字典键值"></a>删除字典键值</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># del内置关键字</span></span><br><span class="line">dict_a = &#123;<span class="string">'a'</span>: <span class="number">1</span>, <span class="string">'b'</span>: <span class="number">2</span>&#125;</span><br><span class="line"><span class="keyword">del</span> dict_a[<span class="string">'a'</span>]</span><br><span class="line">print(dict_a)</span><br><span class="line">&lt;&lt;&lt; &#123;<span class="string">'b'</span>: <span class="number">2</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 字典的pop方法</span></span><br><span class="line">dict_a = &#123;<span class="string">'a'</span>: <span class="number">1</span>, <span class="string">'b'</span>: <span class="number">2</span>&#125;</span><br><span class="line">dict_a.pop(<span class="string">'a'</span>)</span><br><span class="line">&lt;&lt;&lt; <span class="number">1</span></span><br><span class="line">print(dict_a)</span><br><span class="line">&lt;&lt;&lt; &#123;<span class="string">'b'</span>: <span class="number">2</span>&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="获取全部的key和value"><a href="#获取全部的key和value" class="headerlink" title="获取全部的key和value"></a>获取全部的key和value</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">dict_a = &#123;<span class="string">'a'</span>: <span class="number">1</span>, <span class="string">'b'</span>: <span class="number">2</span>, <span class="string">'c'</span>: <span class="number">3</span>&#125;</span><br><span class="line"><span class="comment"># 获取所有keys</span></span><br><span class="line">dict_a.keys()</span><br><span class="line">&lt;&lt;&lt; dict_keys([<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>])</span><br><span class="line"><span class="comment"># 获取所有的value</span></span><br><span class="line">dict_a.values()</span><br><span class="line">&lt;&lt;&lt; dict_values([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>])</span><br><span class="line"><span class="comment"># 获取所有的键值对</span></span><br><span class="line">dict_a.items()</span><br><span class="line">&lt;&lt;&lt; dict_items([(<span class="string">'a'</span>, <span class="number">1</span>), (<span class="string">'b'</span>, <span class="number">2</span>), (<span class="string">'c'</span>, <span class="number">3</span>)])</span><br></pre></td></tr></table></figure>
+<p><em>注：以上方法返回不是真正的列表，无法直接进行索引取值，可以利用for循环进行取值，或者在外层加一个list()将其转换成真正的列表，也就是list(dict_a.keys())。</em></p>
+<p>本来我以为以上方法返回的是迭代器，但是尝试过使用next()方法，证明了并不是迭代器，正好简单说下迭代器和生成器。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">next(dict_a.keys())</span><br><span class="line">TypeError: <span class="string">'dict_keys'</span> object <span class="keyword">is</span> <span class="keyword">not</span> an iterator</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>生成器【generator】(一边循环，一边计算，未知序列长度，惰性)</p>
+<p>如果一个函数种包含yield关键字，那么它就是一个生成器。在每次调用next()的时候执行，遇到yield语句返回，再次执行时从上次返回yield的语句处继续执行。</p>
+</li>
+<li><p>可迭代对象【Iterable】</p>
+<p>可以用for循环，但无法用next(),例如list,tuple,dict,set,str。</p>
+</li>
+<li><p>迭代器【Iterator】</p>
+<p>可以用for和next()，例如生成器；使用iter()，可以将Iterable变为Iterator。</p>
+</li>
+</ul>
+<h2 id="面向对象"><a href="#面向对象" class="headerlink" title="面向对象"></a>面向对象</h2><h3 id="slots"><a href="#slots" class="headerlink" title="__slots__"></a>__slots__</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># __slots__属性来限定对象的属性，不允许私自修改种类和个数</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span><span class="params">(object)</span>:</span></span><br><span class="line">    __slots__ = [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>] <span class="comment"># or ('a', 'b', 'c')</span></span><br><span class="line">    </span><br><span class="line">t = Test()</span><br><span class="line">t.d = <span class="number">4</span></span><br><span class="line">AttributeError: <span class="string">'Test'</span> object has no attribute <span class="string">'d'</span></span><br><span class="line">print(t.a)</span><br><span class="line">AttributeError: b</span><br><span class="line"><span class="comment"># 也就是说，__slots__只是限定了对象的属性，但是还没有真正意义上给对象确定添加这些属性。</span></span><br></pre></td></tr></table></figure>
+<h3 id="init"><a href="#init" class="headerlink" title="__init__()"></a>__init__()</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 类有一个名为 __init__() 的特殊方法（构造方法），该方法在类实例化时会自动调用</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span><span class="params">(object)</span>:</span></span><br><span class="line">    __slots__ = [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>]</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">    	self.a = <span class="string">'1'</span></span><br><span class="line"></span><br><span class="line">t = Test()</span><br><span class="line">print(t.a)</span><br><span class="line">&lt;&lt;&lt; <span class="number">1</span></span><br><span class="line"><span class="comment"># 当然， __init__() 方法可以有参数，参数通过 __init__() 传递到类的实例化操作上</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span><span class="params">(object)</span>:</span></span><br><span class="line">    __slots__ = [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>]</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, a, b)</span>:</span></span><br><span class="line">    	self.a = a</span><br><span class="line">        self.b = b</span><br><span class="line">        </span><br><span class="line">t = Test(<span class="number">100</span>, <span class="number">200</span>)</span><br><span class="line">print(t.a)    </span><br><span class="line">&lt;&lt;&lt; <span class="number">100</span></span><br></pre></td></tr></table></figure>
+<p><em>注：self代表类的实例，而非类</em></p>
+<h3 id="“-”和”-”的含义"><a href="#“-”和”-”的含义" class="headerlink" title="“_”和”__”的含义"></a>“_”和”__”的含义</h3><p>以”_”开头的变量或者方法是protected的，只能允许其本身与子类进行访问；</p>
+<p>以”__”开头的变量或方法是私有的，只能允许这个类本身进行访问；</p>
+<p><em>注：__xx__是特殊变量或者特殊方法，非私有变量</em></p>
+<h3 id="hasattr-、getattr-、setattr"><a href="#hasattr-、getattr-、setattr" class="headerlink" title="hasattr()、getattr()、setattr()"></a>hasattr()、getattr()、setattr()</h3><ul>
+<li><code>hasattr(obj, target)</code></li>
+<li><code>getattr(obj, target, default)</code></li>
+<li><code>setattr(obj, target, default)</code></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test1</span><span class="params">(object)</span>:</span></span><br><span class="line"></span><br><span class="line">    __slots__ = (<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将该类的属性全部显示定义并赋初值(初值1)</span></span><br><span class="line">test = Test1()</span><br><span class="line"><span class="keyword">for</span> key <span class="keyword">in</span> test.__slots__:</span><br><span class="line">    setattr(test, key, <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 检查对象是否含有目标属性</span></span><br><span class="line">print(hasattr(test, <span class="string">'a'</span>))</span><br><span class="line">&lt;&lt;&lt; <span class="literal">True</span></span><br><span class="line">print(hasattr(test, <span class="string">'d'</span>))</span><br><span class="line">&lt;&lt;&lt; <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取目标属性值</span></span><br><span class="line">print(getattr(test, <span class="string">'b'</span>))</span><br><span class="line">&lt;&lt;&lt; <span class="number">1</span></span><br><span class="line">print(getattr(test, <span class="string">'d'</span>))</span><br><span class="line">AttributeError: <span class="string">'Test1'</span> object has no attribute <span class="string">'d'</span></span><br><span class="line"><span class="comment"># 可以看出，getattr方法，获取的属性不存在会报错，通过设置默认值可以解决</span></span><br><span class="line">print(getattr(test, <span class="string">'d'</span>, <span class="number">1</span>))</span><br><span class="line">&lt;&lt;&lt; <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<h3 id="对象转换成字典"><a href="#对象转换成字典" class="headerlink" title="对象转换成字典"></a>对象转换成字典</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test1</span><span class="params">(object)</span>:</span>    </span><br><span class="line">    </span><br><span class="line">    __slots__ = (<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>)</span><br><span class="line"></span><br><span class="line">test = Test1()</span><br><span class="line">test.a = <span class="number">1</span></span><br><span class="line">test.b = <span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 将对象test转换成字典</span></span><br><span class="line">result = dict()</span><br><span class="line"><span class="keyword">for</span> key <span class="keyword">in</span> test.__slots__:</span><br><span class="line">    <span class="comment"># 此处必须设置默认值，不然极有可能会报错，例如此例中没有对属性c进行显示定义</span></span><br><span class="line">    result[key] = getattr(test, key, <span class="string">''</span>)</span><br><span class="line">    print(result)</span><br><span class="line">&lt;&lt;&lt; &#123;<span class="string">'a'</span>: <span class="number">1</span>, <span class="string">'b'</span>: <span class="number">1</span>, <span class="string">'c'</span>: <span class="string">''</span>&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="python中的三目运算"><a href="#python中的三目运算" class="headerlink" title="python中的三目运算"></a>python中的三目运算</h3><p>在C/C++/C#或者Java中，都有三目运算符，即条件表达式1?表达式1:表达式2；</p>
+<p>意为如果条件表达式1值为真，则这个整个表达式的取值为表达式1的值，否则为表达式2的值。</p>
+<p>python没有a?b:c的形式，但是有类似的表达式，a if b else c，意为若b为真，返回a，否则返回c。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">a = <span class="number">10</span></span><br><span class="line">b = <span class="number">20</span></span><br><span class="line">c = a <span class="keyword">if</span> <span class="literal">True</span> <span class="keyword">else</span> b</span><br><span class="line">d = a <span class="keyword">if</span> <span class="literal">False</span> <span class="keyword">else</span> b</span><br><span class="line">print(c)</span><br><span class="line">print(d)</span><br><span class="line">&lt;&lt;&lt; <span class="number">10</span></span><br><span class="line">&lt;&lt;&lt; <span class="number">20</span></span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/dict/" rel="tag"># dict</a>
+          
+            <a href="/tags/object/" rel="tag"># object</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/08/db-mongo常用命令/" rel="next" title="mongodb小技能">
+                <i class="fa fa-chevron-left"></i> mongodb小技能
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/08/21/python-apscheduler/" rel="prev" title="python 调度">
+                python 调度 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">104</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">198</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#python字典"><span class="nav-text">python字典</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#字典初始化的N种方法"><span class="nav-text">字典初始化的N种方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#优雅的获取键值"><span class="nav-text">优雅的获取键值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#字典的更新"><span class="nav-text">字典的更新</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除字典键值"><span class="nav-text">删除字典键值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取全部的key和value"><span class="nav-text">获取全部的key和value</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#面向对象"><span class="nav-text">面向对象</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#slots"><span class="nav-text">__slots__</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#init"><span class="nav-text">__init__()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#“-”和”-”的含义"><span class="nav-text">“_”和”__”的含义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hasattr-、getattr-、setattr"><span class="nav-text">hasattr()、getattr()、setattr()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对象转换成字典"><span class="nav-text">对象转换成字典</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#python中的三目运算"><span class="nav-text">python中的三目运算</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

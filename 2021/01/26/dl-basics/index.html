@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="deep learning,监督学习,特征工程,过拟合,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本文章参考《python深度学习》，看这部分内容之前已经学习过吴恩达机器学习视频的大部分内容，所以看这一章非常简单，易于理解，仅做简单的重点整理。 机器学习的四个分支监督学习监督学习是目前最常见的机器学习类型。给定一组样本（通常由人工标注），它可以学会将 输入数据映射到已知目标［也叫标注(annotation)］。 虽然监督学习主要包括分类和回归，但还有更多的奇特变体，主要包括如下几种。  序列生">
+<meta name="keywords" content="deep learning,监督学习,特征工程,过拟合">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习基础">
+<meta property="og:url" content="http://yoursite.com/2021/01/26/dl-basics/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="本文章参考《python深度学习》，看这部分内容之前已经学习过吴恩达机器学习视频的大部分内容，所以看这一章非常简单，易于理解，仅做简单的重点整理。 机器学习的四个分支监督学习监督学习是目前最常见的机器学习类型。给定一组样本（通常由人工标注），它可以学会将 输入数据映射到已知目标［也叫标注(annotation)］。 虽然监督学习主要包括分类和回归，但还有更多的奇特变体，主要包括如下几种。  序列生">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2021/01/26/dl-basics/p1.png">
+<meta property="og:image" content="http://yoursite.com/2021/01/26/dl-basics/p2.png">
+<meta property="og:image" content="http://yoursite.com/2021/01/26/dl-basics/p3.png">
+<meta property="og:updated_time" content="2021-06-17T03:07:01.552Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="机器学习基础">
+<meta name="twitter:description" content="本文章参考《python深度学习》，看这部分内容之前已经学习过吴恩达机器学习视频的大部分内容，所以看这一章非常简单，易于理解，仅做简单的重点整理。 机器学习的四个分支监督学习监督学习是目前最常见的机器学习类型。给定一组样本（通常由人工标注），它可以学会将 输入数据映射到已知目标［也叫标注(annotation)］。 虽然监督学习主要包括分类和回归，但还有更多的奇特变体，主要包括如下几种。  序列生">
+<meta name="twitter:image" content="http://yoursite.com/2021/01/26/dl-basics/p1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2021/01/26/dl-basics/">
+
+
+
+
+
+  <title>机器学习基础 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/26/dl-basics/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">机器学习基础</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-26T12:37:05+08:00">
+                2021-01-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><em>本文章参考《python深度学习》，看这部分内容之前已经学习过吴恩达机器学习视频的大部分内容，所以看这一章非常简单，易于理解，仅做简单的重点整理。</em></p>
+<h4 id="机器学习的四个分支"><a href="#机器学习的四个分支" class="headerlink" title="机器学习的四个分支"></a>机器学习的四个分支</h4><h5 id="监督学习"><a href="#监督学习" class="headerlink" title="监督学习"></a>监督学习</h5><p>监督学习是目前最常见的机器学习类型。给定一组样本（通常由人工标注），它可以学会将 输入数据映射到已知目标［也叫标注(annotation)］。</p>
+<p>虽然监督学习主要包括分类和回归，但还有更多的奇特变体，主要包括如下几种。</p>
+<ul>
+<li><strong>序列生成</strong>（sequence generation）。给定一张图像，预测描述图像的文字。序列生成有时 可以被重新表示为一系列分类问题，比如反复预测序列中的单词或标记。</li>
+<li><strong>语法树预测</strong>（syntax tree prediction）。给定一个句子，预测其分解生成的语法树。 </li>
+<li><strong>目标检测</strong>（object detection）。给定一张图像，在图中特定目标的周围画一个边界框。这 个问题也可以表示为分类问题（给定多个候选边界框，对每个框内的目标进行分类）或 分类与回归联合问题（用向量回归来预测边界框的坐标）。 </li>
+<li><strong>图像分割</strong>（image segmentation）。给定一张图像，在特定物体上画一个像素级的掩模（mask）。</li>
+</ul>
+<h5 id="无监督学习"><a href="#无监督学习" class="headerlink" title="无监督学习"></a>无监督学习</h5><p>无监督学习是指在没有目标的情况下寻找输入数据的有趣变换，其目的在于数据可视化、 数据压缩、数据去噪或更好地理解数据中的相关性。</p>
+<p><strong>降维</strong>（dimensionality reduction）和<strong>聚类</strong>（clustering）都是众所周知的无监督学习方法。</p>
+<a id="more"></a>
+<h5 id="自监督学习"><a href="#自监督学习" class="headerlink" title="自监督学习"></a>自监督学习</h5><p>自监督学习是<strong>没有人工标注</strong>的标签的监督学习，你可以将它看作没有人类参与的监督学习。标签仍然存在（因为 总要有什么东西来监督学习过程），但它们是<strong>从输入数据中生成的</strong>，通常是使用启发式算法 成的。</p>
+<p><strong>自编码器</strong>（<code>autoencoder</code>）是有名的自监督学习的例子，其生成的目标就是未经修改的输入。</p>
+<h5 id="强化学习"><a href="#强化学习" class="headerlink" title="强化学习"></a>强化学习</h5><p>在强化学习中，<strong>智能体</strong>（agent）接收有关其环境的信息，并<strong>学会选择使某种奖励最大化的行动</strong>。 例如，神经网络会“观察”视频游戏的屏幕并输出游戏操作，目的是尽可能得高分，这种神经网络可以通过强化学习来训练。</p>
+<h4 id="评估机器学习模型"><a href="#评估机器学习模型" class="headerlink" title="评估机器学习模型"></a>评估机器学习模型</h4><p>机器学习的目的是得到可以<strong>泛化</strong>（generalize）的模型，即在前所未见的数据上表现很好的 模型，而<strong>过拟合则是核心难点</strong>。</p>
+<h5 id="训练集、验证集和测试集"><a href="#训练集、验证集和测试集" class="headerlink" title="训练集、验证集和测试集"></a>训练集、验证集和测试集</h5><p><em>这段内容的思想要真的理解</em></p>
+<p>评估模型的重点是将数据划分为<strong>三个集合：训练集、验证集和测试集</strong>。在训练数据上训练 模型，在验证数据上评估模型。一旦找到了最佳参数，就在测试数据上最后测试一次。</p>
+<p> 你可能会问，<strong>为什么不是两个集合</strong>：一个训练集和一个测试集？在训练集上训练模型，然 后在测试集上评估模型。这样简单得多！</p>
+<p> 原因在于开发模型时总是需要调节模型配置，比如选择层数或每层大小［这叫作模型的超参数（<code>hyperparameter</code>），以便与模型参数（即权重）区分开］。<strong>这个调节过程需要使用模型在验证数据上的性能作为反馈信号</strong>。这个调节过程本质上就是一种学习：在某个参数空间中寻找良 好的模型配置。因此，<strong>如果基于模型在验证集上的性能来调节模型配置，会很快导致模型在验证集上过拟合</strong>，即使你并没有在验证集上直接训练模型也会如此。</p>
+<p>造成这一现象的关键在于<strong>信息泄露</strong>（information leak）。每次基于模型在验证集上的性能来 调节模型超参数，都会有一些关于验证数据的信息泄露到模型中。如果对每个参数只调节一次， 那么泄露的信息很少，验证集仍然可以可靠地评估模型。但如果你多次重复这一过程（运行一 次实验，在验证集上评估，然后据此修改模型），那么将会有越来越多的关于验证集的信息泄露 到模型中。 </p>
+<p>最后，你得到的模型在验证集上的性能非常好（人为造成的），因为这正是你优化的目的。 你关心的是模型在全新数据上的性能，而不是在验证数据上的性能，因此你需要使用一个完全 不同的、前所未见的数据集来评估模型，它就是测试集。你的模型一定不能读取与测试集有关 的任何信息，既使间接读取也不行。如果基于测试集性能来调节模型，那么对泛化能力的衡量 是不准确的。 </p>
+<p>将数据划分为训练集、验证集和测试集可能看起来很简单，但如果可用数据很少，还有几种高级方法可以派上用场。我们先来介绍三种经典的评估方法：<strong>简单的留出验证、K 折验证， 以及带有打乱数据的重复 K 折验证</strong>。</p>
+<p>带有打乱数据的重复K折验证是指是<strong>多次使用 K 折验证</strong>，在每次将数据划分为 K 个分区之前都先<strong>将数据打乱</strong>。 最终分数是每次 K 折验证分数的平均值。注意，这种方法一共要训练和评估 P×K 个模型（P 是重复次数），计算代价很大。</p>
+<h5 id="评估模型的注意事项"><a href="#评估模型的注意事项" class="headerlink" title="评估模型的注意事项"></a>评估模型的注意事项</h5><ul>
+<li><strong>数据代表性</strong>（data representativeness）。你希望训练集和测试集都能够代表当前数据。例如，你想要对数字图像进行分类，而图像样本是按类别排序的，如果你将前 80% 作为训练集，剩余 20% 作为测试集，那么会导致训练集中只包含类别 0~7，而测试集中只包含 类别 8~9。这个错误看起来很可笑，却很常见（我自己训练验证码的时候就犯了这个错误）。因此，在将数据划分为训练集和测试集之前，通常应该<strong>随机打乱数据</strong>。</li>
+<li><strong>时间箭头</strong>（the arrow of time）。如果想要根据过去预测未来（比如明天的天气、股票走势 等），那么在划分数据前你<strong>不应该随机打乱数据</strong>，因为这么做会造成<strong>时间泄露</strong>（temporal leak）：你的模型将在未来数据上得到有效训练。在这种情况下，你应该始终确保测试集中所有数据的时间都晚于训练集数据。 </li>
+<li><strong>数据冗余</strong>（redundancy in your data）。如果数据中的某些数据点出现了两次（这在现实中的数据里十分常见），那么打乱数据并划分成训练集和验证集会导致训练集和验证集之 间的数据冗余。从效果上来看，你是在部分训练数据上评估模型，这是极其糟糕的！<strong>一 定要确保训练集和验证集之间没有交集</strong>。</li>
+</ul>
+<h4 id="数据预处理、特征工程和特征学习"><a href="#数据预处理、特征工程和特征学习" class="headerlink" title="数据预处理、特征工程和特征学习"></a>数据预处理、特征工程和特征学习</h4><p>除模型评估之外，在深入研究模型开发之前，我们还必须解决另一个重要问题：<strong>将数据输 入神经网络之前，如何准备输入数据和目标</strong>？</p>
+<p>许多数据预处理方法和特征工程技术都是和特定领域相关的（比如只和文本数据或图像数据相关），我们将在后续章节的实例中介绍这些内容。 现在我们要介绍<strong>所有数据领域通用</strong>的基本方法。</p>
+<ol>
+<li><p><strong>向量化</strong></p>
+<p>神经网络的所有输入和目标都必须是浮点数张量（在特定情况下可以是整数张量）。无论处理什么数据（声音、图像还是文本），都必须<strong>首先将其转换为张量</strong>，这一步叫作数据向量化 (data vectorization)。</p>
+</li>
+<li><p><strong>值标准化</strong></p>
+<p>为了让网络的学习变得更容易，输入数据应该具有以下特征:</p>
+<p><strong>取值较小</strong>：大部分值都应该在 0~1 范围内。 </p>
+<p><strong>同质性</strong>（<code>homogenous</code>）：所有特征的取值都应该在大致相同的范围内。</p>
+<p> 此外，下面这种更严格的标准化方法也很常见，而且很有用，虽然不一定总是必需的。</p>
+<p>将每个特征分别标准化，使其平均值为 0。 </p>
+<p>将每个特征分别标准化，使其标准差为 1。</p>
+<p>这对于 <code>Numpy</code> 数组很容易实现。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x -= x.mean(axis=<span class="number">0</span>)</span><br><span class="line">x /= x.std(axis=<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>处理缺失值</strong></p>
+<p>你的数据中有时可能会有缺失值，一般来说，对于神经网络，<strong>将缺失值设置为 0 是安全的</strong>，只要 0 不是一个有意义的值。网络能够从数据中学到 0 意味着缺失数据，并且会忽略这个值。</p>
+<p>注意，如果测试数据中可能有缺失值，而网络是在没有缺失值的数据上训练的，那么网络 不可能学会忽略缺失值。在这种情况下，你应该人为生成一些有缺失项的训练样本：多次复制 一些训练样本，然后删除测试数据中可能缺失的某些特征。</p>
+</li>
+</ol>
+<h4 id="特征工程"><a href="#特征工程" class="headerlink" title="特征工程"></a>特征工程</h4><p>特征工程（feature engineering）是指将数据输入模型之前，利用你自己关于数据和机器学 习算法（这里指神经网络）的知识对数据进行硬编码的变换（不是模型学到的），以改善模型的效果。多数情况下，一个机器学习模型无法从完全任意的数据中进行学习。<strong>呈现给模型的数据应该便于模型进行学习</strong>。</p>
+<p><strong>特征工程的本质：用更简单的方式表述问题，从而使问题变得更容易</strong>。它通常需要深入理解问题。</p>
+<p>深度学习出现之前，特征工程<strong>曾经非常重要</strong>，因为经典的浅层算法没有足够大的假设空间来自己学习有用的表示。将数据呈现给算法的方式对解决问题至关重要。例如，卷积神经网络在 <code>MNIST</code> 数字分类问题上取得成功之前，其解决方法通常是基于硬编码的特征，比如数字图像中的圆圈个数、图像中每个数字的高度、像素值的直方图等。 幸运的是，<strong>对于现代深度学习，大部分特征工程都是不需要的，因为神经网络能够从原始 数据中自动提取有用的特征</strong>。</p>
+<p>这是否意味着，只要使用深度神经网络，就无须担心特征工程呢？ 并不是这样，原因有两点。</p>
+<ul>
+<li><strong>良好的特征仍然可以让你用更少的资源更优雅地解决问题</strong>。例如，使用卷积神经网络来读取钟面上的时间是非常可笑的。</li>
+<li><strong>良好的特征可以让你用更少的数据解决问题</strong>。深度学习模型自主学习特征的能力依赖于大量的训练数据。如果只有很少的样本，那么特征的信息价值就变得非常重要。</li>
+</ul>
+<h4 id="过拟合与欠拟合"><a href="#过拟合与欠拟合" class="headerlink" title="过拟合与欠拟合"></a>过拟合与欠拟合</h4><p>机器学习的根本问题是<strong>优化和泛化之间的对立</strong>。<strong>优化</strong>（optimization）是指调节模型以在训练数据上得到最佳性能（即机器学习中的学习），而<strong>泛化</strong>（generalization）是指训练好的模型在前所未见的数据上的性能好坏。机器学习的目的当然是得到良好的泛化，<strong>但你无法控制泛化</strong>， 只能基于训练数据调节模型。</p>
+<p>为了防止模型从训练数据中学到错误或无关紧要的模式，<strong>最优解决方法是获取更多的训练数据</strong>。模型的训练数据越多，泛化能力自然也越好。如果无法获取更多数据，<strong>次优解决方法是调节模型允许存储的信息量</strong>，或对模型允许存储的信息加以约束。如果一个网络只能记住几个模式，那么优化过程会<strong>迫使模型集中学习最重要的模式</strong>，这样更可能得到良好的泛化。 这种降低过拟合的方法叫作<strong>正则化</strong>（regularization）。</p>
+<p>常见的正则化方法(又是一大段思想很重要的内容)</p>
+<h5 id="减小网络大小"><a href="#减小网络大小" class="headerlink" title="减小网络大小"></a>减小网络大小</h5><p>防止过拟合的最简单的方法就是<strong>减小模型大小，即减少模型中可学习参数的个数</strong>（这由层数和每层的单元个数决定）。在深度学习中，模型中可学习参数的个数通常被称为模型的<strong>容量</strong> （capacity）。直观上来看，参数更多的模型拥有更大的<strong>记忆容量</strong>（memorization capacity），因此能够在训练样本和目标之间轻松地<strong>学会完美的字典式映射，这种映射没有任何泛化能力</strong>。例如，拥有 500 000 个二进制参数的模型，能够轻松学会 <code>MNIST</code> 训练集中所有数字对应的类别——我们只需让 50 000 个数字每个都对应 10 个二进制参数。但这种模型对于新数字样本的分类毫无用处。 始终牢记：<strong>深度学习模型通常都很擅长拟合训练数据，但真正的挑战在于泛化，而不是拟合</strong>。</p>
+<p>与此相反，如果网络的记忆资源有限，则无法轻松学会这种映射。因此，为了让损失最小化， <strong>网络必须学会对目标具有很强预测能力的压缩表示</strong>，这也正是我们感兴趣的数据表示。同时请记住，你使用的模型应该具有足够多的参数，以防欠拟合，即模型应避免记忆资源不足。<strong>在容量过大与容量不足之间要找到一个折中</strong>。</p>
+<p>不幸的是，没有一个魔法公式能够确定最佳层数或每层的最佳大小。<strong>你必须评估一系列不同的网络架构</strong>（当然是在验证集上评估，而不是在测试集上），以便为数据找到最佳的模型大小。 要找到合适的模型大小，一般的工作流程是<strong>开始时选择相对较少的层和参数</strong>，然后逐渐增加层的大小或增加新层，直到这种增加对验证损失的影响变得很小。</p>
+<h5 id="添加权重正则化"><a href="#添加权重正则化" class="headerlink" title="添加权重正则化"></a>添加权重正则化</h5><p>你可能知道<strong>奥卡姆剃刀</strong>（Occam’s razor）原理：如果一件事情有两种解释，那么最可能正确的解释就是最简单的那个，即假设更少的那个。这个原理也适用于神经网络学到的模型：给定一些训练数据和一种网络架构，很多组权重值（即很多模型）都可以解释这些数据。<strong>简单模型比复杂模型更不容易过拟合</strong>。</p>
+<p>这里的简单模型（simple model）是指参数值分布的熵更小的模型（或参数更少的模型，比 如上一节的例子）。因此，一种常见的降低过拟合的方法就是<strong>强制让模型权重只能取较小的值</strong>， 从而限制模型的复杂度，这使得权重值的分布更加规则（regular）。这种方法叫作权重正则化 （weight regularization），其<strong>实现方法是向网络损失函数中添加与较大权重值相关的成本</strong>（cost）。 </p>
+<p>这个成本有两种形式。 </p>
+<ul>
+<li><code>L1 正则化（L1 regularization）</code>：添加的成本与<strong>权重系数的绝对值</strong>［权重的<code>L1</code> 范数（norm）］ 成正比。 </li>
+<li><p><code>L2 正则化（L2 regularization）</code>：添加的成本与<strong>权重系数的平方</strong>（权重的<code>L2</code> 范数）成正比。 神经网络的<code>L2</code> 正则化也叫权重衰减（weight decay）。不要被不同的名称搞混，权重衰减 与 <code>L2</code> 正则化在数学上是完全相同的。</p>
+<p>在 <code>Keras</code> 中，添加权重正则化的方法是<strong>向层传递权重正则化项实例</strong>（<code>weight regularizer instance</code>）作为关键字参数。下列代码将向电影评论分类网络中添加<code>L2</code>权重正则化。</p>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> regularizers</span><br><span class="line"></span><br><span class="line">model = models.Sequential()</span><br><span class="line">model.add(layers.Dense(<span class="number">16</span>, kernel_regularizer=regularizers.l2(<span class="number">0.001</span>),</span><br><span class="line"> activation=<span class="string">'relu'</span>, input_shape=(<span class="number">10000</span>,)))</span><br><span class="line">model.add(layers.Dense(<span class="number">16</span>, kernel_regularizer=regularizers.l2(<span class="number">0.001</span>),</span><br><span class="line"> activation=<span class="string">'relu'</span>))</span><br><span class="line">model.add(layers.Dense(<span class="number">1</span>, activation=<span class="string">'sigmoid'</span>))</span><br></pre></td></tr></table></figure>
+<p><code>l2(0.001)</code>的意思是该层权重矩阵的每个系数都会使网络总损失增加 0.001 * weight_ coefficient_value。注意，由于这个惩罚项<strong>只在训练时添加</strong>，所以这个网络的训练损失会比测试损失大很多。 下图显示了 <code>L2</code>正则化惩罚的影响。如你所见，即使两个模型的参数个数相同，具有<code>L2</code>正则化的模型（圆点）比参考模型（十字）更不容易过拟合。</p>
+<p><img src="/2021/01/26/dl-basics/p1.png" alt></p>
+<p>你还可以用<code>Keras</code>中以下这些权重正则化项来代替<code>L2</code>正则化。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> regularizers</span><br><span class="line"></span><br><span class="line">regularizers.l1(<span class="number">0.001</span>)  <span class="comment"># L1正则化</span></span><br><span class="line">regularizers.l1_l2(l1=<span class="number">0.001</span>, l2=<span class="number">0.001</span>)  <span class="comment"># 同时L1和L2正则化</span></span><br></pre></td></tr></table></figure>
+<h5 id="添加dropout正则化"><a href="#添加dropout正则化" class="headerlink" title="添加dropout正则化"></a>添加dropout正则化</h5><p>对某一层使用 dropout，就是<strong>在训练过程中随机将该层的一些输出特征舍弃（设置为 0）</strong>。假设在训练过程中，某一层对给定输入样本的返回值应该是向量 [0.2, 0.5, 1.3, 0.8, 1.1]。使用 dropout 后，这个向量会有几个随机的元素变成 0，比如 [0, 0.5, 1.3, 0, 1.1]。<strong>dropout 比率（dropout rate）是被设为 0 的特征所占的比例，通常在 0.2~0.5 范围内</strong>。测试时没有单元被舍弃，而该层的输出值需要<strong>按 dropout 比率缩小</strong>，因为这时比训练时有更多的单元被激活，需要加以平衡。</p>
+<p>假设有一个包含某层输出的 <code>Numpy</code> 矩 阵 layer_output，其形状为 (batch_size, features)。训练时，我们随机将矩阵中一部分值设为 0。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">layer_output *= np.random.randint(<span class="number">0</span>, high=<span class="number">2</span>, size=layer_output.shape)</span><br></pre></td></tr></table></figure>
+<p>测试时，我们将输出按 dropout 比率缩小。这里我们乘以 0.5（因为前面舍弃了一半的单元）。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">layer_output *= <span class="number">0.5</span></span><br></pre></td></tr></table></figure>
+<p>注意，为了实现这一过程，还可以让<strong>两个运算都在训练时进行</strong>，而测试时输出保持不变。 这通常也是实践中的实现方式。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">layer_output *= np.random.randint(<span class="number">0</span>, high=<span class="number">2</span>, size=layer_output.shape)</span><br><span class="line">layer_output /= <span class="number">0.5</span>  <span class="comment"># 注意，是成比例放大而不是成比例缩小</span></span><br></pre></td></tr></table></figure>
+<p><img src="/2021/01/26/dl-basics/p2.png" alt></p>
+<p>这一方法可能看起来有些奇怪和随意。它为什么能够降低过拟合？ Hinton 说他的灵感之一来自于<strong>银行的防欺诈机制</strong>。用他自己的话来说：“我去银行办理业务。柜员不停地换人，于是我问其中一人这是为什么。他说他不知道，但他们经常换来换去。我猜想，银行工作人员要想成功欺诈银行，他们之间要互相合作才行。这让我意识到，<strong>在每个样本中随机删除不同的部分神经元，可以阻止它们的阴谋</strong>，因此可以降低过拟合。”其核心思想是<strong>在层的输出值中引入噪声， 打破不显著的偶然模式</strong>（Hinton 称之为阴谋）。如果没有噪声的话，网络将会记住这些偶然模式。</p>
+<p>在 <code>Keras</code> 中，你可以通过 Dropout 层向网络中引入 dropout，dropout 将<strong>被应用于前面一层的输出</strong>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">model.add(layers.Dropout(<span class="number">0.5</span>))</span><br></pre></td></tr></table></figure>
+<p>我们向 <code>IMDB</code> 网络中添加两个 Dropout 层，来看一下它们降低过拟合的效果</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">model = models.Sequential()</span><br><span class="line">model.add(layers.Dense(<span class="number">16</span>, activation=<span class="string">'relu'</span>, input_shape=(<span class="number">10000</span>,)))</span><br><span class="line">model.add(layers.Dropout(<span class="number">0.5</span>))</span><br><span class="line">model.add(layers.Dense(<span class="number">16</span>, activation=<span class="string">'relu'</span>))</span><br><span class="line">model.add(layers.Dropout(<span class="number">0.5</span>))</span><br><span class="line">model.add(layers.Dense(<span class="number">1</span>, activation=<span class="string">'sigmoid'</span>))</span><br></pre></td></tr></table></figure>
+<p>我们再次看到，这种方法的性能相比参考网络有明显提高。</p>
+<p><img src="/2021/01/26/dl-basics/p3.png" alt></p>
+<p>总结一下，防止神经网络过拟合的常用方法包括： </p>
+<ul>
+<li>获取更多的训练数据 </li>
+<li>减小网络容量 </li>
+<li>添加权重正则化</li>
+<li>添加 dropout</li>
+</ul>
+<h4 id="机器学习的通用工作流程"><a href="#机器学习的通用工作流程" class="headerlink" title="机器学习的通用工作流程"></a>机器学习的通用工作流程</h4><p>本节将介绍一种可用于解决任何机器学习问题的通用模板。这一模板将你在本章学到的这 些概念串在一起：问题定义、评估、特征工程和解决过拟合。</p>
+<h5 id="定义问题，收集数据集"><a href="#定义问题，收集数据集" class="headerlink" title="定义问题，收集数据集"></a>定义问题，收集数据集</h5><p>首先，你必须定义所面对的问题。</p>
+<ul>
+<li>你的输入数据是什么？你要预测什么？只有拥有可用的训练数据，你才能学习预测某件事情。 </li>
+<li>你面对的是什么类型的问题？是二分类问题、多分类问题、标量回归问题、向量回归问题， 还是多分类、多标签问题？或者是其他问题，比如聚类、生成或强化学习？<strong>确定问题类型有助于你选择模型架构、损失函数等</strong>。 </li>
+</ul>
+<p>只有明确了输入、输出以及所使用的数据，你才能进入下一阶段。注意你在这一阶段所做的假设。 </p>
+<ul>
+<li>假设输出是可以根据输入进行预测的。 </li>
+<li>假设可用数据包含足够多的信息，足以学习输入和输出之间的关系。</li>
+</ul>
+<p>在开发出工作模型之前，这些只是假设，等待验证真假。<strong>并非所有问题都可以解决</strong>。你收集了包含输入 X 和目标 Y 的很多样例，<strong>并不意味着 X 包含足够多的信息来预测 Y</strong>。例如，如果 你想根据某支股票最近的历史价格来预测其股价走势，那你成功的可能性不大，因为历史价格 并没有包含很多可用于预测的信息。 有一类无法解决的问题你应该知道，那就是<strong>非平稳问题</strong>（<code>nonstationary problem</code>）。</p>
+<p><strong>请记住，机器学习只能用来记忆训练数据中存在的模式。你只能识别出曾经见过的东西。 在过去的数据上训练机器学习来预测未来，这里存在一个假设，就是未来的规律与过去相同。 但事实往往并非如此</strong>。（好有哲理的一句话！！！）</p>
+<h5 id="选择衡量成功的指标"><a href="#选择衡量成功的指标" class="headerlink" title="选择衡量成功的指标"></a>选择衡量成功的指标</h5><p>要控制一件事物，就需要能够观察它。要取得成功，就<strong>必须给出成功的定义</strong>：精度？准确率（precision）和召回率（recall）？客户保留率？衡量成功的指标将指引你选择损失函数，即模型要优化什么。它应该直接与你的目标（如业务成功）保持一致。</p>
+<p>对于平衡分类问题（每个类别的可能性相同），精度和接收者操作特征曲线下面积（area under the receiver operating characteristic curve，<code>ROC AUC</code>）是常用的指标。对于类别不平衡的问题，你可以使用准确率和召回率。对于排序问题或多标签分类，你可以使用平均准确率均值 （mean average precision）。自定义衡量成功的指标也很常见。要想了解各种机器学习的成功衡量 指标以及这些指标与不同问题域的关系，你可以浏览 <code>Kaggle</code> 网站上的数据科学竞赛，上面展示 了各种各样的问题和评估指标。（这是一些非常有用的经验）</p>
+<h5 id="确定评估方法"><a href="#确定评估方法" class="headerlink" title="确定评估方法"></a>确定评估方法</h5><p>一旦明确了目标，你必须确定如何衡量当前的进展。前面介绍了三种常见的评估方法。</p>
+<ul>
+<li>留出验证集。数据量很大时可以采用这种方法。</li>
+<li>K 折交叉验证。如果留出验证的样本量太少，无法保证可靠性，那么应该选择这种方法。</li>
+<li>重复的 K 折验证。如果可用的数据很少，同时模型评估又需要非常准确，那么应该使用 这种方法。 </li>
+</ul>
+<p>只需选择三者之一。大多数情况下，第一种方法足以满足要求。</p>
+<h5 id="准备数据"><a href="#准备数据" class="headerlink" title="准备数据"></a>准备数据</h5><p>一旦知道了要训练什么、要优化什么以及评估方法，那么你就几乎已经准备好训练模型了。 但首先你应该将数据格式化，使其可以输入到机器学习模型中（这里假设模型为深度神经网络）。</p>
+<ul>
+<li>如前所述，应该将数据格式化为张量。 </li>
+<li>这些张量的取值通常应该缩放为较小的值，比如在 [-1, 1] 区间或 [0, 1] 区间。 </li>
+<li>如果不同的特征具有不同的取值范围（异质数据），那么应该做数据标准化。</li>
+<li>你可能需要做特征工程，尤其是对于小数据问题。 准备好输入数据和目标数据的张量后，你就可以开始训练模型了。</li>
+</ul>
+<h5 id="开发比基准更好的模型"><a href="#开发比基准更好的模型" class="headerlink" title="开发比基准更好的模型"></a>开发比基准更好的模型</h5><p>这一阶段的目标是获得<strong>统计功效</strong>（statistical power），即开发一个<strong>小型模型</strong>，它能够打败纯随机的基准（dumb baseline）。在 <code>MNIST</code> 数字分类的例子中，任何精度大于 0.1 的模型都可以说 具有统计功效；在<code>IMDB</code> 的例子中，任何精度大于 0.5 的模型都可以说具有统计功效。 注意，不一定总是能获得统计功效。<strong>如果你尝试了多种合理架构之后仍然无法打败随机基准， 那么原因可能是问题的答案并不在输入数据中</strong>。要记住你所做的两个假设。</p>
+<ul>
+<li>假设输出是可以根据输入进行预测的。</li>
+<li>假设可用的数据包含足够多的信息，足以学习输入和输出之间的关系。 </li>
+</ul>
+<p>这些假设很可能是错误的，这样的话你需要从头重新开始。 </p>
+<p>如果一切顺利，你还需要选择三个关键参数来构建第一个工作模型。</p>
+<ul>
+<li><strong>最后一层的激活</strong>。<strong>它对网络输出进行有效的限制</strong>。例如，<code>IMDB</code> 分类的例子在最后一层使用了 sigmoid，回归的例子在最后一层没有使用激活，等等。 </li>
+<li><strong>损失函数</strong>。它应该匹配你要解决的问题的类型。例如，<code>IMDB</code> 的例子使用<code>binary_ crossentropy</code>、回归的例子使用 <code>mse</code>，等等。 </li>
+<li><strong>优化配置</strong>。你要使用哪种优化器？学习率是多少？大多数情况下，使用<code>rmsprop</code> 及其默认的学习率是稳妥的。</li>
+</ul>
+<p>常见问题类型的最后一层激活和损失函数</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">问题类型</th>
+<th style="text-align:left">最后一层激活</th>
+<th style="text-align:left">损失函数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">二分类问题</td>
+<td style="text-align:left">sigmoid</td>
+<td style="text-align:left">binary_crossentropy</td>
+</tr>
+<tr>
+<td style="text-align:left">多分类、单标签问题</td>
+<td style="text-align:left">softmax</td>
+<td style="text-align:left">categorical_crossentropy</td>
+</tr>
+<tr>
+<td style="text-align:left">多分类、多标签问题</td>
+<td style="text-align:left">sigmoid</td>
+<td style="text-align:left">binary_crossentropy</td>
+</tr>
+<tr>
+<td style="text-align:left">回归到任意值</td>
+<td style="text-align:left">无</td>
+<td style="text-align:left">mse</td>
+</tr>
+<tr>
+<td style="text-align:left">回归到 0~1 范围内的值</td>
+<td style="text-align:left">sigmoid</td>
+<td style="text-align:left">mse 或 binary_crossentropy</td>
+</tr>
+</tbody>
+</table>
+<h5 id="扩大模型规模"><a href="#扩大模型规模" class="headerlink" title="扩大模型规模"></a>扩大模型规模</h5><p>请记住，机器学习中无处不在的对立是优化和 泛化的对立，理想的模型是刚好在欠拟合和过拟合的界线上，在容量不足和容量过大的界线上。 <strong>为了找到这条界线，你必须穿过它</strong>。</p>
+<p>要搞清楚你需要多大的模型，就<strong>必须开发一个过拟合的模型</strong>，这很简单。</p>
+<p> (1) 添加更多的层。</p>
+<p> (2) 让每一层变得更大。</p>
+<p> (3) 训练更多的轮次。</p>
+<p> 要始终监控训练损失和验证损失，以及你所关心的指标的训练值和验证值。如果你发现模型在验证数据上的性能开始下降，那么就出现了过拟合。 下一阶段将开始正则化和调节模型，以便尽可能地接近理想模型，既不过拟合也不欠拟合。</p>
+<h5 id="模型正则化与调节超参数"><a href="#模型正则化与调节超参数" class="headerlink" title="模型正则化与调节超参数"></a>模型正则化与调节超参数</h5><p>这一步是最费时间的：你将不断地调节模型、训练、在验证数据上评估（这里不是测试数据）、 再次调节模型，然后重复这一过程，直到模型达到最佳性能。你应该尝试以下几项。</p>
+<ul>
+<li>添加 dropout。 </li>
+<li>尝试不同的架构：增加或减少层数。 </li>
+<li>添加 <code>L1</code>和 / 或<code>L2</code> 正则化。 </li>
+<li>尝试不同的超参数（比如每层的单元个数或优化器的学习率），以找到最佳配置。</li>
+<li><p>(可选）反复做特征工程：添加新特征或删除没有信息量的特征。</p>
+<p>请注意：每次使用验证过程的反馈来调节模型，都会将有关验证过程的信息泄露到模型中。 如果只重复几次，那么无关紧要；<strong>但如果系统性地迭代许多次，最终会导致模型对验证过程过拟合</strong>（即使模型并没有直接在验证数据上训练）。这会降低验证过程的可靠性。 一旦开发出令人满意的模型配置，你就可以在所有可用数据（训练数据 + 验证数据）上训练最终的生产模型，然后在测试集上最后评估一次。如果测试集上的性能比验证集上差很多， 那么这可能意味着你的验证流程不可靠，或者你在调节模型参数时在验证数据上出现了过拟合。 在这种情况下，你可能需要换用更加可靠的评估方法，比如重复的 K 折验证。</p>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/监督学习/" rel="tag"># 监督学习</a>
+          
+            <a href="/tags/特征工程/" rel="tag"># 特征工程</a>
+          
+            <a href="/tags/过拟合/" rel="tag"># 过拟合</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/01/19/dl-house-price-predict/" rel="next" title="预测房价：回归问题">
+                <i class="fa fa-chevron-left"></i> 预测房价：回归问题
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/01/30/spider-yidun3/" rel="prev" title="网易易盾滑动验证码破解（补充篇）">
+                网易易盾滑动验证码破解（补充篇） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">104</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">198</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#机器学习的四个分支"><span class="nav-text">机器学习的四个分支</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#监督学习"><span class="nav-text">监督学习</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#无监督学习"><span class="nav-text">无监督学习</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#自监督学习"><span class="nav-text">自监督学习</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#强化学习"><span class="nav-text">强化学习</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#评估机器学习模型"><span class="nav-text">评估机器学习模型</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#训练集、验证集和测试集"><span class="nav-text">训练集、验证集和测试集</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#评估模型的注意事项"><span class="nav-text">评估模型的注意事项</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据预处理、特征工程和特征学习"><span class="nav-text">数据预处理、特征工程和特征学习</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#特征工程"><span class="nav-text">特征工程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#过拟合与欠拟合"><span class="nav-text">过拟合与欠拟合</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#减小网络大小"><span class="nav-text">减小网络大小</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#添加权重正则化"><span class="nav-text">添加权重正则化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#添加dropout正则化"><span class="nav-text">添加dropout正则化</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#机器学习的通用工作流程"><span class="nav-text">机器学习的通用工作流程</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#定义问题，收集数据集"><span class="nav-text">定义问题，收集数据集</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#选择衡量成功的指标"><span class="nav-text">选择衡量成功的指标</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#确定评估方法"><span class="nav-text">确定评估方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#准备数据"><span class="nav-text">准备数据</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#开发比基准更好的模型"><span class="nav-text">开发比基准更好的模型</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#扩大模型规模"><span class="nav-text">扩大模型规模</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#模型正则化与调节超参数"><span class="nav-text">模型正则化与调节超参数</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

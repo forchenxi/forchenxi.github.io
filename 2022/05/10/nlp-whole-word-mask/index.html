@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="nlp,wordpiece,whole word mask,bert,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Whole Word Masking (wwm)本文代码部分参考github项目：https://github.com/BSlience/search-engine-zerotohero/tree/main/public/bert_wwm_pretrain Whole Word Masking (wwm)，暂翻译为全词Mask或整词Mask，是谷歌在2019年5月31日发布的一项BERT的升级版本">
+<meta name="keywords" content="nlp,wordpiece,whole word mask,bert">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Whole Word Masking (wwm)">
+<meta property="og:url" content="http://yoursite.com/2022/05/10/nlp-whole-word-mask/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="Whole Word Masking (wwm)本文代码部分参考github项目：https://github.com/BSlience/search-engine-zerotohero/tree/main/public/bert_wwm_pretrain Whole Word Masking (wwm)，暂翻译为全词Mask或整词Mask，是谷歌在2019年5月31日发布的一项BERT的升级版本">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2022-10-05T11:40:25.472Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Whole Word Masking (wwm)">
+<meta name="twitter:description" content="Whole Word Masking (wwm)本文代码部分参考github项目：https://github.com/BSlience/search-engine-zerotohero/tree/main/public/bert_wwm_pretrain Whole Word Masking (wwm)，暂翻译为全词Mask或整词Mask，是谷歌在2019年5月31日发布的一项BERT的升级版本">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2022/05/10/nlp-whole-word-mask/">
+
+
+
+
+
+  <title>Whole Word Masking (wwm) | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/05/10/nlp-whole-word-mask/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Whole Word Masking (wwm)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-05-10T11:29:54+08:00">
+                2022-05-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Whole-Word-Masking-wwm"><a href="#Whole-Word-Masking-wwm" class="headerlink" title="Whole Word Masking (wwm)"></a>Whole Word Masking (wwm)</h2><p>本文代码部分参考github项目：<br><a href="https://github.com/BSlience/search-engine-zerotohero/tree/main/public/bert_wwm_pretrain" target="_blank" rel="noopener">https://github.com/BSlience/search-engine-zerotohero/tree/main/public/bert_wwm_pretrain</a></p>
+<p>Whole Word Masking (wwm)，暂翻译为<strong>全词Mask</strong>或整词Mask，是谷歌在2019年5月31日发布的一项<strong>BERT的升级版本</strong>，主要更改了原预训练阶段的训练样本生成策略。我们先看下BERT原文的遮蔽语言模型。</p>
+<h3 id="BERT–遮蔽语言模型"><a href="#BERT–遮蔽语言模型" class="headerlink" title="BERT–遮蔽语言模型"></a>BERT–遮蔽语言模型</h3><p>在BERT之前，标准的条件语言模型只能从左到右或从右到左进行训练，因为双向条件作用将允许每个单词在多层上下文中<strong>间接地看到自己</strong>，为了训练深度双向表示，BERT采用了一种简单的方法，即随机遮蔽一定比例的输入标记，然后仅预测那些被遮蔽的标记，这一过程被称为<strong>遮蔽语言模型</strong>（MLM， masked language model），尽管在文献中它通常被称为完型填词任务。</p>
+<p>在这种情况下，就像在标准语言模型中一样，与遮蔽标记相对应的最终隐藏向量被输入到与词汇表对应的输出 softmax 中（也就是要把被遮蔽的标记对应为词汇表中的一个词语）。在所有的实验中，BERT在每个序列中<strong>随机遮蔽 15% 的标记</strong>。</p>
+<p>虽然这确实允许我们获得一个双向预训练模型，但这种方法有两个缺点。第一个缺点是，我们在预训练和微调之间造成了不匹配，因为 [MASK] 标记在微调期间从未出现过。为了缓和这种情况，我们并不总是用真的用 [MASK] 标记替换被选择的单词。而是，训练数据生成器随机选择 15% 的标记，例如，在my dog is hairy 这句话中，它选择 hairy。然后执行以下步骤:</p>
+<ul>
+<li>80% 的情况下：用 [MASK] 替换被选择的单词，例如，my dog is hairy → my dog is [MASK]</li>
+<li>10% 的情况下：用一个随机单词替换被选择的单词，例如，my dog is hairy → my dog is apple</li>
+<li>10% 的情况下：保持被选择的单词不变，例如，my dog is hairy → my dog is hairy。这样做的目<br>的是使表示偏向于实际观察到的词。</li>
+</ul>
+<p>Transformer 编码器不知道它将被要求预测哪些单词，或者哪些单词已经被随机单词替换，因此它被迫保持每个输入标记的分布的上下文表示。另外，因为随机替换只发生在 1.5% 的标记（即，15% 的10%）这似乎不会损害模型的语言理解能力。</p>
+<p>第二个缺点是，使用 Transformer 的每批次数据中只有 15% 的标记被预测，这意味着模型可能需要更多的预训练步骤来收敛。在 5.3 节中，我们证明了 Transformer 确实比从左到右的模型（预测每个标记）稍微慢一点，但是 Transformer 模型的实验效果远远超过了它增加的预训练模型的成本。</p>
+<a id="more"></a>
+<h4 id="WordPiece"><a href="#WordPiece" class="headerlink" title="WordPiece"></a>WordPiece</h4><p>BERT原文中的遮蔽语言模型是基于wordPiece拆词后的子词进行MASK，所谓的wordPiece其实是把word再进一步的拆分，拆分为piece，得到更细粒度。</p>
+<p>比如<strong>“loved”,”loving”,”loves”</strong>这三个单词。其实本身的语义都是“爱”的意思，但是如果我们以单词为单位，那它们就算作是不一样的词，在英语中不同后缀的词非常的多，就会使得词表变的很大，训练速度变慢，训练的效果也不是太好。</p>
+<p>WordPiece与<strong>BPE（Byte-Pair Encoding）双字节编码</strong>算法比较相似，它们是两种不同的子词切分算法，主要区别在于如何选择两个子词进行合并。</p>
+<p>例如WordPiece(或<code>BPE</code>)通过训练，能够把上面的”loved”,”loving”,”loves”3个单词拆分成”lov”,”ed”,”ing”,”es”几部分，这样可以把词的本身的意思和时态分开，有效的减少了词表的数量。</p>
+<h3 id="Whole-Word-Masking策略"><a href="#Whole-Word-Masking策略" class="headerlink" title="Whole Word Masking策略"></a>Whole Word Masking策略</h3><p>在BERT中，原有基于WordPiece的分词方式会把一个完整的词切分成若干个子词，在生成训练样本时，这些<strong>被分开的子词会随机被mask</strong>。 在全词Mask中，如果一个完整的词的<strong>部分WordPiece子词被mask，则同属该词的其他部分也会被mask</strong>，即全词Mask。</p>
+<p>需要注意的是，这里的mask指的是<strong>广义的mask（替换成[MASK]；保持原词汇；随机替换成另外一个词）</strong>，并非只局限于单词替换成[MASK]标签的情况。</p>
+<p>由于谷歌官方发布的BERT-base, Chinese中，<strong>中文是以字为粒度进行切分</strong>，没有考虑到传统NLP中的中文分词（CWS, chinese word segment），所以全词Mask可以用在中文预训练中。</p>
+<p>数据示例（方便理解）</p>
+<ul>
+<li>原始文本： 使用语言模型来预测下一个词的probability。</li>
+<li>分词文本： 使用 语言 模型 来 预测 下 一个 词 的 probability 。</li>
+<li>原始Mask输入(mlm)： 使 用 语 言 [MASK] 型 来 [MASK] 测 下 一 个 词 的 pro [MASK] ##lity 。</li>
+<li>全词Mask输入(wwm)： 使 用 语 言 [MASK] [MASK] 来 [MASK] [MASK] 下 一 个 词 的 [MASK] [MASK] [MASK] 。</li>
+</ul>
+<h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><p>因为后面我会针对huggingface transformer中的chinese_bert wwm模型进行fine tune，该模型使用的是wwm(也就是全词MASK方法)，所以这里记录whole Word Masking的一种实现方式。</p>
+<p>huggingface transformer中有一个data collator的概念，数据整理器(data collator)是通过使用数据集元素列表作为输入来形成批次的对象。这些元素与train_dataset或eval_dataset的元素类型相同。</p>
+<p>为了能够构建批处理，数据整理器可能会应用一些处理（如填充、截断）。其中一些（如DataCollatorForLanguageModeling）还对所形成的批处理应用了一些随机数据扩充（如随机屏蔽）。</p>
+<p><a href="https://huggingface.co/docs/transformers/main/en/main_classes/data_collator#transformers.DataCollatorForLanguageModeling" target="_blank" rel="noopener">huggingface transformer中关于data collator的文档</a></p>
+<p>当然MASK操作也属于数据整理器的功能之一，整个data collator的步骤如下：</p>
+<ol>
+<li>先获得这个批次数据的最大长度max_seq_len；</li>
+<li>对句子进行补齐和截断；</li>
+<li>对于每个样本的input_ids,随机选择20%字(token)，认为其和前面一个词可能组成词；</li>
+<li>在对应的token前添加特殊符号<strong>##</strong>比如 4 -&gt; ##4 </li>
+<li>将带特征符号##的token传入mask方法(这里是self._whole_word_mask)，随机选择15%的字认为是需要mask的，如果选到的字是带##标记的，那么就把它前面的字一起mask，返回mask_label；</li>
+<li>根据mask_label和input_ids进行mask(80%进行mask掉，10%进行随机替换，10%选择保持不变)</li>
+</ol>
+<p><strong>注意</strong>：步骤3中选择的20%，是认为可能组成词的字（并不是需要mask的字），因为是随机选的，所以可能根本不是词，因为参考的这个项目就是这么实现的，所以在我看来是一个不完整的实现方案，如果有能力、有兴趣的小伙伴可以完整实现，也就是找到真正的词，可以借助一些分词工具。</p>
+<p>下面是实现代码。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DataCollator</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, max_seq_len: int, tokenizer: BertTokenizer, mlm_probability=<span class="number">0.15</span>)</span>:</span></span><br><span class="line">        <span class="comment"># max_seq_len 用于截断的最大长度</span></span><br><span class="line">        self.max_seq_len = max_seq_len</span><br><span class="line">        self.tokenizer = tokenizer</span><br><span class="line">        self.mlm_probability = mlm_probability  <span class="comment"># 遮词概率</span></span><br><span class="line">        </span><br><span class="line">    <span class="comment"># 截断和填充</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">truncate_and_pad</span><span class="params">(self, input_ids_list, token_type_ids_list, attention_mask_list, max_seq_len)</span>:</span></span><br><span class="line">        <span class="comment"># 初始化一个样本数量 * max_seq_len 的二维tensor</span></span><br><span class="line">        input_ids = torch.zeros((len(input_ids_list), max_seq_len), dtype=torch.long)</span><br><span class="line">        token_type_ids = torch.zeros_like(input_ids)</span><br><span class="line">        attention_mask = torch.zeros_like(input_ids)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(len(input_ids_list)):</span><br><span class="line">            seq_len = len(input_ids_list[i])  <span class="comment"># 当前句子的长度</span></span><br><span class="line">            <span class="comment"># 如果长度小于最大长度</span></span><br><span class="line">            <span class="keyword">if</span> seq_len &lt;= max_seq_len:</span><br><span class="line">                <span class="comment"># 把input_ids_list中的值赋值给input_ids</span></span><br><span class="line">                input_ids[i, :seq_len] = torch.tensor(input_ids_list[i][:seq_len], dtype=torch.long)</span><br><span class="line">            <span class="keyword">else</span>:  <span class="comment"># self.tokenizer.sep_token_id = 102</span></span><br><span class="line">                <span class="comment"># 度超过最大长度的句子，input_ids最后一个值设置为102即分割词</span></span><br><span class="line">                <span class="comment"># input_ids[i, :seq_len] = torch.tensor(input_ids_list[i][:seq_len - 1] +</span></span><br><span class="line">                <span class="comment">#                                       [self.tokenizer.sep_token_id], dtype=torch.long)</span></span><br><span class="line">                input_ids[i, :seq_len] = torch.tensor(input_ids_list[i][:max_seq_len - <span class="number">1</span>] +</span><br><span class="line">                                                      [self.tokenizer.sep_token_id], dtype=torch.long)</span><br><span class="line">            print(input_ids[i])</span><br><span class="line">            seq_len = min(len(input_ids_list[i]), max_seq_len)</span><br><span class="line">            token_type_ids[i, :seq_len] = torch.tensor(token_type_ids_list[i][:seq_len], dtype=torch.long)</span><br><span class="line">            attention_mask[i, :seq_len] = torch.tensor(attention_mask_list[i][:seq_len], dtype=torch.long)</span><br><span class="line">        <span class="comment"># print('截断和填充之前' + '*' * 30)</span></span><br><span class="line">        <span class="comment"># print(input_ids_list)  # 每个句子向量长度不一</span></span><br><span class="line">        <span class="comment"># print('截断和填充之后' + '*' * 30)</span></span><br><span class="line">        <span class="comment"># print(input_ids)    # 每个句子向量长度统一</span></span><br><span class="line">        <span class="keyword">return</span> input_ids, token_type_ids, attention_mask</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_whole_word_mask</span><span class="params">(self, input_ids_list: List[str], max_seq_len: int, max_predictions=<span class="number">512</span>)</span>:</span></span><br><span class="line">        cand_indexes = []</span><br><span class="line">        <span class="keyword">for</span> (i, token) <span class="keyword">in</span> enumerate(input_ids_list):</span><br><span class="line">            <span class="comment"># 跳过开头与结尾</span></span><br><span class="line">            <span class="keyword">if</span> (token == str(self.tokenizer.cls_token_id)  <span class="comment"># 101</span></span><br><span class="line">                    <span class="keyword">or</span> token == str(self.tokenizer.sep_token_id)):  <span class="comment"># 102</span></span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> len(cand_indexes) &gt;= <span class="number">1</span> <span class="keyword">and</span> token.startswith(<span class="string">"##"</span>):</span><br><span class="line">                cand_indexes[<span class="number">-1</span>].append(i)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                cand_indexes.append([i])</span><br><span class="line"></span><br><span class="line">        random.shuffle(cand_indexes)  <span class="comment"># 打乱</span></span><br><span class="line">        <span class="comment"># 根据句子长度*遮词概率算出要预测的个数，最大预测不超过512，不足1的按1</span></span><br><span class="line">        <span class="comment"># round()四舍五入，但是偶数.5会舍去，不过这是细节问题，影响不是很大</span></span><br><span class="line">        num_to_predict = min(max_predictions, max(<span class="number">1</span>, int(round(len(input_ids_list) * self.mlm_probability))))</span><br><span class="line">        masked_lms = []</span><br><span class="line">        covered_indexes = set()</span><br><span class="line">        <span class="keyword">for</span> index_set <span class="keyword">in</span> cand_indexes:</span><br><span class="line">            <span class="keyword">if</span> len(masked_lms) &gt;= num_to_predict:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">if</span> len(masked_lms) + len(index_set) &gt; num_to_predict:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            is_any_index_covered = <span class="literal">False</span></span><br><span class="line">            <span class="keyword">for</span> index <span class="keyword">in</span> index_set:</span><br><span class="line">                <span class="keyword">if</span> index <span class="keyword">in</span> covered_indexes:</span><br><span class="line">                    is_any_index_covered = <span class="literal">True</span></span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">if</span> is_any_index_covered:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            <span class="keyword">for</span> index <span class="keyword">in</span> index_set:</span><br><span class="line">                covered_indexes.add(index)</span><br><span class="line">                masked_lms.append(index)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">assert</span> len(covered_indexes) == len(masked_lms)</span><br><span class="line">        <span class="comment"># mask 掉的 token 使用 1 来进行标记，否则使用 0 来标记</span></span><br><span class="line">        mask_labels = [<span class="number">1</span> <span class="keyword">if</span> i <span class="keyword">in</span> covered_indexes <span class="keyword">else</span> <span class="number">0</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(min(len(input_ids_list), max_seq_len))]</span><br><span class="line">        mask_labels += [<span class="number">0</span>] * (max_seq_len - len(mask_labels))</span><br><span class="line">        <span class="keyword">return</span> torch.tensor(mask_labels)</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">whole_word_mask</span><span class="params">(self, input_ids_list: List[list], max_seq_len: int)</span> -&gt; torch.Tensor:</span></span><br><span class="line">        mask_labels = []</span><br><span class="line">        <span class="keyword">for</span> input_ids <span class="keyword">in</span> input_ids_list:</span><br><span class="line">            <span class="comment"># 随机选取20%的字，认为其和前一个字可以组成词（实际不一定）</span></span><br><span class="line">            <span class="comment"># choices是一个有放回抽样，会重复，可能实际会少于20%，细节问题影响不大</span></span><br><span class="line">            wwm_id = random.choices(range(len(input_ids)), k=int(len(input_ids)*<span class="number">0.2</span>))</span><br><span class="line">            <span class="comment"># 给挑选出来的位置添加 "##"标记</span></span><br><span class="line">            input_id_str = [<span class="string">f'##<span class="subst">&#123;id_&#125;</span>'</span> <span class="keyword">if</span> i <span class="keyword">in</span> wwm_id <span class="keyword">else</span> str(id_) <span class="keyword">for</span> i, id_ <span class="keyword">in</span> enumerate(input_ids)]</span><br><span class="line">            mask_label = self._whole_word_mask(input_id_str, max_seq_len)</span><br><span class="line">            mask_labels.append(mask_label)</span><br><span class="line">        <span class="keyword">return</span> torch.stack(mask_labels, dim=<span class="number">0</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">mask_tokens</span><span class="params">(self, inputs: torch.Tensor, mask_labels: torch.Tensor)</span> -&gt; Tuple[torch.Tensor, torch.Tensor]:</span></span><br><span class="line">        labels = inputs.clone()</span><br><span class="line"></span><br><span class="line">        probability_matrix = mask_labels</span><br><span class="line"></span><br><span class="line">        special_tokens_mask = [</span><br><span class="line">            self.tokenizer.get_special_tokens_mask(val, already_has_special_tokens=<span class="literal">True</span>) <span class="keyword">for</span> val <span class="keyword">in</span> labels.tolist()</span><br><span class="line">        ]</span><br><span class="line">        probability_matrix.masked_fill_(torch.tensor(special_tokens_mask, dtype=torch.bool), value=<span class="number">0.0</span>)</span><br><span class="line">        <span class="keyword">if</span> self.tokenizer.pad_token <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            padding_mask = labels.eq(self.tokenizer.pad_token_id)</span><br><span class="line">            probability_matrix.masked_fill_(padding_mask, value=<span class="number">0.0</span>)</span><br><span class="line"></span><br><span class="line">        masked_indices = probability_matrix.bool()</span><br><span class="line">        labels[~masked_indices] = <span class="number">-100</span></span><br><span class="line"></span><br><span class="line">        indices_replaced = torch.bernoulli(torch.full(labels.shape, <span class="number">0.8</span>)).bool() &amp; masked_indices</span><br><span class="line">        inputs[indices_replaced] = self.tokenizer.convert_tokens_to_ids(self.tokenizer.mask_token)</span><br><span class="line"></span><br><span class="line">        indices_random = torch.bernoulli(torch.full(labels.shape, <span class="number">0.5</span>)).bool() &amp; masked_indices &amp; ~indices_replaced</span><br><span class="line">        random_words = torch.randint(len(self.tokenizer), labels.shape, dtype=torch.long)</span><br><span class="line">        inputs[indices_random] = random_words[indices_random]</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> inputs, labels</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 重写魔术方法，可以把类的对象当做函数去调用</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, examples: list)</span> -&gt; dict:</span></span><br><span class="line">        <span class="comment"># pad前的（句子不一样长，需要填充）</span></span><br><span class="line">        input_ids_list, token_type_ids_list, attention_mask_list = list(zip(*examples))</span><br><span class="line">        <span class="comment"># 动态识别batch中最大长度，用于padding操作</span></span><br><span class="line">        cur_max_seq_len = max(len(input_id) <span class="keyword">for</span> input_id <span class="keyword">in</span> input_ids_list)</span><br><span class="line">        <span class="comment"># 如果这一批中，所有句子都比设定的最大长度还小，那直接使用该批次的最大长度，</span></span><br><span class="line">        <span class="comment"># 可以减少运算数据量，加快速度</span></span><br><span class="line">        <span class="comment"># 如果这一批中有句子比设定的最大长度还长，后续就会被截断</span></span><br><span class="line">        max_seq_len = min(cur_max_seq_len, self.max_seq_len)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># pad后的</span></span><br><span class="line">        input_ids, token_type_ids, attention_mask = self.truncate_and_pad(</span><br><span class="line">            input_ids_list, token_type_ids_list, attention_mask_list, max_seq_len</span><br><span class="line">        )</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 遮蔽单词,whole word mask策略</span></span><br><span class="line">        batch_mask = self.whole_word_mask(input_ids_list, max_seq_len)</span><br><span class="line">        <span class="comment"># 针对得到的需要mask的词，进行实际mask操作（80%进行mask掉，10%进行随机替换，10%选择保持不变）</span></span><br><span class="line">        input_ids, mlm_labels = self.mask_tokens(input_ids, batch_mask)</span><br><span class="line">        data_dict = &#123;</span><br><span class="line">            <span class="string">'input_ids'</span>: input_ids,</span><br><span class="line">            <span class="string">'attention_mask'</span>: attention_mask,</span><br><span class="line">            <span class="string">'token_type_ids'</span>: token_type_ids,</span><br><span class="line">            <span class="string">'labels'</span>: mlm_labels</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> data_dict</span><br></pre></td></tr></table></figure>
+<p>测试数据样例</p>
+<p>输入data collator的数据一般是BertTokenizer encode_plus得到的输出，即</p>
+<ul>
+<li>input_ids：输入句子中每个词的编号(在词表中的序号)，101代表[cls]，102代表[sep]；</li>
+<li>token_type_ids：单词属于哪个句子，第一个句子为0，第二句子为1；</li>
+<li>attention_mask：需要对哪些单词做self_attention。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">input_ids = [</span><br><span class="line">    [<span class="number">101</span>, <span class="number">4078</span>, <span class="number">3828</span>, <span class="number">7029</span>, <span class="number">4344</span>, <span class="number">2768</span>, <span class="number">2642</span>, <span class="number">8024</span>, <span class="number">1220</span>, <span class="number">4289</span>, <span class="number">924</span>, <span class="number">2844</span>, <span class="number">5442</span>, <span class="number">1316</span>, <span class="number">2456</span>, <span class="number">21128</span>, <span class="number">7344</span>, <span class="number">4344</span>, <span class="number">7270</span>, <span class="number">1814</span>, <span class="number">21129</span>, <span class="number">2828</span>, <span class="number">3315</span>, <span class="number">1759</span>, <span class="number">4289</span>, <span class="number">4905</span>, <span class="number">1750</span>, <span class="number">1075</span>, <span class="number">2768</span>, <span class="number">4635</span>, <span class="number">4590</span>, <span class="number">102</span>],</span><br><span class="line">    ...</span><br><span class="line">]</span><br><span class="line">token_type_ids = [</span><br><span class="line">    [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>],</span><br><span class="line">    ...</span><br><span class="line">]</span><br><span class="line">attention_mask = [</span><br><span class="line">    [<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>],</span><br><span class="line">    ...</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">data = (input_ids, token_type_ids, attention_mask)</span><br><span class="line">data_collator = DataCollator()</span><br><span class="line">data_collator(data)  <span class="comment"># 直接调用__call__方法</span></span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/nlp/" rel="tag"># nlp</a>
+          
+            <a href="/tags/wordpiece/" rel="tag"># wordpiece</a>
+          
+            <a href="/tags/whole-word-mask/" rel="tag"># whole word mask</a>
+          
+            <a href="/tags/bert/" rel="tag"># bert</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/04/29/nlp-hf-transformer-ner/" rel="next" title="利用huggingface-transformers进行命名实体识别">
+                <i class="fa fa-chevron-left"></i> 利用huggingface-transformers进行命名实体识别
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/05/18/nlp-bert-finetune/" rel="prev" title="BERT finetune">
+                BERT finetune <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">104</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">198</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Whole-Word-Masking-wwm"><span class="nav-text">Whole Word Masking (wwm)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#BERT–遮蔽语言模型"><span class="nav-text">BERT–遮蔽语言模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#WordPiece"><span class="nav-text">WordPiece</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Whole-Word-Masking策略"><span class="nav-text">Whole Word Masking策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码实现"><span class="nav-text">代码实现</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Cifar10,deep learning,pytorch,VGG16,cnn,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="PyTorch实现卷积神经网络关于卷积神经网络的一些基础知识和概念等前面已经多次学习，这篇文章的重点是Pytorch来实现卷积神经网络，偏向于代码实践，理论知识不多，不过有一点关于图像经过卷积后的输出尺寸问题的公式我觉得不错，值得记录。 卷积层我们知道卷积的过程是：让卷积核在图片上依次进行滑动，滑动方向为从左到右，从上到下，每滑动一次，卷积核就与其滑窗位置对应的输入图片x做一次点击运算并得到一个数">
+<meta name="keywords" content="Cifar10,deep learning,pytorch,VGG16,cnn">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PyTorch实现卷积神经网络">
+<meta property="og:url" content="http://yoursite.com/2021/07/04/dl-pytorch-cnn/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="PyTorch实现卷积神经网络关于卷积神经网络的一些基础知识和概念等前面已经多次学习，这篇文章的重点是Pytorch来实现卷积神经网络，偏向于代码实践，理论知识不多，不过有一点关于图像经过卷积后的输出尺寸问题的公式我觉得不错，值得记录。 卷积层我们知道卷积的过程是：让卷积核在图片上依次进行滑动，滑动方向为从左到右，从上到下，每滑动一次，卷积核就与其滑窗位置对应的输入图片x做一次点击运算并得到一个数">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2021/07/04/dl-pytorch-cnn/1.png">
+<meta property="og:image" content="http://yoursite.com/2021/07/04/dl-pytorch-cnn/2.png">
+<meta property="og:image" content="http://yoursite.com/2021/07/04/dl-pytorch-cnn/3.png">
+<meta property="og:image" content="http://yoursite.com/2021/07/04/dl-pytorch-cnn/4.png">
+<meta property="og:updated_time" content="2022-03-11T12:05:22.485Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PyTorch实现卷积神经网络">
+<meta name="twitter:description" content="PyTorch实现卷积神经网络关于卷积神经网络的一些基础知识和概念等前面已经多次学习，这篇文章的重点是Pytorch来实现卷积神经网络，偏向于代码实践，理论知识不多，不过有一点关于图像经过卷积后的输出尺寸问题的公式我觉得不错，值得记录。 卷积层我们知道卷积的过程是：让卷积核在图片上依次进行滑动，滑动方向为从左到右，从上到下，每滑动一次，卷积核就与其滑窗位置对应的输入图片x做一次点击运算并得到一个数">
+<meta name="twitter:image" content="http://yoursite.com/2021/07/04/dl-pytorch-cnn/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2021/07/04/dl-pytorch-cnn/">
+
+
+
+
+
+  <title>PyTorch实现卷积神经网络 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/07/04/dl-pytorch-cnn/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">PyTorch实现卷积神经网络</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-07-04T10:47:54+08:00">
+                2021-07-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="PyTorch实现卷积神经网络"><a href="#PyTorch实现卷积神经网络" class="headerlink" title="PyTorch实现卷积神经网络"></a><code>PyTorch</code>实现卷积神经网络</h2><p>关于卷积神经网络的一些基础知识和概念等前面已经多次学习，这篇文章的重点是<code>Pytorch</code>来实现卷积神经网络，偏向于代码实践，理论知识不多，不过有一点关于图像经过卷积后的输出尺寸问题的公式我觉得不错，值得记录。</p>
+<h3 id="卷积层"><a href="#卷积层" class="headerlink" title="卷积层"></a>卷积层</h3><p>我们知道卷积的过程是：让卷积核在图片上依次进行滑动，滑动方向为从左到右，从上到下，每滑动一次，卷积核就与其滑窗位置对应的输入图片x做一次点击运算并得到一个数值。在卷积的过程中，一般情况下，图片的宽高会变得越来越小，而通道数会变得越来越多。这里尺寸改变有什么样的规律呢？</p>
+<p>输入1*7的向量，经过1*3的卷积，如果步长为2，最终得到一个1*5的向量；如果步长为2，最终得到一个1*3的向量</p>
+<p>输入7*7的向量，经过3*3的卷积，如果步长为1，最终得到一个5*5的向量；如果步长为2，最终得到一个3*3的向量；如果步长为3，会<strong>报错</strong></p>
+<p>上面的例子卷积核个数都是1且通道数也是1，下面考虑多个卷积核的情况</p>
+<p>输入32*32*3的图片，如果kernel大小为5*5*3(实际上大小就是5*5，后面的3只是为了表示针对3通道图片的一种写法，卷积核会对三个通道分别实行5*5卷积，然后加到一起)，单个卷积核和步长为1的情况下，最终得到一个28*28*1的新图片；如果我们连续堆叠6个不同的卷积，最终特征层将得到6个通道，即28*28*6的新图片。</p>
+<p><img src="/2021/07/04/dl-pytorch-cnn/1.png" alt></p>
+<p>，在7*7的输入图片周边做一个像素的填充(pad=1,周边填充是上下左右都会填充),如果步长为1，kernel为3*3的卷积输出的特征层为7*7。</p>
+<a id="more"></a>
+<p>所以可以总结出一种通用的卷积层计算公式：输入图片为<code>W1*H1*D1</code>(字母分别表示图像的宽、高、channel)，卷积层的参数中kernel大小为F*F，步长为S，pad大小为P，kernel个数为K，那么经过卷积后，输出图像的宽、高、channel分别为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">W2 = (W1-F+<span class="number">2</span>P)/S + <span class="number">1</span></span><br><span class="line"></span><br><span class="line">H2 = (H1-F+<span class="number">2</span>P)/S + <span class="number">1</span></span><br><span class="line"></span><br><span class="line">D2 = K</span><br></pre></td></tr></table></figure>
+<p>其实关于这个计算公式倒是不用刻意的去记忆，理解了卷积的原理，那么关于卷积后的图片尺寸大小，很容易就能得出，完全用不到公式。</p>
+<p><code>PyTorch</code>中的卷积函数代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"></span><br><span class="line">nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding, dilation, groups, bias)</span><br></pre></td></tr></table></figure>
+<p>参数说明</p>
+<ul>
+<li>in_channels(int)：输入图片的channel</li>
+<li>out_channels(int)：输出图片（特征层）的channel</li>
+<li>kernel_size(int or tuple)：kernel的大小</li>
+<li>stride(int or tuple, optional)：卷积的步长，默认为1</li>
+<li>padding(int or tuple, optional)：四周pad的大小，默认为0</li>
+<li>dilation(int or tuple, optional)：kernel元素间的距离，默认为1</li>
+<li>groups(int, optional)：将原始输入channel划分成的组数，默认为1</li>
+<li>bias(<code>bool</code>, optional)：如果是True，则输出的Bias可学，默认为True</li>
+</ul>
+<p>因为输出图片的通道数等于卷积核的个数，所以这里的out_channels参数可以理解为卷积核个数。</p>
+<h3 id="池化层"><a href="#池化层" class="headerlink" title="池化层"></a>池化层</h3><p>池化是对图片进行压缩(降采样)的一种方法，池化的方法有很多，如max pooling、average pooling等。池化层也有操作参数，我们假设输入图像为<code>W1*H1*D1</code>(字母分别表示图像的宽、高、channel)，池化层的参数中，池化kernel的大小为F*F，步长为S，那么经过池化后输出的图像宽、高、channel分别为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">W2 = (W1 - F)/S + <span class="number">1</span></span><br><span class="line">H2 = (H2 - F)/S + <span class="number">1</span></span><br><span class="line">D2 = D1</span><br></pre></td></tr></table></figure>
+<p>通常情况下，F=2,S=2。</p>
+<p>一个4*4的特征层经过池化filter=2*2,stride=2的最大池化操作后可以得到一个2*2的特征层。</p>
+<p><img src="/2021/07/04/dl-pytorch-cnn/2.png" alt></p>
+<p>池化层对原始特征层的信息进行压缩，卷积层、池化层、激活层很多时候三者几乎像一个整体一样同时出现。</p>
+<p><code>Pytorch</code>定义卷积神经网络的代码（初版）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> f</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CNN</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 定义卷积神经网络需要的元素</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        super(CNN, self).__init__()</span><br><span class="line">        self.conv1 = nn.Conv2d(<span class="number">3</span>, <span class="number">6</span>, (<span class="number">5</span>,))  <span class="comment"># 定义第一个卷积层</span></span><br><span class="line">        self.pool = nn.MaxPool2d(<span class="number">2</span>, <span class="number">2</span>)  <span class="comment"># 池化层</span></span><br><span class="line">        self.conv2 = nn.Conv2d(<span class="number">6</span>, <span class="number">16</span>, (<span class="number">5</span>,))</span><br><span class="line">        self.fc1 = nn.Linear(<span class="number">16</span>*<span class="number">5</span>*<span class="number">5</span>, <span class="number">120</span>)  <span class="comment"># 全连接层</span></span><br><span class="line">        self.fc2 = nn.Linear(<span class="number">120</span>, <span class="number">84</span>)      <span class="comment"># 全连接层</span></span><br><span class="line">        self.fc3 = nn.Linear(<span class="number">84</span>, <span class="number">10</span>)       <span class="comment"># 最后一个全连接层用作10分类</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x)</span>:</span></span><br><span class="line">        <span class="comment"># 第一个卷积层首先经过ReLU做激活，然后池化</span></span><br><span class="line">        x = self.pool(f.relu(self.conv1(x)))</span><br><span class="line">        <span class="comment"># 第二个卷积层也先经过ReLU激活，然后池化</span></span><br><span class="line">        x = self.pool(f.relu(self.conv2(x)))</span><br><span class="line">        <span class="comment"># 对特征层Tensor维度进行变换，使之符合预定义好的全连接层输入尺寸</span></span><br><span class="line">        x = x.view(<span class="number">-1</span>, <span class="number">16</span>*<span class="number">5</span>*<span class="number">5</span>)</span><br><span class="line">        <span class="comment"># 特征层经过第一次全连接层操作，然后通过ReLU激活</span></span><br><span class="line">        x = f.relu(self.fc1(x))</span><br><span class="line">        <span class="comment"># 特征层经过第二次全连接层操作，然后通过ReLU激活</span></span><br><span class="line">        x = f.relu(self.fc2(x))</span><br><span class="line">        <span class="comment"># 特征层经过最后一次全连接层操作，得到最终要分类的结果（10分类标签）</span></span><br><span class="line">        x = self.fc3(x)</span><br><span class="line">        <span class="keyword">return</span> x</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    net = CNN()</span><br><span class="line">    print(net)</span><br></pre></td></tr></table></figure>
+<h3 id="批规范化层-BatchNorm层，BN层"><a href="#批规范化层-BatchNorm层，BN层" class="headerlink" title="批规范化层(BatchNorm层，BN层)"></a>批规范化层(<code>BatchNorm</code>层，<code>BN</code>层)</h3><p>批规范化层主要是为了加速神经网络的收敛过程以及提高训练过程中的稳定性。</p>
+<p><code>batch</code>的概念就是在使用卷积神经网络处理图像数据时，往往是几张图片(如32张、64张、128张等)被同时输入到神经网络中一起进行前向计算，误差也是将该batch中所有图片的误差累计起来一起回传。</p>
+<p><code>BatchNorm</code>方法其实就是对一个batch和中的数据根据公式做了归一化。</p>
+<h3 id="VGGNet"><a href="#VGGNet" class="headerlink" title="VGGNet"></a><code>VGGNet</code></h3><p>下面我们借助比较比较常见的<code>VGG</code>网络架构来进行了解<code>Pytorch</code>是如何实现卷积神经网络的。</p>
+<p><img src="/2021/07/04/dl-pytorch-cnn/3.png" alt></p>
+<p><code>VGGNet</code>包含两种结构，分别为16层和19层，<code>VGG16</code>包含了16个隐藏层（13个卷积层+3个全连接层），如图中的D列所示；<code>VGG19</code>包含了19个隐藏层（16个卷积层+3个全连接层），如图中的E列所示。</p>
+<p><code>VGGNet</code>结构中，所有的卷积层的kernel都只有3*3；其连续使用3组3*3 kernel（stride=1）的原因是它与使用1个7*7 kernel产生的效果相同，然而更深的网络结构还会学习到更复杂的非线性关系，从而使得模型的效果更好。</p>
+<p>该操作带来的另一个好处是参数数量的减少，因为对于一个包含了C个kernel的卷积层来说，原来的参数个数为7*7*C，而新的参数个数为3*(3*3*C)。</p>
+<p>VGG16的立体的网络结构图：（此部分内容参考文章：<a href="https://blog.csdn.net/weixin_38132153/article/details/107616764）" target="_blank" rel="noopener">https://blog.csdn.net/weixin_38132153/article/details/107616764）</a></p>
+<p><img src="/2021/07/04/dl-pytorch-cnn/4.png" alt></p>
+<p>根据<code>VGG16</code>的网络结构，我们使用<code>Pyotrch</code>来个初步实现一下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> torch <span class="keyword">import</span> nn</span><br><span class="line"><span class="keyword">from</span> torch <span class="keyword">import</span> optim</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">VGG16</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 指定输出类别数量</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, nums)</span>:</span></span><br><span class="line">        super(VGG16, self).__init__()</span><br><span class="line">        self.nums = nums</span><br><span class="line">        vgg = list()</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 第一个卷积部分 3*3 conv, 64</span></span><br><span class="line">        <span class="comment"># 初始输入通道数=3</span></span><br><span class="line">        vgg.append(nn.Conv2d(in_channels=<span class="number">3</span>, out_channels=<span class="number">64</span>, kernel_size=<span class="number">3</span>, stride=<span class="number">1</span>, padding=<span class="number">1</span>))</span><br><span class="line">        vgg.append(nn.ReLU())</span><br><span class="line">        <span class="comment"># 下一层的输入通道数等于上一层的输出通道数</span></span><br><span class="line">        vgg.append(nn.Conv2d(in_channels=<span class="number">64</span>, out_channels=<span class="number">64</span>, kernel_size=<span class="number">3</span>, stride=<span class="number">1</span>, padding=<span class="number">1</span>))</span><br><span class="line">        vgg.append(nn.ReLU())</span><br><span class="line">        <span class="comment"># 两个卷积层后接一个池化层</span></span><br><span class="line">        vgg.append(nn.MaxPool2d(kernel_size=<span class="number">2</span>, stride=<span class="number">2</span>))</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 第二个卷积部分 3*3 conv, 128</span></span><br><span class="line">        vgg.append(nn.Conv2d(in_channels=<span class="number">64</span>, out_channels=<span class="number">128</span>, kernel_size=<span class="number">3</span>, stride=<span class="number">1</span>, padding=<span class="number">1</span>))</span><br><span class="line">        vgg.append(nn.ReLU())</span><br><span class="line">        vgg.append(nn.Conv2d(in_channels=<span class="number">128</span>, out_channels=<span class="number">128</span>, kernel_size=<span class="number">3</span>, stride=<span class="number">1</span>, padding=<span class="number">1</span>))</span><br><span class="line">        vgg.append(nn.ReLU())</span><br><span class="line">        vgg.append(nn.MaxPool2d(kernel_size=<span class="number">2</span>, stride=<span class="number">2</span>))</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 第三个卷积部分 3*3 conv, 256  从第三个部分开始，有三个卷积层</span></span><br><span class="line">        vgg.append(nn.Conv2d(in_channels=<span class="number">128</span>, out_channels=<span class="number">256</span>, kernel_size=<span class="number">3</span>, stride=<span class="number">1</span>, padding=<span class="number">1</span>))</span><br><span class="line">        vgg.append(nn.ReLU())</span><br><span class="line">        vgg.append(nn.Conv2d(in_channels=<span class="number">256</span>, out_channels=<span class="number">256</span>, kernel_size=<span class="number">3</span>, stride=<span class="number">1</span>, padding=<span class="number">1</span>))</span><br><span class="line">        vgg.append(nn.ReLU())</span><br><span class="line">        vgg.append(nn.Conv2d(in_channels=<span class="number">256</span>, out_channels=<span class="number">256</span>, kernel_size=<span class="number">3</span>, stride=<span class="number">1</span>, padding=<span class="number">1</span>))</span><br><span class="line">        vgg.append(nn.ReLU())</span><br><span class="line">        vgg.append(nn.MaxPool2d(kernel_size=<span class="number">2</span>, stride=<span class="number">2</span>))</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 第四个卷积部分 3*3 conv, 512</span></span><br><span class="line">        vgg.append(nn.Conv2d(in_channels=<span class="number">256</span>, out_channels=<span class="number">512</span>, kernel_size=<span class="number">3</span>, stride=<span class="number">1</span>, padding=<span class="number">1</span>))</span><br><span class="line">        vgg.append(nn.ReLU())</span><br><span class="line">        vgg.append(nn.Conv2d(in_channels=<span class="number">512</span>, out_channels=<span class="number">512</span>, kernel_size=<span class="number">3</span>, stride=<span class="number">1</span>, padding=<span class="number">1</span>))</span><br><span class="line">        vgg.append(nn.ReLU())</span><br><span class="line">        vgg.append(nn.Conv2d(in_channels=<span class="number">512</span>, out_channels=<span class="number">512</span>, kernel_size=<span class="number">3</span>, stride=<span class="number">1</span>, padding=<span class="number">1</span>))</span><br><span class="line">        vgg.append(nn.ReLU())</span><br><span class="line">        vgg.append(nn.MaxPool2d(kernel_size=<span class="number">2</span>, stride=<span class="number">2</span>))</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 第五个卷积部分 3*3 conv, 512</span></span><br><span class="line">        vgg.append(nn.Conv2d(in_channels=<span class="number">512</span>, out_channels=<span class="number">512</span>, kernel_size=<span class="number">3</span>, stride=<span class="number">1</span>, padding=<span class="number">1</span>))</span><br><span class="line">        vgg.append(nn.ReLU())</span><br><span class="line">        vgg.append(nn.Conv2d(in_channels=<span class="number">512</span>, out_channels=<span class="number">512</span>, kernel_size=<span class="number">3</span>, stride=<span class="number">1</span>, padding=<span class="number">1</span>))</span><br><span class="line">        vgg.append(nn.ReLU())</span><br><span class="line">        vgg.append(nn.Conv2d(in_channels=<span class="number">512</span>, out_channels=<span class="number">512</span>, kernel_size=<span class="number">3</span>, stride=<span class="number">1</span>, padding=<span class="number">1</span>))</span><br><span class="line">        vgg.append(nn.ReLU())</span><br><span class="line">        vgg.append(nn.MaxPool2d(kernel_size=<span class="number">2</span>, stride=<span class="number">2</span>))</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 将每一个模块按照他们的顺序送入到nn.Sequential中,输入要么是predict,要么是一系列的模型，遇到上述的list，必须用*号进行转化</span></span><br><span class="line">        self.main = nn.Sequential(*vgg)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 全连接层(in_features为什么是512*512*7很关键)</span></span><br><span class="line">        <span class="comment"># 另外，当输入图片尺寸非3*224*224时，in_features是不同的</span></span><br><span class="line">        classification = list()</span><br><span class="line">        <span class="comment"># in_features四维张量变成二维[batch_size,channels,width,height]变成    [batch_size,channels*width*height]</span></span><br><span class="line">        <span class="comment"># 输出4096个神经元，参数变成512*7*7*4096+bias(4096)个</span></span><br><span class="line">        classification.append(nn.Linear(in_features=<span class="number">512</span> * <span class="number">7</span> * <span class="number">7</span>, out_features=<span class="number">4096</span>))</span><br><span class="line">        classification.append(nn.ReLU())</span><br><span class="line">        classification.append(nn.Dropout(p=<span class="number">0.5</span>))</span><br><span class="line">        classification.append(nn.Linear(in_features=<span class="number">4096</span>, out_features=<span class="number">4096</span>))</span><br><span class="line">        classification.append(nn.ReLU())</span><br><span class="line">        classification.append(nn.Dropout(p=<span class="number">0.5</span>))</span><br><span class="line">        classification.append(nn.Linear(in_features=<span class="number">4096</span>, out_features=self.nums))</span><br><span class="line"></span><br><span class="line">        self.classification = nn.Sequential(*classification)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x)</span>:</span></span><br><span class="line">        feature = self.main(x)  <span class="comment"># 输入张量x</span></span><br><span class="line">        <span class="comment"># reshape x变成[batch_size,channels*width*height]</span></span><br><span class="line">        feature = feature.view(x.size(<span class="number">0</span>), <span class="number">-1</span>)  </span><br><span class="line">        result = self.classification(feature)</span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">x = torch.rand(size=(<span class="number">8</span>, <span class="number">3</span>, <span class="number">224</span>, <span class="number">224</span>))</span><br><span class="line">vgg16 = VGG16(nums=<span class="number">10</span>)</span><br><span class="line">out = vgg16(x)</span><br><span class="line">print(out)</span><br><span class="line">print(vgg16)</span><br></pre></td></tr></table></figure>
+<p>这里特别需要注意的一点就是，全连接层的输入值（in_features）,上面给出的网络结构图的尺寸值前提是在输入图片大小为3*224*224，所以经过全部卷积层后得到512*7*7的特征图，如果输入尺寸有变，那么全连接层的输入值是要自己改变的。</p>
+<p>上面编写的初步版本我们很容易读懂是如何一步步实现的，但是经过观察思考我们可以发现，卷积部分代码存在许多重复的地方，如果我们可以编写一个方法，通过传入参数，自动实现卷积部分就好了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"> 可以通过初始化参数指定生成VGG16 <span class="keyword">or</span> VGG19网络模型</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">VGG</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line"></span><br><span class="line">    cfg = &#123;</span><br><span class="line">        <span class="string">'VGG16'</span>: [</span><br><span class="line">            <span class="number">64</span>, <span class="number">64</span>, <span class="string">'M'</span>,</span><br><span class="line">            <span class="number">128</span>, <span class="number">128</span>, <span class="string">'M'</span>,</span><br><span class="line">            <span class="number">256</span>, <span class="number">256</span>, <span class="number">256</span>, <span class="string">'M'</span>,</span><br><span class="line">            <span class="number">512</span>, <span class="number">512</span>, <span class="number">512</span>, <span class="string">'M'</span>,</span><br><span class="line">            <span class="number">512</span>, <span class="number">512</span>, <span class="number">512</span>, <span class="string">'M'</span></span><br><span class="line">        ],</span><br><span class="line">        <span class="string">'VGG19'</span>: [</span><br><span class="line">            <span class="number">64</span>, <span class="number">64</span>, <span class="string">'M'</span>,</span><br><span class="line">            <span class="number">128</span>, <span class="number">128</span>, <span class="string">'M'</span>,</span><br><span class="line">            <span class="number">256</span>, <span class="number">256</span>, <span class="number">256</span>, <span class="number">256</span>, <span class="string">'M'</span>,</span><br><span class="line">            <span class="number">512</span>, <span class="number">512</span>, <span class="number">512</span>, <span class="number">512</span>, <span class="string">'M'</span>,</span><br><span class="line">            <span class="number">512</span>, <span class="number">512</span>, <span class="number">512</span>, <span class="number">512</span>, <span class="string">'M'</span></span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, net_name, out_put_nums)</span>:</span></span><br><span class="line">        super(VGG, self).__init__()</span><br><span class="line"></span><br><span class="line">        self.main = self._make_layers(net_name)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 全连接层(in_features为什么是512*512*7很关键)</span></span><br><span class="line">        <span class="comment"># 另外，当输入图片尺寸非3*224*224时，in_features是不同的</span></span><br><span class="line">        classification = list()</span><br><span class="line">        <span class="comment"># in_features四维张量变成二维[batch_size,channels,width,height]变成[batch_size,channels*width*height]</span></span><br><span class="line">        <span class="comment"># 输出4096个神经元，参数变成512*7*7*4096+bias(4096)个</span></span><br><span class="line">        classification.append(nn.Linear(in_features=<span class="number">512</span> * <span class="number">7</span> * <span class="number">7</span>, out_features=<span class="number">4096</span>))</span><br><span class="line">        classification.append(nn.ReLU())</span><br><span class="line">        classification.append(nn.Dropout(p=<span class="number">0.5</span>))</span><br><span class="line">        classification.append(nn.Linear(in_features=<span class="number">4096</span>, out_features=<span class="number">4096</span>))</span><br><span class="line">        classification.append(nn.ReLU())</span><br><span class="line">        classification.append(nn.Dropout(p=<span class="number">0.5</span>))</span><br><span class="line">        classification.append(nn.Linear(in_features=<span class="number">4096</span>, out_features=out_put_nums))</span><br><span class="line"></span><br><span class="line">        self.classification = nn.Sequential(*classification)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_make_layers</span><span class="params">(self, net_name)</span>:</span></span><br><span class="line">        layers = []</span><br><span class="line">        in_channels = <span class="number">3</span>  <span class="comment"># 初始输入通道数量为3</span></span><br><span class="line">        last_out_put = in_channels  <span class="comment"># 上一层的输出通道数，初始时就是输入通道数</span></span><br><span class="line">        <span class="keyword">for</span> v <span class="keyword">in</span> self.cfg[net_name]:</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> v == <span class="string">'M'</span>:</span><br><span class="line">                layers += [nn.MaxPool2d(kernel_size=<span class="number">2</span>, stride=<span class="number">2</span>)]</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                layers += [nn.Conv2d(last_out_put, v, kernel_size=<span class="number">3</span>, padding=<span class="number">1</span>),</span><br><span class="line">                           nn.BatchNorm2d(v),</span><br><span class="line">                           nn.ReLU(inplace=<span class="literal">True</span>)]</span><br><span class="line">                last_out_put = v</span><br><span class="line">        <span class="keyword">return</span> nn.Sequential(*layers)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, _x)</span>:</span></span><br><span class="line">        feature = self.main(_x)</span><br><span class="line">        feature = feature.view(_x.size(<span class="number">0</span>), <span class="number">-1</span>)</span><br><span class="line">        result = self.classification(feature)</span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    net = VGG(<span class="string">'VGG16'</span>, <span class="number">10</span>)</span><br><span class="line">    x = torch.randn(<span class="number">2</span>, <span class="number">3</span>, <span class="number">224</span>, <span class="number">224</span>)</span><br><span class="line">    y = net(x)</span><br><span class="line">    print(y.size())</span><br><span class="line">    print(net)</span><br></pre></td></tr></table></figure>
+<p>经过对<code>VGGNet</code>的学习，我们可以发现这些所谓的神经网络架构模型，其实就是卷积层+激活+池化等的组合，不同的就是要使用多少层卷积，每层卷积的卷积核数量、大小、步长等的区别，针对一些特定的数据集，如果你能设计出一个网络模型以更快的速度达到现有的更高的精度，那你就是开创者。</p>
+<h3 id="VGG16实现Cifar10分类"><a href="#VGG16实现Cifar10分类" class="headerlink" title="VGG16实现Cifar10分类"></a><code>VGG16</code>实现<code>Cifar10</code>分类</h3><p>如果要把<code>VGG16</code>应用于<code>Cifar10</code>分类任务，那么上面提到的输入到全连接层的in_features需要修改，因为<code>Cifar10</code>的图片尺寸是3*32*32，经过全部卷积层后变成了1*1*512。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 全连接层</span></span><br><span class="line">self.classification = nn.Sequential(</span><br><span class="line">    nn.Dropout(p=<span class="number">0.5</span>),</span><br><span class="line">    nn.Linear(in_features=<span class="number">512</span>, out_features=<span class="number">512</span>),</span><br><span class="line">    nn.ReLU(),</span><br><span class="line">    nn.Dropout(p=<span class="number">0.5</span>),</span><br><span class="line">    nn.Linear(in_features=<span class="number">512</span>, out_features=<span class="number">512</span>),</span><br><span class="line">    nn.ReLU(),</span><br><span class="line">    nn.Linear(<span class="number">512</span>, <span class="number">10</span>)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 训练(速度特别慢，5轮跑了十几个小时， 准确率76%，5轮后的损失还挺大的，其实还可以继续跑)</span></span><br><span class="line">criterion = nn.CrossEntropyLoss()  <span class="comment"># 定义损失函数 交叉熵</span></span><br><span class="line"><span class="comment"># 定义优化方法 随机梯度下降</span></span><br><span class="line">optimizer = optim.SGD(net.parameters(), lr=<span class="number">0.001</span>, momentum=<span class="number">0.9</span>)</span><br><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> range(<span class="number">5</span>):</span><br><span class="line">    train_loss = <span class="number">0.0</span></span><br><span class="line">    <span class="keyword">for</span> batch_idx, data <span class="keyword">in</span> enumerate(cifar10.train_loader, <span class="number">0</span>):</span><br><span class="line">        inputs, labels = data</span><br><span class="line">        optimizer.zero_grad()  <span class="comment"># 先将梯度设置为0</span></span><br><span class="line"></span><br><span class="line">        out_puts = net(inputs)  <span class="comment"># 将数据输入到网络</span></span><br><span class="line">        loss = criterion(out_puts, labels)  <span class="comment"># 计算损失</span></span><br><span class="line"></span><br><span class="line">        loss.backward()</span><br><span class="line">        optimizer.step()</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 查看网络训练状态</span></span><br><span class="line">        train_loss += loss.item()</span><br><span class="line">        <span class="keyword">if</span> batch_idx % <span class="number">2000</span> == <span class="number">1999</span>:</span><br><span class="line">            print(<span class="string">f'[<span class="subst">&#123;epoch+<span class="number">1</span>&#125;</span>, <span class="subst">&#123;batch_idx+<span class="number">1</span>&#125;</span>] loss <span class="subst">&#123;train_loss / <span class="number">2000</span>&#125;</span>'</span>)</span><br><span class="line">            train_loss = <span class="number">0.0</span></span><br><span class="line">    print(<span class="string">f'Saving epoch <span class="subst">&#123;epoch+<span class="number">1</span>&#125;</span> mode ...'</span>)</span><br><span class="line">    state = &#123;</span><br><span class="line">        <span class="string">'net'</span>: net.state_dict(),</span><br><span class="line">        <span class="string">'epoch'</span>: epoch+<span class="number">1</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.isdir(<span class="string">'checkpoint'</span>):</span><br><span class="line">        os.mkdir(<span class="string">'checkpoint'</span>)</span><br><span class="line">    torch.save(state, <span class="string">f'./checkpoint/cifar10_epoch_<span class="subst">&#123;epoch+<span class="number">1</span>&#125;</span>.ckpt'</span>)</span><br><span class="line">print(<span class="string">'Finished Training'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试几个例子</span></span><br><span class="line">check_point = torch.load(<span class="string">'./checkpoint/cifar10_epoch_5.ckpt'</span>)</span><br><span class="line">net.load_state_dict(check_point[<span class="string">'net'</span>])</span><br><span class="line">start_epoch = check_point[<span class="string">'epoch'</span>]</span><br><span class="line">data_iter = iter(cifar10.test_loader)</span><br><span class="line">test_image, test_labels = data_iter.next()</span><br><span class="line">out_puts = net(test_image)</span><br><span class="line">_, predict = torch.max(out_puts, <span class="number">1</span>)</span><br><span class="line">print(predict)</span><br><span class="line">print(test_labels)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 批量计算整个测试集的预测效果</span></span><br><span class="line">correct = <span class="number">0</span></span><br><span class="line">total = <span class="number">0</span></span><br><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    <span class="keyword">for</span> data <span class="keyword">in</span> cifar10.test_loader:</span><br><span class="line">        images, labels = data</span><br><span class="line">        out_puts = net(images)</span><br><span class="line">        _, predicted = torch.max(out_puts.data, <span class="number">1</span>)</span><br><span class="line">        total += labels.size(<span class="number">0</span>)</span><br><span class="line">        correct += (predicted == labels).sum().item()</span><br><span class="line">print(<span class="string">f'Accuracy of the network on the 10000 test images: <span class="subst">&#123;correct/total&#125;</span>'</span>)</span><br></pre></td></tr></table></figure>
+<p>这里介绍了保存训练模型和加载训练模型的方式。</p>
+<p>使用<code>VGG16</code>模型训练速度较慢，因为网络结构较深；<code>Cifar10</code>的图片比较小，我尝试用了一个更简单的模型，达到的准确率与<code>VGG16</code>训练5轮的准确率差不多。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CNN</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 定义卷积神经网络需要的元素</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        super(CNN, self).__init__()</span><br><span class="line">        self.conv1 = nn.Conv2d(<span class="number">3</span>, <span class="number">16</span>, kernel_size=<span class="number">3</span>, padding=<span class="number">1</span>)  <span class="comment"># 定义第一个卷积层</span></span><br><span class="line">        self.pool1 = nn.MaxPool2d(<span class="number">2</span>, <span class="number">2</span>)  <span class="comment"># 池化层</span></span><br><span class="line">        self.conv2 = nn.Conv2d(<span class="number">16</span>, <span class="number">64</span>, kernel_size=<span class="number">3</span>, padding=<span class="number">1</span>)</span><br><span class="line">        self.pool2 = nn.MaxPool2d(<span class="number">2</span>, <span class="number">2</span>)</span><br><span class="line">        self.conv3 = nn.Conv2d(<span class="number">64</span>, <span class="number">256</span>, kernel_size=<span class="number">3</span>, padding=<span class="number">1</span>)</span><br><span class="line">        self.pool3 = nn.MaxPool2d(<span class="number">2</span>, <span class="number">2</span>)</span><br><span class="line">        self.fc1 = nn.Linear(<span class="number">256</span>*<span class="number">4</span>*<span class="number">4</span>, <span class="number">512</span>)  <span class="comment"># 全连接层  这个输入值需要计算，根据输入图像的尺寸决定</span></span><br><span class="line">        self.fc2 = nn.Linear(<span class="number">512</span>, <span class="number">128</span>)      <span class="comment"># 全连接层</span></span><br><span class="line">        self.fc3 = nn.Linear(<span class="number">128</span>, <span class="number">10</span>)       <span class="comment"># 最后一个全连接层用作10分类</span></span><br><span class="line">        self.dropout = nn.Dropout(p=<span class="number">0.5</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, _x)</span>:</span></span><br><span class="line">        <span class="comment"># 第一个卷积层首先经过ReLU做激活，然后池化</span></span><br><span class="line">        feature = self.pool1(f.relu(self.conv1(_x)))</span><br><span class="line">        <span class="comment"># 第二个卷积层也先经过ReLU激活，然后池化</span></span><br><span class="line">        feature = self.pool2(f.relu(self.conv2(feature)))</span><br><span class="line">        feature = self.pool3(f.relu(self.conv3(feature)))</span><br><span class="line">        <span class="comment"># 对特征层Tensor维度进行变换</span></span><br><span class="line">        feature = feature.view(_x.size(<span class="number">0</span>), <span class="number">-1</span>)</span><br><span class="line">        <span class="comment"># 特征层经过第一次全连接层操作，然后通过ReLU激活</span></span><br><span class="line">        feature = f.relu(self.fc1(feature))</span><br><span class="line">        self.dropout(feature)</span><br><span class="line">        <span class="comment"># 特征层经过第二次全连接层操作，然后通过ReLU激活</span></span><br><span class="line">        feature = f.relu(self.fc2(feature))</span><br><span class="line">        self.dropout(feature)</span><br><span class="line">        <span class="comment"># 特征层经过最后一次全连接层操作，得到最终要分类的结果（10分类标签）</span></span><br><span class="line">        result = self.fc3(feature)</span><br><span class="line">        <span class="keyword">return</span> result</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Cifar10/" rel="tag"># Cifar10</a>
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/pytorch/" rel="tag"># pytorch</a>
+          
+            <a href="/tags/VGG16/" rel="tag"># VGG16</a>
+          
+            <a href="/tags/cnn/" rel="tag"># cnn</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/06/26/dl-pytorch-nn/" rel="next" title="PyTorch实现神经网络图像分类">
+                <i class="fa fa-chevron-left"></i> PyTorch实现神经网络图像分类
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/07/17/ip-yolov3/" rel="prev" title="YOLOV1、V2、V3 理论篇">
+                YOLOV1、V2、V3 理论篇 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">104</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">198</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#PyTorch实现卷积神经网络"><span class="nav-text">PyTorch实现卷积神经网络</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#卷积层"><span class="nav-text">卷积层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#池化层"><span class="nav-text">池化层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#批规范化层-BatchNorm层，BN层"><span class="nav-text">批规范化层(BatchNorm层，BN层)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VGGNet"><span class="nav-text">VGGNet</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VGG16实现Cifar10分类"><span class="nav-text">VGG16实现Cifar10分类</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

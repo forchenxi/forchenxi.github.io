@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="deep learning,nlp,out-of-vocabulary,bpe,wordpiece,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Out of Vocabulary我们在NLP任务中一般都会有一个词表，这个词表一般可以使用一些大牛论文中的词表或者一些大公司的词表，或者是从自己的数据集中提取的词。但是无论当后续的训练还是预测，总有可能会出现并不包含在词表中的词，这种情况叫做Out of Vocabulary。 那么当我们遇到OOV的问题时，有以下解决方式。 Ignore直接忽略OOV的情形，也就是不做处理，效果肯定不好。 UN">
+<meta name="keywords" content="deep learning,nlp,out-of-vocabulary,bpe,wordpiece">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Out of Vocabulary">
+<meta property="og:url" content="http://yoursite.com/2022/09/17/nlp-out-of-vocabulary/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="Out of Vocabulary我们在NLP任务中一般都会有一个词表，这个词表一般可以使用一些大牛论文中的词表或者一些大公司的词表，或者是从自己的数据集中提取的词。但是无论当后续的训练还是预测，总有可能会出现并不包含在词表中的词，这种情况叫做Out of Vocabulary。 那么当我们遇到OOV的问题时，有以下解决方式。 Ignore直接忽略OOV的情形，也就是不做处理，效果肯定不好。 UN">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2022/09/17/nlp-out-of-vocabulary/1.png">
+<meta property="og:image" content="http://yoursite.com/2022/09/17/nlp-out-of-vocabulary/2.png">
+<meta property="og:image" content="http://yoursite.com/2022/09/17/nlp-out-of-vocabulary/3.png">
+<meta property="og:image" content="http://yoursite.com/2022/09/17/nlp-out-of-vocabulary/4.png">
+<meta property="og:image" content="http://yoursite.com/2022/09/17/nlp-out-of-vocabulary/5.png">
+<meta property="og:updated_time" content="2022-10-15T04:56:03.212Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Out of Vocabulary">
+<meta name="twitter:description" content="Out of Vocabulary我们在NLP任务中一般都会有一个词表，这个词表一般可以使用一些大牛论文中的词表或者一些大公司的词表，或者是从自己的数据集中提取的词。但是无论当后续的训练还是预测，总有可能会出现并不包含在词表中的词，这种情况叫做Out of Vocabulary。 那么当我们遇到OOV的问题时，有以下解决方式。 Ignore直接忽略OOV的情形，也就是不做处理，效果肯定不好。 UN">
+<meta name="twitter:image" content="http://yoursite.com/2022/09/17/nlp-out-of-vocabulary/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2022/09/17/nlp-out-of-vocabulary/">
+
+
+
+
+
+  <title>Out of Vocabulary | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/09/17/nlp-out-of-vocabulary/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Out of Vocabulary</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-17T18:02:54+08:00">
+                2022-09-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Out-of-Vocabulary"><a href="#Out-of-Vocabulary" class="headerlink" title="Out of Vocabulary"></a>Out of Vocabulary</h2><p>我们在<code>NLP</code>任务中一般都会有一个词表，这个词表一般可以使用一些大牛论文中的词表或者一些大公司的词表，或者是从自己的数据集中提取的词。但是无论当后续的训练还是预测，总有可能会出现并不包含在词表中的词，这种情况叫做Out of Vocabulary。</p>
+<p>那么当我们遇到<code>OOV</code>的问题时，有以下解决方式。</p>
+<h3 id="Ignore"><a href="#Ignore" class="headerlink" title="Ignore"></a>Ignore</h3><p>直接忽略<code>OOV</code>的情形，也就是不做处理，效果肯定不好。</p>
+<h3 id="UNK"><a href="#UNK" class="headerlink" title="UNK"></a><code>UNK</code></h3><p>这种方式就是把所有超出词表的词，转换为统一的\&lt;<code>unk</code>>标识，对于性能的提升有限，特别是当超出词表的词是比较重要的词时。</p>
+<a id="more"></a>
+<p><img src="/2022/09/17/nlp-out-of-vocabulary/1.png" alt></p>
+<h3 id="Enlarge-vocabulary"><a href="#Enlarge-vocabulary" class="headerlink" title="Enlarge vocabulary"></a>Enlarge vocabulary</h3><p>扩充词表就是把所有的词都尽可能的添加到词表中（包括非常低频率的词），这样就会带来问题：</p>
+<ol>
+<li>计算量大，速度变慢，因为每次要预测的数量会变大；</li>
+<li><strong>低频率词的训练样本会很少</strong>，难以充分训练，最终结果就是训练不到一个理想的效果。</li>
+</ol>
+<h3 id="Individual-Character"><a href="#Individual-Character" class="headerlink" title="Individual Character"></a>Individual Character</h3><p>拆分成字符（如英文字母）训练，缺点就是丢失了语义和语法。</p>
+<h3 id="Spell-Check"><a href="#Spell-Check" class="headerlink" title="Spell Check"></a>Spell Check</h3><p>拼写检查，避免因为数据错误而导致的<code>OOV</code>。</p>
+<h3 id="subword"><a href="#subword" class="headerlink" title="subword"></a><code>subword</code></h3><p>子词（类似于词根的思想），此方法介于单词和字符之间，借助n-gram实现。</p>
+<p><img src="/2022/09/17/nlp-out-of-vocabulary/2.png" alt></p>
+<p>缺点：会生成非常多的子词，为了解决这一问题，利用hash将词哈希到数字以减少内存的占用。</p>
+<h3 id="BPE（Byte-Pair-Encoding）"><a href="#BPE（Byte-Pair-Encoding）" class="headerlink" title="BPE（Byte Pair Encoding）"></a><code>BPE</code>（Byte Pair Encoding）</h3><p><code>BPE</code>的方法其实是对<code>subword</code>方法的一种优化，就是减少子词。在<code>GPT</code>和<code>RoBERTa</code>中就是使用的<code>BPE</code>的方法。</p>
+<p><img src="/2022/09/17/nlp-out-of-vocabulary/3.png" alt></p>
+<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><h5 id="自己动手实现（简化版）"><a href="#自己动手实现（简化版）" class="headerlink" title="自己动手实现（简化版）"></a>自己动手实现（简化版）</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> Dict, Tuple, List, Set</span><br><span class="line"></span><br><span class="line"><span class="comment"># 这里的词表需要根据自己的文本，把词的频率统计出来，并按字符分割</span></span><br><span class="line">vocab = &#123;</span><br><span class="line">    <span class="string">'l o w &lt;/w&gt;'</span>: <span class="number">5</span>,</span><br><span class="line">    <span class="string">'l o w e r &lt;/w&gt;'</span>: <span class="number">2</span>,</span><br><span class="line">    <span class="string">'n e w e s t &lt;/w&gt;'</span>: <span class="number">6</span>,</span><br><span class="line">    <span class="string">'w i d e s t &lt;/w&gt;'</span>: <span class="number">3</span>,</span><br><span class="line">    <span class="string">'h a p p i e r &lt;/w&gt;'</span>: <span class="number">2</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取所有的组合和频率</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_pair_status</span><span class="params">(vocab: Dict[str, int])</span> -&gt; Dict[Tuple[str, str], int]:</span></span><br><span class="line">    pairs = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> word, frequency <span class="keyword">in</span> vocab.items():</span><br><span class="line">        symbols = word.split()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(len(symbols) - <span class="number">1</span>):</span><br><span class="line">            pair = (symbols[i], symbols[i+<span class="number">1</span>])</span><br><span class="line">            current_frequency = pairs.get(pair, <span class="number">0</span>)</span><br><span class="line">            pairs[pair] = current_frequency+frequency</span><br><span class="line">    <span class="keyword">return</span> pairs</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">pair_status = get_pair_status(vocab)</span><br><span class="line">print(pair_status)</span><br><span class="line"></span><br><span class="line">&#123;(<span class="string">'l'</span>, <span class="string">'o'</span>): <span class="number">7</span>, (<span class="string">'o'</span>, <span class="string">'w'</span>): <span class="number">7</span>, (<span class="string">'w'</span>, <span class="string">'&lt;/w&gt;'</span>): <span class="number">5</span>, (<span class="string">'w'</span>, <span class="string">'e'</span>): <span class="number">8</span>, (<span class="string">'e'</span>, <span class="string">'r'</span>): <span class="number">4</span>, (<span class="string">'r'</span>, <span class="string">'&lt;/w&gt;'</span>): <span class="number">4</span>, (<span class="string">'n'</span>, <span class="string">'e'</span>): <span class="number">6</span>, (<span class="string">'e'</span>, <span class="string">'w'</span>): <span class="number">6</span>, (<span class="string">'e'</span>, <span class="string">'s'</span>): <span class="number">9</span>, (<span class="string">'s'</span>, <span class="string">'t'</span>): <span class="number">9</span>, (<span class="string">'t'</span>, <span class="string">'&lt;/w&gt;'</span>): <span class="number">9</span>, (<span class="string">'w'</span>, <span class="string">'i'</span>): <span class="number">3</span>, (<span class="string">'i'</span>, <span class="string">'d'</span>): <span class="number">3</span>, (<span class="string">'d'</span>, <span class="string">'e'</span>): <span class="number">3</span>, (<span class="string">'h'</span>, <span class="string">'a'</span>): <span class="number">2</span>, (<span class="string">'a'</span>, <span class="string">'p'</span>): <span class="number">2</span>, (<span class="string">'p'</span>, <span class="string">'p'</span>): <span class="number">2</span>, (<span class="string">'p'</span>, <span class="string">'i'</span>): <span class="number">2</span>, (<span class="string">'i'</span>, <span class="string">'e'</span>): <span class="number">2</span>&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 根据已经筛选到的最大频率组合，合并词表</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">merge_vocab</span><span class="params">(pair: Tuple[str, str], vocab_in: Dict[str, int])</span> -&gt; Dict[str, int]:</span></span><br><span class="line">    vocab_out = &#123;&#125;</span><br><span class="line">    pattern = re.escape(<span class="string">' '</span>.join(pair))</span><br><span class="line">    replacement = <span class="string">''</span>.join(pair)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> word_in <span class="keyword">in</span> vocab_in:</span><br><span class="line">        word_out = re.sub(pattern, replacement, word_in)</span><br><span class="line">        vocab_out[word_out] = vocab_in[word_in]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> vocab_out</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 根据频率值，获取最大字符对</span></span><br><span class="line">best_pair = max(pair_status, key=pair_status.get)</span><br><span class="line">print(best_pair)</span><br><span class="line"></span><br><span class="line">new_vocab = merge_vocab(best_pair, vocab)</span><br><span class="line">print(new_vocab)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">(<span class="string">'e'</span>, <span class="string">'s'</span>)</span><br><span class="line">&#123;<span class="string">'l o w &lt;/w&gt;'</span>: <span class="number">5</span>, <span class="string">'l o w e r &lt;/w&gt;'</span>: <span class="number">2</span>, <span class="string">'n e w es t &lt;/w&gt;'</span>: <span class="number">6</span>, <span class="string">'w i d es t &lt;/w&gt;'</span>: <span class="number">3</span>, <span class="string">'h a p p i e r &lt;/w&gt;'</span>: <span class="number">2</span>&#125;</span><br></pre></td></tr></table></figure>
+<p>上述过程只是一轮迭代的结果，在<code>BPE</code>算法中，最终要生成预先设定好的词表大小的字符对，那么也就是需要不断循环来实现。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 完整迭代</span></span><br><span class="line">bpe_codes = &#123;&#125;</span><br><span class="line">nums_merge = <span class="number">10</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(nums_merge):</span><br><span class="line">    print(<span class="string">'\niteration'</span>, i)</span><br><span class="line">    pair_status = get_pair_status(vocab)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> pair_status:</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">    best_pair = max(pair_status, key=pair_status.get)</span><br><span class="line">    bpe_codes[best_pair] = i</span><br><span class="line"></span><br><span class="line">    print(<span class="string">'vocabulary: '</span>, vocab)</span><br><span class="line">    print(<span class="string">'best pair: '</span>, best_pair)</span><br><span class="line">    vocab = merge_vocab(best_pair, vocab)</span><br><span class="line"></span><br><span class="line">print(<span class="string">'\n final vocabulary: '</span>, vocab)</span><br><span class="line">print(<span class="string">'\n byte pair encoding: '</span>, bpe_codes)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">iteration <span class="number">0</span></span><br><span class="line">vocabulary:  &#123;<span class="string">'l o w &lt;/w&gt;'</span>: <span class="number">5</span>, <span class="string">'l o w e r &lt;/w&gt;'</span>: <span class="number">2</span>, <span class="string">'n e w e s t &lt;/w&gt;'</span>: <span class="number">6</span>, <span class="string">'w i d e s t &lt;/w&gt;'</span>: <span class="number">3</span>, <span class="string">'h a p p i e r &lt;/w&gt;'</span>: <span class="number">2</span>&#125;</span><br><span class="line">best pair:  (<span class="string">'e'</span>, <span class="string">'s'</span>)</span><br><span class="line">iteration <span class="number">1</span></span><br><span class="line">vocabulary:  &#123;<span class="string">'l o w &lt;/w&gt;'</span>: <span class="number">5</span>, <span class="string">'l o w e r &lt;/w&gt;'</span>: <span class="number">2</span>, <span class="string">'n e w es t &lt;/w&gt;'</span>: <span class="number">6</span>, <span class="string">'w i d es t &lt;/w&gt;'</span>: <span class="number">3</span>, <span class="string">'h a p p i e r &lt;/w&gt;'</span>: <span class="number">2</span>&#125;</span><br><span class="line">best pair:  (<span class="string">'es'</span>, <span class="string">'t'</span>)</span><br><span class="line">iteration <span class="number">2</span></span><br><span class="line">vocabulary:  &#123;<span class="string">'l o w &lt;/w&gt;'</span>: <span class="number">5</span>, <span class="string">'l o w e r &lt;/w&gt;'</span>: <span class="number">2</span>, <span class="string">'n e w est &lt;/w&gt;'</span>: <span class="number">6</span>, <span class="string">'w i d est &lt;/w&gt;'</span>: <span class="number">3</span>, <span class="string">'h a p p i e r &lt;/w&gt;'</span>: <span class="number">2</span>&#125;</span><br><span class="line">best pair:  (<span class="string">'est'</span>, <span class="string">'&lt;/w&gt;'</span>)</span><br><span class="line">iteration <span class="number">3</span></span><br><span class="line">vocabulary:  &#123;<span class="string">'l o w &lt;/w&gt;'</span>: <span class="number">5</span>, <span class="string">'l o w e r &lt;/w&gt;'</span>: <span class="number">2</span>, <span class="string">'n e w est&lt;/w&gt;'</span>: <span class="number">6</span>, <span class="string">'w i d est&lt;/w&gt;'</span>: <span class="number">3</span>, <span class="string">'h a p p i e r &lt;/w&gt;'</span>: <span class="number">2</span>&#125;</span><br><span class="line">best pair:  (<span class="string">'l'</span>, <span class="string">'o'</span>)</span><br><span class="line">iteration <span class="number">4</span></span><br><span class="line">vocabulary:  &#123;<span class="string">'lo w &lt;/w&gt;'</span>: <span class="number">5</span>, <span class="string">'lo w e r &lt;/w&gt;'</span>: <span class="number">2</span>, <span class="string">'n e w est&lt;/w&gt;'</span>: <span class="number">6</span>, <span class="string">'w i d est&lt;/w&gt;'</span>: <span class="number">3</span>, <span class="string">'h a p p i e r &lt;/w&gt;'</span>: <span class="number">2</span>&#125;</span><br><span class="line">best pair:  (<span class="string">'lo'</span>, <span class="string">'w'</span>)</span><br><span class="line">iteration <span class="number">5</span></span><br><span class="line">vocabulary:  &#123;<span class="string">'low &lt;/w&gt;'</span>: <span class="number">5</span>, <span class="string">'low e r &lt;/w&gt;'</span>: <span class="number">2</span>, <span class="string">'n e w est&lt;/w&gt;'</span>: <span class="number">6</span>, <span class="string">'w i d est&lt;/w&gt;'</span>: <span class="number">3</span>, <span class="string">'h a p p i e r &lt;/w&gt;'</span>: <span class="number">2</span>&#125;</span><br><span class="line">best pair:  (<span class="string">'n'</span>, <span class="string">'e'</span>)</span><br><span class="line">iteration <span class="number">6</span></span><br><span class="line">vocabulary:  &#123;<span class="string">'low &lt;/w&gt;'</span>: <span class="number">5</span>, <span class="string">'low e r &lt;/w&gt;'</span>: <span class="number">2</span>, <span class="string">'ne w est&lt;/w&gt;'</span>: <span class="number">6</span>, <span class="string">'w i d est&lt;/w&gt;'</span>: <span class="number">3</span>, <span class="string">'h a p p i e r &lt;/w&gt;'</span>: <span class="number">2</span>&#125;</span><br><span class="line">best pair:  (<span class="string">'ne'</span>, <span class="string">'w'</span>)</span><br><span class="line">iteration <span class="number">7</span></span><br><span class="line">vocabulary:  &#123;<span class="string">'low &lt;/w&gt;'</span>: <span class="number">5</span>, <span class="string">'low e r &lt;/w&gt;'</span>: <span class="number">2</span>, <span class="string">'new est&lt;/w&gt;'</span>: <span class="number">6</span>, <span class="string">'w i d est&lt;/w&gt;'</span>: <span class="number">3</span>, <span class="string">'h a p p i e r &lt;/w&gt;'</span>: <span class="number">2</span>&#125;</span><br><span class="line">best pair:  (<span class="string">'new'</span>, <span class="string">'est&lt;/w&gt;'</span>)</span><br><span class="line">iteration <span class="number">8</span></span><br><span class="line">vocabulary:  &#123;<span class="string">'low &lt;/w&gt;'</span>: <span class="number">5</span>, <span class="string">'low e r &lt;/w&gt;'</span>: <span class="number">2</span>, <span class="string">'newest&lt;/w&gt;'</span>: <span class="number">6</span>, <span class="string">'w i d est&lt;/w&gt;'</span>: <span class="number">3</span>, <span class="string">'h a p p i e r &lt;/w&gt;'</span>: <span class="number">2</span>&#125;</span><br><span class="line">best pair:  (<span class="string">'low'</span>, <span class="string">'&lt;/w&gt;'</span>)</span><br><span class="line">iteration <span class="number">9</span></span><br><span class="line">vocabulary:  &#123;<span class="string">'low&lt;/w&gt;'</span>: <span class="number">5</span>, <span class="string">'low e r &lt;/w&gt;'</span>: <span class="number">2</span>, <span class="string">'newest&lt;/w&gt;'</span>: <span class="number">6</span>, <span class="string">'w i d est&lt;/w&gt;'</span>: <span class="number">3</span>, <span class="string">'h a p p i e r &lt;/w&gt;'</span>: <span class="number">2</span>&#125;</span><br><span class="line">best pair:  (<span class="string">'e'</span>, <span class="string">'r'</span>)</span><br><span class="line">    </span><br><span class="line"> final vocabulary:  &#123;<span class="string">'low&lt;/w&gt;'</span>: <span class="number">5</span>, <span class="string">'low er &lt;/w&gt;'</span>: <span class="number">2</span>, <span class="string">'newest&lt;/w&gt;'</span>: <span class="number">6</span>, <span class="string">'w i d est&lt;/w&gt;'</span>: <span class="number">3</span>, <span class="string">'h a p p i er &lt;/w&gt;'</span>: <span class="number">2</span>&#125;</span><br><span class="line"> byte pair encoding:  &#123;(<span class="string">'e'</span>, <span class="string">'s'</span>): <span class="number">0</span>, (<span class="string">'es'</span>, <span class="string">'t'</span>): <span class="number">1</span>, (<span class="string">'est'</span>, <span class="string">'&lt;/w&gt;'</span>): <span class="number">2</span>, (<span class="string">'l'</span>, <span class="string">'o'</span>): <span class="number">3</span>, (<span class="string">'lo'</span>, <span class="string">'w'</span>): <span class="number">4</span>, (<span class="string">'n'</span>, <span class="string">'e'</span>): <span class="number">5</span>, (<span class="string">'ne'</span>, <span class="string">'w'</span>): <span class="number">6</span>, (<span class="string">'new'</span>, <span class="string">'est&lt;/w&gt;'</span>): <span class="number">7</span>, (<span class="string">'low'</span>, <span class="string">'&lt;/w&gt;'</span>): <span class="number">8</span>, (<span class="string">'e'</span>, <span class="string">'r'</span>): <span class="number">9</span>&#125;</span><br></pre></td></tr></table></figure>
+<p>这里我们自行实现（思考：怎么判断生成的词数量达到预先设定的词表大小了？），锻炼动手能力，而实际上已经有相关的包封装了<code>BPE</code>的实现过程，主要有下面两种。</p>
+<h5 id="Google的sentencepiece"><a href="#Google的sentencepiece" class="headerlink" title="Google的sentencepiece"></a>Google的<code>sentencepiece</code></h5><p>参考<code>github</code>项目：<a href="https://github.com/google/sentencepiece" target="_blank" rel="noopener">https://github.com/google/sentencepiece</a></p>
+<p>安装：<code>pip install sentencepiece</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">input_file = <span class="string">'botchan.txt'</span>  <span class="comment"># 在上面的github项目中</span></span><br><span class="line">max_num_words = <span class="number">10000</span></span><br><span class="line">model_type = <span class="string">'bpe'</span></span><br><span class="line">model_prefix = <span class="string">'sentencepiece'</span></span><br><span class="line">pad_id = <span class="number">0</span></span><br><span class="line">unk_id = <span class="number">1</span></span><br><span class="line">bos_id = <span class="number">2</span></span><br><span class="line">eos_id = <span class="number">3</span></span><br><span class="line"></span><br><span class="line">sentencepiece_params = <span class="string">' '</span>.join([</span><br><span class="line">    <span class="string">'--input=&#123;&#125;'</span>.format(input_file),</span><br><span class="line">    <span class="string">'--model_type=&#123;&#125;'</span>.format(model_type),</span><br><span class="line">    <span class="string">'--model_prefix=&#123;&#125;'</span>.format(model_prefix),</span><br><span class="line">    <span class="string">'--vocab_size=&#123;&#125;'</span>.format(max_num_words),</span><br><span class="line">    <span class="string">'--pad_id=&#123;&#125;'</span>.format(pad_id),</span><br><span class="line">    <span class="string">'--unk_id=&#123;&#125;'</span>.format(unk_id),</span><br><span class="line">    <span class="string">'--bos_id=&#123;&#125;'</span>.format(bos_id),</span><br><span class="line">    <span class="string">'--eos_id=&#123;&#125;'</span>.format(eos_id)</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line">print(sentencepiece_params)</span><br><span class="line">SentencePieceTrainer.train(sentencepiece_params)</span><br></pre></td></tr></table></figure>
+<p>这里方法名叫做train，实际上也就是计算，适合大规模的数据处理，速度比较快。最后会生成并保存两个文件分别为：<code>sentencepiece.model</code>和<code>sentencepiece.vocab</code>。</p>
+<p>通过以下方式可以加载上面训练得到的词表</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">sp = SentencePieceProcessor()</span><br><span class="line">sp.load(<span class="string">"&#123;&#125;.model"</span>.format(model_prefix))</span><br><span class="line">print(<span class="string">'Found &#123;&#125; unique tokens.'</span>.format(sp.get_piece_size()))</span><br><span class="line"></span><br><span class="line">Found <span class="number">10000</span> unique tokens.</span><br><span class="line"></span><br><span class="line">original = <span class="string">'This is a test'</span></span><br><span class="line">encoded_piece = sp.encode_as_pieces(original)</span><br><span class="line">print(encoded_piece)</span><br><span class="line"></span><br><span class="line">encoded_ids = sp.encode_as_ids(original)</span><br><span class="line">print(encoded_ids)</span><br><span class="line"></span><br><span class="line">[<span class="string">'▁This'</span>, <span class="string">'▁is'</span>, <span class="string">'▁a'</span>, <span class="string">'▁t'</span>, <span class="string">'est'</span>]</span><br><span class="line">[<span class="number">475</span>, <span class="number">98</span>, <span class="number">6</span>, <span class="number">4</span>, <span class="number">264</span>]</span><br><span class="line"></span><br><span class="line">decoded_pieces = sp.decode_pieces(encoded_piece)</span><br><span class="line">print(decoded_pieces)</span><br><span class="line"></span><br><span class="line">decoded_ids = sp.decode_ids(encoded_ids)</span><br><span class="line">print(decoded_ids)</span><br><span class="line"></span><br><span class="line">This <span class="keyword">is</span> a test</span><br><span class="line">This <span class="keyword">is</span> a test</span><br><span class="line"></span><br><span class="line">piece_id = sp.piece_to_id(<span class="string">'▁This'</span>)</span><br><span class="line">print(piece_id)</span><br><span class="line"></span><br><span class="line">print(sp.id_to_piece(piece_id))</span><br><span class="line"></span><br><span class="line"><span class="number">475</span></span><br><span class="line">▁This</span><br></pre></td></tr></table></figure>
+<h5 id="huggingface-transformer的-tokenizers"><a href="#huggingface-transformer的-tokenizers" class="headerlink" title="huggingface transformer的 tokenizers"></a><code>huggingface transformer的 tokenizers</code></h5><p>安装：<code>pip install tokenizers</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">tokenizer = Tokenizer(BPE())</span><br><span class="line"></span><br><span class="line">tokenizer.normalizer = Sequence([NFKC(), Lowercase()])</span><br><span class="line">tokenizer.pre_tokenizer = ByteLevel()</span><br><span class="line"></span><br><span class="line">tokenizer.decoder = ByteLevelDecoder()</span><br><span class="line">trainer = BpeTrainer(vocab_size=<span class="number">10000</span>, show_progress=<span class="literal">True</span>, initial_alphabet=ByteLevel.alphabet())</span><br><span class="line">tokenizer.train(files=[<span class="string">"botchan.txt"</span>], trainer=trainer)</span><br><span class="line">print(<span class="string">"Trained vocab size: &#123;&#125;"</span>.format(tokenizer.get_vocab_size()))</span><br><span class="line">tokenizer.model.save(<span class="string">"."</span>)</span><br><span class="line"></span><br><span class="line">tokenizer.model = BPE(<span class="string">'vocab.json'</span>, <span class="string">'merges.txt'</span>)</span><br><span class="line">encoding = tokenizer.encode(<span class="string">"This is a simple input to be tokenized"</span>)</span><br><span class="line">print(<span class="string">"Encoded string: &#123;&#125;"</span>.format(encoding.tokens))</span><br><span class="line"></span><br><span class="line">decoded = tokenizer.decode(encoding.ids)</span><br><span class="line">print(<span class="string">"Decoded string: &#123;&#125;"</span>.format(decoded))</span><br><span class="line"></span><br><span class="line">Trained vocab size: <span class="number">9579</span></span><br><span class="line">Encoded string: [<span class="string">'Ġthis'</span>, <span class="string">'Ġis'</span>, <span class="string">'Ġa'</span>, <span class="string">'Ġsimple'</span>, <span class="string">'Ġin'</span>, <span class="string">'p'</span>, <span class="string">'ut'</span>, <span class="string">'Ġto'</span>, <span class="string">'Ġbe'</span>, <span class="string">'Ġto'</span>, <span class="string">'ken'</span>, <span class="string">'ized'</span>]</span><br><span class="line">Decoded string:  this <span class="keyword">is</span> a simple input to be tokenized</span><br><span class="line"><span class="keyword">import</span> sys; print(<span class="string">'Python %s on %s'</span> % (sys.version, sys.platform))</span><br></pre></td></tr></table></figure>
+<h3 id="WordPiece"><a href="#WordPiece" class="headerlink" title="WordPiece"></a><code>WordPiece</code></h3><p><img src="/2022/09/17/nlp-out-of-vocabulary/4.png" style="zoom:50%;"></p>
+<p><code>wordpiece</code>与<code>BPE</code>算法本质一样，都是基于<code>subword</code>的优化算法，主要区别在于如何选择子词进行合并，下面的<code>unigram language model</code>也是这样。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> tokenizers <span class="keyword">import</span> Tokenizer</span><br><span class="line"><span class="keyword">from</span> tokenizers.models <span class="keyword">import</span> WordPiece</span><br><span class="line"><span class="keyword">from</span> tokenizers <span class="keyword">import</span> normalizers</span><br><span class="line"><span class="keyword">from</span> tokenizers.normalizers <span class="keyword">import</span> Lowercase, NFD, StripAccents</span><br><span class="line"><span class="keyword">from</span> tokenizers.pre_tokenizers <span class="keyword">import</span> Whitespace</span><br><span class="line"><span class="keyword">from</span> tokenizers.processors <span class="keyword">import</span> TemplateProcessing</span><br><span class="line"><span class="keyword">from</span> tokenizers.trainers <span class="keyword">import</span> WordPieceTrainer</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">bert_tokenizer = Tokenizer(WordPiece(unk_token=<span class="string">"[UNK]"</span>))</span><br><span class="line">bert_tokenizer.normalizer = normalizers.Sequence([NFD(), Lowercase(), StripAccents()])</span><br><span class="line">bert_tokenizer.pre_tokenizer = Whitespace()</span><br><span class="line"></span><br><span class="line">bert_tokenizer.post_process = TemplateProcessing(</span><br><span class="line">    single=<span class="string">"[CLS] $A [SEP]"</span>,</span><br><span class="line">    pair=<span class="string">"[CLS] $A [SEP] $B:1 [SEP]:1"</span>,</span><br><span class="line">    special_tokens=[</span><br><span class="line">        (<span class="string">"[CLS]"</span>, <span class="number">1</span>),</span><br><span class="line">        (<span class="string">"[SEP]"</span>, <span class="number">2</span>)</span><br><span class="line">    ],</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">trainer = WordPieceTrainer(</span><br><span class="line">    vocab_size=<span class="number">10000</span>, special_tokens=[<span class="string">"[UNK]"</span>, <span class="string">"[CLS]"</span>, <span class="string">"[SEP]"</span>, <span class="string">"[PAD]"</span>, <span class="string">"[MASK]"</span>]</span><br><span class="line">)</span><br><span class="line">files = [<span class="string">"botchan.txt"</span>]</span><br><span class="line">bert_tokenizer.train(files, trainer)</span><br><span class="line"></span><br><span class="line">encoding = bert_tokenizer.encode(<span class="string">"This is a simple input to be tokenized"</span>)</span><br><span class="line">print(<span class="string">"Encoded string: &#123;&#125;"</span>.format(encoding.tokens))</span><br><span class="line">decoded = bert_tokenizer.decode(encoding.ids)</span><br><span class="line">print(<span class="string">"Decoded string: &#123;&#125;"</span>.format(decoded))</span><br><span class="line"></span><br><span class="line">Encoded string: [<span class="string">'this'</span>, <span class="string">'is'</span>, <span class="string">'a'</span>, <span class="string">'simple'</span>, <span class="string">'in'</span>, <span class="string">'##p'</span>, <span class="string">'##ut'</span>, <span class="string">'to'</span>, <span class="string">'be'</span>, <span class="string">'to'</span>, <span class="string">'##ke'</span>, <span class="string">'##n'</span>, <span class="string">'##ized'</span>]</span><br><span class="line">Decoded string: this <span class="keyword">is</span> a simple <span class="keyword">in</span> <span class="comment">##p ##ut to be to ##ke ##n ##ized</span></span><br></pre></td></tr></table></figure>
+<h3 id="Unigram-Language-Model"><a href="#Unigram-Language-Model" class="headerlink" title="Unigram Language Model"></a><code>Unigram Language Model</code></h3><p><img src="/2022/09/17/nlp-out-of-vocabulary/5.png" alt></p>
+<p>同样可以借助Google的<code>SentencePiece</code>包来实现，只需要把model_type改为<code>unigram</code>即可。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/nlp/" rel="tag"># nlp</a>
+          
+            <a href="/tags/out-of-vocabulary/" rel="tag"># out-of-vocabulary</a>
+          
+            <a href="/tags/bpe/" rel="tag"># bpe</a>
+          
+            <a href="/tags/wordpiece/" rel="tag"># wordpiece</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/09/11/nlp-text-summarize-evaluate/" rel="next" title="文本摘要生成的评估指标">
+                <i class="fa fa-chevron-left"></i> 文本摘要生成的评估指标
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/09/24/nlp-hyper-parameters-tuning/" rel="prev" title="Hyper Parameter Tuning">
+                Hyper Parameter Tuning <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">104</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">198</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Out-of-Vocabulary"><span class="nav-text">Out of Vocabulary</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Ignore"><span class="nav-text">Ignore</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UNK"><span class="nav-text">UNK</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Enlarge-vocabulary"><span class="nav-text">Enlarge vocabulary</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Individual-Character"><span class="nav-text">Individual Character</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spell-Check"><span class="nav-text">Spell Check</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#subword"><span class="nav-text">subword</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BPE（Byte-Pair-Encoding）"><span class="nav-text">BPE（Byte Pair Encoding）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#代码实现"><span class="nav-text">代码实现</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#自己动手实现（简化版）"><span class="nav-text">自己动手实现（简化版）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Google的sentencepiece"><span class="nav-text">Google的sentencepiece</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#huggingface-transformer的-tokenizers"><span class="nav-text">huggingface transformer的 tokenizers</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#WordPiece"><span class="nav-text">WordPiece</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Unigram-Language-Model"><span class="nav-text">Unigram Language Model</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

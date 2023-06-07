@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="deep learning,nlp,transformers,huggingface,实体抽取,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="利用huggingface-transformers进行命名实体识别项目地址：https://github.com/huggingface/transformers 文档地址：https://huggingface.co/docs/transformers/pipeline_tutorial 寻找你要的模型Transformers 提供了数以千计的预训练模型，支持 100 多种语言的文本分类、信息">
+<meta name="keywords" content="deep learning,nlp,transformers,huggingface,实体抽取">
+<meta property="og:type" content="article">
+<meta property="og:title" content="利用huggingface-transformers进行命名实体识别">
+<meta property="og:url" content="http://yoursite.com/2022/04/29/nlp-hf-transformer-ner/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="利用huggingface-transformers进行命名实体识别项目地址：https://github.com/huggingface/transformers 文档地址：https://huggingface.co/docs/transformers/pipeline_tutorial 寻找你要的模型Transformers 提供了数以千计的预训练模型，支持 100 多种语言的文本分类、信息">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2022-07-16T08:34:53.674Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="利用huggingface-transformers进行命名实体识别">
+<meta name="twitter:description" content="利用huggingface-transformers进行命名实体识别项目地址：https://github.com/huggingface/transformers 文档地址：https://huggingface.co/docs/transformers/pipeline_tutorial 寻找你要的模型Transformers 提供了数以千计的预训练模型，支持 100 多种语言的文本分类、信息">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2022/04/29/nlp-hf-transformer-ner/">
+
+
+
+
+
+  <title>利用huggingface-transformers进行命名实体识别 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/04/29/nlp-hf-transformer-ner/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">利用huggingface-transformers进行命名实体识别</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-04-29T14:19:54+08:00">
+                2022-04-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="利用huggingface-transformers进行命名实体识别"><a href="#利用huggingface-transformers进行命名实体识别" class="headerlink" title="利用huggingface-transformers进行命名实体识别"></a>利用huggingface-transformers进行命名实体识别</h2><p>项目地址：<a href="https://github.com/huggingface/transformers" target="_blank" rel="noopener">https://github.com/huggingface/transformers</a></p>
+<p>文档地址：<a href="https://huggingface.co/docs/transformers/pipeline_tutorial" target="_blank" rel="noopener">https://huggingface.co/docs/transformers/pipeline_tutorial</a></p>
+<h3 id="寻找你要的模型"><a href="#寻找你要的模型" class="headerlink" title="寻找你要的模型"></a>寻找你要的模型</h3><p>Transformers 提供了数以千计的预训练模型，支持 100 多种语言的文本分类、信息抽取、问答、摘要、翻译、文本生成。</p>
+<p>从这里：<a href="https://huggingface.co/models" target="_blank" rel="noopener">https://huggingface.co/models</a> 可以查找你要的模型，可以根据任务、语言、框架、数据集等筛选。</p>
+<p>这里我们想要进行基于中文的ner任务，筛选出这个模型：<a href="https://huggingface.co/ckiplab/bert-base-chinese-ner" target="_blank" rel="noopener"> bert-base-chinese-ner</a></p>
+<p>打开之后，通过介绍我们发现这是一个基于<strong>繁体中文</strong>的模型，对应的github地址是：</p>
+<p><a href="https://github.com/ckiplab/ckip-transformers" target="_blank" rel="noopener">https://github.com/ckiplab/ckip-transformers</a></p>
+<p>有需要的小伙伴可以尝试。</p>
+<p>我们继续筛选，找到了这个模型：<a href="https://huggingface.co/uer/roberta-base-finetuned-cluener2020-chinese" target="_blank" rel="noopener">uer/roberta-base-finetuned-cluener2020-chinese</a></p>
+<h3 id="模型使用"><a href="#模型使用" class="headerlink" title="模型使用"></a>模型使用</h3><a id="more"></a>
+<h4 id="方法一：运行时下载模型"><a href="#方法一：运行时下载模型" class="headerlink" title="方法一：运行时下载模型"></a>方法一：运行时下载模型</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoModelForTokenClassification,AutoTokenizer,pipeline</span><br><span class="line"></span><br><span class="line">model = AutoModelForTokenClassification.from_pretrained(<span class="string">'uer/roberta-base-finetuned-cluener2020-chinese'</span>)</span><br><span class="line">tokenizer = AutoTokenizer.from_pretrained(<span class="string">'uer/roberta-base-finetuned-cluener2020-chinese'</span>)</span><br><span class="line"></span><br><span class="line">ner_pipe = pipeline(<span class="string">'ner'</span>, model=model, tokenizer=tokenizer)</span><br><span class="line">print(ner_pipe(<span class="string">"江苏警方通报特斯拉冲进店铺"</span>))</span><br></pre></td></tr></table></figure>
+<p>第一次执行时，会下载模型权重文件，默认保存到的路径是</p>
+<p>C:\Users\用户名\.cache\torch\transformers\</p>
+<p>我们可以把相应的权重文件从这里复制到别的地方，然后从指定目录加载模型（也可以在一开始时直接下载至指定目录）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">model = AutoModelForTokenClassification.from_pretrained(</span><br><span class="line">    <span class="string">'uer/roberta-base-finetuned-cluener2020-chinese'</span>,</span><br><span class="line">    cache_dir=<span class="string">'./data/transformers'</span>)</span><br></pre></td></tr></table></figure>
+<p>上面运行下载的模型文件名称不太友好，当模型多了不好管理，还可以用下面这种方法加载模型</p>
+<h4 id="方法二：下载原项目，然后加载"><a href="#方法二：下载原项目，然后加载" class="headerlink" title="方法二：下载原项目，然后加载"></a>方法二：下载原项目，然后加载</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git lfs install</span><br><span class="line">git clone https://huggingface.co/uer/roberta-base-finetuned-cluener2020-chinese</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 从下载的原项目路径加载</span></span><br><span class="line">model = AutoModelForTokenClassification.from_pretrained(</span><br><span class="line">    <span class="string">'D:/python_project/git/roberta-base-finetuned-cluener2020-chinese'</span></span><br><span class="line">)</span><br><span class="line">tokenizer = AutoTokenizer.from_pretrained(</span><br><span class="line">    <span class="string">'D:/python_project/git/roberta-base-finetuned-cluener2020-chinese'</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h3 id="实体抽取"><a href="#实体抽取" class="headerlink" title="实体抽取"></a>实体抽取</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">model = AutoModelForTokenClassification.from_pretrained(</span><br><span class="line">    <span class="string">'uer/roberta-base-finetuned-cluener2020-chinese'</span>,</span><br><span class="line">    cache_dir=<span class="string">'./data/transformers'</span>)</span><br><span class="line">tokenizer = AutoTokenizer.from_pretrained(</span><br><span class="line">    <span class="string">'uer/roberta-base-finetuned-cluener2020-chinese'</span>,</span><br><span class="line">    cache_dir=<span class="string">'./data/transformers'</span>)</span><br><span class="line"></span><br><span class="line">ner_pipe = pipeline(<span class="string">'ner'</span>, model=model, tokenizer=tokenizer)</span><br><span class="line">print(ner_pipe(<span class="string">"江苏警方通报特斯拉冲进店铺"</span>))</span><br><span class="line"></span><br><span class="line">[</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'B-address'</span>, <span class="string">'score'</span>: <span class="number">0.66190094</span>, <span class="string">'index'</span>: <span class="number">1</span>, <span class="string">'word'</span>: <span class="string">'江'</span>, <span class="string">'start'</span>: <span class="number">0</span>, <span class="string">'end'</span>: <span class="number">1</span>&#125;, </span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-address'</span>, <span class="string">'score'</span>: <span class="number">0.554456</span>, <span class="string">'index'</span>: <span class="number">2</span>, <span class="string">'word'</span>: <span class="string">'苏'</span>, <span class="string">'start'</span>: <span class="number">1</span>, <span class="string">'end'</span>: <span class="number">2</span>&#125;, </span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'B-company'</span>, <span class="string">'score'</span>: <span class="number">0.42272708</span>, <span class="string">'index'</span>: <span class="number">7</span>, <span class="string">'word'</span>: <span class="string">'特'</span>, <span class="string">'start'</span>: <span class="number">6</span>, <span class="string">'end'</span>: <span class="number">7</span>&#125;, </span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-company'</span>, <span class="string">'score'</span>: <span class="number">0.4546979</span>, <span class="string">'index'</span>: <span class="number">8</span>, <span class="string">'word'</span>: <span class="string">'斯'</span>, <span class="string">'start'</span>: <span class="number">7</span>, <span class="string">'end'</span>: <span class="number">8</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-company'</span>, <span class="string">'score'</span>: <span class="number">0.52078307</span>, <span class="string">'index'</span>: <span class="number">9</span>, <span class="string">'word'</span>: <span class="string">'拉'</span>, <span class="string">'start'</span>: <span class="number">8</span>, <span class="string">'end'</span>: <span class="number">9</span>&#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p>实体抽取的结果是一个列表，列表中每个元素为字典类型，但是并非每个字典为一个实体，而是实体的一部分，“江”的entity为“B-address”表示，表示其为一个address实体的开始（beginning），相应地“苏”就是address实体的Inside部分。可以参考<strong>BIO的标注规则</strong>。</p>
+<p>再来做一个测试</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">content = <span class="string">"""本院定于2022年6月1日 上午09时00分在普洱市中级人民法院第三法庭公开开庭审理原告中国音像著作权集体管理协会与被告普洱帝都娱乐有限公司著作权权属、侵权纠纷一案。"""</span></span><br><span class="line">print(ner_pipe(content))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'B-government'</span>, <span class="string">'score'</span>: <span class="number">0.94568264</span>, <span class="string">'index'</span>: <span class="number">18</span>, <span class="string">'word'</span>: <span class="string">'普'</span>, <span class="string">'start'</span>: <span class="number">23</span>, <span class="string">'end'</span>: <span class="number">24</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-government'</span>, <span class="string">'score'</span>: <span class="number">0.9213542</span>, <span class="string">'index'</span>: <span class="number">19</span>, <span class="string">'word'</span>: <span class="string">'洱'</span>, <span class="string">'start'</span>: <span class="number">24</span>, <span class="string">'end'</span>: <span class="number">25</span>&#125;, </span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-government'</span>, <span class="string">'score'</span>: <span class="number">0.96393627</span>, <span class="string">'index'</span>: <span class="number">20</span>, <span class="string">'word'</span>: <span class="string">'市'</span>, <span class="string">'start'</span>: <span class="number">25</span>, <span class="string">'end'</span>: <span class="number">26</span>&#125;, </span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-government'</span>, <span class="string">'score'</span>: <span class="number">0.97218406</span>, <span class="string">'index'</span>: <span class="number">21</span>, <span class="string">'word'</span>: <span class="string">'中'</span>, <span class="string">'start'</span>: <span class="number">26</span>, <span class="string">'end'</span>: <span class="number">27</span>&#125;, </span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-government'</span>, <span class="string">'score'</span>: <span class="number">0.9750988</span>, <span class="string">'index'</span>: <span class="number">22</span>, <span class="string">'word'</span>: <span class="string">'级'</span>, <span class="string">'start'</span>: <span class="number">27</span>, <span class="string">'end'</span>: <span class="number">28</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-government'</span>, <span class="string">'score'</span>: <span class="number">0.9764756</span>, <span class="string">'index'</span>: <span class="number">23</span>, <span class="string">'word'</span>: <span class="string">'人'</span>, <span class="string">'start'</span>: <span class="number">28</span>, <span class="string">'end'</span>: <span class="number">29</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-government'</span>, <span class="string">'score'</span>: <span class="number">0.9742114</span>, <span class="string">'index'</span>: <span class="number">24</span>, <span class="string">'word'</span>: <span class="string">'民'</span>, <span class="string">'start'</span>: <span class="number">29</span>, <span class="string">'end'</span>: <span class="number">30</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-government'</span>, <span class="string">'score'</span>: <span class="number">0.96489114</span>, <span class="string">'index'</span>: <span class="number">25</span>, <span class="string">'word'</span>: <span class="string">'法'</span>, <span class="string">'start'</span>: <span class="number">30</span>, <span class="string">'end'</span>: <span class="number">31</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-government'</span>, <span class="string">'score'</span>: <span class="number">0.9691787</span>, <span class="string">'index'</span>: <span class="number">26</span>, <span class="string">'word'</span>: <span class="string">'院'</span>, <span class="string">'start'</span>: <span class="number">31</span>, <span class="string">'end'</span>: <span class="number">32</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-government'</span>, <span class="string">'score'</span>: <span class="number">0.65080214</span>, <span class="string">'index'</span>: <span class="number">27</span>, <span class="string">'word'</span>: <span class="string">'第'</span>, <span class="string">'start'</span>: <span class="number">32</span>, <span class="string">'end'</span>: <span class="number">33</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-government'</span>, <span class="string">'score'</span>: <span class="number">0.9060895</span>, <span class="string">'index'</span>: <span class="number">28</span>, <span class="string">'word'</span>: <span class="string">'三'</span>, <span class="string">'start'</span>: <span class="number">33</span>, <span class="string">'end'</span>: <span class="number">34</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-government'</span>, <span class="string">'score'</span>: <span class="number">0.8860891</span>, <span class="string">'index'</span>: <span class="number">29</span>, <span class="string">'word'</span>: <span class="string">'法'</span>, <span class="string">'start'</span>: <span class="number">34</span>, <span class="string">'end'</span>: <span class="number">35</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-government'</span>, <span class="string">'score'</span>: <span class="number">0.90334916</span>, <span class="string">'index'</span>: <span class="number">30</span>, <span class="string">'word'</span>: <span class="string">'庭'</span>, <span class="string">'start'</span>: <span class="number">35</span>, <span class="string">'end'</span>: <span class="number">36</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'B-organization'</span>, <span class="string">'score'</span>: <span class="number">0.9363663</span>, <span class="string">'index'</span>: <span class="number">39</span>, <span class="string">'word'</span>: <span class="string">'中'</span>, <span class="string">'start'</span>: <span class="number">44</span>, <span class="string">'end'</span>: <span class="number">45</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-organization'</span>, <span class="string">'score'</span>: <span class="number">0.9424646</span>, <span class="string">'index'</span>: <span class="number">40</span>, <span class="string">'word'</span>: <span class="string">'国'</span>, <span class="string">'start'</span>: <span class="number">45</span>, <span class="string">'end'</span>: <span class="number">46</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-organization'</span>, <span class="string">'score'</span>: <span class="number">0.8929043</span>, <span class="string">'index'</span>: <span class="number">41</span>, <span class="string">'word'</span>: <span class="string">'音'</span>, <span class="string">'start'</span>: <span class="number">46</span>, <span class="string">'end'</span>: <span class="number">47</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-organization'</span>, <span class="string">'score'</span>: <span class="number">0.90582854</span>, <span class="string">'index'</span>: <span class="number">42</span>, <span class="string">'word'</span>: <span class="string">'像'</span>, <span class="string">'start'</span>: <span class="number">47</span>, <span class="string">'end'</span>: <span class="number">48</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-organization'</span>, <span class="string">'score'</span>: <span class="number">0.8805796</span>, <span class="string">'index'</span>: <span class="number">43</span>, <span class="string">'word'</span>: <span class="string">'著'</span>, <span class="string">'start'</span>: <span class="number">48</span>, <span class="string">'end'</span>: <span class="number">49</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-organization'</span>, <span class="string">'score'</span>: <span class="number">0.79649234</span>, <span class="string">'index'</span>: <span class="number">44</span>, <span class="string">'word'</span>: <span class="string">'作'</span>, <span class="string">'start'</span>: <span class="number">49</span>, <span class="string">'end'</span>: <span class="number">50</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-organization'</span>, <span class="string">'score'</span>: <span class="number">0.92722464</span>, <span class="string">'index'</span>: <span class="number">45</span>, <span class="string">'word'</span>: <span class="string">'权'</span>, <span class="string">'start'</span>: <span class="number">50</span>, <span class="string">'end'</span>: <span class="number">51</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-organization'</span>, <span class="string">'score'</span>: <span class="number">0.95748276</span>, <span class="string">'index'</span>: <span class="number">46</span>, <span class="string">'word'</span>: <span class="string">'集'</span>, <span class="string">'start'</span>: <span class="number">51</span>, <span class="string">'end'</span>: <span class="number">52</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-organization'</span>, <span class="string">'score'</span>: <span class="number">0.96203715</span>, <span class="string">'index'</span>: <span class="number">47</span>, <span class="string">'word'</span>: <span class="string">'体'</span>, <span class="string">'start'</span>: <span class="number">52</span>, <span class="string">'end'</span>: <span class="number">53</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-organization'</span>, <span class="string">'score'</span>: <span class="number">0.9557828</span>, <span class="string">'index'</span>: <span class="number">48</span>, <span class="string">'word'</span>: <span class="string">'管'</span>, <span class="string">'start'</span>: <span class="number">53</span>, <span class="string">'end'</span>: <span class="number">54</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-organization'</span>, <span class="string">'score'</span>: <span class="number">0.96434724</span>, <span class="string">'index'</span>: <span class="number">49</span>, <span class="string">'word'</span>: <span class="string">'理'</span>, <span class="string">'start'</span>: <span class="number">54</span>, <span class="string">'end'</span>: <span class="number">55</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-organization'</span>, <span class="string">'score'</span>: <span class="number">0.9720231</span>, <span class="string">'index'</span>: <span class="number">50</span>, <span class="string">'word'</span>: <span class="string">'协'</span>, <span class="string">'start'</span>: <span class="number">55</span>, <span class="string">'end'</span>: <span class="number">56</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-organization'</span>, <span class="string">'score'</span>: <span class="number">0.9506598</span>, <span class="string">'index'</span>: <span class="number">51</span>, <span class="string">'word'</span>: <span class="string">'会'</span>, <span class="string">'start'</span>: <span class="number">56</span>, <span class="string">'end'</span>: <span class="number">57</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'B-company'</span>, <span class="string">'score'</span>: <span class="number">0.9608379</span>, <span class="string">'index'</span>: <span class="number">55</span>, <span class="string">'word'</span>: <span class="string">'普'</span>, <span class="string">'start'</span>: <span class="number">60</span>, <span class="string">'end'</span>: <span class="number">61</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-company'</span>, <span class="string">'score'</span>: <span class="number">0.9295836</span>, <span class="string">'index'</span>: <span class="number">56</span>, <span class="string">'word'</span>: <span class="string">'洱'</span>, <span class="string">'start'</span>: <span class="number">61</span>, <span class="string">'end'</span>: <span class="number">62</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-company'</span>, <span class="string">'score'</span>: <span class="number">0.9206439</span>, <span class="string">'index'</span>: <span class="number">57</span>, <span class="string">'word'</span>: <span class="string">'帝'</span>, <span class="string">'start'</span>: <span class="number">62</span>, <span class="string">'end'</span>: <span class="number">63</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-company'</span>, <span class="string">'score'</span>: <span class="number">0.9737558</span>, <span class="string">'index'</span>: <span class="number">58</span>, <span class="string">'word'</span>: <span class="string">'都'</span>, <span class="string">'start'</span>: <span class="number">63</span>, <span class="string">'end'</span>: <span class="number">64</span>&#125;, </span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-company'</span>, <span class="string">'score'</span>: <span class="number">0.98576665</span>, <span class="string">'index'</span>: <span class="number">59</span>, <span class="string">'word'</span>: <span class="string">'娱'</span>, <span class="string">'start'</span>: <span class="number">64</span>, <span class="string">'end'</span>: <span class="number">65</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-company'</span>, <span class="string">'score'</span>: <span class="number">0.9775351</span>, <span class="string">'index'</span>: <span class="number">60</span>, <span class="string">'word'</span>: <span class="string">'乐'</span>, <span class="string">'start'</span>: <span class="number">65</span>, <span class="string">'end'</span>: <span class="number">66</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-company'</span>, <span class="string">'score'</span>: <span class="number">0.98828006</span>, <span class="string">'index'</span>: <span class="number">61</span>, <span class="string">'word'</span>: <span class="string">'有'</span>, <span class="string">'start'</span>: <span class="number">66</span>, <span class="string">'end'</span>: <span class="number">67</span>&#125;,</span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-company'</span>, <span class="string">'score'</span>: <span class="number">0.9860963</span>, <span class="string">'index'</span>: <span class="number">62</span>, <span class="string">'word'</span>: <span class="string">'限'</span>, <span class="string">'start'</span>: <span class="number">67</span>, <span class="string">'end'</span>: <span class="number">68</span>&#125;, </span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-company'</span>, <span class="string">'score'</span>: <span class="number">0.9872212</span>, <span class="string">'index'</span>: <span class="number">63</span>, <span class="string">'word'</span>: <span class="string">'公'</span>, <span class="string">'start'</span>: <span class="number">68</span>, <span class="string">'end'</span>: <span class="number">69</span>&#125;, </span><br><span class="line">    &#123;<span class="string">'entity'</span>: <span class="string">'I-company'</span>, <span class="string">'score'</span>: <span class="number">0.9746289</span>, <span class="string">'index'</span>: <span class="number">64</span>, <span class="string">'word'</span>: <span class="string">'司'</span>, <span class="string">'start'</span>: <span class="number">69</span>, <span class="string">'end'</span>: <span class="number">70</span>&#125;]</span><br></pre></td></tr></table></figure>
+<p>可以看到其抽取到了三个实体，分别为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="string">'government'</span>: <span class="string">'普洱市中级人民法院第三法庭'</span>, <span class="string">'organization'</span>: <span class="string">'中国音像著作权集体管理协会'</span>,</span><br><span class="line"><span class="string">'company'</span>: <span class="string">'普洱帝都娱乐有限公司'</span>&#125;</span><br></pre></td></tr></table></figure>
+<p>通过以下方式还可以查看分词结果</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">print(tokenizer.tokenize(content))</span><br><span class="line"></span><br><span class="line">[<span class="string">'本'</span>, <span class="string">'院'</span>, <span class="string">'定'</span>, <span class="string">'于'</span>, <span class="string">'2022'</span>, <span class="string">'年'</span>, <span class="string">'6'</span>, <span class="string">'月'</span>, <span class="string">'1'</span>, <span class="string">'日'</span>, <span class="string">'上'</span>, <span class="string">'午'</span>, <span class="string">'09'</span>, <span class="string">'时'</span>, <span class="string">'00'</span>, <span class="string">'分'</span>, <span class="string">'在'</span>, <span class="string">'普'</span>, <span class="string">'洱'</span>, <span class="string">'市'</span>, <span class="string">'中'</span>, <span class="string">'级'</span>, <span class="string">'人'</span>, <span class="string">'民'</span>, <span class="string">'法'</span>, <span class="string">'院'</span>, <span class="string">'第'</span>, <span class="string">'三'</span>, <span class="string">'法'</span>, <span class="string">'庭'</span>, <span class="string">'公'</span>, <span class="string">'开'</span>, <span class="string">'开'</span>, <span class="string">'庭'</span>, <span class="string">'审'</span>, <span class="string">'理'</span>, <span class="string">'原'</span>, <span class="string">'告'</span>, <span class="string">'中'</span>, <span class="string">'国'</span>, <span class="string">'音'</span>, <span class="string">'像'</span>, <span class="string">'著'</span>, <span class="string">'作'</span>, <span class="string">'权'</span>, <span class="string">'集'</span>, <span class="string">'体'</span>, <span class="string">'管'</span>, <span class="string">'理'</span>, <span class="string">'协'</span>, <span class="string">'会'</span>, <span class="string">'与'</span>, <span class="string">'被'</span>, <span class="string">'告'</span>, <span class="string">'普'</span>, <span class="string">'洱'</span>, <span class="string">'帝'</span>, <span class="string">'都'</span>, <span class="string">'娱'</span>, <span class="string">'乐'</span>, <span class="string">'有'</span>, <span class="string">'限'</span>, <span class="string">'公'</span>, <span class="string">'司'</span>, <span class="string">'著'</span>, <span class="string">'作'</span>, <span class="string">'权'</span>, <span class="string">'权'</span>, <span class="string">'属'</span>, <span class="string">'、'</span>, <span class="string">'侵'</span>, <span class="string">'权'</span>, <span class="string">'纠'</span>, <span class="string">'纷'</span>, <span class="string">'一'</span>, <span class="string">'案'</span>, <span class="string">'。'</span>]</span><br></pre></td></tr></table></figure>
+<p>看起来并没有“词”，都是单个的字，与HanLP是不一样的，不过实际上可以理解，因为BERT本身在训练的时候就是把单个的字作为输入进行训练，没有去做真正的中文分词。</p>
+<h3 id="训练自己的实体抽取任务"><a href="#训练自己的实体抽取任务" class="headerlink" title="训练自己的实体抽取任务"></a>训练自己的实体抽取任务</h3><p>上面的模型已经可以做到一个不错的中文实体抽取效果，但是应用到特定领域，不可避免地会有一些领域实体抽取不出来，例如在司法领域，案由<strong>著作权权属、侵权纠纷</strong>就无法抽取出来，如果我们想训练自己的实体抽取任务应该怎么做呢？其实通过查看<a href="https://huggingface.co/uer/roberta-base-finetuned-cluener2020-chinese" target="_blank" rel="noopener">uer/roberta-base-finetuned-cluener2020-chinese</a>这个模型的文档可以知道，该模型是通过UER-py的GitHub项目训练得到一个中文命名实体模型，UER-py项目地址为：</p>
+<p><a href="https://github.com/dbiir/UER-py" target="_blank" rel="noopener">https://github.com/dbiir/UER-py</a></p>
+<p>对应中文文档为：<a href="https://github.com/dbiir/UER-py/blob/master/README_ZH.md" target="_blank" rel="noopener">https://github.com/dbiir/UER-py/blob/master/README_ZH.md</a></p>
+<p>在文档中可以看到：<strong>“UER-py（Universal Encoder Representations）是一个用于对通用语料进行预训练并对下游任务进行微调的工具包。UER-py遵循模块化的设计原则。通过模块的组合，用户能迅速精准的复现已有的预训练模型，并利用已有的接口进一步开发更多的预训练模型”</strong>。</p>
+<p>所以，如果我们想要在训练自己的实体抽取任务，可以借助UER-py来帮助我们实现，下面我也会记录学习使用这个工具包的过程。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/nlp/" rel="tag"># nlp</a>
+          
+            <a href="/tags/transformers/" rel="tag"># transformers</a>
+          
+            <a href="/tags/huggingface/" rel="tag"># huggingface</a>
+          
+            <a href="/tags/实体抽取/" rel="tag"># 实体抽取</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/04/23/nlp-hanlp-ner/" rel="next" title="使用HanLP进行分词和实体抽取">
+                <i class="fa fa-chevron-left"></i> 使用HanLP进行分词和实体抽取
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/05/10/nlp-whole-word-mask/" rel="prev" title="Whole Word Masking (wwm)">
+                Whole Word Masking (wwm) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">104</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">198</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#利用huggingface-transformers进行命名实体识别"><span class="nav-text">利用huggingface-transformers进行命名实体识别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#寻找你要的模型"><span class="nav-text">寻找你要的模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模型使用"><span class="nav-text">模型使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#方法一：运行时下载模型"><span class="nav-text">方法一：运行时下载模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#方法二：下载原项目，然后加载"><span class="nav-text">方法二：下载原项目，然后加载</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实体抽取"><span class="nav-text">实体抽取</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#训练自己的实体抽取任务"><span class="nav-text">训练自己的实体抽取任务</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

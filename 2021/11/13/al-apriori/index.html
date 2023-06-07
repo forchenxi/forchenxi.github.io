@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="关联规则,Apriori,连接,剪枝,置信度,支持度,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="关联规则啤酒与尿布的故事： 在美国，一些年轻的父亲下班后经常要到超市去买婴儿尿布，超市也因此发现了一个规律，在购买婴儿尿布的年轻的父亲们中，有30%~40%的人同时要买一些啤酒。超市随后调整了货架的摆放，将尿布和啤酒放在一起，因此，明显增加了销售额。 兴趣度度量1、兴趣度度量的概念 挖掘出的模式(规律的表示形式)的简洁性、确定性和实用性即为兴趣度度量。 2、兴趣度度量的必要性 大量的数据 –&amp;gt">
+<meta name="keywords" content="关联规则,Apriori,连接,剪枝,置信度,支持度">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关联规则--Apriori算法">
+<meta property="og:url" content="http://yoursite.com/2021/11/13/al-apriori/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="关联规则啤酒与尿布的故事： 在美国，一些年轻的父亲下班后经常要到超市去买婴儿尿布，超市也因此发现了一个规律，在购买婴儿尿布的年轻的父亲们中，有30%~40%的人同时要买一些啤酒。超市随后调整了货架的摆放，将尿布和啤酒放在一起，因此，明显增加了销售额。 兴趣度度量1、兴趣度度量的概念 挖掘出的模式(规律的表示形式)的简洁性、确定性和实用性即为兴趣度度量。 2、兴趣度度量的必要性 大量的数据 –&amp;gt">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2021/11/13/al-apriori/1.png">
+<meta property="og:image" content="http://yoursite.com/2021/11/13/al-apriori/2.png">
+<meta property="og:image" content="http://yoursite.com/2021/11/13/al-apriori/3.png">
+<meta property="og:image" content="http://yoursite.com/2021/11/13/al-apriori/4.png">
+<meta property="og:image" content="http://yoursite.com/2021/11/13/al-apriori/5.png">
+<meta property="og:updated_time" content="2021-12-21T07:00:38.592Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="关联规则--Apriori算法">
+<meta name="twitter:description" content="关联规则啤酒与尿布的故事： 在美国，一些年轻的父亲下班后经常要到超市去买婴儿尿布，超市也因此发现了一个规律，在购买婴儿尿布的年轻的父亲们中，有30%~40%的人同时要买一些啤酒。超市随后调整了货架的摆放，将尿布和啤酒放在一起，因此，明显增加了销售额。 兴趣度度量1、兴趣度度量的概念 挖掘出的模式(规律的表示形式)的简洁性、确定性和实用性即为兴趣度度量。 2、兴趣度度量的必要性 大量的数据 –&amp;gt">
+<meta name="twitter:image" content="http://yoursite.com/2021/11/13/al-apriori/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2021/11/13/al-apriori/">
+
+
+
+
+
+  <title>关联规则--Apriori算法 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/11/13/al-apriori/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">关联规则--Apriori算法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-11-13T10:21:05+08:00">
+                2021-11-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/算法/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="关联规则"><a href="#关联规则" class="headerlink" title="关联规则"></a>关联规则</h2><p>啤酒与尿布的故事：</p>
+<p>在美国，一些年轻的父亲下班后经常要到超市去买婴儿尿布，超市也因此发现了一个规律，在购买婴儿尿布的年轻的父亲们中，有30%~40%的人同时要买一些啤酒。超市随后调整了货架的摆放，将尿布和啤酒放在一起，因此，明显增加了销售额。</p>
+<h3 id="兴趣度度量"><a href="#兴趣度度量" class="headerlink" title="兴趣度度量"></a>兴趣度度量</h3><p>1、兴趣度度量的概念</p>
+<p>挖掘出的模式(规律的表示形式)的<strong>简洁性、确定性和实用性</strong>即为兴趣度度量。</p>
+<p>2、兴趣度度量的必要性</p>
+<p>大量的数据 –&gt; 挖掘出大量的规则  –&gt;  规则一小部分是用户感兴趣的 –&gt; 有必要进行兴趣度度量</p>
+<p>3、兴趣度度量方法</p>
+<p><strong>简洁性度量</strong>：模式的便于人理解的度量</p>
+<p><strong>确定性度量</strong>：模式的可信性</p>
+<p>方法：对于关联规则，确定性度量使用置信度。</p>
+<p>设A和B为项目集合，A与B关联的规则A–&gt;B的置信度定义为：</p>
+<p><strong>置信度（A–&gt;B）= 同时包含A和B的元组数/包含A的元组数</strong></p>
+<p>举例：对某计算机商店购买物品的相关情况进行挖掘，得到一个置信度为85%的关联规则：</p>
+<p> buys(X，”computer”)  –&gt;  buys(X，”printer”)</p>
+<p> 意味着买计算机的顾客85%也买打印机。A的元组数为买计算机的事务数（顾客数），同时包含A和B的元组数为买计算机同时又买打印机的事务数（顾客数）。</p>
+<p><strong>实用性度量</strong>：模式的有用性</p>
+<p>方法：对于关联规则，实用性度量使用支持度。</p>
+<p>设A和B为项目集合，A与B关联的规则A”B的支持度定义为：</p>
+<p><strong>支持度（A–&gt;B）= 同时包含A和B的元组数/元组总数</strong></p>
+<p>举例：对某计算机商店购买物品的相关情况进行挖掘，得到一个支持度为30%的关联规则：</p>
+<p>  buys(X，”computer”) –&gt; buys(X，”printer”)</p>
+<p> 意味着该计算机商店的所有顾客的30%同时购买了计算机和打印机。元组总数为购买计算机或购买打印机的事务数（顾客数），同时包含A和B的元组数为买计算机同时又买打印机的事务数（顾客数）。</p>
+<a id="more"></a>
+<p><strong>注意</strong></p>
+<ul>
+<li>同时满足用户定义的最小置信度阈值和最小支持度阈值的关联规则称为强关联规则，并认为是有趣的。</li>
+<li>置信度太低，说明关联规则的可信度差；支持度太低，说明关联规则不具有一般性，即有用性差。</li>
+<li>关联规则表示：buys(X，”computer”) “ buys(X，”printer”) [30%，85%]</li>
+</ul>
+<h3 id="关联规则挖掘的基本概念"><a href="#关联规则挖掘的基本概念" class="headerlink" title="关联规则挖掘的基本概念"></a>关联规则挖掘的基本概念</h3><p><strong>定义3-1</strong> 关联规则挖掘的数据集记为D（一般称为事务数据库）,</p>
+<p><code>D={t1,t2,t3……,tk, ……tn},tk={i1,i2,…,im…ip}</code>, </p>
+<p><code>tk</code> (k=1,2,….n)称为<strong>事务</strong>，<code>im</code> (m=1,2,…p)称为<strong>项目</strong>。</p>
+<p><strong>定义3-2</strong> 设<code>I={i1,i2….im}</code>是D中全体项目组成的集合，I的任何子集X称为D中的项目集，|X|=k称集合X为k项目集。设<code>tk</code>和X分别为D中的事务和项目集，如果<code>X ⊆ tk</code>,称事务<code>tk</code>包含项目集X。每一个事务都有一个惟一的标识符，称为TID。</p>
+<p><strong>定义3-3</strong> 数据集D中包含项目集X的事务数称为项目集X的<strong>支持数</strong>，记为Ϭx。项目集X的<strong>支持度</strong>记为support(X):</p>
+<p><img src="/2021/11/13/al-apriori/1.png" alt></p>
+<p>其中|D|是数据集D的事务数，<strong>若support(X)不小于用户指定的最小支持度，则称X为频繁项目集，简称频集（或大项目集）</strong>，否则则称X为非频繁项目集，简称非频集（或小项目集）。</p>
+<p>针对以上定义举个例子来简单说明下：</p>
+<table>
+<thead>
+<tr>
+<th>T1</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T2</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+</tr>
+<tr>
+<td>T3</td>
+<td>2</td>
+<td>3</td>
+<td>5</td>
+<td>6</td>
+</tr>
+</tbody>
+</table>
+<p>以上表格可以简称为D数据集（也是一个事务数据库），每一行就是一个事务（t），T1、T2是事务的唯一标识。</p>
+<p>假设项目集<code>x={2， 3}</code>，则|x|=σx=3（在3个事务中都有出现）</p>
+<p>假设项目集<code>y={2， 3， 4}</code>，则|y|= σy=2（在2个事务中出现过）</p>
+<p><strong>定理3-1</strong> 设X、Y是数据集D中的项目集：</p>
+<p> (1) 若X ⊆ Y ，则support(X) ≥support(Y)         </p>
+<p> (2) 若X ⊆ Y ，如果X是非频集，则Y也是非频集。   </p>
+<p> (3) 若X ⊆ Y，若Y是频集，则X也是频集。  </p>
+<p><strong>定义3-4</strong> 若X、Y为项目集，且X∩Y = Ø，蕴含式X=&gt;Y称为关联规则，X、Y分别称为关联规则X=&gt;Y的前提和结论。项目集X∪Y的支持度称为关联规则的X=&gt;Y的支持度，记作：support(X=&gt;Y)，support(X=&gt;Y)=support(X∪Y)</p>
+<p>关联规则X=&gt;Y的置信度记作，confidence(X=&gt;Y):</p>
+<p><img src="/2021/11/13/al-apriori/2.png" alt></p>
+<p>通常用户根据挖掘需要要指定的最小置信度记为<code>minconfidence</code>。支持度和置信度是描述关联规则的两个重要的概念，<strong>前者用于衡量关联规则在整个数据集中的统计重要性，后者用于衡量关联规则的可信程度。</strong></p>
+<p><strong>定义3-5</strong> 若support(X=&gt;Y) ≥ <code>minsupport</code>,且confidence(X=&gt;Y) ≥ <code>minconfidence</code>，称关联规则X=&gt;Y为强规则，否则称弱规则。</p>
+<p>关联规则挖掘的任务就是挖掘出D中所有的强规则。强规则X=&gt;Y对应的项目集（X ∪Y）必定是频集，频集（X∪ Y）导出的关联规则X=&gt;Y的置信度可由频集X和（X∪ Y）的支持度计算。因此把关联规则挖掘分为以下两个子问题：</p>
+<p>（1）根据最小支持度找出数据集D中的所有频集。</p>
+<p>（2）根据频繁项目集和最小置信度产生关联规则。</p>
+<h3 id="关联规则种类"><a href="#关联规则种类" class="headerlink" title="关联规则种类"></a>关联规则种类</h3><p>1、布尔关联规则</p>
+<p>如果考虑事务的项集中的项存在与不存在，而得出的关联规则称为布尔关联规则。</p>
+<p>2、单维与多维关联规则</p>
+<p>如果规则A–&gt;B中，项集A或B都是一维谓词的表达式，则该规则为单维规则，否则为多维规则。如：</p>
+<p>  buys(x,computer) –&gt; buys(x,printer)</p>
+<p>  age(x,30-39)^income(x,42k-48k) –&gt; buys(x,computer)</p>
+<p>3、单层和多层关联规则</p>
+<p>例如：下层概念的青岛啤酒和帮宝适尿布之间的关联规则不如上层概念的啤酒和尿布之间的关联规则对促销指导有作用。这就是涉及多个概念层的关联规则。</p>
+<h3 id="关联规则算法——Apriori算法"><a href="#关联规则算法——Apriori算法" class="headerlink" title="关联规则算法——Apriori算法"></a>关联规则算法——<code>Apriori</code>算法</h3><p><code>Apriori</code>算法是一种最有影响的挖掘布尔关联规则频繁项集的算法。</p>
+<p><code>Apriori</code>使用一种称作逐层搜索的迭代方法，k-项集用于探索(k+1)-项集。首先找出频繁1-项集的集合。称为集合L1。L1用于找频繁2-项集的集合L2，而L2用于找L3，如此下去直到不能找到频繁k-项集。</p>
+<p>为了提高频繁项集逐层产生的效率，一种称作<code>Apriori</code>性质的重要性质用于压缩搜索空间</p>
+<p><strong><code>Apriori</code>性质</strong>：如果项目集X 是频繁项目集，那么它的所有非空子集都是频繁项目集</p>
+<p>利用L(k-1) 找到Lk的过程由<strong>连接</strong>和<strong>剪枝</strong>组成：</p>
+<p>   <strong>（1）连接步</strong>：为找Lk，通过L(k-1)与自己连接产生候选k-项集的集合。该候选项集的集合记为Ck。设l1和l2是L(k-1)中的项集。记号为li[j]表示li的第j项。为方便计，假定事务或项集中的项按字典次序排序。执行连接L(k-1)∞L(k-1)，其中L(k-1)的元素是可连接的。连接L1项集和L2项集产生的结果是项集l1[1]l2[2]………l1[k-1]l2[k-1].</p>
+<p><strong>（2）剪枝步</strong>：Ck是Lk的超集；即是，它的成员可以是也可以不是频集，但所有频集k-项集都包含在Ck中。扫描数据库，确定Ck中每个候选的计数，从而确定Lk。然而，Ck可能很大，这样所涉及的计算量就很大。为压缩Ck，可以利用以下办法使用<code>Apriori</code>性质：任何非频集的（k-1）-项集都不可能是频繁k-项集的子集。因此，如果一个候选k-项集的(k-1)-子集不在Lk-1中，则该候选也不可能是频繁的，从而可以有Ck中删除。</p>
+<h3 id="使用Apriori算法解决例题"><a href="#使用Apriori算法解决例题" class="headerlink" title="使用Apriori算法解决例题"></a>使用<code>Apriori</code>算法解决例题</h3><p>例：该例数据库中有9个事务，即|D|=9。<code>Apriori</code>假定事务中的项按字典次序存放。</p>
+<p><img src="/2021/11/13/al-apriori/3.png" alt></p>
+<p>最小支持度计数为2，最小置信度为70%。</p>
+<p>解答：</p>
+<p><img src="/2021/11/13/al-apriori/4.png" alt></p>
+<p>1）在算法的第一次迭代，每个项集都是候选1-项集的集合C1的成员。算法简单的扫描所有的事务，对每个项的出现次数计数。</p>
+<p>2）假定最小事务支持数为2（即min_sup = 2/9）。可以确定频繁1-项集的集合L1.它由具有最小支持度的候选1-项集组成。</p>
+<p>3）为发现频繁2-项集的集合L2，算法使用L1∞L1产生候选2-项集的集合C2.</p>
+<p>4）下一步，扫描D中的事务，计算C2中每个候选项集的支持计数。</p>
+<p>5）确定频繁2-项集的集合L2，它由最小支持度的C2中的候选2-项集组成。</p>
+<p>6）候选3-项集的集合C3的产生详细地产生过程如下图所示。</p>
+<p>注意：L2与L2做连接时，只有前缀相同的才能做连接，例如<code>{I1, I2}与{I1, I3}连接得到{I1, I2, I3}</code>;</p>
+<p><code>{I2, I3}与{I2, I4}连接得到{I2, I3, I4}</code>。但是<code>{I1, I2}与{I2, I3}</code>不能做连接。（据我观察，实际做连接也可以，一般得到的结果都是重复的或者会被剪枝掉）</p>
+<p><img src="/2021/11/13/al-apriori/5.png" alt></p>
+<p>首先，令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C3=L2∞L2=&#123;&#123;I1,I2,I3&#125;,&#123;I1,I2,I5&#125;,&#123;I1,I3,I5&#125;,&#123;I2,I3,I4&#125;,&#123;I2,I3,I5&#125;,&#123;I2,I4,I5&#125; &#125;</span><br></pre></td></tr></table></figure>
+<p>根据<code>Apriori</code>性质，频繁项集的所有子集必须是频繁的，我们可以确定后4个不是频繁的。因此可以将其从C1删除。这样在此后扫描D确定L3时就不必再求它们的计数值。</p>
+<p>7）扫描D中的事务，以确定L3，它由具有最小支持度的C3中的候选3-项集组成。</p>
+<p>8）算法使用L3∞L3产生候选4-项集的集合C4。尽管产生了<code>{I1,I2,I3,I5}</code>，这个项集被剪去，因为它的子集<code>{I2,I3,I5}</code>不是频繁的。这样，C4 = Ø，因此算法结束，找出了所有的频繁项集。</p>
+<p>一旦由数据库D中的事务找出频繁项集，由它们产生的强关联规则是直接的。这里，</p>
+<p>频繁集<code>L1={I1, I2, I5}</code>，L1的非空子集有<code>{I1, I2}, {I1, I5}, {I2, I5}, {I1}, {I2}, {I5}</code></p>
+<p>I1^ I2 =&gt; I5, confidence=2/4=50%</p>
+<p>I1 ^ I5 =&gt; I2, confidence=2/2=100 %</p>
+<p>I2 ^ I5 =&gt; I1, confidence=2/2=100 %</p>
+<p>I1 =&gt; I2 ^ I5, confidence=2/6=33 %</p>
+<p>I2 =&gt; I1 ^ I5, confidence=2/7=29 %</p>
+<p>I5 =&gt; I1 ^ I2, confidence=2/2=100 %</p>
+<p>最小置信度阀值为70%，则只有第2、3和最后一个规则可以输出。</p>
+<p>频繁集<code>L2={I1, I2, I3}</code>，L2的非空子集有<code>{I1, I2}, {I1, I3}, {I2, I3}, {I1}, {I2}, {I3}</code></p>
+<p>I1^ I2 =&gt; I3, confidence=2/4=50%</p>
+<p>I1 ^ I3 =&gt; I2, confidence=2/4=50 %</p>
+<p>I2 ^ I3 =&gt; I1, confidence=2/4=50%</p>
+<p>I1 =&gt; I2 ^ I3, confidence=2/6=33 %</p>
+<p>I2 =&gt; I1 ^ I3, confidence=2/7=29 %</p>
+<p>I3 =&gt; I1 ^ I2, confidence=2/6=33 %</p>
+<p>无满足情况的。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/关联规则/" rel="tag"># 关联规则</a>
+          
+            <a href="/tags/Apriori/" rel="tag"># Apriori</a>
+          
+            <a href="/tags/连接/" rel="tag"># 连接</a>
+          
+            <a href="/tags/剪枝/" rel="tag"># 剪枝</a>
+          
+            <a href="/tags/置信度/" rel="tag"># 置信度</a>
+          
+            <a href="/tags/支持度/" rel="tag"># 支持度</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/11/03/dl-tuning-one/" rel="next" title="关于神经网络的一些调参经验">
+                <i class="fa fa-chevron-left"></i> 关于神经网络的一些调参经验
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/11/20/al-naive-bayes-classifier/" rel="prev" title="朴素贝叶斯分类">
+                朴素贝叶斯分类 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">104</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">198</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#关联规则"><span class="nav-text">关联规则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#兴趣度度量"><span class="nav-text">兴趣度度量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关联规则挖掘的基本概念"><span class="nav-text">关联规则挖掘的基本概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关联规则种类"><span class="nav-text">关联规则种类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关联规则算法——Apriori算法"><span class="nav-text">关联规则算法——Apriori算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用Apriori算法解决例题"><span class="nav-text">使用Apriori算法解决例题</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

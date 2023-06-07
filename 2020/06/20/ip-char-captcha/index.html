@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="CNN,DL,cv2,PIL,mugger_ocr,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Python的PIL库python imaging library是Python平台的图像处理标准库，我们在图像处理时不仅可以使用opencv，PIL也是可以的。 12345678910from PIL import Image# 打开图片img = Image.open(&quot;123.jpg&quot;)# 获取宽、高width, height = img.size()# 获取像素值r, g, b = img">
+<meta name="keywords" content="CNN,DL,cv2,PIL,mugger_ocr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="字符验证码识别补充">
+<meta property="og:url" content="http://yoursite.com/2020/06/20/ip-char-captcha/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="Python的PIL库python imaging library是Python平台的图像处理标准库，我们在图像处理时不仅可以使用opencv，PIL也是可以的。 12345678910from PIL import Image# 打开图片img = Image.open(&quot;123.jpg&quot;)# 获取宽、高width, height = img.size()# 获取像素值r, g, b = img">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2020/06/20/ip-char-captcha/p1.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/20/ip-char-captcha/p2.png">
+<meta property="og:image" content="http://yoursite.com/2020/06/20/ip-char-captcha/p3.png">
+<meta property="og:updated_time" content="2022-04-28T12:59:35.350Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="字符验证码识别补充">
+<meta name="twitter:description" content="Python的PIL库python imaging library是Python平台的图像处理标准库，我们在图像处理时不仅可以使用opencv，PIL也是可以的。 12345678910from PIL import Image# 打开图片img = Image.open(&quot;123.jpg&quot;)# 获取宽、高width, height = img.size()# 获取像素值r, g, b = img">
+<meta name="twitter:image" content="http://yoursite.com/2020/06/20/ip-char-captcha/p1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/06/20/ip-char-captcha/">
+
+
+
+
+
+  <title>字符验证码识别补充 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/20/ip-char-captcha/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">字符验证码识别补充</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-20T14:03:54+08:00">
+                2020-06-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/图像处理/" itemprop="url" rel="index">
+                    <span itemprop="name">图像处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="Python的PIL库"><a href="#Python的PIL库" class="headerlink" title="Python的PIL库"></a>Python的<code>PIL</code>库</h4><p><code>python imaging library</code>是Python平台的图像处理标准库，我们在图像处理时不仅可以使用<code>opencv</code>，<code>PIL</code>也是可以的。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"></span><br><span class="line"><span class="comment"># 打开图片</span></span><br><span class="line">img = Image.open(<span class="string">"123.jpg"</span>)</span><br><span class="line"><span class="comment"># 获取宽、高</span></span><br><span class="line">width, height = img.size()</span><br><span class="line"><span class="comment"># 获取像素值</span></span><br><span class="line">r, g, b = img.getpixel((<span class="number">15</span>, <span class="number">9</span>))</span><br><span class="line"><span class="comment"># 保存图片</span></span><br><span class="line">img.save(<span class="string">'456.png'</span>)</span><br></pre></td></tr></table></figure>
+<p><code>PIL</code>还可以做图片剪裁，模糊等其他操作，并且<code>PIL</code>还可以打开<code>opencv</code>打不开的图片;</p>
+<p>我曾遇到过使用<code>opencv</code>打开为None，而使用<code>PIL</code>可以打开的图片，但是使用<code>PIL</code>保存会提示：<code>cannot write mode P as JPEG</code>。</p>
+<a id="more"></a>
+<p>后查资料发现，<code>PIL</code>模块打开图片分为以下模式：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>             <span class="number">1</span>位像素，黑和白，存成<span class="number">8</span>位的像素</span><br><span class="line">L             <span class="number">8</span>位像素，黑白</span><br><span class="line">P             <span class="number">8</span>位像素，使用调色板映射到任何其他模式</span><br><span class="line">RGB           <span class="number">3</span>×<span class="number">8</span>位像素，真彩</span><br><span class="line">RGBA          <span class="number">4</span>×<span class="number">8</span>位像素，真彩+透明通道</span><br><span class="line">CMYK          <span class="number">4</span>×<span class="number">8</span>位像素，颜色隔离</span><br><span class="line">YCbCr         <span class="number">3</span>×<span class="number">8</span>位像素，彩色视频格式</span><br><span class="line">I             <span class="number">32</span>位整型像素</span><br><span class="line">F             <span class="number">32</span>位浮点型像素</span><br></pre></td></tr></table></figure>
+<p>可以先将模式为<code>P</code>的图片先转化为<code>RGB</code>模式再保存。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看模式</span></span><br><span class="line">print(img.mode)</span><br><span class="line"><span class="comment"># 转换模式</span></span><br><span class="line">img = img.convert(<span class="string">"RGB"</span>)</span><br><span class="line">img.save(<span class="string">"456.png"</span>)</span><br></pre></td></tr></table></figure>
+<p>因为<code>PIL</code>在处理像素方面比较方便，而<code>opencv</code>在模糊处理等方面更为便捷，所以经常可能需要两者联合使用，这里记录一种两种对象互相转换的方式（不用保存文件做中转）</p>
+<ul>
+<li><p><code>PIL</code>Image直接读取二进制流</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"><span class="keyword">from</span> io <span class="keyword">import</span> BytesIO</span><br><span class="line"></span><br><span class="line"><span class="comment"># image_content是图片的二进制流</span></span><br><span class="line">img = Image.open(BytesIO(image_content))</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>OpenCV cv2</code>直接读取二进制流</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line">img = cv2.imdecode(np.frombuffer(image_content, np.uint8), cv2.IMREAD_COLOR)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将Image对象转换为二进制流</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"><span class="keyword">from</span> io <span class="keyword">import</span> BytesIO </span><br><span class="line"></span><br><span class="line">out = BytesIO()</span><br><span class="line"><span class="comment"># img是Image对象</span></span><br><span class="line">img.save(out, format=<span class="string">"JPEG"</span>)</span><br><span class="line">image_content = out.getvalue()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将<code>cv2</code>对象转换为二进制流</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"></span><br><span class="line">res, out = cv2.imencode(<span class="string">'.jpg'</span>, img)</span><br><span class="line">image_content = out.tobytes()</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>掌握了上面四种技巧，就可以直接将任一种对象转换为二进制流，再以二进制流的形式读取即可。</p>
+<h4 id="验证码数据增强"><a href="#验证码数据增强" class="headerlink" title="验证码数据增强"></a>验证码数据增强</h4><p>通常在使用神经网络识别图像时，可以对图片进行翻转、平移、缩放、旋转等一系列操作以达到扩充数据集的目的，虽然对于验证码也可以使用类似的方式来扩充数据集，但是具体操作方式与普通图像有一定的区别，一般图像可能是识别一整个物体之类的，而验证码需要识别其中的数个字符（一般为4~6个），首先翻转平移之类的操作就不适合验证码，例如6翻转变成了9，这将会对模型训练起到反作用，平移也可能导致丢失字符；缩放和旋转是可以对验证码进行的操作，但是幅度不宜过大，不同的验证码图片即便字符大小有区别，应该也是很微小的，并且验证码字符常常有倾斜的可能，但是我们也不宜将其倾斜幅度过大，否则也有可能将一个倾斜的6变成一个倾斜的9。</p>
+<p>数据增强一般用于训练数据不足的情况，当训练数据比较充足时，使用数据增强提升可能很小。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.preprocessing.image <span class="keyword">import</span> ImageDataGenerator</span><br><span class="line"></span><br><span class="line"><span class="comment"># 旋转10度，缩放0.05</span></span><br><span class="line">train_datagen = ImageDataGenerator(rotation_range=<span class="number">10</span>, zoom_range=<span class="number">0.05</span>)</span><br></pre></td></tr></table></figure>
+<h4 id="验证码图片去除干扰线"><a href="#验证码图片去除干扰线" class="headerlink" title="验证码图片去除干扰线"></a>验证码图片去除干扰线</h4><p><img src="/2020/06/20/ip-char-captcha/p1.png" alt></p>
+<p>像上面这种形式的验证码，有比较明显的干扰线，并且大部分的干扰线有个明显的特征，颜色比验证码字符的颜色更鲜艳一些，所以可以考虑<strong>根据像素值分布来去除绝大部分的干扰线</strong>，windows自带的画图软件有个很好用的功能叫“颜色选取器”，使用方式如下：</p>
+<p>点击箭头指向的选项：</p>
+<p><img src="/2020/06/20/ip-char-captcha/p2.png" alt></p>
+<p>然后将鼠标放到你选取的图片的某个区域处，再点击颜色编辑，就可以看到这个颜色的<code>RGB</code> 值</p>
+<p><img src="/2020/06/20/ip-char-captcha/p3.png" alt></p>
+<p>以下是我简单看了一些颜色的<code>RGB</code>值：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 干扰线的颜色</span></span><br><span class="line"><span class="comment"># 绿色 [51, 255, 51]</span></span><br><span class="line"><span class="comment"># 嫩绿色 [153, 213, 51]</span></span><br><span class="line"><span class="comment"># 深绿色 [51, 85, 51]</span></span><br><span class="line"><span class="comment"># 黄色 [255, 255, 102]</span></span><br><span class="line"><span class="comment"># 棕色 [102, 43, 51]</span></span><br><span class="line"><span class="comment"># 粉红色（较亮） [255, 0, 153]</span></span><br><span class="line"><span class="comment"># 粉红色（较暗） [204, 85, 102]</span></span><br><span class="line"><span class="comment"># 橙色 [204, 85, 0]</span></span><br><span class="line"><span class="comment"># [51, 85, 204]</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 验证码的颜色</span></span><br><span class="line"><span class="comment"># 深蓝色 [0, 0, 255]</span></span><br><span class="line"><span class="comment"># [51, 0, 204]</span></span><br><span class="line"><span class="comment"># [102, 43, 102]</span></span><br><span class="line"><span class="comment"># [102, 0, 102]</span></span><br><span class="line"><span class="comment"># [102, 0, 51]</span></span><br></pre></td></tr></table></figure>
+<p>经过观察，很容易发现大多数情况下，干扰线的颜色<code>R</code>和<code>G</code>的值比较大，而验证码字符的颜色<code>B</code>的值较大（或者至少可以说验证码字符的<code>R</code>和<code>G</code>的值比较小），那只要找到这样一个分界值，就可以把干扰线去掉了。我这里找个一个粗略的边界值，展示一下代码实现方式：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">process_img</span><span class="params">(img_list: list, img_path: str)</span>:</span></span><br><span class="line">    <span class="keyword">for</span> img <span class="keyword">in</span> img_list:</span><br><span class="line">        path = <span class="string">f'<span class="subst">&#123;img_path&#125;</span><span class="subst">&#123;img&#125;</span>'</span></span><br><span class="line">        image = Image.open(path)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(image.size[<span class="number">0</span>]):</span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> range(image.size[<span class="number">1</span>]):</span><br><span class="line">                r, g, b = image.getpixel((i, j))</span><br><span class="line">                <span class="comment"># 将部分像素值变为纯白色</span></span><br><span class="line">                <span class="keyword">if</span> r &gt; <span class="number">110</span> <span class="keyword">or</span> g &gt; <span class="number">100</span>:</span><br><span class="line">                    image.putpixel((i, j), (<span class="number">255</span>, <span class="number">255</span>, <span class="number">255</span>))</span><br><span class="line"></span><br><span class="line">        image.save(<span class="string">f'img_new/<span class="subst">&#123;img&#125;</span>'</span>)</span><br></pre></td></tr></table></figure>
+<h4 id="麻瓜库"><a href="#麻瓜库" class="headerlink" title="麻瓜库"></a>麻瓜库</h4><p>最近开源了一个白嫖的<code>OCR</code>库，可以用来识别单行的印刷体文字或者验证码字符，具体查看<a href="https://pypi.org/project/muggle-ocr/" target="_blank" rel="noopener">官方文档</a>，我有使用它测试上面那种验证码字符的识别准确率，简单写下过程：</p>
+<p>安装：<code>pip install muggle-ocr</code></p>
+<p>使用：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> muggle_ocr</span><br><span class="line"></span><br><span class="line"><span class="comment"># model_type 可选: [ModelType.OCR, ModelType.Captcha]</span></span><br><span class="line">sdk = muggle_ocr.SDK(model_type=muggle_ocr.ModelType.Captcha)</span><br><span class="line"><span class="comment"># 预测</span></span><br><span class="line">text = sdk.predict(image_bytes=captcha_bytes)</span><br><span class="line">print(text)</span><br></pre></td></tr></table></figure>
+<p>直接使用这个麻瓜库的识别准确率在0.64左右，但是经过我上面的干扰线处理，准确率可以提升至<code>0.85</code>左右，然后我自己的模型却只能达到0.75……</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/CNN/" rel="tag"># CNN</a>
+          
+            <a href="/tags/DL/" rel="tag"># DL</a>
+          
+            <a href="/tags/cv2/" rel="tag"># cv2</a>
+          
+            <a href="/tags/PIL/" rel="tag"># PIL</a>
+          
+            <a href="/tags/mugger-ocr/" rel="tag"># mugger_ocr</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/05/15/dl-train-process/" rel="next" title="字符验证码识别之模型构建">
+                <i class="fa fa-chevron-left"></i> 字符验证码识别之模型构建
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/07/15/spider-chrome-debug/" rel="prev" title="浏览器调试功能介绍">
+                浏览器调试功能介绍 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">104</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">198</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Python的PIL库"><span class="nav-text">Python的PIL库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#验证码数据增强"><span class="nav-text">验证码数据增强</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#验证码图片去除干扰线"><span class="nav-text">验证码图片去除干扰线</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#麻瓜库"><span class="nav-text">麻瓜库</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

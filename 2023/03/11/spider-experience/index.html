@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="python,爬虫,爬取策略,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="业务爬取经验总结注意代理有没有挂上，如果没有挂上也不会有什么提示，会直接使用本机IP，风险极高。 在平时业务开发时，遇到的网站一般分为两种类型，搜索式和列表式，当然列表式居多 列表式爬取方法拿到一个待开发的网站，一般开发完成之后，先爬取一遍全部历史数据，再上线增量爬取。 历史数据爬取过程中需要注意的点首先是要测试，要多看爬取日志，不要直接就推送入库；查看日志可以看第一页、第二页、中间随机抽取几页和">
+<meta name="keywords" content="python,爬虫,爬取策略">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python Request库的cookie使用">
+<meta property="og:url" content="http://yoursite.com/2023/03/11/spider-experience/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="业务爬取经验总结注意代理有没有挂上，如果没有挂上也不会有什么提示，会直接使用本机IP，风险极高。 在平时业务开发时，遇到的网站一般分为两种类型，搜索式和列表式，当然列表式居多 列表式爬取方法拿到一个待开发的网站，一般开发完成之后，先爬取一遍全部历史数据，再上线增量爬取。 历史数据爬取过程中需要注意的点首先是要测试，要多看爬取日志，不要直接就推送入库；查看日志可以看第一页、第二页、中间随机抽取几页和">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2023-06-05T15:08:15.900Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python Request库的cookie使用">
+<meta name="twitter:description" content="业务爬取经验总结注意代理有没有挂上，如果没有挂上也不会有什么提示，会直接使用本机IP，风险极高。 在平时业务开发时，遇到的网站一般分为两种类型，搜索式和列表式，当然列表式居多 列表式爬取方法拿到一个待开发的网站，一般开发完成之后，先爬取一遍全部历史数据，再上线增量爬取。 历史数据爬取过程中需要注意的点首先是要测试，要多看爬取日志，不要直接就推送入库；查看日志可以看第一页、第二页、中间随机抽取几页和">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2023/03/11/spider-experience/">
+
+
+
+
+
+  <title>Python Request库的cookie使用 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2023/03/11/spider-experience/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Python Request库的cookie使用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-03-11T14:33:42+08:00">
+                2023-03-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/爬虫/" itemprop="url" rel="index">
+                    <span itemprop="name">爬虫</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="业务爬取经验总结"><a href="#业务爬取经验总结" class="headerlink" title="业务爬取经验总结"></a>业务爬取经验总结</h2><p><strong>注意代理有没有挂上</strong>，如果没有挂上也不会有什么提示，会直接使用本机<code>IP</code>，风险极高。</p>
+<p>在平时业务开发时，遇到的网站一般分为两种类型，搜索式和列表式，当然列表式居多</p>
+<h3 id="列表式爬取方法"><a href="#列表式爬取方法" class="headerlink" title="列表式爬取方法"></a>列表式爬取方法</h3><p>拿到一个待开发的网站，一般开发完成之后，先爬取一遍全部历史数据，再上线增量爬取。</p>
+<h4 id="历史数据爬取过程中需要注意的点"><a href="#历史数据爬取过程中需要注意的点" class="headerlink" title="历史数据爬取过程中需要注意的点"></a>历史数据爬取过程中需要注意的点</h4><p>首先是要测试，要多看爬取日志，不要直接就推送入库；<br>查看日志可以看第一页、第二页、中间随机抽取几页和最后一页，日志是否和网站上的数据对应的上，避免一些程序bug压根没有成功翻页，然后也要看字段解析的是否正确，如果有比较明显的大规模错误那就要优化程序。</p>
+<p>如果该业务的数据源是比较多的情况，就要考虑不同的源是不是会造成重复，比如当前的数据源数据质量本身很差（结构化错误比例较高或缺少关键字段信息等），那最好先看下这个源的数据是否已经被其他源覆盖（在开发之前也可以进行评估），如果已被其他源覆盖就可以不爬取历史数据或者直接不开发，避免这个源的数据覆盖其他更优质的源的数据。</p>
+<p>其他还有一些针对数据质量不太好的源的爬取方法，比如增加过滤逻辑，缺失某些字段的数据丢弃；或者根据页码或者发布日期只爬取部分质量较好的数据。</p>
+<a id="more"></a>
+<h4 id="增量爬取的方法"><a href="#增量爬取的方法" class="headerlink" title="增量爬取的方法"></a>增量爬取的方法</h4><p>增量爬取一般有两种常见的方法</p>
+<ol>
+<li><strong>直接设置要爬取的页码</strong>，针对新增数据比较少的网站，可以直接设置每次爬取1页、3页、5页和10页等，在短时间内就可以爬取完成；具体页码数量需要根据具体网站而定；因为设置的页码无法确保是否可以覆盖网站任何一次发布的全部新增数据，可以设置一个日常爬取的页码数量，然后每周的某一天某一时间进行一次较大页码数量的爬取，通过在程序中添加当前时间判断来控制爬取范围。例如日常爬取5页，每周5的5点那次爬取，爬取50页；</li>
+<li><strong>根据发布日期设置爬取截至地方</strong>，例如发布日期早于过去7天、15天和30天的就不再爬取，终止爬取程序；具体的截止日期范围需要根据具体网站而定。<strong>极少情况下</strong>要考虑到网站会不会存在不按照实际情况生成发布日期的问题，比如一条数据明明是2月5号发布的，但是他发布到网站上时将发布日期设置为1月3号，那么按照常规爬取发布日期为近30天的数据时，就无法爬到这一条。遇到这种网站可以日常爬取一个小范围的数据，每周设置一次大范围爬取，通过在程序中添加当前时间判断来控制爬取范围。</li>
+</ol>
+<p>上述增量爬取的方法基于网站的列表页是按照发布日期从新到旧排序的，如果网站是<strong>乱序</strong>的（开发的时候需要多看看是不是乱序的），那最简单的方式就是每次都全部爬取一遍，如果因为数据量太大，爬取时间太长想快一点，那就需要根据日期诸如此类的信息过滤掉部分数据，比如日期比较老的跳过详情页请求。</p>
+<p>还有一个不得不提的<strong>爬取频率</strong>问题，对于普通网站可能一天爬取一次就差不多，但是如果是很重要的网站一天爬取一次是不够的，比如同样的网站大家都爬了，但是竞品总比我们更新的更快，其实没快多少，就快了半天或者几个小时，那用户体验都是不一样的，所以重要的网站可以一天更新多次，甚至说每隔半小时或者一小时就更新一次，当然也要考虑到对网站造成的压力，选择适当的频率。</p>
+<p>还有<strong>程序运行的时间点</strong>的设置也很重要，要考虑到数据源会在什么时间点放出数据（大多数时候这是无法预判的），在合适的时间点开始爬取效率更高；还有就是有的网站会在晚上关服务器，如果你的程序设置在晚上运行会做无用功。</p>
+<h3 id="搜索式爬取方法"><a href="#搜索式爬取方法" class="headerlink" title="搜索式爬取方法"></a>搜索式爬取方法</h3><p>除了网站直接给出列表页数据，有的网站需要自己输入检索条件进行检索，或者根据发布日期、相关部门、相关类别进行检索。</p>
+<h4 id="根据日期检索"><a href="#根据日期检索" class="headerlink" title="根据日期检索"></a>根据日期检索</h4><h5 id="存量数据爬取"><a href="#存量数据爬取" class="headerlink" title="存量数据爬取"></a>存量数据爬取</h5><p>第一步：<strong>先尝试下不设置日期是否能检索</strong>，注意要在程序中测试，浏览器上可以会因为前端的一些限制让你无法测试；<br>如果可以不设置日期获取到数据，这时候获取到的数据一般分为两种，（1）获取到的是全量数据；（2）网站默认的三天、七天范围的数据。<br>如果获取到了全量数据，那直接全部爬取即可。<br>如何判断不设置检索日期获取到了全量数据？<br>通过设置不同的日期来对比检索到的总数据量的变化情况。</p>
+<p>第二步：如果不设置日期无法检索数据，那就按需设置检索范围，很多时候网站上会提示你只能检索某一范围的数据，不要被这个提示所限制，可以多尝试是否可以检索这个范围之外的数据，毕竟获取的数据越多越好；</p>
+<p>另外有的时候，设置的日期范围越大，可能会导致请求响应特别慢，这个时候可以小范围检索，遍历所有区间以提升速度；<br>还有如果涉及的业务本身会有很多未来的数据，比如开庭公告，几个月后开庭的数据往往都已提前定好了，那这个时候检索范围要往未来设置。</p>
+<h5 id="增量数据爬取"><a href="#增量数据爬取" class="headerlink" title="增量数据爬取"></a>增量数据爬取</h5><p>增量爬取自然就是设置一个新增数据的时间区间即可。</p>
+<p>如果你的业务是类似行政处罚这种针对过去的数据（今天不可能出现明天的处罚数据），那么检索范围设置为过去一段时间即可，与上面列表页设置发布日期有异曲同工之妙，同样地，要考虑到<strong>网站延迟发布</strong>的情况，比如你每次爬取时检索过去一个月的数据，但是这个网站可能某一天放出了一批两个月前的数据，那你是没法更新到的，可以每周设置一次大范围的检索；</p>
+<p>如果你的业务是类似开庭公告这种未来的数据更重要的业务，检索范围不仅要包括过去一段时间，还要包括未来，而且未来可以设置的范围越大越好，比如你检索到了一年后的开庭数据，这样更能体现数据更新的及时性。</p>
+<p>关于网站延迟发布的情况其实很重要的一个点，我遇到过很多这种情况，比如开发一个网站的时候明明已经把全量的历史数据都爬完了，后续改成了增量爬取，但是殊不知后续网站又更新了较多老数据，很容易被我们遗漏，<strong>如果竞品比我们开发的晚，反而获取的数据更全</strong>，对于河北省行政执法信息公示平台就是一个很好的例子，天眼查开发的最晚，对于历史数据的爬取更全一些，但是当我们发现了这个网站延迟更新数据的问题后，通过定期去补充历史数据，就可以反超竞品。</p>
+<h3 id="输入名称检索"><a href="#输入名称检索" class="headerlink" title="输入名称检索"></a>输入名称检索</h3><ol>
+<li>可以看看为空能不能检索，如果浏览器上限制了为空无法搜索，那可以通过在程序中置空搜索条件来测试；</li>
+<li>可以试试能不能模糊搜索，比如输入”公司”、”医院”等关键词；</li>
+<li>有的网站会专门限制”公司”、”有限公司”等词的搜索，可以尝试通过在搜索词前面或后面增加空格如” 公司”绕过限制；</li>
+<li>以业务的角度缩小检索范围，以限高举例，当你不知道官网近期发布了哪些企业的新增数据时，常规的思路就是拿我们所有的业务名称挨个去搜索，但是企业名称数量过多，搜索一轮需要很久的时间无法保证更新及时性，而当你了解到只有先被列为被执行人之后才有可能会限高，那么搜索条件就进一步缩小了，从被列为被执行人的企业里再去进一步筛选即可。</li>
+</ol>
+<h3 id="根据发布部门检索"><a href="#根据发布部门检索" class="headerlink" title="根据发布部门检索"></a>根据发布部门检索</h3><p>有时候因为翻页限制或者爬取速度（如为了多线程爬取）等一些情况，我们必须要分部门来请求数据，最好多观察下分部门是否能获取不分部门时的所有数据，有一些数据源会存在这种情况，就是当你分部门去筛选时，有一些在总的列表中的数据却查不到，所以为了以防万一，分部门爬取时也建议把总得爬一遍，除非你可以确信分部门爬取不会缺失数据，比如通过分部门爬取将数据量加和看看是否与总得数据量一致。</p>
+<h3 id="有验证码的网站"><a href="#有验证码的网站" class="headerlink" title="有验证码的网站"></a>有验证码的网站</h3><p>看看请求中是否确实包含与验证码相关的参数，如果没有或许可以直接绕过，有很多网站只不过是一个前端验证码，网络请求并不需要验证码。</p>
+<h3 id="网站限制翻页时"><a href="#网站限制翻页时" class="headerlink" title="网站限制翻页时"></a>网站限制翻页时</h3><ol>
+<li>将每页返回的数据条数设置的更大，如果其请求并没有可以设置每页返回条数的参数，可以使用常见的参数去做尝试，如pageSize等；</li>
+<li>看看是不是可以按照日期或者地区、部门等检索条件缩小每一次返回的数据范围，比如每次网站只让翻10页，每页10条，但是该源超过100条数据，那就无法获取到全部数据，但是如果每次请求只请求一天范围的数据，可能就少于100条，然后递推获取04-06、04-05、04-04…等。</li>
+</ol>
+<h3 id="有时候会返回200，但是无法拿到数据"><a href="#有时候会返回200，但是无法拿到数据" class="headerlink" title="有时候会返回200，但是无法拿到数据"></a>有时候会返回200，但是无法拿到数据</h3><p>有的时候，你开发完一个网站测试都是正常的，但是线上跑的时候可能会发现漏数据，实际上有可能是因为很多网站判断同一个IP访问频率过高时，将IP封禁，<strong>但是仍然给你返回200</strong>，这样的话你的程序是不会将其判断为异常结果换代理重试的，所以当发现这类情况需要判断response_text中是否包含特定的封禁的关键词，如”访问频繁”、”访问受限”、”访问被拒绝”等（当然每个网站返回的可能是不同的）</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/爬虫/" rel="tag"># 爬虫</a>
+          
+            <a href="/tags/爬取策略/" rel="tag"># 爬取策略</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2023/03/04/pytorch-regularization/" rel="next" title="PyTorch正则化和批标准化">
+                <i class="fa fa-chevron-left"></i> PyTorch正则化和批标准化
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">104</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">198</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#业务爬取经验总结"><span class="nav-text">业务爬取经验总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#列表式爬取方法"><span class="nav-text">列表式爬取方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#历史数据爬取过程中需要注意的点"><span class="nav-text">历史数据爬取过程中需要注意的点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#增量爬取的方法"><span class="nav-text">增量爬取的方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#搜索式爬取方法"><span class="nav-text">搜索式爬取方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#根据日期检索"><span class="nav-text">根据日期检索</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#存量数据爬取"><span class="nav-text">存量数据爬取</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#增量数据爬取"><span class="nav-text">增量数据爬取</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#输入名称检索"><span class="nav-text">输入名称检索</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#根据发布部门检索"><span class="nav-text">根据发布部门检索</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#有验证码的网站"><span class="nav-text">有验证码的网站</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网站限制翻页时"><span class="nav-text">网站限制翻页时</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#有时候会返回200，但是无法拿到数据"><span class="nav-text">有时候会返回200，但是无法拿到数据</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="git,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Git简单使用git初始化操作 pwd：显示当前目录   git init：把这个目录变成git可以管理的仓库 git clone： 从现有 Git 仓库中拷贝项目（类似 svn checkout）。   克隆仓库的命令格式为：  1git clone &amp;lt;repo&amp;gt;  如果我们需要克隆到指定的目录，可以使用以下命令格式：  1git clone &amp;lt;repo&amp;gt; &amp;lt;dir">
+<meta name="keywords" content="git">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git简单使用">
+<meta property="og:url" content="http://yoursite.com/2022/12/24/git-简单使用/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="Git简单使用git初始化操作 pwd：显示当前目录   git init：把这个目录变成git可以管理的仓库 git clone： 从现有 Git 仓库中拷贝项目（类似 svn checkout）。   克隆仓库的命令格式为：  1git clone &amp;lt;repo&amp;gt;  如果我们需要克隆到指定的目录，可以使用以下命令格式：  1git clone &amp;lt;repo&amp;gt; &amp;lt;dir">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/git版本库.jpg">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/git基本操作.jpg">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/status1.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/status2.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/status3.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/diff1.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/status4.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/diff2.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/reset1.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/reset2.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/reset-soft.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/reset-soft1.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/reset-hard.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/git-checkout.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/git-checkout1.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/git-reset-hard1.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/git-rm1.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/git-rm.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/git-rm2.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/git-remote.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/git-remote1.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/git-fetch.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/git-merge.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/git-branch1.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/git-branch2.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/git-branch3.png">
+<meta property="og:image" content="http://yoursite.com/2022/12/24/git-简单使用/git-conflict.png">
+<meta property="og:updated_time" content="2023-03-09T14:15:10.275Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Git简单使用">
+<meta name="twitter:description" content="Git简单使用git初始化操作 pwd：显示当前目录   git init：把这个目录变成git可以管理的仓库 git clone： 从现有 Git 仓库中拷贝项目（类似 svn checkout）。   克隆仓库的命令格式为：  1git clone &amp;lt;repo&amp;gt;  如果我们需要克隆到指定的目录，可以使用以下命令格式：  1git clone &amp;lt;repo&amp;gt; &amp;lt;dir">
+<meta name="twitter:image" content="http://yoursite.com/2022/12/24/git-简单使用/git版本库.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2022/12/24/git-简单使用/">
+
+
+
+
+
+  <title>Git简单使用 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/12/24/git-简单使用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Git简单使用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-12-24T15:21:05+08:00">
+                2022-12-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Git/" itemprop="url" rel="index">
+                    <span itemprop="name">Git</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Git简单使用"><a href="#Git简单使用" class="headerlink" title="Git简单使用"></a>Git简单使用</h2><h3 id="git初始化操作"><a href="#git初始化操作" class="headerlink" title="git初始化操作"></a>git初始化操作</h3><p> <code>pwd</code>：显示当前目录 </p>
+<p> <code>git init</code>：把这个目录变成git可以管理的仓库</p>
+<p><code>git clone</code>： 从现有 Git 仓库中拷贝项目（类似 <strong>svn checkout</strong>）。 </p>
+<p> 克隆仓库的命令格式为： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone &lt;repo&gt;</span><br></pre></td></tr></table></figure>
+<p> 如果我们需要克隆到指定的目录，可以使用以下命令格式： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone &lt;repo&gt; &lt;directory&gt;</span><br></pre></td></tr></table></figure>
+<p><strong>参数说明：</strong></p>
+<ul>
+<li><strong>repo:</strong>Git 仓库。</li>
+<li><strong>directory:</strong>本地目录。</li>
+</ul>
+<p><code>git config --list</code>：显示当前的git配置信息</p>
+<p> 编辑 git 配置文件: </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config -e    # 针对当前仓库</span><br></pre></td></tr></table></figure>
+<p> 或者： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config -e --global   # 针对系统上所有仓库</span><br></pre></td></tr></table></figure>
+<p> 设置提交代码时的用户信息： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name &quot;runoob&quot;</span><br><span class="line">git config --global user.email test@runoob.com</span><br></pre></td></tr></table></figure>
+<h3 id="工作区、暂存区和版本库"><a href="#工作区、暂存区和版本库" class="headerlink" title="工作区、暂存区和版本库"></a>工作区、暂存区和版本库</h3><a id="more"></a>
+<ul>
+<li>工作区（Working Directory）：指的是在电脑里能看到的目录，即本地工作目录；</li>
+<li><p>暂存区： 英文叫 stage 或 index。一般存放在 <strong>.git</strong> 目录下的 index 文件（.git/index）中，所以我们把暂存区有时也叫作索引（index）。；</p>
+</li>
+<li><p>版本库（Repository）：.git目录， Git的版本库里存了很多东西，其中最重要的就是称为stage（或者叫index）的<strong>暂存区</strong>，还有Git为我们自动创建的第一个分支<code>master</code>，以及指向<code>master</code>的一个指针叫<code>HEAD</code>。 </p>
+</li>
+</ul>
+<p>下面这个图展示了工作区、版本库中的暂存区和版本库之间的关系：</p>
+<p><img src="/2022/12/24/git-简单使用/git版本库.jpg" alt></p>
+<ul>
+<li>图中左侧为工作区，右侧为版本库。在版本库中标记为 “index” 的区域是暂存区（stage/index），标记为 “master” 的是 master 分支所代表的目录树。</li>
+<li>图中我们可以看出此时 “HEAD” 实际是指向 master 分支的一个”游标”。所以图示的命令中出现 HEAD 的地方可以用 master 来替换。</li>
+<li>图中的 objects 标识的区域为 Git 的对象库，实际位于 “.git/objects” 目录下，里面包含了创建的各种对象及内容。</li>
+<li>当对工作区修改（或新增）的文件执行 <strong>git add</strong> 命令时，暂存区的目录树被更新，同时工作区修改（或新增）的文件内容被写入到对象库中的一个新的对象中，而该对象的ID被记录在暂存区的文件索引中。</li>
+<li>当执行提交操作（git commit）时，暂存区的目录树写到版本库（对象库）中，master 分支会做相应的更新。即 master 指向的目录树就是提交时暂存区的目录树。</li>
+<li>当执行 <strong>git reset HEAD</strong> 命令时，暂存区的目录树会被重写，被 master 分支指向的目录树所替换，但是工作区不受影响。</li>
+<li>当执行 <strong>git rm –cached \&lt;file></strong> 命令时，会直接从暂存区删除文件，工作区则不做出改变。</li>
+<li>当执行 <strong>git checkout .</strong> 或者 <strong>git checkout – \&lt;file></strong> 命令时，会用暂存区全部或指定的文件替换工作区的文件。这个操作很危险，会清除工作区中未添加到暂存区中的改动。</li>
+<li>当执行 <strong>git checkout HEAD .</strong> 或者 <strong>git checkout HEAD \&lt;file> </strong> 命令时，会用 HEAD 指向的 master 分支中的全部或者部分文件替换暂存区和以及工作区中的文件。这个命令也是极具危险性的，因为不但会清除工作区中未提交的改动，也会清除暂存区中未提交的改动。</li>
+</ul>
+<p>后面我会对这里给出的重要命令分别利用具体例子进行解释，更容易理解一些。</p>
+<h3 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h3><p> Git 常用的是以下 6 个命令：<strong>git clone</strong>、<strong>git push</strong>、<strong>git add</strong> 、<strong>git commit</strong>、<strong>git checkout</strong>、<strong>git pull</strong> </p>
+<p><img src="/2022/12/24/git-简单使用/git基本操作.jpg" alt></p>
+<p><strong>说明：</strong></p>
+<ul>
+<li>workspace：工作区</li>
+<li>staging area：暂存区/缓存区</li>
+<li>local repository：版本库或本地仓库</li>
+<li>remote repository：远程仓库</li>
+</ul>
+<h4 id="提交与修改命令：介于工作区和版本库之间"><a href="#提交与修改命令：介于工作区和版本库之间" class="headerlink" title="提交与修改命令：介于工作区和版本库之间"></a><strong>提交与修改命令</strong>：介于工作区和版本库之间</h4><p>查看提交日志的命令，先放前面，没什么需要特别说明的</p>
+<table>
+<thead>
+<tr>
+<th><code>git log</code></th>
+<th>查看历史提交记录</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>git blame</code></td>
+<td>以列表形式查看指定文件的历史修改记录</td>
+</tr>
+</tbody>
+</table>
+<p><code>git status</code>：查看状态，会提示当前哪些文件在工作区被修改尚未提交到暂存区；哪些文件已经被提交到暂存区，但尚未提交到当前分支；有几个提交已经提交到了当前分支，但尚未推送到远程仓库。</p>
+<p>例如在本地新建了一个test.txt文件</p>
+<p><img src="/2022/12/24/git-简单使用/status1.png" alt></p>
+<p>在git命令行中被叫做\<untracked files\>，而且提示你使用git add命令添加；不过\&lt;Untracked>只适用于新增的文件，如果是对已经提交过的文件做了改动，git的提示叫做：”Changes not staged for commit”。</untracked></p>
+<p><code>git add</code>：把需要提交的文件添加到暂存区 </p>
+<p>这里我们把test.txt添加到暂存区</p>
+<p><img src="/2022/12/24/git-简单使用/status2.png" alt></p>
+<p>在git命令行中的提示为”changes to be commited”</p>
+<p>这里可以<code>git add 指定文件</code>，也可以<code>git add .</code>添加全部文件</p>
+<p> <code>git commit</code>：把暂存区的所有内容提交到当前分支，也可以理解为提交到本地版本库</p>
+<p>接下来我们把test.txt提交到当前分支</p>
+<p><img src="/2022/12/24/git-简单使用/status3.png" alt></p>
+<p><strong>使用-m参数，添加代码提交说明是一个好习惯</strong></p>
+<p> <code>git diff</code>：查看工作区文件和暂存区里面的区别</p>
+<p>注意这个命令是对比具体某一个文件的内容的差别，所以后面一般要带上具体的文件名称，该命令有两个主要的应用场景：</p>
+<ol>
+<li><p>工作区和暂存区文件的区别</p>
+<p>例如我们在上面的test.txt文件中再增加一行</p>
+<p><img src="/2022/12/24/git-简单使用/diff1.png" alt></p>
+</li>
+<li><p>暂存区中尚未commit的和已经commit的文件的区别</p>
+<p>接下来我们将工作区中增加了一行的test.txt添加到暂存区中</p>
+<p><img src="/2022/12/24/git-简单使用/status4.png" alt></p>
+<p>现在我们最新改动的test.txt添加到了暂存区，但是尚未提交到当前分支，刚才我们已经提交了一个版本的test.txt到当前分支，现在我们可以看看这两个文件的区别（注意使用git diff test.txt是没有用的）</p>
+<p><img src="/2022/12/24/git-简单使用/diff2.png" alt></p>
+<p> 显示暂存区和上一次提交(commit)的差异: </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git diff --cached [file]</span><br><span class="line">或</span><br><span class="line">$ git diff --staged [file]</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>一般情况下，git add和git commit可能就够处理日常的代码提交了，但是考虑以下几种情况，可能还需要撤销一些改动和提交。</p>
+<p>文件改错了，想撤回恢复原状，这个时候分为三种情况</p>
+<ol>
+<li><p>你修改了本地文件，未添加到暂存区，想将本地的文件恢复原状</p>
+<p>执行 <strong>git checkout .</strong> 或者 <strong>git checkout – \&lt;file></strong> 命令时，<strong>会用暂存区全部或指定的文件替换工作区的文件</strong>。</p>
+<p><strong>注意：这个操作很危险，会清除工作区中未添加到暂存区中的改动，确保你本地的改动不想要了或者已经备份了本地的改动，再执行该命令</strong></p>
+<p>另外还有一点，如果是本地新增的一个文件，暂存区中并没有，那么git checkout是不会对此文件有任何效果的，如果你不想要这个文件了，手动删除即可。</p>
+<p>“–”很重要，不加的话就变成了切换分支的命令。</p>
+<p>考虑一种情况：工作区的修改在之前已经添加到暂存区，现在又做了修改，checkout命令只能回到上一次添加到暂存区后的状态，并不能撤回上一次添加到暂存区的操作（想要撤回那就是下面这种情况）；</p>
+</li>
+<li><p>你修改的文件被添加到了暂存区，但尚未提交到当前分支</p>
+<p>我们继续上面的例子，增加了一行数据的test.txt被添加到了暂存区，尚未提交到当前分支，可以通过执行<strong>git reset HEAD</strong>来丢弃暂存区的修改</p>
+<p><img src="/2022/12/24/git-简单使用/reset1.png" alt></p>
+<p>但是其修改的原理是：<strong>使用当前分支指向的目录树刷新暂存区的目录树</strong>，执行完该命令后，我们第一次commit到当前分支的test.txt状态和内容不会改变，工作区的内容同样不会改变。</p>
+<p>如果需要提交本地的修改，那就再次add、commit；如果工作区的代码你也不想要了，那就回到了第1点。</p>
+</li>
+<li><p>你修改的文件已经提交到了当前分支，但尚未push到远程分支：</p>
+<p>其实通过上面的学习，我们可以绘制出这样一个流程图</p>
+<p><img src="/2022/12/24/git-简单使用/reset2.png" alt></p>
+<p>上面第2种情况中提到如果代码添加到了暂存区尚未提交到分支，可以通过reset来恢复暂存区，那么当代码已经提交到了分支之后，无论怎么reset，都是没有用的，那么究竟应该怎么做？</p>
+<p>符合这一条件的就是第一次commit到当前分支的test.txt，我们以这个文件为例来实现。</p>
+<p>不过这里同样需要使用reset命令，利用其 <strong>–soft</strong> 参数，可以回退到某个版本： </p>
+<p>第一步：执行git log 定位commit xxxadsfdgfngffdhfj2435465fdfdfwe (commitid)，一般选择本次提交前的上一个版本即可</p>
+<p>第二步：git reset –soft commitid 回退到这一版本</p>
+<p><img src="/2022/12/24/git-简单使用/reset-soft.png" alt></p>
+<p>这个时候之前提交到分支的test.txt文件被从当前分支中移除，目前处于暂存区，想要继续撤销的话就可以使用<code>git reset HEAD</code>，也就是回到上面的第2点。</p>
+</li>
+</ol>
+<p><strong>问题1：那么有没有丢弃本次提交到分支的内容并且同时清空暂存区的方法呢？</strong></p>
+<p>有，那就是<code>git reset HEAD^</code>，此时<strong>工作区的改动不会受到影响</strong>。</p>
+<p>假设我们有test1.txt和test2.txt已经提交到了当前分支</p>
+<p><img src="/2022/12/24/git-简单使用/reset-soft1.png" alt></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git reset HEAD^            # 回退所有内容到上一个版本  </span><br><span class="line">git reset HEAD^ hello.php  # 回退hello.php的版本到上一个版本  </span><br><span class="line">git reset  052e           # 回退到指定版本</span><br></pre></td></tr></table></figure>
+<p>可以看到，此命令相当先reset到上一个版本，然后git reset HEAD。</p>
+<p><strong>问题2：那么有没有丢弃本次提交到分支的内容并且同时清空暂存区，并且恢复工作区到与暂存区一致的方法呢？</strong></p>
+<p>有，那就是<code>git reset --hard HEAD^</code>，这里HEAD^表示上一个版本，如果命令中使用HEAD是没有用的，因为改动已经提交，当前的改动就是最新版本。</p>
+<p>假设我们有test1.txt和test2.txt已经提交到了当前分支，并且又分别在这两个文件末尾增加了两行改动，现在执行该命令</p>
+<p><img src="/2022/12/24/git-简单使用/reset-hard.png" alt></p>
+<p>执行完我们可以发现，工作区的这两个文件直接被删掉了，而不是丢弃最新的一次修改，所以你应该能够明白，”–hard”参数不要轻易使用，除非在你确定工作区的所有改动都不想要了或者已经备份的情况下再使用。</p>
+<p>可以看到，此命令相当于先reset到上一个版本，然后git reset HEAD，最后又执行了<code>git checkout .</code>，区别点在于，如果提交的工作区文件是较上个版本新增加的文件，<code>git reset --hard HEAD^</code>会把工作区新增的文件也给删掉，而如果先执行<code>git reset HEAD^</code>再执行<code>git checkout .</code>则不会删掉新增的文件；如果改动的是上一个版本中就已经存在的文件，那么两种方式就没有区别，最终都会将相比上个版本的所有改动丢弃。</p>
+<p><em>如果工作新增了文件，但从未添加到过暂存区，则无论是checkout还是reset –hard都不会对其造成影响。</em></p>
+<p><strong>HEAD 说明：</strong></p>
+<ul>
+<li>HEAD 表示当前版本</li>
+<li>HEAD^ 上一个版本</li>
+<li>HEAD^^ 上上一个版本</li>
+<li>HEAD^^^ 上上上一个版本</li>
+<li>以此类推…</li>
+</ul>
+<p>可以使用 ～数字表示</p>
+<ul>
+<li>HEAD~0 表示当前版本</li>
+<li>HEAD~1 上一个版本</li>
+<li>HEAD^2 上上一个版本</li>
+<li>HEAD^3 上上上一个版本</li>
+<li>以此类推…</li>
+</ul>
+<p><strong>问题3：当改动尚未提交到当前分支，已经添加到了暂存区，有没有同时清除暂存区和工作区改动的方法呢？</strong></p>
+<p>同样也是有的，就是<code>git checkout HEAD .</code>或<code>git checkout HEAD file</code>，同样是利用checkout，但是多加了一个HEAD， 它就会用 HEAD 指向的 master 分支中的全部或者部分文件替换暂存区和以及工作区中的文件。</p>
+<p> 假设我们有个README文件（上个版本中已经存在），现在我们在工作区进行了修改，并添加到了暂存区。</p>
+<p><img src="/2022/12/24/git-简单使用/git-checkout.png" alt></p>
+<p>执行完之后，我们发现暂存区被清空了，而且工作区的改动也被丢弃了。</p>
+<p>现在我们再假设工作区新建了一个test.txt文件（上个版本中并不包含），现在我们将其添加到暂存区。</p>
+<p><img src="/2022/12/24/git-简单使用/git-checkout1.png" alt></p>
+<p>可以发现这种情况下，使用checkout是无法起作用的，新增加的test.txt依然在暂存区中，这个时候<code>git reset --hard HEAD</code>就派上用场了。</p>
+<p><img src="/2022/12/24/git-简单使用/git-reset-hard1.png" alt></p>
+<p>执行完可以发现暂存区和工作区中的test.txt都被清理掉了。</p>
+<p>通过以上的学习可以发现，checkout无法处理新增的文件，reset –hard可以处理新增的文件。</p>
+<p><strong>文件删除</strong></p>
+<p>在工作中我们也会遇到需要删除线上的部分文件的场景，那么我们首先需要在工作区和暂存区中删除，然后commit给分支，最后再push到远程分支。</p>
+<p>这个时候就需要使用git rm \&lt;file>命令</p>
+<p>假设我们工作区有一个README文件，并且在上一个版本中就已经有该文件，我们执行<code>git rm README.md</code>之后，会发现工作区中没有该文件了，查看状态会发现暂存区中也删除了该文件，待提交到分支（所以如果你想把远程分支上的该文件也删除，还需要commit和push）。</p>
+<p><img src="/2022/12/24/git-简单使用/git-rm1.png" alt></p>
+<p>其实上面的操作基本已经可以解决工作中绝大多数的问题了，不过考虑一种情况，添加了较多文件到暂存区准备提交，然后多添加了个别并不打算提交的文件，然后又并不想通过上面那种撤销的操作来解决，那同样可以使用这里提到的文件删除操作。</p>
+<p>我们同样也是分为两种情况来讨论</p>
+<ol>
+<li><p>工作区新建了文件，但未添加到暂存区，不想要这个文件了，那随便删，不想要任何git命令；</p>
+</li>
+<li><p>针对上个版本已有的文件进行了修改，并添加到了暂存区，但是现在想从线上删除该文件，理论上这种情况不存在对吧，既然不要了也不会改，既然改了那应该不会想从线上删除该文件，不过即使存在这种情况，可以使用下面第3点一样的方法来解决；</p>
+</li>
+<li><p>工作区新建了文件，并添加到了暂存区，想要删除该文件;</p>
+<p>假设新建了test.txt文件，并添加到了暂存区，然后我们将工作区的test.txt删掉，看下会发生什么</p>
+<p><img src="/2022/12/24/git-简单使用/git-rm.png" alt></p>
+<p>暂存区的test.txt依然存在，正在等待commit，然后还提示工作区删掉了test.txt并未同步到暂存区，可以通过<code>git add/rm test.txt</code>来同步给暂存区。</p>
+<p>我们接下来执行这两个命令的任一个肯定是可以删掉暂存区中的test.txt的，但是实际上如果使用git rm的话，无需先手动删除工作区的test.txt，但是因为test.txt文件是新建的文件（或者其他已有的文件进行了修改，新建也可以理解为修改），需要使用<code>-f参数</code>，也就是force强制删除。</p>
+<p>删除命令：<code>git rm -f test.txt</code>。</p>
+<p>那现在还有个问题，这样直接把我们工作区新建的文件并且写的代码都给删掉了，我并不想删啊，我只是这次不想提交，那就使用<code>--cache</code>参数只删除暂存区，仍然保留工作区的改动。</p>
+<p>假设我们在工作区新建了test.txt并添加到了暂存区</p>
+<p><img src="/2022/12/24/git-简单使用/git-rm2.png" alt></p>
+<p>可以看到这时只删除了暂存区的test.txt，工作区的依然还在。</p>
+</li>
+</ol>
+<h4 id="远程操作命令：介于版本库和远程仓库之间"><a href="#远程操作命令：介于版本库和远程仓库之间" class="headerlink" title="远程操作命令：介于版本库和远程仓库之间"></a><strong>远程操作命令</strong>：介于版本库和远程仓库之间</h4><p><strong>远程操作</strong></p>
+<p><code>git remote</code>：用于在远程仓库的操作</p>
+<p><code>git remote -v</code>：显示所有远程仓库</p>
+<p><img src="/2022/12/24/git-简单使用/git-remote.png" alt></p>
+<p><strong>origin为远程地址的别名，也可以叫远程主机名</strong>，命令中使用的[alian]标志表示别名的意思。</p>
+<p>显示某个远程仓库的信息，show后面也可以远程仓库的url</p>
+<p><img src="/2022/12/24/git-简单使用/git-remote1.png" alt></p>
+<p>这里告诉我们远程有dev和main分支，本地也有dev和main分支。</p>
+<p><strong>那么这里为啥我们没有master分支呢，实际上后来github上已经将master分支更名为main分支，本质就是一个名称，没有什么区别，后面对于所有出现的main或master分支是等价的</strong></p>
+<p><strong>拉取远程代码</strong></p>
+<p><code>git fetch</code>：用于从远程获取代码库， 该命令执行完后需要执行 git merge 远程分支到你所在的分支。</p>
+<p>现在我们测试将远程的main分支拉到本地，拉之前先修改一下远程main分支的README文件内容，方便后续对比变化。</p>
+<p>拉取代码的语法规则是：<code>git fetch [远程地址名] [分支名]</code>，分支名不写的话默认为master分支（这里和GitHub上你设置的默认分支有一致），远程地址名不写默认应该是origin。</p>
+<p><img src="/2022/12/24/git-简单使用/git-fetch.png" alt></p>
+<p>以上信息”f564186..9cc37d5 main-&gt; origin/main” 说明 master 分支已被更新，接下来我们使用merge命令将更新同步到本地，这里本地指的是本地版本库以及工作区。</p>
+<p><strong>合并代码</strong></p>
+<p>合并代码的命令语法是：<code>git merge 远程地址名/分支名</code></p>
+<p><img src="/2022/12/24/git-简单使用/git-merge.png" alt></p>
+<p>命令执行结束查看当前分支的本地工作区文件已经被同步修改。</p>
+<p>origin master表达的意思是：git服务器(origin代表)上的master分支。<br>origin/master表示本地分支(本地的远程分支)，是从远程拉取代码后，在本地建立的一份拷贝，需要merge后才能更新当前分支的代码版本。</p>
+<p><strong>拉取并合并</strong></p>
+<p><code>git pull</code>： 用于从远程获取代码并合并本地的版本，其等价于fetch+merge，使用语法</p>
+<p><code>git pull 远程主机名 远程分支名:本地分支名</code></p>
+<p>将远程主机 origin 的 main分支拉取过来，与本地的 dev分支合并。 </p>
+<p><code>git pull origin main:dev</code></p>
+<p> 如果远程分支是与<strong>当前分支</strong>合并，则冒号后面的部分可以省略。</p>
+<p><code>git pull origin main</code> </p>
+<p>上面命令表示，取回 origin/main分支，再与本地的main分支(假设当前分支是main)合并。</p>
+<p>当然也有简写的版本（一般不是很建议过多去记省略的版本，容易出错）</p>
+<p>从origin的默认分支(一般是master，可以在GitHub上改)拉取过来，然后与当前分支合并</p>
+<p><code>git pull origin</code>和<code>git pull</code> </p>
+<p><strong>推送代码</strong></p>
+<p><code>git push</code>：用于将本地的分支版本上传到远程并合并，命令语法：</p>
+<p><code>git push 远程主机名  本地分支名:远程分支名</code></p>
+<p>如果本地分支名与远程分支名相同，则可以省略冒号：</p>
+<p><code>git push 远程主机名 本地分支名</code></p>
+<p>注意这里与pull的区别在于，pull是从远程到本地，远程分支名在前，本地分支名在后；而push是从本地到远程，所以本地分支名在前。</p>
+<p> 以下命令将本地的 master 分支推送到 origin 主机的 master 分支。 </p>
+<p><code>git push origin master</code></p>
+<p>等价于</p>
+<p><code>git push origin master:master</code></p>
+<p>简化版本：<code>git push</code>或<code>git push origin</code></p>
+<p>将当前分支的内容推送到远程与当前分支同名的远程分支名，例如当前分支为dev，则是从本地dev分支推送到远程dev分支。</p>
+<h3 id="分支管理"><a href="#分支管理" class="headerlink" title="分支管理"></a>分支管理</h3><p>几乎每一种版本控制系统都以某种形式支持分支，一个分支代表一条独立的开发线。</p>
+<p>使用分支意味着你可以从开发主线上分离开来，然后在不影响主线的同时继续工作。</p>
+<p> Git 分支实际上是指向更改快照的指针。 </p>
+<p><strong>查看分支</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git branch</span><br></pre></td></tr></table></figure>
+<p><strong>新建分支</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git branch 分支名称</span><br></pre></td></tr></table></figure>
+<p><strong>切换分支</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout 分支名称</span><br></pre></td></tr></table></figure>
+<p><em>上面也有用过checkout，用来清空工作区的改动，注意使用的区别</em></p>
+<p><strong>合并分支</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git merge 分支名</span><br></pre></td></tr></table></figure>
+<p><strong>删除分支</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git branch -d 分支名</span><br></pre></td></tr></table></figure>
+<p>这个命令是把指定的分支合并到当前分支，上面我们把origin/master分支合并到当前分支也是用的merge，且用法一致。</p>
+<p>下面我们使用一些例子来理解分支</p>
+<p>已知我们现在已经有两个分支main和dev，现在我们切换到dev分支，然后新建一个文件test1.txt并提交。</p>
+<p><img src="/2022/12/24/git-简单使用/git-branch1.png" alt></p>
+<p>然后我们切换回main分支会发现工作区又回到了原来的样子，刚才在dev分支新建的文件不见了，切换回dev分支的话，test1.txt又会出现。</p>
+<p>使用分支将工作切分开来，从而让我们能够在不同开发环境中做事，并来回切换。 </p>
+<p><img src="/2022/12/24/git-简单使用/git-branch2.png" alt></p>
+<p><strong>如果在dev分支新建了文件没有提交，无论添加没添加到过暂存区，那么切换分支后是可以看得到的。</strong></p>
+<p>我们在dev分支新建了test1文件，将他合并到main分支</p>
+<p><code>git merge dev</code></p>
+<p>这样main分支也就有了test1.txt文件，假设dev分支开发已经结束，可以将其删除。</p>
+<p><img src="/2022/12/24/git-简单使用/git-branch3.png" alt></p>
+<p>这里提示说dev没有完全merge，确认删除使用”-D”参数。</p>
+<h3 id="Diverge-分支分化问题"><a href="#Diverge-分支分化问题" class="headerlink" title="Diverge 分支分化问题"></a>Diverge 分支分化问题</h3><p>Diverge的主要原因是因为没有同步服务器端最新的代码就commit，设想服务器端已经有新的提交（其他同事更新了代码），但是你并没有同步，然后直接commit代码，这个时候你的分支代码与服务器端分支代码是不同的，当你push时肯定会出问题。<br>正确的流程应该是：先将本地代码同步为最新，再add，commmit和push。</p>
+<p>如果出现Diverge问题，解决办法：<br>方案一：</p>
+<ol>
+<li>先备份本地修改的未提交的代码；</li>
+<li>git fetch origin；</li>
+<li>git reset –hard origin/master</li>
+</ol>
+<p>这种解决办法的原理是，先将本地的代码同步为服务器端的最新代码(fetch)，这时候origin/master分支就是从远程拉过来的本地分支，然后使用reset命令和<code>--hard</code>参数覆盖本地版本库和工作区。</p>
+<p>处理完之后可以再将修改的文件添加进来，重新提交，可以看出方案一的做法比较保守，也比较安全，适合新手。</p>
+<p>方案二：</p>
+<ol>
+<li>git fetch origin</li>
+<li>git merge origin/master</li>
+</ol>
+<p>第2步很有可能出现冲突，若出现冲突就解决冲突。</p>
+<h3 id="冲突解决"><a href="#冲突解决" class="headerlink" title="冲突解决"></a>冲突解决</h3><p>这里举个简单的例子解决冲突，假设我们的main分支test文件的内容如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">first line</span><br><span class="line">second line</span><br><span class="line">third line</span><br><span class="line">end line</span><br></pre></td></tr></table></figure>
+<p>dev分支的test文件内容如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">first line</span><br><span class="line">third line</span><br><span class="line">second line</span><br><span class="line">end line</span><br></pre></td></tr></table></figure>
+<p>将两个分支所做的改动都提交后，将dev分支的内容merge到main分支</p>
+<p><img src="/2022/12/24/git-简单使用/git-conflict.png" alt></p>
+<p>提示告诉我们发生冲突了，无法完成自动merge，需要手动处理之后再提交，我们打开test文件看一下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">first line</span><br><span class="line">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span><br><span class="line">second line</span><br><span class="line">third line</span><br><span class="line">=======</span><br><span class="line">third line</span><br><span class="line">second line</span><br><span class="line">&gt;&gt;&gt;&gt;&gt;&gt;&gt; dev</span><br><span class="line">end line</span><br></pre></td></tr></table></figure>
+<p>这里告诉我们”&lt;&lt;&lt;”和”===”之间包括的内容与”===”和”&gt;&gt;&gt;”之间包括的内容冲突，需要你确定下到底怎么保留，考虑到实际工作场景可能两边的代码都是需要的，所以我们这样处理</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">first line</span><br><span class="line">second line</span><br><span class="line">third line</span><br><span class="line">third line</span><br><span class="line">second line</span><br><span class="line">end line</span><br></pre></td></tr></table></figure>
+<p>处理完之后，我们需要git add和git commit和push。</p>
+<p><strong>这个时候main分支冲突问题解决了，但是要注意dev分支和main分支还是有区别的，如果这一阶段的开发完成了可以删除dev分支；或者将main分支合并到dev分支以同步修改（如果你需要的话）。</strong></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/git/" rel="tag"># git</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/12/05/spider-heilongjiang/" rel="next" title="反爬（四）">
+                <i class="fa fa-chevron-left"></i> 反爬（四）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2023/02/04/pytorch-tensor/" rel="prev" title="Pytorch中的张量学习">
+                Pytorch中的张量学习 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">104</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">198</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Git简单使用"><span class="nav-text">Git简单使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#git初始化操作"><span class="nav-text">git初始化操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工作区、暂存区和版本库"><span class="nav-text">工作区、暂存区和版本库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基本操作"><span class="nav-text">基本操作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#提交与修改命令：介于工作区和版本库之间"><span class="nav-text">提交与修改命令：介于工作区和版本库之间</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#远程操作命令：介于版本库和远程仓库之间"><span class="nav-text">远程操作命令：介于版本库和远程仓库之间</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分支管理"><span class="nav-text">分支管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Diverge-分支分化问题"><span class="nav-text">Diverge 分支分化问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#冲突解决"><span class="nav-text">冲突解决</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

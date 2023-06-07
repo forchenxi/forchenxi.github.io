@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="pytorch,optimizer,learning rate,SGD,Momentum,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Pytorch中的优化器Optimizer什么是优化器pytorch的优化器：管理并更新模型中可学习参数的值，使得模型输出更接近真实标签 导数：函数在指定坐标轴上的变化率方向导数：指定方向上的变化率（二元及以上函数，偏导数）梯度：一个向量，方向是使得方向导数取得最大值的方向 Pytorch的Optimizer 参数  defaults：优化器超参数 state：参数的缓存，如momentum的缓存">
+<meta name="keywords" content="pytorch,optimizer,learning rate,SGD,Momentum">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pytorch中的优化器Optimizer">
+<meta property="og:url" content="http://yoursite.com/2023/02/25/pytorch-optim/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="Pytorch中的优化器Optimizer什么是优化器pytorch的优化器：管理并更新模型中可学习参数的值，使得模型输出更接近真实标签 导数：函数在指定坐标轴上的变化率方向导数：指定方向上的变化率（二元及以上函数，偏导数）梯度：一个向量，方向是使得方向导数取得最大值的方向 Pytorch的Optimizer 参数  defaults：优化器超参数 state：参数的缓存，如momentum的缓存">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2023/02/25/pytorch-optim/p1.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/25/pytorch-optim/p2.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/25/pytorch-optim/p3.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/25/pytorch-optim/p4.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/25/pytorch-optim/p5.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/25/pytorch-optim/p6.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/25/pytorch-optim/p7.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/25/pytorch-optim/p8.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/25/pytorch-optim/p9.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/25/pytorch-optim/p10.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/25/pytorch-optim/p11.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/25/pytorch-optim/p12.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/25/pytorch-optim/p13.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/25/pytorch-optim/p14.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/25/pytorch-optim/p15.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/25/pytorch-optim/p16.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/25/pytorch-optim/p17.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/25/pytorch-optim/p18.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/25/pytorch-optim/p19.png">
+<meta property="og:image" content="http://yoursite.com/2023/02/25/pytorch-optim/p20.png">
+<meta property="og:updated_time" content="2023-03-25T08:34:46.960Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Pytorch中的优化器Optimizer">
+<meta name="twitter:description" content="Pytorch中的优化器Optimizer什么是优化器pytorch的优化器：管理并更新模型中可学习参数的值，使得模型输出更接近真实标签 导数：函数在指定坐标轴上的变化率方向导数：指定方向上的变化率（二元及以上函数，偏导数）梯度：一个向量，方向是使得方向导数取得最大值的方向 Pytorch的Optimizer 参数  defaults：优化器超参数 state：参数的缓存，如momentum的缓存">
+<meta name="twitter:image" content="http://yoursite.com/2023/02/25/pytorch-optim/p1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2023/02/25/pytorch-optim/">
+
+
+
+
+
+  <title>Pytorch中的优化器Optimizer | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2023/02/25/pytorch-optim/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Pytorch中的优化器Optimizer</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-02-25T16:34:05+08:00">
+                2023-02-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/pytorch/" itemprop="url" rel="index">
+                    <span itemprop="name">pytorch</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Pytorch中的优化器Optimizer"><a href="#Pytorch中的优化器Optimizer" class="headerlink" title="Pytorch中的优化器Optimizer"></a>Pytorch中的优化器Optimizer</h2><h3 id="什么是优化器"><a href="#什么是优化器" class="headerlink" title="什么是优化器"></a>什么是优化器</h3><p><code>pytorch</code>的优化器：<strong>管理并更新</strong>模型中可学习参数的值，使得模型输出更接近真实标签</p>
+<p><strong>导数</strong>：函数在指定坐标轴上的变化率<br><strong>方向导数</strong>：指定方向上的变化率（二元及以上函数，偏导数）<br><strong>梯度</strong>：一个向量，方向是使得方向导数取得最大值的方向</p>
+<h3 id="Pytorch的Optimizer"><a href="#Pytorch的Optimizer" class="headerlink" title="Pytorch的Optimizer"></a><code>Pytorch</code>的Optimizer</h3><p><img src="/2023/02/25/pytorch-optim/p1.png" alt></p>
+<p>参数</p>
+<ul>
+<li>defaults：优化器超参数</li>
+<li>state：参数的缓存，如momentum的缓存</li>
+<li><code>param_groups</code>：管理的参数组</li>
+<li>_step_count：记录更新次数，学习率调整中使用</li>
+</ul>
+<a id="more"></a>
+<p>基本方法：</p>
+<ul>
+<li>zero_grad()：清空所管理参数的梯度<br><img src="/2023/02/25/pytorch-optim/p2.png" alt></li>
+</ul>
+<p><code>pytorch</code>特性：张量梯度不会自动清零</p>
+<ul>
+<li><p>step()：执行一步更新</p>
+</li>
+<li><p><code>add_param_group()</code>：添加参数组<br><img src="/2023/02/25/pytorch-optim/p3.png" alt></p>
+</li>
+<li><p><code>state_dict()</code>：获取优化器当前状态信息字典<br><img src="/2023/02/25/pytorch-optim/p4.png" alt></p>
+</li>
+<li><p><code>load_state_dict()</code>：加载状态信息字典</p>
+</li>
+</ul>
+<h4 id="使用代码帮助理解和学习"><a href="#使用代码帮助理解和学习" class="headerlink" title="使用代码帮助理解和学习"></a>使用代码帮助理解和学习</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BASE_DIR = os.path.dirname(os.path.abspath(__file__))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">weight = torch.randn((<span class="number">2</span>, <span class="number">2</span>), requires_grad=<span class="literal">True</span>)</span><br><span class="line">weight.grad = torch.ones((<span class="number">2</span>, <span class="number">2</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 需要传入一个可迭代对象</span></span><br><span class="line">optimizer = optim.SGD([weight], lr=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">print(<span class="string">"weight before step:&#123;&#125;"</span>.format(weight.data))</span><br><span class="line">optimizer.step()</span><br><span class="line">print(<span class="string">"weight after step:&#123;&#125;"</span>.format(weight.data))</span><br><span class="line"></span><br><span class="line">weight before step:tensor([[<span class="number">-0.0606</span>, <span class="number">-0.3197</span>],</span><br><span class="line">        [ <span class="number">1.4949</span>, <span class="number">-0.8007</span>]])</span><br><span class="line">weight after step:tensor([[<span class="number">-1.0606</span>, <span class="number">-1.3197</span>],</span><br><span class="line">        [ <span class="number">0.4949</span>, <span class="number">-1.8007</span>]])</span><br></pre></td></tr></table></figure>
+<p><code>weight = weight - lr * weight.grad</code><br>上面学习率是1，把学习率改为0.1试一下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">optimizer = optim.SGD([weight], lr=<span class="number">0.1</span>)</span><br><span class="line"></span><br><span class="line">weight before step:tensor([[ <span class="number">0.3901</span>,  <span class="number">0.2167</span>],</span><br><span class="line">        [<span class="number">-0.3428</span>, <span class="number">-0.7151</span>]])</span><br><span class="line">weight after step:tensor([[ <span class="number">0.2901</span>,  <span class="number">0.1167</span>],</span><br><span class="line">        [<span class="number">-0.4428</span>, <span class="number">-0.8151</span>]])</span><br></pre></td></tr></table></figure>
+<p>接着上面的代码，我们再看一下<code>add_param_group</code>方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># add_param_group方法</span></span><br><span class="line">print(<span class="string">"optimizer.param_groups is \n&#123;&#125;"</span>.format(optimizer.param_groups))</span><br><span class="line"></span><br><span class="line">w2 = torch.randn((<span class="number">3</span>, <span class="number">3</span>), requires_grad=<span class="literal">True</span>)</span><br><span class="line">optimizer.add_param_group(&#123;<span class="string">"params"</span>: w2, <span class="string">"lr"</span>: <span class="number">0.0001</span>&#125;)</span><br><span class="line">print(<span class="string">"optimizer.param_groups is\n&#123;&#125;"</span>.format(optimizer.param_groups))</span><br><span class="line"></span><br><span class="line">optimizer.param_groups <span class="keyword">is</span> </span><br><span class="line">[&#123;<span class="string">'params'</span>: [tensor([[ <span class="number">0.1749</span>, <span class="number">-0.2018</span>],</span><br><span class="line">        [ <span class="number">0.0080</span>,  <span class="number">0.3517</span>]], requires_grad=<span class="literal">True</span>)], <span class="string">'lr'</span>: <span class="number">0.1</span>, <span class="string">'momentum'</span>: <span class="number">0</span>, <span class="string">'dampening'</span>: <span class="number">0</span>, <span class="string">'weight_decay'</span>: <span class="number">0</span>, <span class="string">'nesterov'</span>: <span class="literal">False</span>&#125;]</span><br><span class="line"></span><br><span class="line">optimizer.param_groups <span class="keyword">is</span></span><br><span class="line">[&#123;<span class="string">'params'</span>: [tensor([[ <span class="number">0.1749</span>, <span class="number">-0.2018</span>],</span><br><span class="line">        [ <span class="number">0.0080</span>,  <span class="number">0.3517</span>]], requires_grad=<span class="literal">True</span>)], <span class="string">'lr'</span>: <span class="number">0.1</span>, <span class="string">'momentum'</span>: <span class="number">0</span>, <span class="string">'dampening'</span>: <span class="number">0</span>, <span class="string">'weight_decay'</span>: <span class="number">0</span>, <span class="string">'nesterov'</span>: <span class="literal">False</span>&#125;, </span><br><span class="line"> &#123;<span class="string">'params'</span>: [tensor([[ <span class="number">0.4538</span>, <span class="number">-0.8521</span>, <span class="number">-1.3081</span>],</span><br><span class="line">        [<span class="number">-0.0158</span>, <span class="number">-0.2708</span>,  <span class="number">0.0302</span>],</span><br><span class="line">        [<span class="number">-0.3751</span>, <span class="number">-0.1052</span>, <span class="number">-0.3030</span>]], requires_grad=<span class="literal">True</span>)], <span class="string">'lr'</span>: <span class="number">0.0001</span>, <span class="string">'momentum'</span>: <span class="number">0</span>, <span class="string">'dampening'</span>: <span class="number">0</span>, <span class="string">'weight_decay'</span>: <span class="number">0</span>, <span class="string">'nesterov'</span>: <span class="literal">False</span>&#125;]</span><br></pre></td></tr></table></figure>
+<p>关于<code>zero_grad()</code>、<code>step()</code>、<code>state_dict()</code>、<code>load_state_dict()</code>这几个方法比较简单就不再赘述。</p>
+<h3 id="SGD随机梯度下降"><a href="#SGD随机梯度下降" class="headerlink" title="SGD随机梯度下降"></a><code>SGD</code>随机梯度下降</h3><h4 id="learning-rate学习率"><a href="#learning-rate学习率" class="headerlink" title="learning_rate学习率"></a>learning_rate学习率</h4><p><img src="/2023/02/25/pytorch-optim/p5.png" alt></p>
+<p>这里学习率为1，可以看到并没有达到梯度下降的效果，反而y值越来越大，这是因为更新的步伐太大。</p>
+<p><img src="/2023/02/25/pytorch-optim/p6.png" alt></p>
+<p>我们以<code>y = 4*x^2</code>这个函数举例，<strong>将y值作为要优化的损失值</strong>，那么梯度下降的过程就是为了找到y的最小值（即此函数曲线的最小值）；如果我们把学习率设置为0.2，就可以得到这样一个梯度下降的图</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">func</span><span class="params">(x)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> torch.pow(<span class="number">2</span>*x, <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">x = torch.tensor([<span class="number">2.</span>], requires_grad=<span class="literal">True</span>)</span><br><span class="line">iter_rec, loss_rec, x_rec = list(), list(), list()</span><br><span class="line">lr = <span class="number">0.2</span></span><br><span class="line">max_iteration = <span class="number">20</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(max_iteration):</span><br><span class="line">    y = func(x)</span><br><span class="line">    y.backward()</span><br><span class="line"></span><br><span class="line">    print(<span class="string">"iter:&#123;&#125;, x:&#123;:8&#125;, x.grad:&#123;:8&#125;, loss:&#123;:10&#125;"</span>.format(</span><br><span class="line">        i, x.detach().numpy()[<span class="number">0</span>], x.grad.detach().numpy()[<span class="number">0</span>], y.item()</span><br><span class="line">    ))</span><br><span class="line">    x_rec.append(x.item())</span><br><span class="line">    x.data.sub_(lr * x.grad)</span><br><span class="line">    x.grad.zero_()</span><br><span class="line">    iter_rec.append(i)</span><br><span class="line">    loss_rec.append(y.item())</span><br><span class="line"></span><br><span class="line">plt.subplot(<span class="number">121</span>).plot(iter_rec, loss_rec, <span class="string">'-ro'</span>)</span><br><span class="line">plt.xlabel(<span class="string">"Iteration"</span>)</span><br><span class="line">plt.ylabel(<span class="string">"Loss value"</span>)</span><br><span class="line"></span><br><span class="line">x_t = torch.linspace(<span class="number">-3</span>, <span class="number">3</span>, <span class="number">100</span>)</span><br><span class="line">y = func(x_t)</span><br><span class="line">plt.subplot(<span class="number">122</span>).plot(x_t.numpy(), y.numpy(), label=<span class="string">"y = 4*x^2"</span>)</span><br><span class="line">plt.grid()</span><br><span class="line"></span><br><span class="line">y_rec = [func(torch.tensor(i)).item() <span class="keyword">for</span> i <span class="keyword">in</span> x_rec]</span><br><span class="line">plt.subplot(<span class="number">122</span>).plot(x_rec, y_rec, <span class="string">'-ro'</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="/2023/02/25/pytorch-optim/p7.png" alt></p>
+<p>这里其实存在一个下降速度更快的学习率，那就是0.125，一步就可以将loss更新为0，这是因为我们已经了这个函数表达式，而在实际神经网络模型训练的过程中，是不知道所谓的函数表达式的，所以只能选取一个相对较小的学习率，然后以训练更多的迭代次数来达到最优的loss。</p>
+<p><img src="/2023/02/25/pytorch-optim/p8.png" alt></p>
+<h4 id="动量（Momentum，又叫冲量）"><a href="#动量（Momentum，又叫冲量）" class="headerlink" title="动量（Momentum，又叫冲量）"></a>动量（Momentum，又叫冲量）</h4><p>结合当前梯度与上一次更新信息，用于当前更新</p>
+<p><strong>为什么会出现动量这个概念？</strong></p>
+<p>当学习率比较小时，往往更新比较慢，通过引入动量，使得后续的更新受到前面更新的影响，可以更快的进行梯度下降。</p>
+<p>指数加权平均：当前时刻的平均值（Vt）与当前参数值（θ）和前一时刻的平均值（Vt-1）的关系。</p>
+<p><img src="/2023/02/25/pytorch-optim/p9.png" alt></p>
+<p>根据上述公式进行迭代展开，因为0&lt;β&lt;1，<strong>当前时刻的平均值受越近时刻的影响越大（更近的时刻其所占的权重更高），越远时刻的影响越小</strong>，我们可以通过下面作图来看到这一变化。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">exp_w_func</span><span class="params">(beta, time_list)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> [(<span class="number">1</span>-beta) * np.power(beta, exp) <span class="keyword">for</span> exp <span class="keyword">in</span> time_list]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">beta = <span class="number">0.9</span></span><br><span class="line">num_point = <span class="number">100</span></span><br><span class="line">time_list = np.arange(num_point).tolist()</span><br><span class="line"></span><br><span class="line">weights = exp_w_func(beta, time_list)</span><br><span class="line"></span><br><span class="line">plt.plot(time_list, weights, <span class="string">'-ro'</span>, label=<span class="string">"Beta: &#123;&#125;\n = B * (1-B)^t"</span>.format(beta))</span><br><span class="line">plt.xlabel(<span class="string">"time"</span>)</span><br><span class="line">plt.ylabel(<span class="string">"weight"</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.title(<span class="string">"exponentially weighted average"</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="/2023/02/25/pytorch-optim/p10.png" alt></p>
+<p>这里β是一个超参数，设置不同的值，其对于过去时刻的权重计算如下图</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">beta_list = [<span class="number">0.98</span>, <span class="number">0.95</span>, <span class="number">0.9</span>, <span class="number">0.8</span>]</span><br><span class="line">w_list = [exp_w_func(beta, time_list) <span class="keyword">for</span> beta <span class="keyword">in</span> beta_list]</span><br><span class="line"><span class="keyword">for</span> i, w <span class="keyword">in</span> enumerate(w_list):</span><br><span class="line">    plt.plot(time_list, w, label=<span class="string">"Beta: &#123;&#125;"</span>.format(beta_list[i]))</span><br><span class="line">    plt.xlabel(<span class="string">"time"</span>)</span><br><span class="line">    plt.ylabel(<span class="string">"weight"</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="/2023/02/25/pytorch-optim/p11.png" alt></p>
+<p>从图中可以得到这一结论：<strong>β值越小，记忆周期越短，β值越大，记忆周期越长</strong>。</p>
+<p><code>pytorch</code>中带有momentum参数的更新公式</p>
+<p><img src="/2023/02/25/pytorch-optim/p12.png" alt></p>
+<p>对于<code>y=4*x^2</code>这个例子，在没有momentum时，我们对比学习率分别为0.01和0.03会发现，0.03收敛的更快。</p>
+<p><img src="/2023/02/25/pytorch-optim/p13.png" alt></p>
+<p>如果我们给learning_rate=0.01增加momentum参数，会发现其可以先一步0.03的学习率到达loss的较小值，但是因为动量较大的因素，在达到了最小值后还会反弹到一个大的值。</p>
+<p><img src="/2023/02/25/pytorch-optim/p14.png" alt></p>
+<h4 id="Pytorch中的优化器"><a href="#Pytorch中的优化器" class="headerlink" title="Pytorch中的优化器"></a><code>Pytorch</code>中的优化器</h4><p><code>optim.SGD</code></p>
+<p>主要参数：</p>
+<ul>
+<li><code>params</code>：管理的参数组</li>
+<li><code>lr</code>：学习率</li>
+<li>momentum：动量系数，贝塔</li>
+<li><code>weight_decay</code>：<code>L2</code>正则化系数</li>
+<li><code>nesterov</code>：是否采用NAG，默认False</li>
+</ul>
+<p><code>optim.Adagrad</code>：自适应学习率梯度下降法</p>
+<p><code>optim.RMSprop</code>：Adagrad的改进</p>
+<p><code>optim.Adadelta</code>：Adagrad的改进</p>
+<p><code>optim.Adam</code>：RMSprop结合Momentum</p>
+<p><code>optim.Adamax</code>：Adam增加学习率上限</p>
+<p><code>optim.SparseAdam</code>：稀疏版的Adam</p>
+<p><code>optim.ASGD</code>：随机平均梯度下降</p>
+<p><code>optim.Rprop</code>：弹性反向传播</p>
+<p><code>optim.LBFGS</code>：BFGS的改进</p>
+<h3 id="学习率调整"><a href="#学习率调整" class="headerlink" title="学习率调整"></a>学习率调整</h3><p>前期学习率大，后期学习率小</p>
+<h4 id="pytorch中调整学习率的基类"><a href="#pytorch中调整学习率的基类" class="headerlink" title="pytorch中调整学习率的基类"></a><code>pytorch</code>中调整学习率的基类</h4><p><code>class _LRScheduler</code></p>
+<p>主要属性：</p>
+<ul>
+<li>optimizer：关联的优化器</li>
+<li>last_epoch：记录epoch数</li>
+<li><code>base_lrs</code>：记录初始学习率</li>
+</ul>
+<p>主要方法：</p>
+<ul>
+<li>step()：更新下一个epoch的学习率</li>
+<li><code>get_lr()</code>：虚函数，计算下一个epoch的学习率</li>
+</ul>
+<h4 id="StepLR"><a href="#StepLR" class="headerlink" title="StepLR"></a><code>StepLR</code></h4><p><strong>等间隔</strong>调整学习率</p>
+<p>主要参数：</p>
+<ul>
+<li>step_size：调整间隔数</li>
+<li>gamma：调整系数</li>
+</ul>
+<p>调整方式：<code>lr = lr * gamma</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">LR = <span class="number">0.1</span></span><br><span class="line">iteration = <span class="number">10</span></span><br><span class="line">max_epoch = <span class="number">200</span></span><br><span class="line"></span><br><span class="line">weights = torch.randn((<span class="number">1</span>,), requires_grad=<span class="literal">True</span>)</span><br><span class="line">target = torch.zeros((<span class="number">1</span>, ))</span><br><span class="line"></span><br><span class="line">optimizer = optim.SGD([weights], lr=LR, momentum=<span class="number">0.9</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">scheduler_lr = optim.lr_scheduler.StepLR(optimizer, step_size=<span class="number">50</span>, gamma=<span class="number">0.1</span>)  <span class="comment"># 设置学习率下降策略</span></span><br><span class="line"></span><br><span class="line">lr_list, epoch_list = list(), list()</span><br><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> range(max_epoch):</span><br><span class="line">    lr_list.append(scheduler_lr.get_lr())</span><br><span class="line">    epoch_list.append(epoch)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(iteration):</span><br><span class="line">        loss = torch.pow((weights-target), <span class="number">2</span>)</span><br><span class="line">        loss.backward()</span><br><span class="line">        optimizer.step()</span><br><span class="line">        optimizer.zero_grad()</span><br><span class="line"></span><br><span class="line">    scheduler_lr.step()</span><br><span class="line"></span><br><span class="line">plt.plot(epoch_list, lr_list, label=<span class="string">'Step LR Scheduler'</span>)</span><br><span class="line">plt.xlabel(<span class="string">'Epoch'</span>)</span><br><span class="line">plt.ylabel(<span class="string">'Learning Rate'</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="/2023/02/25/pytorch-optim/p15.png" alt></p>
+<h4 id="MultiStepLR"><a href="#MultiStepLR" class="headerlink" title="MultiStepLR"></a><code>MultiStepLR</code></h4><p>功能：按给定间隔调整学习率</p>
+<p>主要参数：</p>
+<ul>
+<li>milestones：设定调整时刻数</li>
+<li>gamma：调整系数</li>
+</ul>
+<p>调整方式：<code>lr = lr * gamma</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># MultiStepLR</span></span><br><span class="line">milestones = [<span class="number">50</span>, <span class="number">125</span>, <span class="number">160</span>]</span><br><span class="line">scheduler_lr = optim.lr_scheduler.MultiStepLR(optimizer, milestones=milestones, gamma=<span class="number">0.1</span>)</span><br></pre></td></tr></table></figure>
+<p>只需要改变这里代码，其他部分与<code>StepLR</code>中基本一致</p>
+<p><img src="/2023/02/25/pytorch-optim/p16.png" alt></p>
+<h4 id="ExponentialLR"><a href="#ExponentialLR" class="headerlink" title="ExponentialLR"></a><code>ExponentialLR</code></h4><p>功能：按指数衰减调整学习率</p>
+<p>主要参数：</p>
+<ul>
+<li>gamma：指数的底</li>
+</ul>
+<p>调整方式：<code>lr = lr * gamma ** epoch</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Exponential LR</span></span><br><span class="line">gamma = <span class="number">0.95</span></span><br><span class="line">scheduler_lr = optim.lr_scheduler.ExponentialLR(optimizer, gamma=gamma)</span><br></pre></td></tr></table></figure>
+<p><img src="/2023/02/25/pytorch-optim/p17.png" alt></p>
+<h4 id="CosineAnnealingLR"><a href="#CosineAnnealingLR" class="headerlink" title="CosineAnnealingLR"></a><code>CosineAnnealingLR</code></h4><p>功能：余弦周期调整学习率</p>
+<p>主要参数：</p>
+<ul>
+<li>T_max：下降周期</li>
+<li>eta_min：学习率下限</li>
+</ul>
+<p>调整方式：</p>
+<p><img src="/2023/02/25/pytorch-optim/p18.png" alt></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># CosineAnnealingLR</span></span><br><span class="line">t_max = <span class="number">50</span></span><br><span class="line">scheduler_lr = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=t_max, eta_min=<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="/2023/02/25/pytorch-optim/p19.png" alt></p>
+<h4 id="ReduceLRonPlateau"><a href="#ReduceLRonPlateau" class="headerlink" title="ReduceLRonPlateau"></a><code>ReduceLRonPlateau</code></h4><p>功能：监控指标，当指标不再变化则调整学习率</p>
+<p>主要参数：</p>
+<ul>
+<li><code>mode</code>：min/max，两种模式，min观察下降，max观察上升</li>
+<li>factor：调整系数</li>
+<li>patience：“耐心”，接受几次不变化</li>
+<li><code>cooldown</code>：“冷却时间”，停止监控一段时间</li>
+<li>verbose：是否打印日志</li>
+<li><code>min_lr</code>：学习率下限</li>
+<li><code>eps</code>：学习率衰减最小值</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Reduce LR on Plateau</span></span><br><span class="line">loss_value = <span class="number">0.5</span></span><br><span class="line">accuray = <span class="number">0.9</span></span><br><span class="line"></span><br><span class="line">factor = <span class="number">0.1</span></span><br><span class="line">mode = <span class="string">'min'</span></span><br><span class="line">patience = <span class="number">10</span></span><br><span class="line">cooldown = <span class="number">10</span></span><br><span class="line">min_lr = <span class="number">1e-4</span></span><br><span class="line">verbose = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">scheduler_lr = optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=factor, mode=mode, patience=patience,</span><br><span class="line">                                                    cooldown=cooldown, min_lr=min_lr, verbose=verbose)</span><br><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> range(max_epoch):</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(iteration):</span><br><span class="line">        optimizer.step()</span><br><span class="line">        optimizer.zero_grad()</span><br><span class="line">    <span class="comment"># if epoch == 5:</span></span><br><span class="line">        <span class="comment"># loss_value = 0.4</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 把要监控的指标传进去</span></span><br><span class="line">    scheduler_lr.step(loss_value)</span><br><span class="line"></span><br><span class="line">Epoch    <span class="number">12</span>: reducing learning rate of group <span class="number">0</span> to <span class="number">1.0000e-02</span>.</span><br><span class="line">Epoch    <span class="number">33</span>: reducing learning rate of group <span class="number">0</span> to <span class="number">1.0000e-03</span>.</span><br><span class="line">Epoch    <span class="number">54</span>: reducing learning rate of group <span class="number">0</span> to <span class="number">1.0000e-04</span>.</span><br></pre></td></tr></table></figure>
+<h4 id="LambdaLR"><a href="#LambdaLR" class="headerlink" title="LambdaLR"></a><code>LambdaLR</code></h4><p>功能：自定义调整策略</p>
+<p>主要参数：</p>
+<ul>
+<li><code>lr_lambda</code>：function or list</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># lambda LR</span></span><br><span class="line"></span><br><span class="line">lr_init = <span class="number">0.1</span></span><br><span class="line">weights_1 = torch.randn((<span class="number">6</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">5</span>))</span><br><span class="line">weights_2 = torch.ones((<span class="number">5</span>, <span class="number">5</span>))</span><br><span class="line"></span><br><span class="line">optimizer = optim.SGD([</span><br><span class="line">    &#123;<span class="string">'params'</span>: [weights_1]&#125;,</span><br><span class="line">    &#123;<span class="string">'params'</span>: [weights_2]&#125;</span><br><span class="line">], lr=lr_init)</span><br><span class="line"></span><br><span class="line">lambda1 = <span class="keyword">lambda</span> epoch: <span class="number">0.1</span> ** (epoch // <span class="number">20</span>)</span><br><span class="line">lambda2 = <span class="keyword">lambda</span> epoch: <span class="number">0.95</span> ** epoch</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=[lambda1, lambda2])</span><br><span class="line"></span><br><span class="line">lr_list, epoch_list = list(), list()</span><br><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> range(max_epoch):</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(iteration):</span><br><span class="line">        optimizer.step()</span><br><span class="line">        optimizer.zero_grad()</span><br><span class="line">    scheduler.step()</span><br><span class="line"></span><br><span class="line">    lr_list.append(scheduler.get_lr())</span><br><span class="line">    epoch_list.append(epoch)</span><br><span class="line"></span><br><span class="line">    print(<span class="string">'epoch: &#123;:5d&#125;, lr:&#123;&#125;'</span>.format(epoch, scheduler.get_lr()))</span><br></pre></td></tr></table></figure>
+<h4 id="transformer包中的warmup-scheduler"><a href="#transformer包中的warmup-scheduler" class="headerlink" title="transformer包中的warmup scheduler"></a>transformer包中的<code>warmup scheduler</code></h4><p>我们都知道模型在开始时可以采用较大的学习率，然后快速的收敛，随着模型训练到后期需要减少学习率才能使得模型进一步学习，如果持续使用较大的学习率会使得模型最后无法走到一个局部的最优点，所以有一种叫做<code>warmup</code>的学习率调整策略，偏向于前期采用较大的学习率，后期逐渐减小学习率。</p>
+<p>在transformer包中就已经封装了类似的方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> transformers</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_get_scheduler</span><span class="params">(self, optimizer, scheduler: str, warmup_steps: int, t_total: int)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        Returns the correct learning rate scheduler</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        scheduler = scheduler.lower()</span><br><span class="line">        <span class="keyword">if</span> scheduler == <span class="string">'constantlr'</span>:</span><br><span class="line">            <span class="keyword">return</span> transformers.get_constant_schedule(optimizer)</span><br><span class="line">        <span class="keyword">elif</span> scheduler == <span class="string">'warmupconstant'</span>:</span><br><span class="line">            <span class="keyword">return</span> transformers.get_constant_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps)</span><br><span class="line">        <span class="keyword">elif</span> scheduler == <span class="string">'warmuplinear'</span>:</span><br><span class="line">            <span class="keyword">return</span> transformers.get_linear_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps, num_training_steps=t_total)</span><br><span class="line">        <span class="keyword">elif</span> scheduler == <span class="string">'warmupcosine'</span>:</span><br><span class="line">            <span class="keyword">return</span> transformers.get_cosine_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps, num_training_steps=t_total)</span><br><span class="line">        <span class="keyword">elif</span> scheduler == <span class="string">'warmupcosinewithhardrestarts'</span>:</span><br><span class="line">            <span class="keyword">return</span> transformers.get_cosine_with_hard_restarts_schedule_with_warmup(optimizer, num_warmup_steps=warmup_steps, num_training_steps=t_total)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">raise</span> ValueError(<span class="string">"Unknown scheduler &#123;&#125;"</span>.format(scheduler))</span><br></pre></td></tr></table></figure>
+<p>这里我们详细看一下<code>get_linear_schedule_with_warmup</code>来进一步理解该方法是如何调整学习率的。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AdamW, get_linear_schedule_with_warmup</span><br><span class="line"></span><br><span class="line">lr_init = <span class="number">0.1</span></span><br><span class="line">weights_1 = torch.randn((<span class="number">6</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">5</span>))</span><br><span class="line"></span><br><span class="line">optimizer = AdamW([&#123;<span class="string">"params"</span>: [weights_1]&#125;], lr=lr_init, eps=<span class="number">1e-4</span>)</span><br><span class="line">epochs = <span class="number">10</span></span><br><span class="line">batch_size = <span class="number">32</span></span><br><span class="line">total_steps = <span class="number">1000</span></span><br><span class="line">warm_up_ratio = <span class="number">0.1</span>  <span class="comment"># 定义要预热的step</span></span><br><span class="line">scheduler = get_linear_schedule_with_warmup(optimizer,</span><br><span class="line">                                            num_warmup_steps=warm_up_ratio * total_steps,</span><br><span class="line">                                            num_training_steps=total_steps)</span><br><span class="line">lr_list = []</span><br><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> range(epochs):</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">100</span>):</span><br><span class="line">        optimizer.step()</span><br><span class="line">        scheduler.step()</span><br><span class="line">        optimizer.zero_grad()</span><br><span class="line">        lr_list.append(scheduler.get_lr())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">plt.plot(range(total_steps), lr_list)</span><br><span class="line">plt.xlabel(<span class="string">"steps"</span>)</span><br><span class="line">plt.ylabel(<span class="string">"learning_rate"</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="/2023/02/25/pytorch-optim/p20.png" alt></p>
+<p>可以看到，根据我们预先设置在总的训练步数的一个比例上，这里是1000的10%，那就是前100步，学习率是从0线性的增长到我们预先设定的学习率，之后线性的减小到0。</p>
+<p>当<code>num_warmup_steps</code>参数设置为0时，learning rate没有预热的上升过程，只有从初始设定的learning rate 逐渐衰减到0的过程，也就是get_constant_schedule方法。</p>
+<p>那其实还有一个问题，类似Adam之类的优化器，本身不是自适应学习率的吗？为什么还需要再引入相关方法来调整学习率呢？</p>
+<p>因为常用的神经网络优化器Adam的自适应学习率并不是真正意义上的自适应。</p>
+<p>从统计的角度看，Adam的自适应原理也是根据统计对梯度进行修正，<strong>但依然离不开前面设置的学习率</strong>。如果学习率设置的过大，则会导致模型发散，造成收敛较慢或陷入局部最小值点，因为过大的学习率会在优化过程中跳过最优解或次优解。<br>所以Adam在调整学习率时也是根据预先设置的学习率来调整的，如果我们本身可以控制学习率的变化，再通过Adam来微调可以得到更好的效果。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/pytorch/" rel="tag"># pytorch</a>
+          
+            <a href="/tags/optimizer/" rel="tag"># optimizer</a>
+          
+            <a href="/tags/learning-rate/" rel="tag"># learning rate</a>
+          
+            <a href="/tags/SGD/" rel="tag"># SGD</a>
+          
+            <a href="/tags/Momentum/" rel="tag"># Momentum</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2023/02/18/pytorch-loss/" rel="next" title="Pytorch中权值初始化和损失函数">
+                <i class="fa fa-chevron-left"></i> Pytorch中权值初始化和损失函数
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2023/03/04/pytorch-regularization/" rel="prev" title="PyTorch正则化和批标准化">
+                PyTorch正则化和批标准化 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">104</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">198</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Pytorch中的优化器Optimizer"><span class="nav-text">Pytorch中的优化器Optimizer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是优化器"><span class="nav-text">什么是优化器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pytorch的Optimizer"><span class="nav-text">Pytorch的Optimizer</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#使用代码帮助理解和学习"><span class="nav-text">使用代码帮助理解和学习</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SGD随机梯度下降"><span class="nav-text">SGD随机梯度下降</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#learning-rate学习率"><span class="nav-text">learning_rate学习率</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#动量（Momentum，又叫冲量）"><span class="nav-text">动量（Momentum，又叫冲量）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Pytorch中的优化器"><span class="nav-text">Pytorch中的优化器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#学习率调整"><span class="nav-text">学习率调整</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#pytorch中调整学习率的基类"><span class="nav-text">pytorch中调整学习率的基类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#StepLR"><span class="nav-text">StepLR</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MultiStepLR"><span class="nav-text">MultiStepLR</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ExponentialLR"><span class="nav-text">ExponentialLR</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CosineAnnealingLR"><span class="nav-text">CosineAnnealingLR</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ReduceLRonPlateau"><span class="nav-text">ReduceLRonPlateau</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LambdaLR"><span class="nav-text">LambdaLR</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#transformer包中的warmup-scheduler"><span class="nav-text">transformer包中的warmup scheduler</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
