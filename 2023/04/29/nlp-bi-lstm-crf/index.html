@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="deep learning,pytorch,nlp,BiLSTM,CRF,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="使用BiLSTM-CRF进行命名实体识别BiLSTM-CRF网络结构关于LSTM的原理以及其对比RNN的优势前面已经有多篇文章介绍了，这里就不再赘述。 使用BiLSTM-CRF进行命名实体识别任务时的步骤流程（粗略地）：  先将句子转化为字词向量序列，字词向量可以在事先训练好或随机初始化，在模型训练时还可以再训练； 经BiLSTM特征提取，输出是每个单词对应的预测标签； 经过CRF层约束，输出最优">
+<meta name="keywords" content="deep learning,pytorch,nlp,BiLSTM,CRF">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用BiLSTM-CRF进行命名实体识别">
+<meta property="og:url" content="http://yoursite.com/2023/04/29/nlp-bi-lstm-crf/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="使用BiLSTM-CRF进行命名实体识别BiLSTM-CRF网络结构关于LSTM的原理以及其对比RNN的优势前面已经有多篇文章介绍了，这里就不再赘述。 使用BiLSTM-CRF进行命名实体识别任务时的步骤流程（粗略地）：  先将句子转化为字词向量序列，字词向量可以在事先训练好或随机初始化，在模型训练时还可以再训练； 经BiLSTM特征提取，输出是每个单词对应的预测标签； 经过CRF层约束，输出最优">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2023/04/29/nlp-bi-lstm-crf/bi-lstm-crf.png">
+<meta property="og:image" content="http://yoursite.com/2023/04/29/nlp-bi-lstm-crf/crf.png">
+<meta property="og:image" content="http://yoursite.com/2023/04/29/nlp-bi-lstm-crf/transfer_score.png">
+<meta property="og:image" content="http://yoursite.com/2023/04/29/nlp-bi-lstm-crf/viterbi.png">
+<meta property="og:image" content="http://yoursite.com/2023/04/29/nlp-bi-lstm-crf/crf-loss.png">
+<meta property="og:image" content="http://yoursite.com/2023/04/29/nlp-bi-lstm-crf/score.png">
+<meta property="og:image" content="http://yoursite.com/2023/04/29/nlp-bi-lstm-crf/score_all.png">
+<meta property="og:image" content="http://yoursite.com/2023/04/29/nlp-bi-lstm-crf/prediction.png">
+<meta property="og:updated_time" content="2023-10-10T13:33:23.468Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用BiLSTM-CRF进行命名实体识别">
+<meta name="twitter:description" content="使用BiLSTM-CRF进行命名实体识别BiLSTM-CRF网络结构关于LSTM的原理以及其对比RNN的优势前面已经有多篇文章介绍了，这里就不再赘述。 使用BiLSTM-CRF进行命名实体识别任务时的步骤流程（粗略地）：  先将句子转化为字词向量序列，字词向量可以在事先训练好或随机初始化，在模型训练时还可以再训练； 经BiLSTM特征提取，输出是每个单词对应的预测标签； 经过CRF层约束，输出最优">
+<meta name="twitter:image" content="http://yoursite.com/2023/04/29/nlp-bi-lstm-crf/bi-lstm-crf.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2023/04/29/nlp-bi-lstm-crf/">
+
+
+
+
+
+  <title>使用BiLSTM-CRF进行命名实体识别 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2023/04/29/nlp-bi-lstm-crf/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">使用BiLSTM-CRF进行命名实体识别</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-04-29T10:31:54+08:00">
+                2023-04-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="使用BiLSTM-CRF进行命名实体识别"><a href="#使用BiLSTM-CRF进行命名实体识别" class="headerlink" title="使用BiLSTM-CRF进行命名实体识别"></a>使用BiLSTM-CRF进行命名实体识别</h2><h3 id="BiLSTM-CRF网络结构"><a href="#BiLSTM-CRF网络结构" class="headerlink" title="BiLSTM-CRF网络结构"></a>BiLSTM-CRF网络结构</h3><p>关于LSTM的原理以及其对比RNN的优势前面已经有多篇文章介绍了，这里就不再赘述。</p>
+<p><img src="/2023/04/29/nlp-bi-lstm-crf/bi-lstm-crf.png" alt><br>使用BiLSTM-CRF进行命名实体识别任务时的步骤流程（粗略地）：</p>
+<ol>
+<li>先将句子转化为字词向量序列，字词向量可以在事先训练好或随机初始化，在模型训练时还可以再训练；</li>
+<li>经BiLSTM特征提取，输出是每个单词对应的预测标签；</li>
+<li>经过CRF层约束，输出最优标签序列。</li>
+</ol>
+<p>使用BiLSTM-CRF进行命名实体识别任务时的步骤流程（细致地）：</p>
+<a id="more"></a>
+<ol>
+<li>先将字词传入Embedding层获取词向量，然后传入BiLSTM层之后得到隐状态； </li>
+<li>将完整的隐状态序列接入线性层，从n维映射到k维，其中k是标注集的标签数；</li>
+<li>从而得到自动提取的句子特征，记作矩阵P = (p1, p2, …, pn)，注意该矩阵是非归一化矩阵<br>其中pi表示该单词对应各个类别的分数；</li>
+<li>如果没有CRF层，预测输出根据每个词对应类别的最大值作为输出类别，最后通过多分类交叉熵计算损失进行反向传播；如果有CRF层，通过转移矩阵校正发射分数，然后接5、6；</li>
+<li>通过维特比解码算法获取最优路径，即获取最优标签序列；</li>
+<li>计算CRF Loss进行反向传播。</li>
+</ol>
+<p>如上图中所示，BiLSTM的输出矩阵（第一列）1.5(B-Person), 0.9(I-Person), 0.1(B-Organization), 0.08(I-Organization),这些分数将是CRF层的输入。</p>
+<p>该矩阵对应的值叫做<strong>发射分数</strong>，用Xiyj代表发射分数，i是单词的位置索引，yj是类别的索引。<br>例如这里Xi=1,yj=2代表w1单词的B-Organization的发射分数，即<br>X(w1,B-Organization=0.1)。</p>
+<p>这里通过BiLSTM和全连接层已经得到了每个单词对应到各个类别的分数，那么不就取分数最高的类别不就可以了吗，正常情况下当然是可以的，但是会有一些非正常的情况，例如<br><img src="/2023/04/29/nlp-bi-lstm-crf/crf.png" alt></p>
+<p>在上图的右侧部分，w0单词分数最大的类别是I-Organization，而I-Organization表示的是组织机构的内部，而w0是第一个单词，所以明显不合理，然后I-Person跟在I-Organization后面也是不合理的，根据BIO标注规则，可以得到以下结论：</p>
+<ol>
+<li>句子的开头应该是“B-”或“O”，而不是“I-”。</li>
+<li>“B-label1 I-label2 I-label3…”，在该模式中，类别1,2,3应该是同一种实体类别。比如，“B-Person I-Person” 是正确的，而“B-Person I-Organization”则是错误的。</li>
+<li>“O I-label”是错误的，命名实体的开头应该是“B-”而不是“I-”。</li>
+</ol>
+<p><em>如果不了解NER的标注规则，如BIO标注的，要先去学习下</em></p>
+<p>但是这一结论，神经网络是不知道的，所以可能会出现图右侧的情况，这就是CRF约束层的作用。</p>
+<p>CRF层通过<strong>转移分数</strong>来校正发射分数中不合理的地方，转移矩阵是BiLSTM-CRF模型的一个参数，可随机初始化转移矩阵的分数，然后在训练中更新。</p>
+<p><img src="/2023/04/29/nlp-bi-lstm-crf/transfer_score.png" alt><br>图中每一行表示每个标签转移到其他标签的概率，例如第一行，Start转移到B-Person和B-Organization的概率分别为0.8和0.7，表示概率较大，转移到I-Person和I-Organization的概率分别为0.007和0.0008，概率较小（基本不可能），然后将<strong>发射分数+转移分数得到打分之和</strong>，然后再取最高的分数。</p>
+<p>在具体实现时，还有一个叫做<strong>路径分数</strong>的东西，其就是发射分数+转移分数之和，我们取路径分数最大的一条路径就是最佳标签序列。</p>
+<h3 id="CRF损失函数-amp-维特比解码（Viterbi算法）"><a href="#CRF损失函数-amp-维特比解码（Viterbi算法）" class="headerlink" title="CRF损失函数&amp;维特比解码（Viterbi算法）"></a>CRF损失函数&amp;维特比解码（Viterbi算法）</h3><p>算法定义：一种用以选择最优路径的动态规划算法，从开始状态后每走一步，记录到达该状态所有路径的最大概率值，最后以最大值为基准继续向后推进，最后再从结尾回溯最大概率，也就是最有可能的最优路径。</p>
+<p><img src="/2023/04/29/nlp-bi-lstm-crf/viterbi.png" alt></p>
+<p>设有N个状态，序列长度为T，因为穷举法是每个时间步都有T种选择，而维特比只需要关注每两个时间步的选择（不需要关注前面的时间步）。</p>
+<p>那么穷举法的时间复杂度为N的T次方，而维特比算法的时间复杂度为TxN的平方。</p>
+<p>因为在实际任务种，T（序列长度）一般远大于N（类别数量），所以维特比算法的效率更高。</p>
+<p><strong>CRF Loss：计算真实路径得分与所有路径得分的比值</strong>，CRF损失函数由两部分组成，真实路径的分数和所有路径的总分数，<strong>真实路径的分数应该是所有路径中分数最高的</strong>。而损失函数是要求loss最小，所以使用负Log函数。</p>
+<p><img src="/2023/04/29/nlp-bi-lstm-crf/crf-loss.png" alt></p>
+<p><em>真实路径得分是指标注数据的路径分数</em></p>
+<h4 id="计算当前节点得分的方法"><a href="#计算当前节点得分的方法" class="headerlink" title="计算当前节点得分的方法"></a>计算当前节点得分的方法</h4><p>类似维特比解码算法，<strong>这里每个节点记录之前所有节点到当前节点的路径总和</strong>，最后一步即可得到所有路径的总和。</p>
+<p><img src="/2023/04/29/nlp-bi-lstm-crf/score.png" alt></p>
+<p>图中假设有共有两种类别（1和2），共有两个时间步（0时间步和1时间步），previous中的<code>x01</code>代表0时间步类别为1的值，<code>x02</code>代表1时间步类别为2的值，因为是previous可以想象成这个节点之前所有节点到当前节点的路径总和。</p>
+<p>obs中的<code>x11</code>代表1时间步类别为1的值，<code>x12</code>代表1时间步类别为2的值，可以理解为发射分数。</p>
+<p>而<code>t11</code>代表从上个时间步的1类别转移到当前时间步1类别的转移分数，<code>t12</code>，<code>t21</code>，<code>t22</code>同理。</p>
+<h4 id="计算所有路径得分的方法"><a href="#计算所有路径得分的方法" class="headerlink" title="计算所有路径得分的方法"></a>计算所有路径得分的方法</h4><p>这里计算从时间步0到时间步1的所有路径得分，因为previous本身就是计算到当前时间步的所有路径得分，所以最后更新previous。</p>
+<p><img src="/2023/04/29/nlp-bi-lstm-crf/score_all.png" alt></p>
+<h4 id="预测"><a href="#预测" class="headerlink" title="预测"></a>预测</h4><p><img src="/2023/04/29/nlp-bi-lstm-crf/prediction.png" alt></p>
+<h3 id="使用PyTorch实现BiLSTM-CRF"><a href="#使用PyTorch实现BiLSTM-CRF" class="headerlink" title="使用PyTorch实现BiLSTM-CRF"></a>使用PyTorch实现BiLSTM-CRF</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding=utf-8</span></span><br><span class="line"><span class="comment"># https://pytorch.org/tutorials/beginner/nlp/advanced_tutorial.html</span></span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.autograd <span class="keyword">as</span> autograd</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim</span><br><span class="line"></span><br><span class="line">torch.manual_seed(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">argmax</span><span class="params">(vec)</span>:</span></span><br><span class="line">    <span class="comment"># 获取vec第1维上的最大值（当vec为矩阵时，就是每一行的最大值），分别返回相应的值和索引</span></span><br><span class="line">    _, idx = torch.max(vec, <span class="number">1</span>)</span><br><span class="line">    <span class="keyword">return</span> idx.item()  <span class="comment"># 返回张量中的值，张量中只有一个值时，使用.item()，多个值时使用.list()</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">prepare_sequence</span><span class="params">(seq, to_ix)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    获取传入文本在词典中的序号</span></span><br><span class="line"><span class="string">    :param seq: 传入分割好的文本，以列表形式</span></span><br><span class="line"><span class="string">    :param to_ix: 单词/词语 到 序号的映射字典</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    idxs = [to_ix[w] <span class="keyword">for</span> w <span class="keyword">in</span> seq]</span><br><span class="line">    <span class="keyword">return</span> torch.tensor(idxs, dtype=torch.long)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">log_sum_exp</span><span class="params">(vec)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    前向算法时不断累积之前的结果，这样就会有个缺点</span></span><br><span class="line"><span class="string">    指数和累积到一定程度后，会超过计算机浮点值的最大值，变成inf，这样取log后也是inf</span></span><br><span class="line"><span class="string">    为了避免这种情况，用一个合适的值clip去提取指数和的公因子，这样就不会某项变得过大而无法计算</span></span><br><span class="line"><span class="string">    sum = log(exp(s1) + exp(s2) + ... + exp(s100))</span></span><br><span class="line"><span class="string">        = log(exp(clip) + exp(s1-clip) + exp(s2-clip) + ... + exp(s100-clip))</span></span><br><span class="line"><span class="string">        = clip + log(exp(s1-clip) + exp(s2-clip) + ... + exp(s100-clip))</span></span><br><span class="line"><span class="string">    :param vec:</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    max_score = vec[<span class="number">0</span>, argmax(vec)]</span><br><span class="line">    <span class="comment"># 将最大值广播</span></span><br><span class="line">    max_score_broadcast = max_score.view(<span class="number">1</span>, <span class="number">-1</span>).expand(<span class="number">1</span>, vec.size()[<span class="number">1</span>])</span><br><span class="line">    <span class="keyword">return</span> max_score + torch.log(torch.sum(torch.exp(vec - max_score_broadcast)))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BiLSTM_CRF</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, vocab_size, tag_to_ix, embedding_dim, hidden_dim)</span>:</span></span><br><span class="line">        super(BiLSTM_CRF, self).__init__()</span><br><span class="line">        self.embedding_dim = embedding_dim  <span class="comment"># 词向量维度（长度），即用多少维度向量表示一个词</span></span><br><span class="line">        self.hidden_dim = hidden_dim</span><br><span class="line">        self.vocab_size = vocab_size  <span class="comment"># 词表大小</span></span><br><span class="line">        self.tag_to_ix = tag_to_ix    <span class="comment"># 标签序号的映射字典</span></span><br><span class="line">        self.tagset_size = len(tag_to_ix)  <span class="comment"># 标签数量/类别数</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 词嵌入层，size为(词表大小, 词向量维度)</span></span><br><span class="line">        self.word_embeds = nn.Embedding(vocab_size, embedding_dim)</span><br><span class="line">        <span class="comment"># 因为这里LSTM是双向的，input_size是词向量维度，隐藏层特征大小是hidden_dim//2</span></span><br><span class="line">        self.lstm = nn.LSTM(embedding_dim, hidden_dim // <span class="number">2</span>, num_layers=<span class="number">1</span>, bidirectional=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 将BiLSTM提取的特征向量映射到特征空间，即经过全连接得到发射分数</span></span><br><span class="line">        self.hidden2tag = nn.Linear(hidden_dim, self.tagset_size)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 转移矩阵的参数初始化，transitions[i, j]代表的是从j个tag转移到第i个tag的转移分数（这个点很重要）</span></span><br><span class="line">        self.transitions = nn.Parameter(</span><br><span class="line">            torch.randn(self.tagset_size, self.tagset_size))</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 初始化所有其他tag转移到START_TAG的分数非常小，即不可能由其他tag转移到START_TAG</span></span><br><span class="line">        <span class="comment"># 初始化STOP_TAG转移到所有其他tag的分数非常小，即不可能由STOP_TAG转移到其他tag</span></span><br><span class="line">        <span class="comment"># print(self.transitions.data)</span></span><br><span class="line">        self.transitions.data[tag_to_ix[START_TAG], :] = <span class="number">-10000</span></span><br><span class="line">        <span class="comment"># print(self.transitions.data)</span></span><br><span class="line">        self.transitions.data[:, tag_to_ix[STOP_TAG]] = <span class="number">-10000</span></span><br><span class="line">        <span class="comment"># print(self.transitions.data)</span></span><br><span class="line"></span><br><span class="line">        self.hidden = self.init_hidden()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">init_hidden</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># 初始化LSTM的参数</span></span><br><span class="line">        <span class="keyword">return</span> (torch.randn(<span class="number">2</span>, <span class="number">1</span>, self.hidden_dim // <span class="number">2</span>),</span><br><span class="line">                torch.randn(<span class="number">2</span>, <span class="number">1</span>, self.hidden_dim // <span class="number">2</span>))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_get_lstm_features</span><span class="params">(self, sentence)</span>:</span></span><br><span class="line">        self.hidden = self.init_hidden()</span><br><span class="line">        <span class="comment"># print(self.word_embeds(sentence), self.word_embeds(sentence).size())</span></span><br><span class="line">        <span class="comment"># 先获取词向量，然后相当于增加了一个维度</span></span><br><span class="line">        embeds = self.word_embeds(sentence).view(len(sentence), <span class="number">1</span>, <span class="number">-1</span>)</span><br><span class="line">        <span class="comment"># 然后传入LSTM，</span></span><br><span class="line">        lstm_out, self.hidden = self.lstm(embeds, self.hidden)</span><br><span class="line">        lstm_out = lstm_out.view(len(sentence), self.hidden_dim)</span><br><span class="line">        <span class="comment"># lstm_features其实就是发射分数</span></span><br><span class="line">        lstm_feats = self.hidden2tag(lstm_out)</span><br><span class="line">        <span class="keyword">return</span> lstm_feats</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_score_sentence</span><span class="params">(self, feats, tags)</span>:</span></span><br><span class="line">        <span class="comment"># 计算给定tag序列的分数，即一条路径的分数</span></span><br><span class="line">        score = torch.zeros(<span class="number">1</span>)</span><br><span class="line">        tags = torch.cat([torch.tensor([self.tag_to_ix[START_TAG]], dtype=torch.long), tags])</span><br><span class="line">        <span class="keyword">for</span> i, feat <span class="keyword">in</span> enumerate(feats):</span><br><span class="line">            <span class="comment"># 递推计算路径分数：转移分数+发射分数</span></span><br><span class="line">            score = score + self.transitions[tags[i + <span class="number">1</span>], tags[i]] + feat[tags[i + <span class="number">1</span>]]</span><br><span class="line">        score = score + self.transitions[self.tag_to_ix[STOP_TAG], tags[<span class="number">-1</span>]]</span><br><span class="line">        <span class="keyword">return</span> score</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_forward_alg</span><span class="params">(self, feats)</span>:</span></span><br><span class="line">        <span class="comment"># 通过前向算法递推计算</span></span><br><span class="line">        init_alphas = torch.full((<span class="number">1</span>, self.tagset_size), <span class="number">-10000.</span>)</span><br><span class="line">        <span class="comment"># 初始化step=0，即Start位置的发射分数，Start_Tag取0，其他位置取-10000（意思就是开始位置只有可能是Start_tag）</span></span><br><span class="line">        init_alphas[<span class="number">0</span>][self.tag_to_ix[START_TAG]] = <span class="number">0.</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 将初始化Start位置为0的发射分数赋值给previous</span></span><br><span class="line">        previous = init_alphas</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 迭代整个句子</span></span><br><span class="line">        <span class="keyword">for</span> obs <span class="keyword">in</span> feats:</span><br><span class="line">            <span class="comment"># 当前时间步的前向tensor</span></span><br><span class="line">            alphas_t = []</span><br><span class="line">            <span class="keyword">for</span> next_tag <span class="keyword">in</span> range(self.tagset_size):</span><br><span class="line">                <span class="comment"># 取出当前tag的发射分数，与之前时间的tag无关</span></span><br><span class="line">                emit_score = obs[next_tag].view(<span class="number">1</span>, <span class="number">-1</span>).expand(<span class="number">1</span>, self.tagset_size)</span><br><span class="line">                <span class="comment"># 取出当前tag与之前tag转移过来的转移分数</span></span><br><span class="line">                trans_score = self.transitions[next_tag].view(<span class="number">1</span>, <span class="number">-1</span>)</span><br><span class="line">                <span class="comment"># 当前路径的分数：之前时间步分数+转移分数+发射分数</span></span><br><span class="line">                next_tag_var = previous + trans_score + emit_score</span><br><span class="line">                <span class="comment"># 对当前分数取log_sum_exp</span></span><br><span class="line">                alphas_t.append(log_sum_exp(next_tag_var).view(<span class="number">1</span>))</span><br><span class="line">            <span class="comment"># 更新previous，递推计算下一个时间步</span></span><br><span class="line">            previous = torch.cat(alphas_t).view(<span class="number">1</span>, <span class="number">-1</span>)</span><br><span class="line">        <span class="comment"># 考虑最终转移到STOP_TAG</span></span><br><span class="line">        terminal_var = previous + self.transitions[self.tag_to_ix[STOP_TAG]]</span><br><span class="line">        <span class="comment"># 计算最终分数</span></span><br><span class="line">        alpha = log_sum_exp(terminal_var)</span><br><span class="line">        <span class="keyword">return</span> alpha</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_viterbi_decode</span><span class="params">(self, feats)</span>:</span></span><br><span class="line">        backpointers = []  <span class="comment"># 回溯指针</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 初始化viterbi的previous变量</span></span><br><span class="line">        init_vvars = torch.full((<span class="number">1</span>, self.tagset_size), <span class="number">-10000.</span>)</span><br><span class="line">        init_vvars[<span class="number">0</span>][self.tag_to_ix[START_TAG]] = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">        previous = init_vvars</span><br><span class="line">        <span class="keyword">for</span> obs <span class="keyword">in</span> feats:</span><br><span class="line">            <span class="comment"># 保存当前时间步的回溯指针，假设一个句子有11个单词，共有5个类别标签，bptrs_t的size为[11, 5]</span></span><br><span class="line">            <span class="comment"># 每个单词对应1个5维的索引值，其表示每个类别从上个单词哪个类别转移过来得分最高</span></span><br><span class="line">            bptrs_t = []</span><br><span class="line">            <span class="comment"># 保存当前时间步的viterbi变量</span></span><br><span class="line">            viterbivars_t = []</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> next_tag <span class="keyword">in</span> range(self.tagset_size):</span><br><span class="line">                <span class="comment"># 维特比算法记录最优路径时只考虑上一步的分数以及上一步tag转移到当前tag的转移分数</span></span><br><span class="line">                <span class="comment"># 并不取决于当前tag的发射分数</span></span><br><span class="line">                next_tag_var = previous + self.transitions[next_tag]</span><br><span class="line">                <span class="comment"># 获取最大分数的索引，这个最大分数是指从上个单词哪个类别转移到当前单词当前类别</span></span><br><span class="line">                best_tag_id = argmax(next_tag_var)</span><br><span class="line">                bptrs_t.append(best_tag_id)</span><br><span class="line">                viterbivars_t.append(next_tag_var[<span class="number">0</span>][best_tag_id].view(<span class="number">1</span>))</span><br><span class="line">            <span class="comment"># 更新previous，加上当前tag的发射分数obs</span></span><br><span class="line">            previous = (torch.cat(viterbivars_t) + obs).view(<span class="number">1</span>, <span class="number">-1</span>)</span><br><span class="line">            <span class="comment"># 回溯指针记录当前时间步各个tag来源前一步的tag</span></span><br><span class="line">            backpointers.append(bptrs_t)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 考虑转移到STOP_TAG的转移分数</span></span><br><span class="line">        terminal_var = previous + self.transitions[self.tag_to_ix[STOP_TAG]]</span><br><span class="line">        best_tag_id = argmax(terminal_var)</span><br><span class="line">        path_score = terminal_var[<span class="number">0</span>][best_tag_id]</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 通过回溯指针解码出最优路径</span></span><br><span class="line">        best_path = [best_tag_id]</span><br><span class="line">        <span class="keyword">for</span> bptrs_t <span class="keyword">in</span> reversed(backpointers):</span><br><span class="line">            best_tag_id = bptrs_t[best_tag_id]</span><br><span class="line">            best_path.append(best_tag_id)</span><br><span class="line">        <span class="comment"># 去除start_tag</span></span><br><span class="line">        start = best_path.pop()</span><br><span class="line">        <span class="keyword">assert</span> start == self.tag_to_ix[START_TAG]  <span class="comment"># Sanity check</span></span><br><span class="line">        best_path.reverse()</span><br><span class="line">        <span class="keyword">return</span> path_score, best_path</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">neg_log_likelihood</span><span class="params">(self, sentence, tags)</span>:</span></span><br><span class="line">        <span class="comment"># CRF损失函数有两部分组成，真实路径的分数和所有路径的总分数</span></span><br><span class="line">        <span class="comment"># 真实路径的分数应该是所有路径中分数最高的</span></span><br><span class="line">        <span class="comment"># log(真实路径的分数)/log(所有可能路径的分数)，越大越好，构造crf_loss函数取反 ，loss越小越好</span></span><br><span class="line">        feats = self._get_lstm_features(sentence)</span><br><span class="line">        forward_score = self._forward_alg(feats)</span><br><span class="line">        gold_score = self._score_sentence(feats, tags)</span><br><span class="line">        <span class="keyword">return</span> forward_score - gold_score</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, sentence)</span>:</span></span><br><span class="line">        <span class="comment"># 注意不要把这个forward与之前的forward_arg搞混了</span></span><br><span class="line">        <span class="comment"># 通过BiLSTM提取发射分数</span></span><br><span class="line">        lstm_feats = self._get_lstm_features(sentence)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 根据发射分数以及转移分数，通过viterbi解码找到一条最优路径</span></span><br><span class="line">        score, tag_seq = self._viterbi_decode(lstm_feats)</span><br><span class="line">        <span class="keyword">return</span> score, tag_seq</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    START_TAG = <span class="string">"&lt;START&gt;"</span></span><br><span class="line">    STOP_TAG = <span class="string">"&lt;STOP&gt;"</span></span><br><span class="line">    EMBEDDING_DIM = <span class="number">5</span></span><br><span class="line">    HIDDEN_DIM = <span class="number">4</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Make up some training data</span></span><br><span class="line">    training_data = [(</span><br><span class="line">        <span class="string">"the wall street journal reported today that apple corporation made money"</span>.split(),</span><br><span class="line">        <span class="string">"B I I I O O O B I O O"</span>.split()</span><br><span class="line">    ), (</span><br><span class="line">        <span class="string">"georgia tech is a university in georgia"</span>.split(),</span><br><span class="line">        <span class="string">"B I O O O O B"</span>.split()</span><br><span class="line">    )]</span><br><span class="line"></span><br><span class="line">    word_to_ix = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> sentence, tags <span class="keyword">in</span> training_data:</span><br><span class="line">        <span class="keyword">for</span> word <span class="keyword">in</span> sentence:</span><br><span class="line">            <span class="keyword">if</span> word <span class="keyword">not</span> <span class="keyword">in</span> word_to_ix:</span><br><span class="line">                word_to_ix[word] = len(word_to_ix)</span><br><span class="line"></span><br><span class="line">    tag_to_ix = &#123;<span class="string">"B"</span>: <span class="number">0</span>, <span class="string">"I"</span>: <span class="number">1</span>, <span class="string">"O"</span>: <span class="number">2</span>, START_TAG: <span class="number">3</span>, STOP_TAG: <span class="number">4</span>&#125;</span><br><span class="line"></span><br><span class="line">    model = BiLSTM_CRF(len(word_to_ix), tag_to_ix, EMBEDDING_DIM, HIDDEN_DIM)</span><br><span class="line">    optimizer = optim.SGD(model.parameters(), lr=<span class="number">0.01</span>, weight_decay=<span class="number">1e-4</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 训练前检查模型预测结果</span></span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        precheck_sent = prepare_sequence(training_data[<span class="number">0</span>][<span class="number">0</span>], word_to_ix)</span><br><span class="line">        precheck_tags = torch.tensor([tag_to_ix[t] <span class="keyword">for</span> t <span class="keyword">in</span> training_data[<span class="number">0</span>][<span class="number">1</span>]], dtype=torch.long)</span><br><span class="line">        print(<span class="string">f"训练前网络得到的标签为：<span class="subst">&#123;model(precheck_sent)&#125;</span>"</span>)</span><br><span class="line">        print(<span class="string">f"正确的标签为：<span class="subst">&#123;precheck_tags&#125;</span>"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Make sure prepare_sequence from earlier in the LSTM section is loaded</span></span><br><span class="line">    <span class="keyword">for</span> epoch <span class="keyword">in</span> range(<span class="number">300</span>):  <span class="comment"># again, normally you would NOT do 300 epochs, it is toy data</span></span><br><span class="line">        <span class="keyword">for</span> sentence, tags <span class="keyword">in</span> training_data:</span><br><span class="line">            <span class="comment"># 第一步，pytorch梯度积累，需要先清零梯度</span></span><br><span class="line">            model.zero_grad()</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 第二步，将输出转换为tensor</span></span><br><span class="line">            sentence_in = prepare_sequence(sentence, word_to_ix)</span><br><span class="line">            targets = torch.tensor([tag_to_ix[t] <span class="keyword">for</span> t <span class="keyword">in</span> tags], dtype=torch.long)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 第三步，进行前向计算，得到crf loss</span></span><br><span class="line">            loss = model.neg_log_likelihood(sentence_in, targets)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 第四步，计算loss,梯度，通过optimizer更新参数</span></span><br><span class="line">            loss.backward()</span><br><span class="line">            optimizer.step()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 训练结束查看模型预测结果，对比观察模型是否学到东西</span></span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        precheck_sent = prepare_sequence(training_data[<span class="number">0</span>][<span class="number">0</span>], word_to_ix)</span><br><span class="line">        print(<span class="string">f"训练后网络得到的标签为：<span class="subst">&#123;model(precheck_sent)&#125;</span>"</span>)</span><br><span class="line">    <span class="comment"># We got it!</span></span><br><span class="line"></span><br><span class="line">训练前网络得到的标签为：(tensor(<span class="number">2.6907</span>), [<span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">1</span>])</span><br><span class="line">正确的标签为：tensor([<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>])</span><br><span class="line">训练后网络得到的标签为：(tensor(<span class="number">20.4906</span>), [<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>])</span><br></pre></td></tr></table></figure>
+<h3 id="使用pytorch-crf包来增加CRF层"><a href="#使用pytorch-crf包来增加CRF层" class="headerlink" title="使用pytorch-crf包来增加CRF层"></a>使用pytorch-crf包来增加CRF层</h3><p>上面的BiLSTM-CRF的实现是Pytorch官网给出的一个实现方式，对于我们理解BiLSTM-CRF的原理是非常有帮助的，实际上当我们理解了原理之后还可以使用pytorch内置的包来增加CRF层，可以进一步精简代码</p>
+<p>首选包安装：pip install pytorch-crf</p>
+<p>如果安装后使用报错可以尝试卸载重新安装，或者使用国内镜像安装，我遇到过安装后使用报错，但是卸载重新安装就正常了的情况。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding=utf-8</span></span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">from</span> torchcrf <span class="keyword">import</span> CRF</span><br><span class="line"><span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F</span><br><span class="line"><span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BiLSTM_CRF</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, vocab_size, tag_to_ix, embedding_dim, hidden_size, num_layers, use_crf=True, seq_length=<span class="number">256</span>)</span>:</span></span><br><span class="line">        super(BiLSTM_CRF, self).__init__()</span><br><span class="line">        self.embedding_dim = embedding_dim  <span class="comment"># 词向量维度（长度），即用多少维度向量表示一个词</span></span><br><span class="line">        self.hidden_size = hidden_size  <span class="comment"># 单向lstm的hidden_size</span></span><br><span class="line">        self.vocab_size = vocab_size  <span class="comment"># 词表大小</span></span><br><span class="line">        self.tag_to_ix = tag_to_ix    <span class="comment"># 标签序号的映射字典</span></span><br><span class="line">        self.tagset_size = len(tag_to_ix)  <span class="comment"># 标签数量/类别数</span></span><br><span class="line">        self.num_layers = num_layers</span><br><span class="line">        self.use_crf = use_crf</span><br><span class="line">        self.seq_length = seq_length  <span class="comment"># 句子最大长度，超过截断，小于填充,会将所有输入神经网络的句子向量统一为该长度</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 词嵌入层，size为(词表大小, 词向量维度)</span></span><br><span class="line">        self.word_embeds = nn.Embedding(vocab_size, embedding_dim)</span><br><span class="line">        <span class="comment"># 双向lstm</span></span><br><span class="line">        self.lstm = nn.LSTM(embedding_dim, hidden_size, bidirectional=<span class="literal">True</span>, num_layers=num_layers, batch_first=<span class="literal">True</span>)</span><br><span class="line">        <span class="comment"># 将BiLSTM提取的特征向量映射到特征空间，即经过全连接得到发射分数</span></span><br><span class="line">        self.hidden2tag = nn.Linear(hidden_size*<span class="number">2</span>, self.tagset_size)</span><br><span class="line">        <span class="keyword">if</span> use_crf:</span><br><span class="line">            <span class="comment"># crf层，可以使用pytorch的crf包</span></span><br><span class="line">            self.crf = CRF(self.tagset_size, batch_first=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, sentence, seg, targets=None)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        NER model的前向传播过程</span></span><br><span class="line"><span class="string">        :param sentence: 传入句子，size(batch_size, seq_length)</span></span><br><span class="line"><span class="string">        :param seg:      =1的位置表示是句子的有效部分         size(batch_size, seq_length)</span></span><br><span class="line"><span class="string">        :param targets:  标签，计算损失时需要, size(batch_size, seq_length)</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="comment"># 得到词向量</span></span><br><span class="line">        embeddings = self.word_embeds(sentence)</span><br><span class="line">        <span class="comment"># 由于lstm层的输入必须是三维的, 当传入的sentence为单个句子且只有一维时，需要对词向量增加维度.view(len(sentence), 1, -1)</span></span><br><span class="line">        <span class="comment"># lstm层返回输出和隐状态，输出size为(batch_size, seq_length, hidden_size*2)</span></span><br><span class="line">        <span class="comment"># 隐状态是有两个元素的tuple(因为双向),每个元素size为(2, seq_length, hidden_size)</span></span><br><span class="line">        lstm_out, hidden_state = self.lstm(embeddings)</span><br><span class="line">        <span class="comment"># 经过全连接层得到发射分数</span></span><br><span class="line">        features = self.hidden2tag(lstm_out)</span><br><span class="line">        <span class="keyword">if</span> self.use_crf:</span><br><span class="line">            tgt_mask = seg.type(torch.uint8)</span><br><span class="line">            pred = self.crf.decode(features, mask=tgt_mask)</span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> range(len(pred)):</span><br><span class="line">                <span class="comment"># 以STOP_TAG的id填充至seq_length长度</span></span><br><span class="line">                <span class="keyword">while</span> len(pred[j]) &lt; self.seq_length:</span><br><span class="line">                    pred[j].append(self.tagset_size<span class="number">-1</span>)</span><br><span class="line">            <span class="comment"># 从(batch_size, seq_length)转成(batch_size*seq_length)一维</span></span><br><span class="line">            pred = torch.tensor(pred).contiguous().view(<span class="number">-1</span>)</span><br><span class="line">            <span class="comment"># 传入targets时，计算损失</span></span><br><span class="line">            <span class="keyword">if</span> targets <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">                loss = -self.crf(F.log_softmax(features, <span class="number">2</span>), targets, mask=tgt_mask, reduction=<span class="string">'mean'</span>)</span><br><span class="line">                <span class="keyword">return</span> loss, pred</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">None</span>, pred</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            tgt_mask = seg.contiguous().view(<span class="number">-1</span>).float()</span><br><span class="line">            <span class="comment"># 变成两维，(batch_size*seq_length, tagset_size)</span></span><br><span class="line">            features = features.contiguous().view(<span class="number">-1</span>, self.tagset_size)</span><br><span class="line">            <span class="comment"># 如果没有CRF层，就直接取值最大的类别(argmax与torch.max的区别是只返回索引)</span></span><br><span class="line">            pred = features.argmax(dim=<span class="number">-1</span>)</span><br><span class="line">            <span class="keyword">if</span> targets <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">                targets = targets.contiguous().view(<span class="number">-1</span>, <span class="number">1</span>)  <span class="comment"># 转变成(batch_size*seq_length, 1)</span></span><br><span class="line">                <span class="comment"># 先zero初始化一个(batch_size*seq_length, tagset_size)的张量，然后根据标签转成One-hot编码</span></span><br><span class="line">                one_hot = (torch.zeros(targets.size(<span class="number">0</span>), self.tagset_size)</span><br><span class="line">                           .to(torch.device(targets.device)).scatter_(<span class="number">1</span>, targets, <span class="number">1.0</span>))</span><br><span class="line">                <span class="comment"># 先针对features的最后一维进行Log_softmax，再乘以One-hot向量（这里为什么不直接使用多分类交叉熵损失函数？）</span></span><br><span class="line">                numerator = -torch.sum(nn.LogSoftmax(dim=<span class="number">-1</span>)(features) * one_hot, <span class="number">1</span>)</span><br><span class="line">                numerator = torch.sum(tgt_mask * numerator)</span><br><span class="line">                denominator = torch.sum(tgt_mask) + <span class="number">1e-6</span></span><br><span class="line">                loss = numerator / denominator</span><br><span class="line">                <span class="keyword">return</span> loss, pred</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">None</span>, pred</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">prepare_sequence</span><span class="params">(seq, to_ix)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    获取传入文本在词典中的序号</span></span><br><span class="line"><span class="string">    :param seq: 传入分割好的文本，以列表形式</span></span><br><span class="line"><span class="string">    :param to_ix: 单词/词语 到 序号的映射字典</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    idxs = [to_ix[w] <span class="keyword">for</span> w <span class="keyword">in</span> seq]</span><br><span class="line">    <span class="keyword">return</span> torch.tensor(idxs, dtype=torch.long)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    START_TAG = <span class="string">"&lt;START&gt;"</span></span><br><span class="line">    STOP_TAG = <span class="string">"&lt;STOP&gt;"</span></span><br><span class="line">    EMBEDDING_DIM = <span class="number">6</span></span><br><span class="line">    HIDDEN_DIM = <span class="number">5</span></span><br><span class="line">    num_layers = <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Make up some training data</span></span><br><span class="line">    training_data = [(</span><br><span class="line">        <span class="string">"the wall street journal reported today that apple corporation made money"</span>.split(),</span><br><span class="line">        <span class="string">"B I I I O O O B I O O"</span>.split()</span><br><span class="line">    ), (</span><br><span class="line">        <span class="string">"georgia tech is a university in georgia"</span>.split(),</span><br><span class="line">        <span class="string">"B I O O O O B"</span>.split()</span><br><span class="line">    )]</span><br><span class="line"></span><br><span class="line">    word_to_ix = &#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> sentence, tags <span class="keyword">in</span> training_data:</span><br><span class="line">        <span class="keyword">for</span> word <span class="keyword">in</span> sentence:</span><br><span class="line">            <span class="keyword">if</span> word <span class="keyword">not</span> <span class="keyword">in</span> word_to_ix:</span><br><span class="line">                word_to_ix[word] = len(word_to_ix)</span><br><span class="line"></span><br><span class="line">    tag_to_ix = &#123;<span class="string">"B"</span>: <span class="number">0</span>, <span class="string">"I"</span>: <span class="number">1</span>, <span class="string">"O"</span>: <span class="number">2</span>, START_TAG: <span class="number">3</span>, STOP_TAG: <span class="number">4</span>&#125;</span><br><span class="line"></span><br><span class="line">    model = BiLSTM_CRF(len(word_to_ix), tag_to_ix, EMBEDDING_DIM, HIDDEN_DIM, num_layers, use_crf=<span class="literal">False</span>)</span><br><span class="line">    optimizer = optim.SGD(model.parameters(), lr=<span class="number">0.1</span>, weight_decay=<span class="number">1e-4</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 训练前检查模型预测结果</span></span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        <span class="comment"># 此demo里并未对训练数据统一补充为seq_length的长度，那么就不能一个批次同时输入多条句子</span></span><br><span class="line">        sentence1 = prepare_sequence(training_data[<span class="number">0</span>][<span class="number">0</span>], word_to_ix)</span><br><span class="line">        sentence1_tags = torch.tensor([tag_to_ix[t] <span class="keyword">for</span> t <span class="keyword">in</span> training_data[<span class="number">0</span>][<span class="number">1</span>]], dtype=torch.long)</span><br><span class="line">        sentence2 = prepare_sequence(training_data[<span class="number">1</span>][<span class="number">0</span>], word_to_ix)</span><br><span class="line">        sentence2_tags = torch.tensor([tag_to_ix[t] <span class="keyword">for</span> t <span class="keyword">in</span> training_data[<span class="number">1</span>][<span class="number">1</span>]], dtype=torch.long)</span><br><span class="line">        <span class="comment"># batch_sentence = torch.tensor([sentence1, sentence2])</span></span><br><span class="line">        <span class="comment"># batch_tags = torch.tensor([sentence1_tags, sentence2_tags])</span></span><br><span class="line">        seg = torch.tensor([<span class="number">1</span>] * len(sentence1))</span><br><span class="line">        sentence1 = sentence1.view(<span class="number">1</span>, <span class="number">-1</span>)  <span class="comment"># 如果sentence是单个句子，可以在第0维增加一维</span></span><br><span class="line">        seg = seg.view(<span class="number">1</span>, <span class="number">-1</span>)</span><br><span class="line">        _, batch_pred1 = model(sentence1, seg)  <span class="comment"># 返回损失和预测</span></span><br><span class="line">        print(<span class="string">f"句子1训练前网络得到的标签为：<span class="subst">&#123;batch_pred1[:len(sentence1[<span class="number">0</span>])]&#125;</span>"</span>)  <span class="comment"># 这里一个batch就一个元素，所以直接取0</span></span><br><span class="line">        print(<span class="string">f"句子1正确的标签为：<span class="subst">&#123;sentence1_tags&#125;</span>"</span>)</span><br><span class="line"></span><br><span class="line">        seg = torch.tensor([<span class="number">1</span>] * len(sentence2)).view(<span class="number">1</span>, <span class="number">-1</span>)</span><br><span class="line">        sentence2 = sentence2.view(<span class="number">1</span>, <span class="number">-1</span>)</span><br><span class="line">        _, batch_pred2 = model(sentence2, seg)  <span class="comment"># 返回损失和预测</span></span><br><span class="line">        print(<span class="string">f"句子2训练前网络得到的标签为：<span class="subst">&#123;batch_pred2[:len(sentence2[<span class="number">0</span>])]&#125;</span>"</span>)  <span class="comment"># 这里一个batch就一个元素，所以直接取0</span></span><br><span class="line">        print(<span class="string">f"句子2正确的标签为：<span class="subst">&#123;sentence2_tags&#125;</span>"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Make sure prepare_sequence from earlier in the LSTM section is loaded</span></span><br><span class="line">    <span class="keyword">for</span> epoch <span class="keyword">in</span> range(<span class="number">300</span>):  <span class="comment"># again, normally you would NOT do 300 epochs, it is toy data</span></span><br><span class="line">        <span class="keyword">for</span> sentence, tags <span class="keyword">in</span> training_data:</span><br><span class="line">            <span class="comment"># 第一步，pytorch梯度积累，需要先清零梯度</span></span><br><span class="line">            model.zero_grad()</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 第二步，将输出转换为tensor</span></span><br><span class="line">            sentence_in = prepare_sequence(sentence, word_to_ix)</span><br><span class="line">            seg = torch.tensor([<span class="number">1</span>] * len(sentence_in))</span><br><span class="line">            sentence_in = sentence_in.view(<span class="number">1</span>, <span class="number">-1</span>)</span><br><span class="line">            seg = seg.view(<span class="number">1</span>, <span class="number">-1</span>)</span><br><span class="line">            targets = torch.tensor([tag_to_ix[t] <span class="keyword">for</span> t <span class="keyword">in</span> tags], dtype=torch.long)</span><br><span class="line">            <span class="comment"># target也要增加一维</span></span><br><span class="line">            targets = targets.view(<span class="number">1</span>, <span class="number">-1</span>)</span><br><span class="line">            <span class="comment"># 第三步，进行前向计算，得到crf loss，当传入target时会自动计算loss</span></span><br><span class="line">            loss, _ = model(sentence_in, seg, targets)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 第四步，计算loss,梯度，通过optimizer更新参数</span></span><br><span class="line">            loss.backward()</span><br><span class="line">            optimizer.step()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 训练结束查看模型预测结果，对比观察模型是否学到东西</span></span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        seg = torch.tensor([<span class="number">1</span>]*len(sentence1[<span class="number">0</span>])).view(<span class="number">1</span>, <span class="number">-1</span>)</span><br><span class="line">        _, preds1 = model(sentence1, seg)</span><br><span class="line">        print(<span class="string">f"句子1训练后网络得到的标签为：<span class="subst">&#123;preds1[:len(sentence1[<span class="number">0</span>])]&#125;</span>"</span>)</span><br><span class="line">        seg = torch.tensor([<span class="number">1</span>] * len(sentence2[<span class="number">0</span>])).view(<span class="number">1</span>, <span class="number">-1</span>)</span><br><span class="line">        _, preds2 = model(sentence2, seg)</span><br><span class="line">        print(<span class="string">f"句子2训练后网络得到的标签为：<span class="subst">&#123;preds2[:len(sentence2[<span class="number">0</span>])]&#125;</span>"</span>)</span><br><span class="line">    <span class="comment"># We got it!</span></span><br><span class="line"></span><br><span class="line">句子<span class="number">1</span>训练前网络得到的标签为：tensor([<span class="number">4</span>, <span class="number">4</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">0</span>, <span class="number">4</span>, <span class="number">4</span>, <span class="number">0</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">4</span>])</span><br><span class="line">句子<span class="number">1</span>正确的标签为：tensor([<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>])</span><br><span class="line">句子<span class="number">2</span>训练前网络得到的标签为：tensor([<span class="number">4</span>, <span class="number">4</span>, <span class="number">4</span>, <span class="number">4</span>, <span class="number">4</span>, <span class="number">0</span>, <span class="number">4</span>])</span><br><span class="line">句子<span class="number">2</span>正确的标签为：tensor([<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">0</span>])</span><br><span class="line">句子<span class="number">1</span>训练后网络得到的标签为：tensor([<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>])</span><br><span class="line">句子<span class="number">2</span>训练后网络得到的标签为：tensor([<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">0</span>])</span><br></pre></td></tr></table></figure>
+<p>这里在模型的forward前向计算部分，其实是我从UER-py的框架代码里借鉴的，重点来看一下损失计算这部分</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">loss = -self.crf(F.log_softmax(features, <span class="number">2</span>), targets, mask=tgt_mask, reduction=<span class="string">'mean'</span>)</span><br></pre></td></tr></table></figure>
+<p>先打印一下features和F.log_softmax(features, dim=2)，看一下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">tensor([[[ <span class="number">0.2056</span>, <span class="number">-0.1778</span>,  <span class="number">0.3660</span>,  <span class="number">0.1293</span>, <span class="number">-0.2844</span>],</span><br><span class="line">         [ <span class="number">0.1895</span>, <span class="number">-0.1792</span>,  <span class="number">0.3430</span>,  <span class="number">0.1270</span>, <span class="number">-0.2139</span>],</span><br><span class="line">         [ <span class="number">0.1952</span>, <span class="number">-0.1807</span>,  <span class="number">0.3810</span>,  <span class="number">0.0988</span>, <span class="number">-0.3275</span>],</span><br><span class="line">         [ <span class="number">0.2284</span>, <span class="number">-0.2302</span>,  <span class="number">0.3037</span>,  <span class="number">0.1401</span>, <span class="number">-0.2611</span>],</span><br><span class="line">         [ <span class="number">0.1485</span>, <span class="number">-0.1867</span>,  <span class="number">0.3787</span>,  <span class="number">0.1309</span>, <span class="number">-0.3057</span>],</span><br><span class="line">         [ <span class="number">0.1784</span>, <span class="number">-0.1761</span>,  <span class="number">0.3400</span>,  <span class="number">0.1349</span>, <span class="number">-0.2641</span>],</span><br><span class="line">         [ <span class="number">0.2223</span>, <span class="number">-0.2179</span>,  <span class="number">0.3341</span>,  <span class="number">0.1052</span>, <span class="number">-0.3031</span>],</span><br><span class="line">         [ <span class="number">0.1790</span>, <span class="number">-0.2088</span>,  <span class="number">0.3403</span>,  <span class="number">0.1347</span>, <span class="number">-0.2798</span>],</span><br><span class="line">         [ <span class="number">0.1946</span>, <span class="number">-0.2041</span>,  <span class="number">0.3254</span>,  <span class="number">0.1393</span>, <span class="number">-0.2897</span>],</span><br><span class="line">         [ <span class="number">0.2030</span>, <span class="number">-0.1748</span>,  <span class="number">0.3544</span>,  <span class="number">0.1387</span>, <span class="number">-0.2588</span>],</span><br><span class="line">         [ <span class="number">0.1980</span>, <span class="number">-0.2170</span>,  <span class="number">0.2821</span>,  <span class="number">0.1241</span>, <span class="number">-0.2678</span>]]],</span><br><span class="line">       grad_fn=&lt;AddBackward0&gt;)</span><br><span class="line">tensor([[[<span class="number">-1.4804</span>, <span class="number">-1.8638</span>, <span class="number">-1.3200</span>, <span class="number">-1.5567</span>, <span class="number">-1.9704</span>],</span><br><span class="line">         [<span class="number">-1.4962</span>, <span class="number">-1.8650</span>, <span class="number">-1.3428</span>, <span class="number">-1.5588</span>, <span class="number">-1.8996</span>],</span><br><span class="line">         [<span class="number">-1.4798</span>, <span class="number">-1.8557</span>, <span class="number">-1.2939</span>, <span class="number">-1.5762</span>, <span class="number">-2.0025</span>],</span><br><span class="line">         [<span class="number">-1.4442</span>, <span class="number">-1.9029</span>, <span class="number">-1.3690</span>, <span class="number">-1.5326</span>, <span class="number">-1.9338</span>],</span><br><span class="line">         [<span class="number">-1.5242</span>, <span class="number">-1.8595</span>, <span class="number">-1.2940</span>, <span class="number">-1.5418</span>, <span class="number">-1.9784</span>],</span><br><span class="line">         [<span class="number">-1.4989</span>, <span class="number">-1.8534</span>, <span class="number">-1.3373</span>, <span class="number">-1.5424</span>, <span class="number">-1.9414</span>],</span><br><span class="line">         [<span class="number">-1.4453</span>, <span class="number">-1.8855</span>, <span class="number">-1.3335</span>, <span class="number">-1.5623</span>, <span class="number">-1.9707</span>],</span><br><span class="line">         [<span class="number">-1.4912</span>, <span class="number">-1.8790</span>, <span class="number">-1.3298</span>, <span class="number">-1.5355</span>, <span class="number">-1.9500</span>],</span><br><span class="line">         [<span class="number">-1.4755</span>, <span class="number">-1.8742</span>, <span class="number">-1.3447</span>, <span class="number">-1.5308</span>, <span class="number">-1.9598</span>],</span><br><span class="line">         [<span class="number">-1.4854</span>, <span class="number">-1.8632</span>, <span class="number">-1.3340</span>, <span class="number">-1.5497</span>, <span class="number">-1.9472</span>],</span><br><span class="line">         [<span class="number">-1.4597</span>, <span class="number">-1.8747</span>, <span class="number">-1.3755</span>, <span class="number">-1.5335</span>, <span class="number">-1.9255</span>]]],</span><br><span class="line">       grad_fn=&lt;LogSoftmaxBackward&gt;)</span><br></pre></td></tr></table></figure>
+<p>features这里是一个(1, 11, 5)的张量，第0维是batch_size大小，第1维是句子长度，第2维是词向量维度。log_softmax是先进行softmax运算再取log，dim=2表示在第2维上进行log_softmax运算。</p>
+<p>以[ 0.2056, -0.1778,  0.3660,  0.1293, -0.2844]举例，进行softmax运算</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> math</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">v = [ <span class="number">0.2056</span>, <span class="number">-0.1778</span>,  <span class="number">0.3660</span>,  <span class="number">0.1293</span>, <span class="number">-0.2844</span>]</span><br><span class="line">sum = sum([math.exp(i) <span class="keyword">for</span> i <span class="keyword">in</span> v])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 等价于F.softmax(torch.tensor(v, dtype=torch.float))</span></span><br><span class="line">s = [round(math.exp(i)/sum, <span class="number">4</span>) <span class="keyword">for</span> i <span class="keyword">in</span> v]</span><br><span class="line">print(s)</span><br><span class="line">[<span class="number">0.2275</span>, <span class="number">0.1551</span>, <span class="number">0.2671</span>, <span class="number">0.2108</span>, <span class="number">0.1394</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 对s[0]取log</span></span><br><span class="line">print(round(math.log(s[<span class="number">0</span>]), <span class="number">4</span>))</span><br><span class="line"><span class="number">-1.4806</span></span><br></pre></td></tr></table></figure>
+<p>这里targets和tgt_mask都是(batch_size, seq_length)的size，target就是对应的标签，比如在NER任务中，一个单词对应的是BIO哪个标签，tgt_mask则用来标记一个句子的有效部分，比如一条句子的长度为100个字，在传入模型之前需要统一成长度为300的张量，那么后两百个元素的值都是填充的句子结束标记，<strong>这部分在训练时是不需要计算损失的</strong>，预测的时候也是不需要关注这部分的值，这里就是通过mask参数来区分句子的有效部分；</p>
+<p>另外如果batch_first=False，则mask的size应该为(seq_length, batch_size)。</p>
+<p>还可以看到，我在这里加了use-crf参数，即可以通过该参数来指定是否增加CRF层，当没有CRF层时，取预测结果时就是直接对features中每个单词特征的最大值，损失函数也是采用了另外的计算方式（这里的计算方式时借鉴了UER-py中的NER模型，原理思想没怎么搞明白，我想的是应该是可以直接使用多分类交叉熵损失函数的，后面还会介绍使用多分类交叉熵损失函数的版本）。</p>
+<p>但是注意，这里不使用CRF层训练，300轮后最后无法正确预测这两个样本的标签，但是通过将学习率由0.01增大至0.1，在300轮后则可以正确预测，<strong>推测是学习率太小，300轮并未得到充分学习</strong>。之后我将学习率设为0.01。然后将训练轮次增加至1000，顺利得到了正确的预测结果。</p>
+<h3 id="BiLSTM-CRF的实现V3版本"><a href="#BiLSTM-CRF的实现V3版本" class="headerlink" title="BiLSTM-CRF的实现V3版本"></a>BiLSTM-CRF的实现V3版本</h3><p>在这一版本的实现中，我进行了如下的优化：</p>
+<ol>
+<li>变量的命名更易于理解；</li>
+<li>在word_embedding后面增加LayerNorm层；</li>
+<li>增加dropout层；</li>
+<li>在训练demo中，采用了更贴近实际情况的方法，即将句子统一成seq_length长度的张量并按照批次传入模型；</li>
+<li>无crf层的损失函数实现，直接使用nn.CrossEntropyLoss，但是依然要考虑到targets_mask的问题。</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding=utf-8</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">与bi-lstm-crf-v2相比，修改了无crf层时的损失函数，直接使用nn.CrossEntropyLoss</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">from</span> torchcrf <span class="keyword">import</span> CRF</span><br><span class="line"><span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F</span><br><span class="line"><span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BiLSTM_CRF</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, vocab_size, label_to_id, embedding_dim, hidden_size, num_layers,</span></span></span><br><span class="line"><span class="function"><span class="params">                 use_crf=True, seq_length=<span class="number">256</span>, dropout=<span class="number">0.0</span>)</span>:</span></span><br><span class="line">        super(BiLSTM_CRF, self).__init__()</span><br><span class="line">        self.embedding_dim = embedding_dim  <span class="comment"># 词向量维度（长度），即用多少维度向量表示一个词</span></span><br><span class="line">        self.hidden_size = hidden_size  <span class="comment"># 单向lstm的hidden_size</span></span><br><span class="line">        self.vocab_size = vocab_size  <span class="comment"># 词表大小</span></span><br><span class="line">        self.label_to_id = label_to_id    <span class="comment"># 标签序号的映射字典</span></span><br><span class="line">        self.label_nums = len(label_to_id)  <span class="comment"># 标签数量/类别数</span></span><br><span class="line">        self.num_layers = num_layers  <span class="comment"># LSTM层数</span></span><br><span class="line">        self.use_crf = use_crf  <span class="comment"># 是否使用CRF层</span></span><br><span class="line">        self.seq_length = seq_length  <span class="comment"># 句子最大长度，超过截断，小于填充,会将所有输入神经网络的句子向量统一为该长度</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 词嵌入层，size为(词表大小, 词向量维度)</span></span><br><span class="line">        self.word_embeds = nn.Embedding(vocab_size, embedding_dim)</span><br><span class="line">        <span class="comment"># LayerNorm层</span></span><br><span class="line">        self.layer_norm = nn.LayerNorm(embedding_dim)</span><br><span class="line">        <span class="comment"># dropout层</span></span><br><span class="line">        self.dropout = nn.Dropout(dropout)</span><br><span class="line">        <span class="comment"># 双向lstm</span></span><br><span class="line">        self.lstm = nn.LSTM(embedding_dim, hidden_size, bidirectional=<span class="literal">True</span>, num_layers=num_layers, dropout=dropout, batch_first=<span class="literal">True</span>)</span><br><span class="line">        <span class="comment"># 将BiLSTM提取的特征向量映射到特征空间，即经过全连接得到发射分数</span></span><br><span class="line">        self.hidden2tag = nn.Linear(hidden_size*<span class="number">2</span>, self.label_nums)</span><br><span class="line">        <span class="keyword">if</span> use_crf:</span><br><span class="line">            <span class="comment"># crf层，可以使用pytorch的crf包</span></span><br><span class="line">            self.crf = CRF(self.label_nums, batch_first=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, sentence, targets_mask, targets=None)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        NER model的前向传播过程</span></span><br><span class="line"><span class="string">        :param sentence: 传入句子，size(batch_size, seq_length)</span></span><br><span class="line"><span class="string">        :param targets_mask: 标签是否有效的标志，=1的部分是句子的有效部分，size(batch_size, seq_length)</span></span><br><span class="line"><span class="string">        :param targets:  标签，计算损失时需要, size(batch_size, seq_length)</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="comment"># 得到词向量</span></span><br><span class="line">        embeddings = self.word_embeds(sentence)</span><br><span class="line">        embeddings = self.dropout(self.layer_norm(embeddings))</span><br><span class="line">        <span class="comment"># 由于lstm层的输入必须是三维的, 当传入的sentence为单个句子且只有一维时，需要对词向量增加维度.view(len(sentence), 1, -1)</span></span><br><span class="line">        <span class="comment"># lstm层返回输出和隐状态，输出size为(batch_size, seq_length, hidden_size*2)</span></span><br><span class="line">        <span class="comment"># 隐状态是有两个元素的tuple(因为双向),每个元素size为(2, seq_length, hidden_size)</span></span><br><span class="line">        lstm_out, hidden_state = self.lstm(embeddings)</span><br><span class="line">        lstm_out = self.dropout(lstm_out)</span><br><span class="line">        <span class="comment"># 经过全连接层得到发射分数,size:(batch_size, seq_length, label_nums)</span></span><br><span class="line">        features = self.hidden2tag(lstm_out)</span><br><span class="line">        <span class="keyword">if</span> self.use_crf:</span><br><span class="line">            pred = self.crf.decode(features)</span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> range(len(pred)):</span><br><span class="line">                <span class="comment"># 以STOP_TAG的id填充至seq_length长度</span></span><br><span class="line">                <span class="keyword">while</span> len(pred[j]) &lt; self.seq_length:</span><br><span class="line">                    pred[j].append(self.label_nums<span class="number">-1</span>)</span><br><span class="line">            <span class="comment"># 从(batch_size, seq_length)转成(batch_size*seq_length)一维</span></span><br><span class="line">            pred = torch.tensor(pred).contiguous().view(<span class="number">-1</span>)</span><br><span class="line">            <span class="comment"># 传入targets时，计算损失</span></span><br><span class="line">            <span class="keyword">if</span> targets <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">                targets_mask = targets_mask.type(torch.uint8)</span><br><span class="line">                <span class="comment"># targets_mask=1的部分计算损失</span></span><br><span class="line">                loss = -self.crf(F.log_softmax(features, <span class="number">2</span>), targets, mask=targets_mask, reduction=<span class="string">'mean'</span>)</span><br><span class="line">                <span class="keyword">return</span> loss, pred</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">None</span>, pred</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">if</span> targets <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">                total_loss = <span class="number">0.0</span></span><br><span class="line">                batch_size = features.size()[<span class="number">0</span>]</span><br><span class="line">                <span class="keyword">for</span> i <span class="keyword">in</span> range(batch_size):</span><br><span class="line">                    length = torch.sum(targets_mask[i])  <span class="comment"># 求出来的值就是1的数量，也就表示这个句子的长度</span></span><br><span class="line">                    single_feature = features[i][:length]  <span class="comment"># 只计算句子有效部分的损失</span></span><br><span class="line">                    single_target = targets[i][:length]</span><br><span class="line">                    <span class="comment"># 使用mean和sum所需的学习率可能有不同的要求</span></span><br><span class="line">                    loss_f = nn.CrossEntropyLoss(reduction=<span class="string">'mean'</span>)</span><br><span class="line">                    loss = loss_f(single_feature, single_target)</span><br><span class="line">                    total_loss += loss</span><br><span class="line">                batch_loss = total_loss / batch_size</span><br><span class="line">                <span class="comment"># 为了统一返回的pred的size</span></span><br><span class="line">                features = features.contiguous().view(<span class="number">-1</span>, self.label_nums)</span><br><span class="line">                pred = features.argmax(dim=<span class="number">-1</span>)</span><br><span class="line">                <span class="keyword">return</span> batch_loss, pred</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                features = features.contiguous().view(<span class="number">-1</span>, self.label_nums)</span><br><span class="line">                pred = features.argmax(dim=<span class="number">-1</span>)</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">None</span>, pred</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">prepare_data</span><span class="params">(data, to_ix, seq_length, label_to_id)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    获取传入文本在词典中的序号</span></span><br><span class="line"><span class="string">    :param data: 训练数据，tuple形式，第一个元素是分割好的文本，以列表形式；第二个元素是标签，以列表形式</span></span><br><span class="line"><span class="string">    :param to_ix: 单词/词语 到 序号的映射字典</span></span><br><span class="line"><span class="string">    :param seq_length: 需要统一的句子长度</span></span><br><span class="line"><span class="string">    :param label_to_id: 标签序号的映射字典</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    seq = data[<span class="number">0</span>]</span><br><span class="line">    labels = data[<span class="number">1</span>]</span><br><span class="line">    text_ids = [to_ix[w] <span class="keyword">for</span> w <span class="keyword">in</span> seq]</span><br><span class="line">    targets = [label_to_id[t] <span class="keyword">for</span> t <span class="keyword">in</span> labels]</span><br><span class="line">    targets_mask = [<span class="number">1</span>] * len(text_ids)</span><br><span class="line">    <span class="keyword">if</span> len(text_ids) &gt; seq_length:</span><br><span class="line">        text_ids = text_ids[:seq_length]</span><br><span class="line">        targets = targets[:seq_length]</span><br><span class="line">        targets_mask = targets_mask[:seq_length]</span><br><span class="line">    <span class="keyword">while</span> len(text_ids) &lt; seq_length:</span><br><span class="line">        text_ids.append(to_ix[<span class="string">"[PAD]"</span>])</span><br><span class="line">        targets.append(label_to_id[STOP_TAG])</span><br><span class="line">        targets_mask.append(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> text_ids, targets_mask, targets</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    START_TAG = <span class="string">"&lt;START&gt;"</span></span><br><span class="line">    STOP_TAG = <span class="string">"&lt;STOP&gt;"</span></span><br><span class="line">    EMBEDDING_DIM = <span class="number">6</span></span><br><span class="line">    HIDDEN_DIM = <span class="number">5</span></span><br><span class="line">    num_layers = <span class="number">1</span></span><br><span class="line">    seq_length = <span class="number">20</span>  <span class="comment"># 将句子统一成20的长度</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Make up some training data</span></span><br><span class="line">    training_data = [(</span><br><span class="line">        <span class="string">"the wall street journal reported today that apple corporation made money"</span>.split(),</span><br><span class="line">        <span class="string">"B I I I O O O B I O O"</span>.split()</span><br><span class="line">    ), (</span><br><span class="line">        <span class="string">"georgia tech is a university in georgia"</span>.split(),</span><br><span class="line">        <span class="string">"B I O O O O B"</span>.split()</span><br><span class="line">    )]</span><br><span class="line"></span><br><span class="line">    word_to_id = &#123;&#125;  <span class="comment"># 词典</span></span><br><span class="line">    <span class="keyword">for</span> sentence, tags <span class="keyword">in</span> training_data:</span><br><span class="line">        <span class="keyword">for</span> word <span class="keyword">in</span> sentence:</span><br><span class="line">            <span class="keyword">if</span> word <span class="keyword">not</span> <span class="keyword">in</span> word_to_id:</span><br><span class="line">                word_to_id[word] = len(word_to_id)</span><br><span class="line">    word_to_id[<span class="string">"[PAD]"</span>] = len(word_to_id)</span><br><span class="line"></span><br><span class="line">    label_to_id = &#123;<span class="string">"B"</span>: <span class="number">0</span>, <span class="string">"I"</span>: <span class="number">1</span>, <span class="string">"O"</span>: <span class="number">2</span>, START_TAG: <span class="number">3</span>, STOP_TAG: <span class="number">4</span>&#125;</span><br><span class="line"></span><br><span class="line">    model = BiLSTM_CRF(len(word_to_id), label_to_id, EMBEDDING_DIM, HIDDEN_DIM, num_layers,</span><br><span class="line">                       use_crf=<span class="literal">False</span>, seq_length=seq_length)</span><br><span class="line">    optimizer = optim.SGD(model.parameters(), lr=<span class="number">0.1</span>, weight_decay=<span class="number">1e-4</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 训练前检查模型预测结果</span></span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        sentence0_length = len(training_data[<span class="number">0</span>][<span class="number">0</span>])</span><br><span class="line">        sentence1_length = len(training_data[<span class="number">1</span>][<span class="number">0</span>])</span><br><span class="line">        sentence0, targets_mask_0, targets_0 = prepare_data(training_data[<span class="number">0</span>], word_to_id, seq_length, label_to_id)</span><br><span class="line">        sentence1, targets_mask_1, targets_1 = prepare_data(training_data[<span class="number">1</span>], word_to_id, seq_length, label_to_id)</span><br><span class="line">        batch_sentence_0 = torch.tensor([sentence0, sentence1])</span><br><span class="line">        <span class="comment"># batch_targets_0 = torch.tensor([targets_0])</span></span><br><span class="line">        batch_targets_mask_0 = torch.tensor([targets_mask_0, targets_mask_1])</span><br><span class="line">        _, batch_pred0 = model(batch_sentence_0, batch_targets_mask_0)  <span class="comment"># 返回损失和预测</span></span><br><span class="line">        print(<span class="string">f"句子1训练前网络得到的标签为：<span class="subst">&#123;batch_pred0[:sentence0_length]&#125;</span>"</span>)</span><br><span class="line">        print(<span class="string">f"句子2训练前网络得到的标签为：<span class="subst">&#123;batch_pred0[seq_length:seq_length+sentence1_length]&#125;</span>"</span>)</span><br><span class="line">        print(<span class="string">f"句子1正确的标签为：<span class="subst">&#123;targets_0[:sentence0_length]&#125;</span>"</span>)</span><br><span class="line">        print(<span class="string">f"句子2正确的标签为：<span class="subst">&#123;targets_1[:sentence1_length]&#125;</span>"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Make sure prepare_sequence from earlier in the LSTM section is loaded</span></span><br><span class="line">    <span class="keyword">for</span> epoch <span class="keyword">in</span> range(<span class="number">300</span>):  <span class="comment"># again, normally you would NOT do 300 epochs, it is toy data</span></span><br><span class="line">        <span class="comment"># 第一步，pytorch梯度积累，需要先清零梯度</span></span><br><span class="line">        model.zero_grad()</span><br><span class="line"></span><br><span class="line">        sentence0, targets_mask_0, targets_0 = prepare_data(training_data[<span class="number">0</span>], word_to_id, seq_length, label_to_id)</span><br><span class="line">        sentence1, targets_mask_1, targets_1 = prepare_data(training_data[<span class="number">1</span>], word_to_id, seq_length, label_to_id)</span><br><span class="line">        batch_sentence = torch.tensor([sentence0, sentence1])</span><br><span class="line">        batch_targets = torch.tensor([targets_0, targets_1])</span><br><span class="line">        batch_targets_mask = torch.tensor([targets_mask_0, targets_mask_1])</span><br><span class="line">        <span class="comment"># 第三步，进行前向计算，得到crf loss，当传入target时会自动计算loss</span></span><br><span class="line">        loss, _ = model(batch_sentence, batch_targets_mask, batch_targets)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 第四步，计算loss,梯度，通过optimizer更新参数</span></span><br><span class="line">        loss.backward()</span><br><span class="line">        optimizer.step()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 训练结束查看模型预测结果，对比观察模型是否学到东西</span></span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        _, batch_pred0 = model(batch_sentence_0, batch_targets_mask_0)  <span class="comment"># 返回损失和预测</span></span><br><span class="line">        print(<span class="string">f"句子1训练后网络得到的标签为：<span class="subst">&#123;batch_pred0[:sentence0_length]&#125;</span>"</span>)</span><br><span class="line">        print(<span class="string">f"句子2训练后网络得到的标签为：<span class="subst">&#123;batch_pred0[seq_length:seq_length+sentence1_length]&#125;</span>"</span>)</span><br><span class="line">    <span class="comment"># We got it!</span></span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">句子<span class="number">1</span>训练前网络得到的标签为：tensor([<span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>])</span><br><span class="line">句子<span class="number">2</span>训练前网络得到的标签为：tensor([<span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>])</span><br><span class="line">句子<span class="number">1</span>正确的标签为：[<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>]</span><br><span class="line">句子<span class="number">2</span>正确的标签为：[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">0</span>]</span><br><span class="line">句子<span class="number">1</span>训练后网络得到的标签为：tensor([<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>])</span><br><span class="line">句子<span class="number">2</span>训练后网络得到的标签为：tensor([<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">0</span>])</span><br></pre></td></tr></table></figure>
+<p>与V2版本相比，使用CRF层时模型学习的更快更好；不使用CRF层时，对超参数的设置要求更高了，比如损失函数的<code>reduction=&#39;sum&#39;</code>时，在学习率0.01和300轮的训练后，模型可以正确预测出这两个样本的标签，而在设置<code>reduction=&#39;mean&#39;</code>时，在学习率0.01的情况下，则需要更多的轮次才能正确预测，如果将学习率设置为0.1则可以更快地学习。</p>
+<h3 id="应用到命名实体识别"><a href="#应用到命名实体识别" class="headerlink" title="应用到命名实体识别"></a>应用到命名实体识别</h3><p>上面对于BiLSTM模型的原理和实现我们已经基本掌握，接下来就是应用到命名实体识别的实际任务中。这部分内容会在后续的github项目中展示，其实整体是借鉴的UER-py这个项目，只不过改写了部分代码。</p>
+<p>这里我仅将我的实验结果进行展示，对于模型的评估一共有两个指标，一种是根据实体数量评估，一种是根据单条数据评估（单条数据可能包含多个实体）。<br>实验数据一：<br>embedding_size=256, hidden_size=512(单向), use_crf=True, layer_nums=2<br>按照实体数量评估：F1=99.0%，按照单条数据评估：F1=95.7%<br>2600条测试数据，大约有26000个实体，1%的实体预测不准确，大概也有260个实体，最多可能导致260条数据提取不准确。<br>参数量：14,963,378，权重大小：57MB</p>
+<p>实验数据二:<br>embedding_size=256, hidden_size=512(单向), user_crf=False, layer_nums=2<br>按照实体数量评估：F1=95.3%，按照单条数据评估：F1=78.4%<br>2600条测试数据，大约有26000个实体，4.7%的实体预测不准确，大概有1222个实体，最多可能导致1222条数据提取不准确。<br>可以看到<strong>效果相比使用CRF确实下降很多</strong>。<br>参数量：14,955,098，权重大小：57MB，与使用CRF几乎相同</p>
+<p>实验数据三：<br>embedding_size=512, hidden_size=768(单向), use_crf=True, layer_nums=2<br>按照实体数量评估：F1=99.4%，按照单条数据评估：96.5%<br>2600条测试数据，大约有26000个实体，0.6%的实体预测不准确，大概也有156个实体，最多可能导致156条数据提取不准确。<br>参数量：33,009,842，权重大小：125MB</p>
+<p>实验数据四:<br>embedding_size=512, hidden_size=768(单向), use_crf=False, layer_nums=2<br>按照实体数量评估：F1=96.8%，按照单条数据评估：F1=82.3%<br>2600条测试数据，大约有26000个实体，3.2%的实体预测不准确，大概有832个实体，最多可能导致832条数据提取不准确。<br>参数量：33,001,562，权重大小：125MB，与使用CRF几乎相同</p>
+<p>实验数据五：<br><strong>embedding_size=384</strong>, hidden_size=768(单向), use_crf=True, layer_nums=2<br>参数量：29,518,770，权重大小：112MB<br>按照实体数量评估：F1=99.4%，按照单条数据评估：96.9%<br>相比embedding_size=512，参数量略有减少，但是实际效果一致，甚至在以单条数据评估的基础上，取得了0.4%的提升。<br>batch_size=16可以再试一下</p>
+<p>实验数据六：<br>embedding_size=256, hidden_size=512(单向), user_crf=True, <strong>layer_nums=3</strong><br>参数量：21,263,026，权重大小：81MB<br>按照实体数量评估：F1=99.4%，按照单条数据评估：96.7%<br>单条数据预测速度：0.024s</p>
+<p>后面更多的对比实验我以表格的形式展示更方便查看，就不再文字罗列。</p>
+<table>
+<thead>
+<tr>
+<th>num_layers</th>
+<th>embedding_dim</th>
+<th>hidden_size</th>
+<th>use_crf</th>
+<th>参数量</th>
+<th>权重大小/MB</th>
+<th>F1</th>
+<th>F2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2</td>
+<td>256</td>
+<td>512</td>
+<td>False</td>
+<td>14,955,098</td>
+<td>57MB</td>
+<td>95.3%</td>
+<td>78.4%</td>
+</tr>
+<tr>
+<td>2</td>
+<td>256</td>
+<td>512</td>
+<td>True</td>
+<td>14,963,378</td>
+<td>52MB</td>
+<td>99.0%</td>
+<td>95.7%</td>
+</tr>
+<tr>
+<td>3</td>
+<td>256</td>
+<td>512</td>
+<td>True</td>
+<td>21,263,026</td>
+<td>81MB</td>
+<td>99.4%</td>
+<td>96.7%</td>
+</tr>
+<tr>
+<td>2</td>
+<td>384</td>
+<td>768</td>
+<td>True</td>
+<td>29,518,770</td>
+<td>112MB</td>
+<td>99.4%</td>
+<td>96.7%</td>
+</tr>
+<tr>
+<td>3</td>
+<td>384</td>
+<td>768</td>
+<td>True</td>
+<td>43,686,834</td>
+<td>166MB</td>
+<td>99.3%</td>
+<td>96.1%</td>
+</tr>
+<tr>
+<td>2</td>
+<td>512</td>
+<td>768</td>
+<td>False</td>
+<td>33,001,562</td>
+<td>125MB</td>
+<td>96.8%</td>
+<td>82.3%</td>
+</tr>
+<tr>
+<td>2</td>
+<td>512</td>
+<td>768</td>
+<td>True</td>
+<td>33,009,842</td>
+<td>125MB</td>
+<td>99.4%</td>
+<td>96.5%</td>
+</tr>
+<tr>
+<td>2</td>
+<td>512</td>
+<td>1024</td>
+<td>True</td>
+<td>48,792,754</td>
+<td>186MB</td>
+<td>99.4%</td>
+<td>96.7%</td>
+</tr>
+<tr>
+<td>2(use_pre)</td>
+<td>768</td>
+<td>768</td>
+<td>True</td>
+<td>39,991,986</td>
+<td>152MB</td>
+<td>99.3%</td>
+<td>96.1%</td>
+</tr>
+<tr>
+<td>2</td>
+<td>768</td>
+<td>768</td>
+<td>True</td>
+<td>39,991,986</td>
+<td>152MB</td>
+<td>99.3%</td>
+<td>96.4%</td>
+</tr>
+<tr>
+<td>2(use_pre)</td>
+<td>384</td>
+<td>768</td>
+<td>True</td>
+<td>23,311,794</td>
+<td>89MB</td>
+<td>99.4%</td>
+<td>96.7%</td>
+</tr>
+</tbody>
+</table>
+<p>关于以上实验得到的结论：</p>
+<ol>
+<li>根据实验一、二和实验三、四两组实验对比显示，使用CRF层可以得到大幅度的效果提升，并且参数量几乎不变，但是使用CRF的训练速度整体要比不使用CRF训练速度慢3~5倍，embedding_size=512,hidden_size=768的配置下，不使用CRF训练100轮大约需要23小时（单个2080Ti）；</li>
+<li>在一定范围内，增加embedding_dim、hidden_size和layers可以提高模型精度，但是代价是训练和预测速度的下降；embedding_size=512,hidden_size=768的配置下其平均单条数据的预测速度为：<br>use_crf=False, 0.011s；use_crf=True, 0.025s；</li>
+<li>当模型增大到一定程度之后，实际效果反而会下降，例如第4、5行的对比；</li>
+<li>第9行特别注释的use_pre是使用的bert的预训练embedding，注意是仅使用embedding层，实际验证效果并不明显；</li>
+<li>最后一行使用word2vec按照单个字符分割训练了一个词向量，因为词表大小变小了，所以embedding层的参数量减少了很多，最终模型大小也降低了。</li>
+</ol>
+<p>这个项目其实还有一些待尝试的方法，例如采用分词的方式去训练词向量，然后输入到NER模型中训练，不过选取哪一种分词库效果更好是需要去对比的；此外，可能还需要根据业务特点，自己去建立一个业务词典，保证这些词不会被分词工具给切割；以及是否可以提出针对此业务的更好地分词方法也是一个可以深入研究的点。</p>
+<p>下一个项目我会利用tranformer encoder作为NER的encoder来进一步实验。</p>
+<h3 id="补充一些实验数据"><a href="#补充一些实验数据" class="headerlink" title="补充一些实验数据"></a>补充一些实验数据</h3><p>使用上述训练得到的模型在真实数据集上做测试时，发现一些抽取异常的问题（并不是因为自动生成数据的方法有问题，只是抽取有问题的情形并不包含在生成数据的模板内，即模型未见过此类数据，也可以理解为模型泛化能力还有所欠缺）。针对抽取异常的数据进行人工修正后作为训练数据参与训练，包括566条训练数据和59条测试数据。<br>合并到之前的训练集后重新训练，下面依然设置了两组对照实验：</p>
+<p>使用BERT的词表且未对词向量进行训练：num_layers=2，embedding_dim=384,hidden_size=768，F1值为98.8%，F2值为93.6%（可以看到相比原来准确率有所下降，原因尚不清楚）。<br>如果单独评测上面标注的59条测试数据，其F1值为94.7%，F2值为48/59=81.4%</p>
+<p>使用word2vec训练词向量并生成词表，num_layers=2，embedding_dim=384,hidden_size=768，F1值为99.3%，F2值为96.2%。</p>
+<p>对59条标注的测试数据的评测结果为:F1=96.4%，F2值为50/59=84.7%。</p>
+<p>现在可以看到通过word2vec学习词向量对准确率有明显提升，是否可以考虑：</p>
+<ol>
+<li>扩充词向量学习的数据集；</li>
+<li>使用BERT微调获取词向量，后续可能需要一定的放缩才能直接用；</li>
+<li>使用GPT微调获取词向量。</li>
+</ol>
+<p>作为消融实验：可以通过仅训练566条数据，对59条测试数据准确率来判断生成的数据是否对模型学习有积极效果。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/pytorch/" rel="tag"># pytorch</a>
+          
+            <a href="/tags/nlp/" rel="tag"># nlp</a>
+          
+            <a href="/tags/BiLSTM/" rel="tag"># BiLSTM</a>
+          
+            <a href="/tags/CRF/" rel="tag"># CRF</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2023/03/11/spider-experience/" rel="next" title="业务爬取经验总结">
+                <i class="fa fa-chevron-left"></i> 业务爬取经验总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2023/07/06/nlp-transformer/" rel="prev" title="Transformer原理">
+                Transformer原理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">107</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">204</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用BiLSTM-CRF进行命名实体识别"><span class="nav-text">使用BiLSTM-CRF进行命名实体识别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#BiLSTM-CRF网络结构"><span class="nav-text">BiLSTM-CRF网络结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CRF损失函数-amp-维特比解码（Viterbi算法）"><span class="nav-text">CRF损失函数&amp;维特比解码（Viterbi算法）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#计算当前节点得分的方法"><span class="nav-text">计算当前节点得分的方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#计算所有路径得分的方法"><span class="nav-text">计算所有路径得分的方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#预测"><span class="nav-text">预测</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用PyTorch实现BiLSTM-CRF"><span class="nav-text">使用PyTorch实现BiLSTM-CRF</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用pytorch-crf包来增加CRF层"><span class="nav-text">使用pytorch-crf包来增加CRF层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BiLSTM-CRF的实现V3版本"><span class="nav-text">BiLSTM-CRF的实现V3版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#应用到命名实体识别"><span class="nav-text">应用到命名实体识别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#补充一些实验数据"><span class="nav-text">补充一些实验数据</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

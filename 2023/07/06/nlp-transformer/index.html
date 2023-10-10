@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="deep learning,nlp,transformer,self-attention,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Transformer原理From Attention to self-Attention关于Attention基本原理我们在seq2seq中已经介绍过，简单说attention就是帮助我们找到两个序列之间的相关度，比如输出序列的每个输出分别应该关注输入序列的哪一部分， 也就是找到权重值 wi。  self-attention与attention的不同点在于，self-attention是帮助我们">
+<meta name="keywords" content="deep learning,nlp,transformer,self-attention">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Transformer原理">
+<meta property="og:url" content="http://yoursite.com/2023/07/06/nlp-transformer/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="Transformer原理From Attention to self-Attention关于Attention基本原理我们在seq2seq中已经介绍过，简单说attention就是帮助我们找到两个序列之间的相关度，比如输出序列的每个输出分别应该关注输入序列的哪一部分， 也就是找到权重值 wi。  self-attention与attention的不同点在于，self-attention是帮助我们">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2023/07/06/nlp-transformer/p1.png">
+<meta property="og:image" content="http://yoursite.com/2023/07/06/nlp-transformer/p2.png">
+<meta property="og:image" content="http://yoursite.com/2023/07/06/nlp-transformer/p3.png">
+<meta property="og:image" content="http://yoursite.com/2023/07/06/nlp-transformer/p4.png">
+<meta property="og:image" content="http://yoursite.com/2023/07/06/nlp-transformer/p5.png">
+<meta property="og:image" content="http://yoursite.com/2023/07/06/nlp-transformer/p6.png">
+<meta property="og:image" content="http://yoursite.com/2023/07/06/nlp-transformer/p7.png">
+<meta property="og:image" content="http://yoursite.com/2023/07/06/nlp-transformer/p1.png">
+<meta property="og:image" content="http://yoursite.com/2023/07/06/nlp-transformer/p8.png">
+<meta property="og:image" content="http://yoursite.com/2023/07/06/nlp-transformer/p9.png">
+<meta property="og:image" content="http://yoursite.com/2023/07/06/nlp-transformer/p1.gif">
+<meta property="og:image" content="http://yoursite.com/2023/07/06/nlp-transformer/p2.gif">
+<meta property="og:image" content="http://yoursite.com/2023/07/06/nlp-transformer/p3.gif">
+<meta property="og:image" content="http://yoursite.com/2023/07/06/nlp-transformer/p4.gif">
+<meta property="og:image" content="http://yoursite.com/2023/07/06/nlp-transformer/p5.gif">
+<meta property="og:image" content="http://yoursite.com/2023/07/06/nlp-transformer/p6.gif">
+<meta property="og:image" content="http://yoursite.com/2023/07/06/nlp-transformer/p7.gif">
+<meta property="og:image" content="http://yoursite.com/2023/07/06/nlp-transformer/p8.gif">
+<meta property="og:image" content="http://yoursite.com/2023/07/06/nlp-transformer/p10.png">
+<meta property="og:image" content="http://yoursite.com/2023/07/06/nlp-transformer/p11.png">
+<meta property="og:image" content="http://yoursite.com/2023/07/06/nlp-transformer/p12.png">
+<meta property="og:updated_time" content="2023-10-10T13:30:57.177Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Transformer原理">
+<meta name="twitter:description" content="Transformer原理From Attention to self-Attention关于Attention基本原理我们在seq2seq中已经介绍过，简单说attention就是帮助我们找到两个序列之间的相关度，比如输出序列的每个输出分别应该关注输入序列的哪一部分， 也就是找到权重值 wi。  self-attention与attention的不同点在于，self-attention是帮助我们">
+<meta name="twitter:image" content="http://yoursite.com/2023/07/06/nlp-transformer/p1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2023/07/06/nlp-transformer/">
+
+
+
+
+
+  <title>Transformer原理 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2023/07/06/nlp-transformer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Transformer原理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-07-06T15:19:54+08:00">
+                2023-07-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Transformer原理"><a href="#Transformer原理" class="headerlink" title="Transformer原理"></a>Transformer原理</h2><h3 id="From-Attention-to-self-Attention"><a href="#From-Attention-to-self-Attention" class="headerlink" title="From Attention to self-Attention"></a>From Attention to self-Attention</h3><p>关于Attention基本原理我们在<code>seq2seq</code>中已经介绍过，简单说<strong>attention就是帮助我们找到两个序列之间的相关度</strong>，比如输出序列的每个输出分别应该关注输入序列的哪一部分， 也就是找到权重值 <code>wi</code>。</p>
+<p><img src="/2023/07/06/nlp-transformer/p1.png" style="zoom:50%;"></p>
+<p>self-attention与attention的不同点在于，<strong>self-attention是帮助我们找到子序列与全局序列之间的关系</strong>，即self-attention使用的场景是同一序列内部，而attention是两个序列。</p>
+<p>不过self-attention的计算方法与attention类似，同样可以使用上述公式（只不过这里的<code>yi</code>是同一序列中的某个token）。</p>
+<p><code>wij</code>的计算方式如下：</p>
+<p><img src="/2023/07/06/nlp-transformer/p2.png" style="zoom:50%;"></p>
+<p><img src="/2023/07/06/nlp-transformer/p3.png" style="zoom:50%;"></p>
+<p>为了更好地理解这个公式，下面我给以<code>y2</code>的计算为例，给出计算过程（图中把exp漏掉了）和图例。</p>
+<a id="more"></a>
+<p><img src="/2023/07/06/nlp-transformer/p4.png" alt></p>
+<p><img src="/2023/07/06/nlp-transformer/p5.png" alt></p>
+<p>图中计算w省略了<code>softmax</code>操作。</p>
+<h3 id="Attention-和-Self-attention-的区别"><a href="#Attention-和-Self-attention-的区别" class="headerlink" title="Attention 和 Self-attention 的区别"></a>Attention 和 Self-attention 的区别</h3><ol>
+<li>在神经网络中，通常来说你会有输入层（Input），应用激活函数后的输出层（Output），在 <code>RNN</code> 当中你会有状态（State）。如果 Attention (AT) 被应用在某一层的话，它更多的是<strong>被应用在输出或者是状态层</strong>上，而当我们使用 Self-attention（SA），这种注意力的机制更多的是在<strong>关注 Input 自己身上</strong>。</li>
+<li>Attention（AT）经常被应用在从编码器(encoder)转换到解码器(decoder)。比如说，解码器的神经元会接受一些AT从编码层生成的输入信息。在这种情况下，AT连接的是两个不同的组件（Component），编码器和解码器。但是如果我们用 SA，它就不是关注的两个组件，它只是在关注你应用的那一个组件。那这里他就不会去关注解码器了，就比如说在 Bert 中，使用的情况，我们就没有解码器。</li>
+<li><strong>SA 可以在一个模型当中被多次的、独立的使用</strong>（比如说在 Transformer 中，使用了18次；在Bert当中使用 12次）。但是，AT 在一个模型当中经常只是被使用一次，并且起到连接两个组件的作用。</li>
+<li><strong>SA 比较擅长在一个序列当中，寻找不同部分之间的关系</strong>。比如说，在词法分析的过程中，能够帮助去理解不同词之间的关系。<strong>AT 却更擅长寻找两个序列之间的关系</strong>，比如说在翻译任务当中，原始的文本和翻译后的文本。这里也要注意，在翻译任务中，SA 也很擅长，比如说 Transformer。</li>
+<li>AT 可以连接两种不同的模态，比如说图片和文字。SA 更多的是被应用在同一种模态上，但是如果一定要使用SA来做的话，也可以将不同的模态组合成一个序列，再使用 SA。</li>
+<li>对我来说，大部分情况，SA 这种结构更加的 general，在很多任务作为降维、特征表示、特征交叉等功能尝试着应用，很多时候效果都不错。</li>
+</ol>
+<h3 id="Self-attention为什么可以work"><a href="#Self-attention为什么可以work" class="headerlink" title="Self-attention为什么可以work"></a>Self-attention为什么可以work</h3><p> 为了应用 Self-attention，我们给每一个在词表中的单词 t 一个 Embeding 向量 vt (这个是我们通过一些 NLP 方法学习到的)。这也是我们在序列模型中常见的 Embeding Layer。它会把单词 the,cat,walks,on,the,street 转换成向量的形式 </p>
+<p><img src="/2023/07/06/nlp-transformer/p6.png" alt></p>
+<p> 如果我们对这些向量序列进行 Self-attention的处理，那么就会生成一个新的向量序列 </p>
+<p><img src="/2023/07/06/nlp-transformer/p7.png" alt></p>
+<p>这其中 ycat 就是所有在第一个序列中的 Embedding 向量的加权和，权重值就是 vcat 的点积。</p>
+<p>上文中我们也提到了， vt 是我们学习到的 Embedding 向量，它是 t 这个单词向量化的表示。在大部分的场景中， the 这个单词和句子中的其他单词没有很强的相关性，因此，我们就会期待 vthe 和其他单词的点积结果应该比较小或者是一个负值。那再看 walks 这个单词，为了能够解释这个单词，我们希望能够知道是谁在 walk ，那在这句话当中， vcat 和 vwalks 的点积就应该有一个比较大的正的值。</p>
+<p>以上这些，就是在 Self-attention 背后一些直觉上的含义。<strong>点积操作很好的表示了输入语句中两个向量之间的相关性。</strong></p>
+<p>在我们继续下面的内容之前，非常有必要做一个小的总结。</p>
+<ul>
+<li>到目前为止，我们还没有用到需要学习的参数。<strong>基础的 Self-attention 实际上完全取决于我们创建的输入序列，上游的 Embeding Layer 驱动着 Self-attention 学习对于文本语义的向量表示。</strong></li>
+<li>Self-attention看到的序列只是一个集合(set)，不是一个序列，它并没有顺序。如果我们重新排列集合，输出的序列也是一样的。后面我们要使用一些方法来缓和这种没有顺序所带来的信息的缺失。但是值得一提的是，<strong>Self-attention 本身是忽略序列的自然输入顺序的。</strong></li>
+</ul>
+<h3 id="self-attention实现"><a href="#self-attention实现" class="headerlink" title="self-attention实现"></a>self-attention实现</h3><p>上面我们也提到了，在这样一个模型当中，是没有使用到可以学习参数的，那我们能不能使用一些参数，来让整个结构更加的 flexable。就是由于这样的想法，诞生了query，key 和 value 这些参数。 </p>
+<p><img src="/2023/07/06/nlp-transformer/p1.png" style="zoom:50%;"></p>
+<p>于是上面的计算方式扩展为下面这种：</p>
+<p><img src="/2023/07/06/nlp-transformer/p8.png" alt></p>
+<p>首先<strong>引入三个权重矩阵，Wq、Wk和Wv，与输入x的点乘分别计为query、key和value。这样后续的xi分别使用q、k和v来代替，也就是说实际上xi被使用了三次</strong>。</p>
+<p>下面我们通过代码和图解的形式来描述self-attention的实现过程，可以进一步帮助理解。</p>
+<h4 id="第一步-准备输入"><a href="#第一步-准备输入" class="headerlink" title="第一步 准备输入"></a>第一步 准备输入</h4><p> 为了简单起见，我们使用3个输入，每个输入都是一个4维的向量。 </p>
+<p><img src="/2023/07/06/nlp-transformer/p9.png" alt></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">x = [</span><br><span class="line">  [<span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>], <span class="comment"># Input 1</span></span><br><span class="line">  [<span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">2</span>], <span class="comment"># Input 2</span></span><br><span class="line">  [<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>]  <span class="comment"># Input 3</span></span><br><span class="line"> ]</span><br><span class="line">x = torch.tensor(x, dtype=torch.float32)</span><br><span class="line">print(x)</span><br><span class="line"></span><br><span class="line">tensor([[<span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>, <span class="number">0.</span>],</span><br><span class="line">        [<span class="number">0.</span>, <span class="number">2.</span>, <span class="number">0.</span>, <span class="number">2.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>, <span class="number">1.</span>]])</span><br></pre></td></tr></table></figure>
+<h4 id="第2步-初始化参数"><a href="#第2步-初始化参数" class="headerlink" title="第2步: 初始化参数"></a>第2步: 初始化参数</h4><p><img src="/2023/07/06/nlp-transformer/p1.gif" alt></p>
+<p><strong>每一个输入都有三个表示</strong>，分别为key（橙黄色）query（红色）value（紫色）。比如说，每一个表示我们希望是一个3维的向量。由于输入是4维，所以我们的参数矩阵为 4*3 维。</p>
+<p><strong>后面我们会看到，value的维度，同样也是我们输出的维度。</strong></p>
+<p>为了能够获取这些表示，每一个输入（绿色）要和key，query和value相乘，在我们例子中，我们使用如下的方式初始化这些参数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">w_key = [</span><br><span class="line">  [<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>],</span><br><span class="line">  [<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>],</span><br><span class="line">  [<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>],</span><br><span class="line">  [<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>]</span><br><span class="line">]</span><br><span class="line">w_query = [</span><br><span class="line">  [<span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>],</span><br><span class="line">  [<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>],</span><br><span class="line">  [<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>],</span><br><span class="line">  [<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>]</span><br><span class="line">]</span><br><span class="line">w_value = [</span><br><span class="line">  [<span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>],</span><br><span class="line">  [<span class="number">0</span>, <span class="number">3</span>, <span class="number">0</span>],</span><br><span class="line">  [<span class="number">1</span>, <span class="number">0</span>, <span class="number">3</span>],</span><br><span class="line">  [<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>]</span><br><span class="line">]</span><br><span class="line">w_key = torch.tensor(w_key, dtype=torch.float32)</span><br><span class="line">w_query = torch.tensor(w_query, dtype=torch.float32)</span><br><span class="line">w_value = torch.tensor(w_value, dtype=torch.float32)</span><br><span class="line"></span><br><span class="line">print(<span class="string">"Weights for key: \n"</span>, w_key)</span><br><span class="line">print(<span class="string">"Weights for query: \n"</span>, w_query)</span><br><span class="line">print(<span class="string">"Weights for value: \n"</span>, w_value)</span><br><span class="line"></span><br><span class="line">Weights <span class="keyword">for</span> key: </span><br><span class="line"> tensor([[<span class="number">0.</span>, <span class="number">0.</span>, <span class="number">1.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">1.</span>, <span class="number">0.</span>],</span><br><span class="line">        [<span class="number">0.</span>, <span class="number">1.</span>, <span class="number">0.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">1.</span>, <span class="number">0.</span>]])</span><br><span class="line">Weights <span class="keyword">for</span> query: </span><br><span class="line"> tensor([[<span class="number">1.</span>, <span class="number">0.</span>, <span class="number">1.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">0.</span>, <span class="number">0.</span>],</span><br><span class="line">        [<span class="number">0.</span>, <span class="number">0.</span>, <span class="number">1.</span>],</span><br><span class="line">        [<span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>]])</span><br><span class="line">Weights <span class="keyword">for</span> value: </span><br><span class="line"> tensor([[<span class="number">0.</span>, <span class="number">2.</span>, <span class="number">0.</span>],</span><br><span class="line">        [<span class="number">0.</span>, <span class="number">3.</span>, <span class="number">0.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">0.</span>, <span class="number">3.</span>],</span><br><span class="line">        [<span class="number">1.</span>, <span class="number">1.</span>, <span class="number">0.</span>]])</span><br></pre></td></tr></table></figure>
+<p>Note: <em>通常在神经网络的初始化过程中，这些参数都是比较小的，一般会在Gaussian, Xavier and Kaiming distributions随机采样完成。</em> </p>
+<h4 id="第3步：获取key，query和value"><a href="#第3步：获取key，query和value" class="headerlink" title="第3步：获取key，query和value"></a>第3步：获取key，query和value</h4><p><img src="/2023/07/06/nlp-transformer/p2.gif" alt>现在我们有了三个参数，让我们来获取实际上的key，query和value。 </p>
+<p>keys的表示为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">               [<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>]</span><br><span class="line">[<span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>]   [<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>]   [<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>]</span><br><span class="line">[<span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">2</span>] x [<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>] = [<span class="number">4</span>, <span class="number">4</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>]   [<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>]   [<span class="number">2</span>, <span class="number">3</span>, <span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+<p>values的表示为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">               [<span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>]   [<span class="number">0</span>, <span class="number">3</span>, <span class="number">0</span>]   [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>] </span><br><span class="line">[<span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">2</span>] x [<span class="number">1</span>, <span class="number">0</span>, <span class="number">3</span>] = [<span class="number">2</span>, <span class="number">8</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>]   [<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>]   [<span class="number">2</span>, <span class="number">6</span>, <span class="number">3</span>]</span><br></pre></td></tr></table></figure>
+<p><img src="/2023/07/06/nlp-transformer/p3.gif" alt></p>
+<p>querys的表示为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">               [<span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>]</span><br><span class="line">[<span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>]   [<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>]   [<span class="number">1</span>, <span class="number">0</span>, <span class="number">2</span>]</span><br><span class="line">[<span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">2</span>] x [<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>] = [<span class="number">2</span>, <span class="number">2</span>, <span class="number">2</span>]</span><br><span class="line">[<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>]   [<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>]   [<span class="number">2</span>, <span class="number">1</span>, <span class="number">3</span>]</span><br></pre></td></tr></table></figure>
+<p><img src="/2023/07/06/nlp-transformer/p4.gif" alt></p>
+<p> Notes: <em>在我们实际的应用中，有可能会在点乘后，加上一个bias的向量。</em> </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">keys = x @ w_key</span><br><span class="line">querys = x @ w_query</span><br><span class="line">values = x @ w_value</span><br><span class="line"></span><br><span class="line">print(<span class="string">"Keys: \n"</span>, keys)</span><br><span class="line"><span class="comment"># tensor([[0., 1., 1.],</span></span><br><span class="line"><span class="comment">#         [4., 4., 0.],</span></span><br><span class="line"><span class="comment">#         [2., 3., 1.]])</span></span><br><span class="line"></span><br><span class="line">print(<span class="string">"Querys: \n"</span>, querys)</span><br><span class="line"><span class="comment"># tensor([[1., 0., 2.],</span></span><br><span class="line"><span class="comment">#         [2., 2., 2.],</span></span><br><span class="line"><span class="comment">#         [2., 1., 3.]])</span></span><br><span class="line">print(<span class="string">"Values: \n"</span>, values)</span><br><span class="line"><span class="comment"># tensor([[1., 2., 3.],</span></span><br><span class="line"><span class="comment">#         [2., 8., 0.],</span></span><br><span class="line"><span class="comment">#         [2., 6., 3.]])</span></span><br><span class="line"></span><br><span class="line">Keys: </span><br><span class="line"> tensor([[<span class="number">0.</span>, <span class="number">1.</span>, <span class="number">1.</span>],</span><br><span class="line">        [<span class="number">4.</span>, <span class="number">4.</span>, <span class="number">0.</span>],</span><br><span class="line">        [<span class="number">2.</span>, <span class="number">3.</span>, <span class="number">1.</span>]])</span><br><span class="line">Querys: </span><br><span class="line"> tensor([[<span class="number">1.</span>, <span class="number">0.</span>, <span class="number">2.</span>],</span><br><span class="line">        [<span class="number">2.</span>, <span class="number">2.</span>, <span class="number">2.</span>],</span><br><span class="line">        [<span class="number">2.</span>, <span class="number">1.</span>, <span class="number">3.</span>]])</span><br><span class="line">Values: </span><br><span class="line"> tensor([[<span class="number">1.</span>, <span class="number">2.</span>, <span class="number">3.</span>],</span><br><span class="line">        [<span class="number">2.</span>, <span class="number">8.</span>, <span class="number">0.</span>],</span><br><span class="line">        [<span class="number">2.</span>, <span class="number">6.</span>, <span class="number">3.</span>]])</span><br></pre></td></tr></table></figure>
+<h4 id="第4步-计算-attention-scores-以input1为例"><a href="#第4步-计算-attention-scores-以input1为例" class="headerlink" title="第4步: 计算 attention scores(以input1为例)"></a>第4步: 计算 attention scores(以input1为例)</h4><p>这里图形给出的是Input1的计算方式，在代码层面input1、input2和Input3实际是同时进行的。</p>
+<p><img src="/2023/07/06/nlp-transformer/p5.gif" alt></p>
+<p>为了获取input1的attention score，我们使用点乘来处理所有的key和query，包括它自己的key和value。这样我们就能够得到3个key的表示（因为我们有3个输入），我们就获得了3个attention score（蓝色）。 </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">            [<span class="number">0</span>, <span class="number">4</span>, <span class="number">2</span>]</span><br><span class="line">[<span class="number">1</span>, <span class="number">0</span>, <span class="number">2</span>] x [<span class="number">1</span>, <span class="number">4</span>, <span class="number">3</span>] = [<span class="number">2</span>, <span class="number">4</span>, <span class="number">4</span>]</span><br><span class="line">            [<span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+<p> 这里我们需要注意一下，这里我们只有input1的例子。后面，我们会对其他的输入的query做相同的操作。 </p>
+<p><strong>这里计算input1的attention score使用的是input1的query，计算input2和input3时，只需要分别使用input2和input3的query即可，其他步骤一致。（在实际计算时，利用矩阵相乘，多个Input的score可以同时计算）</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在上面的式子中是，qT x k</span></span><br><span class="line">attn_scores = querys @ keys.T</span><br><span class="line">print(attn_scores)</span><br><span class="line"></span><br><span class="line"><span class="comment"># tensor([[ 2.,  4.,  4.], # attention scores from Query 1</span></span><br><span class="line"><span class="comment">#         [ 4., 16., 12.], # attention scores from Query 2</span></span><br><span class="line"><span class="comment">#         [ 4., 12., 10.]])# attention scores from Query 3</span></span><br></pre></td></tr></table></figure>
+<h4 id="第5步-计算softmax"><a href="#第5步-计算softmax" class="headerlink" title="第5步: 计算softmax"></a>第5步: 计算softmax</h4><p><img src="/2023/07/06/nlp-transformer/p6.gif" alt></p>
+<p>给attention score应用softmax。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">softmax([<span class="number">2</span>, <span class="number">4</span>, <span class="number">4</span>]) = [<span class="number">0.0</span>, <span class="number">0.5</span>, <span class="number">0.5</span>] <span class="comment"># 这里是近似的结果</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> torch.nn.functional <span class="keyword">import</span> softmax</span><br><span class="line"></span><br><span class="line">attn_scores_softmax = softmax(attn_scores, dim=<span class="number">-1</span>)</span><br><span class="line">print(attn_scores_softmax)</span><br><span class="line"><span class="comment"># tensor([[6.3379e-02, 4.6831e-01, 4.6831e-01],</span></span><br><span class="line"><span class="comment">#         [6.0337e-06, 9.8201e-01, 1.7986e-02],</span></span><br><span class="line"><span class="comment">#         [2.9539e-04, 8.8054e-01, 1.1917e-01]])</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># For readability, approximate the above as follows</span></span><br><span class="line">attn_scores_softmax = [</span><br><span class="line">  [<span class="number">0.0</span>, <span class="number">0.5</span>, <span class="number">0.5</span>],</span><br><span class="line">  [<span class="number">0.0</span>, <span class="number">1.0</span>, <span class="number">0.0</span>],</span><br><span class="line">  [<span class="number">0.0</span>, <span class="number">0.9</span>, <span class="number">0.1</span>]</span><br><span class="line">]</span><br><span class="line">attn_scores_softmax = torch.tensor(attn_scores_softmax)</span><br><span class="line">print(attn_scores_softmax)</span><br><span class="line"></span><br><span class="line">tensor([[<span class="number">6.3379e-02</span>, <span class="number">4.6831e-01</span>, <span class="number">4.6831e-01</span>],</span><br><span class="line">        [<span class="number">6.0337e-06</span>, <span class="number">9.8201e-01</span>, <span class="number">1.7986e-02</span>],</span><br><span class="line">        [<span class="number">2.9539e-04</span>, <span class="number">8.8054e-01</span>, <span class="number">1.1917e-01</span>]])</span><br><span class="line">tensor([[<span class="number">0.0000</span>, <span class="number">0.5000</span>, <span class="number">0.5000</span>],</span><br><span class="line">        [<span class="number">0.0000</span>, <span class="number">1.0000</span>, <span class="number">0.0000</span>],</span><br><span class="line">        [<span class="number">0.0000</span>, <span class="number">0.9000</span>, <span class="number">0.1000</span>]])</span><br></pre></td></tr></table></figure>
+<h4 id="第6步-给value乘上score"><a href="#第6步-给value乘上score" class="headerlink" title="第6步: 给value乘上score"></a>第6步: 给value乘上score</h4><p><img src="/2023/07/06/nlp-transformer/p7.gif" alt></p>
+<p>使用经过softmax后的attention score乘以它对应的value值（紫色），这样我们就得到了3个weighted values（黄色）。 </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>: <span class="number">0.0</span> * [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>] = [<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>]</span><br><span class="line"><span class="number">2</span>: <span class="number">0.5</span> * [<span class="number">2</span>, <span class="number">8</span>, <span class="number">0</span>] = [<span class="number">1.0</span>, <span class="number">4.0</span>, <span class="number">0.0</span>]</span><br><span class="line"><span class="number">3</span>: <span class="number">0.5</span> * [<span class="number">2</span>, <span class="number">6</span>, <span class="number">3</span>] = [<span class="number">1.0</span>, <span class="number">3.0</span>, <span class="number">1.5</span>]</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">weighted_values = values[:,<span class="literal">None</span>] * attn_scores_softmax.T[:,:,<span class="literal">None</span>]</span><br><span class="line">print(weighted_values)</span><br><span class="line"></span><br><span class="line">tensor([[[<span class="number">0.0000</span>, <span class="number">0.0000</span>, <span class="number">0.0000</span>],</span><br><span class="line">         [<span class="number">0.0000</span>, <span class="number">0.0000</span>, <span class="number">0.0000</span>],</span><br><span class="line">         [<span class="number">0.0000</span>, <span class="number">0.0000</span>, <span class="number">0.0000</span>]],</span><br><span class="line"></span><br><span class="line">        [[<span class="number">1.0000</span>, <span class="number">4.0000</span>, <span class="number">0.0000</span>],</span><br><span class="line">         [<span class="number">2.0000</span>, <span class="number">8.0000</span>, <span class="number">0.0000</span>],</span><br><span class="line">         [<span class="number">1.8000</span>, <span class="number">7.2000</span>, <span class="number">0.0000</span>]],</span><br><span class="line"></span><br><span class="line">        [[<span class="number">1.0000</span>, <span class="number">3.0000</span>, <span class="number">1.5000</span>],</span><br><span class="line">         [<span class="number">0.0000</span>, <span class="number">0.0000</span>, <span class="number">0.0000</span>],</span><br><span class="line">         [<span class="number">0.2000</span>, <span class="number">0.6000</span>, <span class="number">0.3000</span>]]])</span><br></pre></td></tr></table></figure>
+<p>values[:, None]</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;tf.Tensor: shape=(<span class="number">3</span>, <span class="number">1</span>, <span class="number">3</span>), dtype=float32, numpy=</span><br><span class="line">array([[[<span class="number">1.</span>, <span class="number">2.</span>, <span class="number">3.</span>]],</span><br><span class="line">       [[<span class="number">2.</span>, <span class="number">8.</span>, <span class="number">0.</span>]],</span><br><span class="line">       [[<span class="number">2.</span>, <span class="number">6.</span>, <span class="number">3.</span>]]], dtype=float32)&gt;</span><br></pre></td></tr></table></figure>
+<p>attn_scores_softmax.T[:,:,None]</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;tf.Tensor: shape=(<span class="number">3</span>, <span class="number">3</span>, <span class="number">1</span>), dtype=float32, numpy=</span><br><span class="line">array([[[<span class="number">0.</span> ],</span><br><span class="line">        [<span class="number">0.</span> ],</span><br><span class="line">        [<span class="number">0.</span> ]],</span><br><span class="line">       [[<span class="number">0.5</span>],</span><br><span class="line">        [<span class="number">1.</span> ],</span><br><span class="line">        [<span class="number">0.9</span>]],</span><br><span class="line">       [[<span class="number">0.5</span>],</span><br><span class="line">        [<span class="number">0.</span> ],</span><br><span class="line">        [<span class="number">0.1</span>]]], dtype=float32)&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="第7步-给value加权求和获取output"><a href="#第7步-给value加权求和获取output" class="headerlink" title="第7步: 给value加权求和获取output"></a>第7步: 给value加权求和获取output</h4><p><img src="/2023/07/06/nlp-transformer/p8.gif" alt></p>
+<p>把所有的weighted values（黄色）进行element-wise的相加。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">  [0.0, 0.0, 0.0]</span><br><span class="line">+ [1.0, 4.0, 0.0]</span><br><span class="line">+ [1.0, 3.0, 1.5]</span><br><span class="line">-----------------</span><br><span class="line">= [2.0, 7.0, 1.5]</span><br></pre></td></tr></table></figure>
+<p>得到结果向量[2.0, 7.0, 1.5]（深绿色）就是ouput1的和其他key交互的query representation。</p>
+<h4 id="第8步-重复步骤4-7，获取output2，output3"><a href="#第8步-重复步骤4-7，获取output2，output3" class="headerlink" title="第8步: 重复步骤4-7，获取output2，output3"></a>第8步: 重复步骤4-7，获取output2，output3</h4><p> 现在，我们已经完成output1的全部计算，我们要对input2和input3也重复的完成步骤4～7的计算。 </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">outputs = weighted_values.sum(dim=<span class="number">0</span>)</span><br><span class="line">print(outputs)</span><br><span class="line"></span><br><span class="line"><span class="comment"># tensor([[2.0000, 7.0000, 1.5000],  # Output 1</span></span><br><span class="line"><span class="comment">#         [2.0000, 8.0000, 0.0000],  # Output 2</span></span><br><span class="line"><span class="comment">#         [2.0000, 7.8000, 0.3000]]) # Output 3</span></span><br></pre></td></tr></table></figure>
+<h4 id="tensorflow实现"><a href="#tensorflow实现" class="headerlink" title="tensorflow实现"></a>tensorflow实现</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"></span><br><span class="line">x = [</span><br><span class="line">    [<span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>],  <span class="comment"># input1</span></span><br><span class="line">    [<span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">2</span>],  <span class="comment"># input2</span></span><br><span class="line">    [<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>]   <span class="comment"># input3</span></span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">x = tf.convert_to_tensor(x, dtype=tf.float32)</span><br><span class="line"></span><br><span class="line">print(x)</span><br><span class="line"></span><br><span class="line">w_key = [</span><br><span class="line">    [<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>],</span><br><span class="line">    [<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>],</span><br><span class="line">    [<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>],</span><br><span class="line">    [<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>]</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">w_query = [</span><br><span class="line">    [<span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>],</span><br><span class="line">    [<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>],</span><br><span class="line">    [<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>],</span><br><span class="line">    [<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>]</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">w_value = [</span><br><span class="line">    [<span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>],</span><br><span class="line">    [<span class="number">0</span>, <span class="number">3</span>, <span class="number">0</span>],</span><br><span class="line">    [<span class="number">1</span>, <span class="number">0</span>, <span class="number">3</span>],</span><br><span class="line">    [<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>]</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">w_key = tf.convert_to_tensor(w_key, dtype=tf.float32)</span><br><span class="line">w_query = tf.convert_to_tensor(w_query, dtype=tf.float32)</span><br><span class="line">w_value = tf.convert_to_tensor(w_value, dtype=tf.float32)</span><br><span class="line">print(<span class="string">"Weights for keys: \n"</span>, w_key)</span><br><span class="line">print(<span class="string">"Weights for query: \n"</span>, w_query)</span><br><span class="line">print(<span class="string">"Weights for value: \n"</span>, w_value)</span><br><span class="line"></span><br><span class="line">keys = tf.matmul(x, w_key)</span><br><span class="line">queries = tf.matmul(x, w_query)</span><br><span class="line">values = tf.matmul(x, w_value)</span><br><span class="line">print(keys)</span><br><span class="line">print(queries)</span><br><span class="line">print(values)</span><br><span class="line"></span><br><span class="line">attn_scores = tf.matmul(queries, keys, transpose_b=<span class="literal">True</span>)</span><br><span class="line">print(attn_scores)</span><br><span class="line"></span><br><span class="line">attn_scores_softmax = tf.nn.softmax(attn_scores, axis=<span class="number">-1</span>)</span><br><span class="line">print(attn_scores_softmax)</span><br><span class="line"></span><br><span class="line">attn_scores_softmax = [</span><br><span class="line">    [<span class="number">0.0</span>, <span class="number">0.5</span>, <span class="number">0.5</span>],</span><br><span class="line">    [<span class="number">0.0</span>, <span class="number">1.0</span>, <span class="number">0.0</span>],</span><br><span class="line">    [<span class="number">0.0</span>, <span class="number">0.9</span>, <span class="number">0.1</span>]</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">attn_scores_softmax = tf.convert_to_tensor(attn_scores_softmax, dtype=tf.float32)</span><br><span class="line">print(attn_scores_softmax)</span><br><span class="line"></span><br><span class="line">weighted_values = values[:, <span class="literal">None</span>] * tf.transpose(attn_scores_softmax)[:, :, <span class="literal">None</span>]</span><br><span class="line">print(weighted_values)</span><br><span class="line"></span><br><span class="line">outputs = tf.reduce_sum(weighted_values, axis=<span class="number">0</span>)</span><br><span class="line">print(outputs)</span><br></pre></td></tr></table></figure>
+<h3 id="transformer的三个trick"><a href="#transformer的三个trick" class="headerlink" title="transformer的三个trick"></a>transformer的三个trick</h3><h4 id="queries、keys和values"><a href="#queries、keys和values" class="headerlink" title="queries、keys和values"></a>queries、keys和values</h4><p>第一点就是queries、keys和values，引入可学习参数</p>
+<h4 id="scaling-the-dot-product（缩放点积）"><a href="#scaling-the-dot-product（缩放点积）" class="headerlink" title="scaling the dot product（缩放点积）"></a>scaling the dot product（缩放点积）</h4><p>softmax功能对非常大的输入值非常敏感。这些会破坏梯度，减缓学习，或者导致学习完全停止。由于<strong>点积的平均值随着维度k而增长</strong>，因此通过下述方式有助于将点积缩小一点，以防止softmax函数的输入增长过大：</p>
+<p><img src="/2023/07/06/nlp-transformer/p10.png" alt></p>
+<p><strong>这里分母为什么要使用 根号k 呢？我们想象一下，当我们有一个所有的值都为 c 的在 ℜk 空间内的值。那它的欧式距离就为 根号kc 。除以根号k 其实就是在除以向量平均的增长长度。 </strong></p>
+<p>这里的维度k表示为dk，其等于词向量维度/h（注意力头个数），其含义为每个注意力头需要处理的词向量维度；其实也等于这里q、k（q、k、v的size完全一致）最后一维的size。</p>
+<p><em>我们上面实现self-attention时并没有加上这里的缩放操作</em></p>
+<h3 id="Multi-head-attention"><a href="#Multi-head-attention" class="headerlink" title="Multi-head attention"></a>Multi-head attention</h3><p>最后，我们必须要知道的是，在真实的语言环境中，每一个词和不同的词，都有不同的关系。我们考虑下面这个例子， I gave my dog Charlie some food 。我们可以看到 gave 和不同的部分有不同的关系。 首先， I 表示谁在进行 give 的动作， food 表达被 give 的东西是什么， Charlie 表示谁在接受东西。我们就可以用不同的Self-attention 来捕获这些不同的关系。如下图： </p>
+<p><img src="/2023/07/06/nlp-transformer/p11.png" alt></p>
+<p>如果我们只进行一个 Self-attention，所有的信息都会被加和到一起。如果是 Charlie 给 I food ，那么我们得到的 ygave 就是一样的了，但是其实意思应发生了改变。</p>
+<p>所以，我们可以通过增加多个 Self-attention 这样的结构，来给 self attention 更强的辨别能力，我们就有了更多个 q，k，v 的矩阵（通过给Wq、Wk、Wv增加维度），那我们把这些不同的 Self-attention 就叫做 Attention Head。有了多个 Self-attention 所代表的不同的参数，我们就可以用来表示不同的词之间的不同层面的关系了，比如说，语义层面的信息、词法方面的信息、时态方面的信息等等，这就大大的加强了 Self-attention 捕获信息的能力。</p>
+<p><img src="/2023/07/06/nlp-transformer/p12.png" alt></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/nlp/" rel="tag"># nlp</a>
+          
+            <a href="/tags/transformer/" rel="tag"># transformer</a>
+          
+            <a href="/tags/self-attention/" rel="tag"># self-attention</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2023/04/29/nlp-bi-lstm-crf/" rel="next" title="使用BiLSTM-CRF进行命名实体识别">
+                <i class="fa fa-chevron-left"></i> 使用BiLSTM-CRF进行命名实体识别
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2023/07/22/nlp-transformer-block/" rel="prev" title="Transformer block">
+                Transformer block <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">107</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">204</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Transformer原理"><span class="nav-text">Transformer原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#From-Attention-to-self-Attention"><span class="nav-text">From Attention to self-Attention</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Attention-和-Self-attention-的区别"><span class="nav-text">Attention 和 Self-attention 的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Self-attention为什么可以work"><span class="nav-text">Self-attention为什么可以work</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#self-attention实现"><span class="nav-text">self-attention实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#第一步-准备输入"><span class="nav-text">第一步 准备输入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第2步-初始化参数"><span class="nav-text">第2步: 初始化参数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第3步：获取key，query和value"><span class="nav-text">第3步：获取key，query和value</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第4步-计算-attention-scores-以input1为例"><span class="nav-text">第4步: 计算 attention scores(以input1为例)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第5步-计算softmax"><span class="nav-text">第5步: 计算softmax</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第6步-给value乘上score"><span class="nav-text">第6步: 给value乘上score</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第7步-给value加权求和获取output"><span class="nav-text">第7步: 给value加权求和获取output</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#第8步-重复步骤4-7，获取output2，output3"><span class="nav-text">第8步: 重复步骤4-7，获取output2，output3</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#tensorflow实现"><span class="nav-text">tensorflow实现</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#transformer的三个trick"><span class="nav-text">transformer的三个trick</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#queries、keys和values"><span class="nav-text">queries、keys和values</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#scaling-the-dot-product（缩放点积）"><span class="nav-text">scaling the dot product（缩放点积）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Multi-head-attention"><span class="nav-text">Multi-head attention</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
