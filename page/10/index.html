@@ -259,6 +259,162 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/21/python-table-header/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/10/21/python-table-header/" itemprop="url">python 提取表格内容的通用方式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-21T19:03:54+08:00">
+                2019-10-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python编程/" itemprop="url" rel="index">
+                    <span itemprop="name">python编程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p><strong>提出问题</strong></p>
+<p>当我们写爬虫进行数据结构化时，经常遇到一些表格数据，无论是web表格还是<code>Excel</code>、<code>Word</code> or <code>PDF</code>中的表格，都很常见；如果表格非常规范化，我们在做结构化时可以说非常省事，一般认为某列对应我们的某字段值即可；但是，大多数时候，表格往往写的比较随意，某一字段值对应的数据并不是在固定的列。</p>
+<p>举个例子，表格A对应的表头如下（这里用列表表示）：</p>
+<p>[“企业名称”, “处罚决定书文号”, “违法行为”, “处罚内容”, “处罚决定机关名称”, “处罚决定日期”]</p>
+<p>相应的我们有一个python对象，其字段值为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PunishmentItem</span><span class="params">(object)</span>:</span></span><br><span class="line">    __slots__ = (</span><br><span class="line">        <span class="string">"name"</span>,                 <span class="comment"># 行政相对人名称</span></span><br><span class="line">        <span class="string">"irregularities"</span>,       <span class="comment"># 违规行为</span></span><br><span class="line">        <span class="string">"punishment_text"</span>,      <span class="comment"># 处罚内容</span></span><br><span class="line">        <span class="string">"department"</span>,           <span class="comment"># 处罚决定机关名称</span></span><br><span class="line">        <span class="string">'public_date'</span>,          <span class="comment"># 时间</span></span><br><span class="line">        <span class="string">'number'</span>,               <span class="comment"># 文号</span></span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+<p>于是我们在提取的时候，理想的方式是<code>name</code>对应表格第一列，<code>number</code>对应第二列，依此类推……</p>
+<p>但是实际上可能还有表格B，其对应的表头为：</p>
+<p>[“处罚决定书文号”, “企业名称”,  “违法行为”, “处罚内容”, “处罚决定机关名称”, “处罚决定日期”]</p>
+<p>我们发现其文书号和企业名称顺序是反的，那我们可能会想在程序中加个判断如果是B表格我们就调整索引值…</p>
+<p>可是，事实上可能还存在表格C、D、E……，其表头顺序各不相同，我们要在程序中写无数个<code>if else</code>吗，显然是不可以的。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/10/21/python-table-header/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/16/db-开庭公告清洗过程/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1662,171 +1818,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/21/python-apscheduler/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/21/python-apscheduler/" itemprop="url">python 调度</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-21T16:03:54+08:00">
-                2019-08-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/python编程/" itemprop="url" rel="index">
-                    <span itemprop="name">python编程</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>python的任务调度模块，<strong>apscheduler</strong>，它主要包含了四种组件triggers(触发器)、job stores(任务存储器)、executors(执行器)、schedulers(定时调度器)。</p>
-<ul>
-<li><p>安装</p>
-<p>pip install apscheduler</p>
-</li>
-<li><p>定时器种类</p>
-<p>BlockingScheduler：当调度器是进程中唯一运行的程序时使用</p>
-<p>BackgroundScheduler：在不使用下面任何框架时使用，并希望调度器在应用程序的后台运行。</p>
-<p>AsyncIOScheduler：你使用的应用程序中必须有asyncio模块</p>
-<p>GeventScheduler：在你的应用程序中必须有gevent模块</p>
-<p>TornadoScheduler：你的应用程序是Tornado框架可以使用</p>
-<p>TwistedScheduler：你的应用程序是Twisted框架可以使用</p>
-<p>QtScheduler： 在QT框架中使用</p>
-</li>
-<li><p>触发器种类</p>
-<p>date：一次性任务，即只执行一次任务</p>
-<p>interval：循环任务，即按照时间间隔执行任务</p>
-<p>cron：定时任务，即在每个时间段执行任务</p>
-</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/08/21/python-apscheduler/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1879,7 +1870,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">107</span>
+                  <span class="site-state-item-count">108</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
