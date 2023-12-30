@@ -259,6 +259,158 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/02/elk-kibana/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/04/02/elk-kibana/" itemprop="url">Kibana简单使用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-02T19:33:54+08:00">
+                2020-04-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ELK/" itemprop="url" rel="index">
+                    <span itemprop="name">ELK</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h3 id="Discover"><a href="#Discover" class="headerlink" title="Discover"></a>Discover</h3><h4 id="Filtering-with-the-time-picker"><a href="#Filtering-with-the-time-picker" class="headerlink" title="Filtering with the time picker"></a>Filtering with the time picker</h4><p>可以利用<code>time picker</code>（时间选择工具）实现按时间筛选数据；</p>
+<p>也可以通过直方图来过滤，直接单击某一个直方图或者单击并拖动以查看特定的时间跨度；</p>
+<h4 id="Searching-Your-Data"><a href="#Searching-Your-Data" class="headerlink" title="Searching Your Data"></a>Searching Your Data</h4><p>在<code>Kibana</code>上搜索数据时，可以使用<code>Kibana Query Language</code>（<code>KQL</code>）(也就是<code>Kibana</code>的标准查询语言)或者直接使用<code>Lucene query syntax</code>(即<code>Lucene 查询语法</code>，<code>KQL</code>本身也是基于<code>Lucene</code>的)。</p>
+<p>每次查询的结果获取的满足条件的数据条数会在左上角显示，会默认显示500条Documents（总条数大于500时），数据会在鼠标不断下滑的过程中自动加载，并且默认是按照时间排序的，时间最新的在最上面。</p>
+<p><em>点一下<code>Time</code>旁边的小三角号就可以切换排序方式，每条数据都可以点开以<code>JSON</code>格式查看</em></p>
+<h4 id="Kibana-Query-Language语法"><a href="#Kibana-Query-Language语法" class="headerlink" title="Kibana Query Language语法"></a><code>Kibana Query Language</code>语法</h4><p><code>response:200</code>will match documents where the response field matches the value 200，通俗地讲就是要求我们的<code>document</code>中有一个字段名为<code>response</code>，其值为“200”。</p>
+<p><code>message:&quot;Quick brown fox&quot;</code>will search for the phrase “quick brown fox” in the message field，其道理跟上面是一样的，这里重点在加不加引号的区别。如果加了引号就是精确匹配，若不加引号，则会匹配”quick brown fox”，也会匹配”quick fox brown”，也就是会忽略他们的顺序。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/04/02/elk-kibana/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/26/spider-shenzhen-environments/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1633,171 +1785,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/18/python代码规范/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/11/18/python代码规范/" itemprop="url">python 代码规范</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-18T09:03:54+08:00">
-                2019-11-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/python编程/" itemprop="url" rel="index">
-                    <span itemprop="name">python编程</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="python代码规范–如何写出优雅、简洁并易于理解的代码"><a href="#python代码规范–如何写出优雅、简洁并易于理解的代码" class="headerlink" title="python代码规范–如何写出优雅、简洁并易于理解的代码"></a>python代码规范–如何写出优雅、简洁并易于理解的代码</h3><h3 id="首部信息"><a href="#首部信息" class="headerlink" title="首部信息"></a>首部信息</h3><p>首先在创建文件时，应该在文件首部声明一些必要信息，如开发者姓名、开发者联系方式以及该脚本的功能描述等，这样便于后续脚本的维护和审查。</p>
-<p>若使用<code>pycharm</code>开发工具，可以在<code>File--&gt;settings--&gt;Editor--&gt;FIle and Code Templates</code>中设置，这样每次新建文件时会自动生成某些基础信息。</p>
-<p>基础信息模板：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># _*_ coding:utf-8 _*_</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">@time :$&#123;DATE&#125; $&#123;TIME&#125;</span></span><br><span class="line"><span class="string">@author :liutengfei</span></span><br><span class="line"><span class="string">@mail:liutengfei@bertadata.com</span></span><br><span class="line"><span class="string">@desc:</span></span><br><span class="line"><span class="string">"""</span></span><br></pre></td></tr></table></figure>
-<h3 id="面向对象Class"><a href="#面向对象Class" class="headerlink" title="面向对象Class"></a><strong>面向对象Class</strong></h3><ul>
-<li><strong>类名</strong>使用<strong>驼峰式</strong>命名方法,类名应与脚本文件名一致</li>
-<li><p>对于无须继承任何类（或者说继承于基类<code>object</code>）的类，使用<code>classs ClassName:</code>而非<code>class ClassName(object):</code>定义</p>
-</li>
-<li><p>对于类变量或全局变量，使用<strong>全大写</strong>英文单词命名，多个单词间使用<code>_</code>连接，最多不超过<strong>3</strong>个</p>
-<p><em><code>ps</code>: 类变量指的是定义在类中，但在各个类方法外的变量。类变量的特点是：所有类的实例化对象都可以共享类变量的值，即类变量可以在所有实例化对象中作为公用资源。  类变量推荐直接用类名访问，但也可以使用对象名访问。</em></p>
-</li>
-<li><p>使用<strong>全小写</strong>英文单词命名实例变量或普通变量，如果需要多个单词的，单词之间使用<code>_</code>连接，单个变量使用单词的个数不超过<strong>3</strong>个</p>
-</li>
-<li><p>私有变量/保护变量：<code>_xxx</code>单下划线开头叫<strong>保护变量</strong>，意思是只有类对象和子类对象自己能访问到这些变量,此变量不能通过<code>from XXX import xxx</code> 导入；<code>__xxx</code>  双下划线开头叫<strong>私有变量</strong>，只允许类本身访问，连子类对象也不能访问到这个数据</p>
-<p><em><code>ps</code>:私有方法和保护方法的定义该规则同样适用</em></p>
-</li>
-<li><p>使用<code>self</code>作为实例方法的第一个参数；使用<code>cls</code>作为类方法的第一个参数；当定义的方法在实现时并不需要引用类或者实例时，定义为静态方法，使用 装饰器<code>@staticmethod</code> 来定义</p>
-<p><em><code>ps</code>:类方法较少使用，其具体使用场景有待总结</em></p>
-</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/11/18/python代码规范/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1850,7 +1837,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">108</span>
+                  <span class="site-state-item-count">109</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1872,7 +1859,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">204</span>
+                  <span class="site-state-item-count">206</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

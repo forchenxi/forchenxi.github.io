@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="LSTM,deep learning,nlp,GRU,">
+  <meta name="keywords" content="deep learning,LSTM,nlp,GRU,">
 
 
 
@@ -80,7 +80,7 @@
 
 
 <meta name="description" content="LSTM和GRURNN的优缺点优点：  可以捕获序列之间的关系； 共享参数。  缺点：  存在梯度消失和梯度爆炸问题； RNN的训练是一个比较困难的任务； 无法处理长序列问题。  LSTMLSTM可以处理长序列问题，同样在之前这篇文章中，关于LSTM网络的核心思想介绍的比较明白，而且传送带的比喻比较形象，结合上篇和当前这篇可以对LSTM有更深入的理解。">
-<meta name="keywords" content="LSTM,deep learning,nlp,GRU">
+<meta name="keywords" content="deep learning,LSTM,nlp,GRU">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LSTM和GRU">
 <meta property="og:url" content="http://yoursite.com/2022/07/18/nlp-lstm/index.html">
@@ -98,7 +98,7 @@
 <meta property="og:image" content="http://yoursite.com/2022/07/18/nlp-lstm/gru_current.png">
 <meta property="og:image" content="http://yoursite.com/2022/07/18/nlp-lstm/gru_final.png">
 <meta property="og:image" content="http://yoursite.com/2022/07/18/nlp-lstm/lstm_vs_gru.png">
-<meta property="og:updated_time" content="2022-11-26T07:36:18.532Z">
+<meta property="og:updated_time" content="2023-12-10T10:56:29.071Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LSTM和GRU">
 <meta name="twitter:description" content="LSTM和GRURNN的优缺点优点：  可以捕获序列之间的关系； 共享参数。  缺点：  存在梯度消失和梯度爆炸问题； RNN的训练是一个比较困难的任务； 无法处理长序列问题。  LSTMLSTM可以处理长序列问题，同样在之前这篇文章中，关于LSTM网络的核心思想介绍的比较明白，而且传送带的比喻比较形象，结合上篇和当前这篇可以对LSTM有更深入的理解。">
@@ -377,9 +377,9 @@
 </ol>
 <h3 id="LSTM"><a href="#LSTM" class="headerlink" title="LSTM"></a>LSTM</h3><p>LSTM可以处理长序列问题，同样在之前<a href="https://forchenxi.github.io/2021/04/23/nlp-rnn/" target="_blank" rel="noopener">这篇文章</a>中，关于LSTM网络的核心思想介绍的比较明白，而且传送带的比喻比较形象，结合上篇和当前这篇可以对LSTM有更深入的理解。</p>
 <a id="more"></a>
-<p>接着上篇文章中的例子，RNN一个时间步t的输出为：</p>
+<p>接着上篇文章中的例子，RNN一个时间步t的输出为(实际上这里只是相当于计算t+1的State，并非真正的输出，输出output = activation(dot(State_t+1, V)+b))：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">y = activation(dot(state_t, U) + dot(input_t, W) + b)</span><br></pre></td></tr></table></figure>
-<p>LSTM多了一个Ct：</p>
+<p>LSTM多了一个Ct（这里描述的LSTM的输出也并不完全准确，只是帮助理解，具体还需要看下面的结构图）：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">output_t = activation(dot(state_t, Uo) + dot(input_t, Wo) + dot(C_t, Vo) + bo)</span><br></pre></td></tr></table></figure>
 <p>Ct的计算方式：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">i_t = activation(dot(state_t, Ui) + dot(input_t, Wi) + bi)</span><br><span class="line">f_t = activation(dot(state_t, Uf) + dot(input_t, Wf) + bf)</span><br><span class="line">k_t = activation(dot(state_t, Uk) + dot(input_t, Wk) + bk)</span><br><span class="line"></span><br><span class="line">c_t+<span class="number">1</span> = i_t * k_t + c_t * f_t</span><br></pre></td></tr></table></figure>
@@ -387,12 +387,17 @@
 <p><img src="/2022/07/18/nlp-lstm/lstm.jpg" alt></p>
 <p><code>c_t+1 = i_t * k_t + c_t * f_t</code>，其中f_t是下面这部分（也就是forget gate）</p>
 <p><img src="/2022/07/18/nlp-lstm/forget_gate.png" alt></p>
+<p><strong>遗忘门</strong>决定需要遗忘多少之前的状态，这是通过当前的输入和上一个时间步的隐藏状态计算得到的。将这两者通过一个全连接层并应用 sigmoid 函数，得到遗忘门的值。这个值在 0 到 1 之间，0 表示完全遗忘，1 表示完全保留。</p>
+<p>遗忘门的计算公式如上图中所示，其中<strong>Wf</strong>是权重矩阵，<strong>bf</strong>是偏置项，<strong>ht-1</strong>是上一时刻的隐藏状态，<strong>xt</strong>是当前输入，<strong>σ</strong>是sigmoid函数。</p>
 <p>i_t*k_t是下面这部分（也就是update gate,网上一般将此门称为输入门）</p>
 <p><img src="/2022/07/18/nlp-lstm/update_gate.png" alt></p>
-<p>之后将这两部分加到一起（memory pipe）</p>
-<p><img src="/2022/07/18/nlp-lstm/pipe.png" alt></p>
-<p>别忘了，以上只是在计算Ct，Ct只是LSTM相比较于RNN增加的部分，真正的输出(ht)是下面这部分</p>
+<p>LSTM需要决定哪些新的信息需要存储到记忆细胞中。这包括两部分：一部分是<strong>输入门</strong>，它决定将更新记忆细胞的哪些部分；另一部分是一个tanh层，它创建了一个新的候选值向量，这个向量可能会被添加到记忆细胞中，输入门的值和候选值都是通过当前的输入和上一个时间步的隐藏状态计算得到的。 输入门的计算公式如上图中的<strong>t</strong>，候选值的计算公式如上图中的<strong>’t</strong></p>
+<p>根据遗忘门和输入门的值来决定更新记忆细胞。将细胞状态(Ct-1，即上一时间步得到的C)与遗忘门的值相乘，表示遗忘了一部分的状态信息；然后将输入门的值与候选值相乘并加上去，表示添加了一部分新的状态信息。<img src="/2022/07/18/nlp-lstm/pipe.png" alt></p>
+<p>别忘了，以上只是在计算Ct，Ct只是LSTM相比较于RNN增加的部分，真正的输出(ht，这个ht或许也不能称作输出？只是隐藏状态？)是下面这部分</p>
 <p><img src="/2022/07/18/nlp-lstm/output.png" alt></p>
+<p>输出门：决定将基于细胞状态输出什么。通过当前的输入和上一个时间步的隐藏状态通过一个全连接层并应用sigmoid函数，得到输出门的值,这个值在0到1之间，0表示完全不输出，1表示完全输出。 然后将细胞状态通过tanh函数得到一个值在 -1 到 1 之间的结果，并与输出门的值相乘，得到最终的隐藏状态。 </p>
+<p>可以看到所谓的遗忘门、输入门、输出门的公式是完全一样的，只不过使用了三个不同的全连接层，即三个权重矩阵W和三个不同的偏执。</p>
+<p>总结：遗忘门·上一个细胞状态表示遗忘多少，输入门·候选值表示本次更新多少，这两个加一起形成这一时间步的细胞状态Ct，输出门·tanh(Ct)得到最终隐藏状态。</p>
 <h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><p><strong>仅返回最终输出</strong></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 32个句子，每个句子长度为10，词向量长度为8</span></span><br><span class="line">inputs = tf.random.normal([<span class="number">32</span>, <span class="number">10</span>, <span class="number">8</span>])</span><br><span class="line">lstm = tf.keras.layers.LSTM(<span class="number">4</span>)</span><br><span class="line">output = lstm(inputs)</span><br><span class="line">print(output.shape)</span><br><span class="line"></span><br><span class="line">(<span class="number">32</span>, <span class="number">4</span>)</span><br></pre></td></tr></table></figure>
 <p><strong>返回每个时间步的输出</strong></p>
@@ -440,9 +445,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/LSTM/" rel="tag"># LSTM</a>
-          
             <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/LSTM/" rel="tag"># LSTM</a>
           
             <a href="/tags/nlp/" rel="tag"># nlp</a>
           
@@ -550,7 +555,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">108</span>
+                  <span class="site-state-item-count">109</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -572,7 +577,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">204</span>
+                  <span class="site-state-item-count">206</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

@@ -259,6 +259,159 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2023/02/04/pytorch-tensor/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2023/02/04/pytorch-tensor/" itemprop="url">Pytorch中的张量学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-02-04T14:33:05+08:00">
+                2023-02-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/pytorch/" itemprop="url" rel="index">
+                    <span itemprop="name">pytorch</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="关于Pytorch中的张量学习"><a href="#关于Pytorch中的张量学习" class="headerlink" title="关于Pytorch中的张量学习"></a>关于<code>Pytorch</code>中的张量学习</h2><h3 id="张量的概念和创建"><a href="#张量的概念和创建" class="headerlink" title="张量的概念和创建"></a>张量的概念和创建</h3><h4 id="张量的概念"><a href="#张量的概念" class="headerlink" title="张量的概念"></a>张量的概念</h4><p>Tensor是<code>pytorch</code>中非常重要且常见的数据结构，相较于<code>numpy</code>数组，Tensor能加载到<code>GPU</code>中，从而有效地利用<code>GPU</code>进行加速计算。但是普通的Tensor对于构建神经网络还远远不够，我们需要能够构建计算图的 tensor，这就是 Variable。<strong>Variable 是对 tensor 的封装，主要用于自动求导</strong>。<br><img src="/2023/02/04/pytorch-tensor/variable.png" alt></p>
+<ul>
+<li>data：被包装的tensor</li>
+<li><code>grad</code>：data的梯度</li>
+<li><code>grad_fn</code>：创建tensor的function，是自动求导的关键</li>
+<li>requires_grad：指示是否需要梯度</li>
+<li>is_leaf：指示是否是叶子节点（用户创建的张量）</li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2023/02/04/pytorch-tensor/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/12/24/git-简单使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1615,155 +1768,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/10/06/nlp-UER-cluener/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2022/10/06/nlp-UER-cluener/" itemprop="url">CLUE命名实体识别</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-10-06T11:54:54+08:00">
-                2022-10-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
-                    <span itemprop="name">自然语言处理</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>使用GitHub项目：<a href="https://github.com/dbiir/UER-py" target="_blank" rel="noopener">https://github.com/dbiir/UER-py</a></p>
-<p>项目完整文档：<a href="https://github.com/dbiir/UER-py/wiki/%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B" target="_blank" rel="noopener">https://github.com/dbiir/UER-py/wiki/%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B</a></p>
-<p>预训练模型仓库：<a href="https://github.com/dbiir/UER-py/wiki/%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E4%BB%93%E5%BA%93" target="_blank" rel="noopener">https://github.com/dbiir/UER-py/wiki/%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E4%BB%93%E5%BA%93</a></p>
-<p>上篇文章是使用huggingface transformer中预训练好的命名实体识别模型来进行实体抽取，但是在实际任务中，一般需要根据自己的数据集再进行微调，所以就继续研究如何进行微调，最终定位到UER-py这个工具包，所以这里先研究下这个工具怎么用。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2022/10/06/nlp-UER-cluener/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1816,7 +1820,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">108</span>
+                  <span class="site-state-item-count">109</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1838,7 +1842,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">204</span>
+                  <span class="site-state-item-count">206</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
