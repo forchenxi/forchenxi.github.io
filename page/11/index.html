@@ -259,6 +259,168 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/22/python-baidu-aip/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/08/22/python-baidu-aip/" itemprop="url">百度人脸识别</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-22T19:03:54+08:00">
+                2019-08-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/python编程/" itemprop="url" rel="index">
+                    <span itemprop="name">python编程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="百度人脸识别–人脸对比"><a href="#百度人脸识别–人脸对比" class="headerlink" title="百度人脸识别–人脸对比"></a>百度人脸识别–人脸对比</h2><p>主要是调用百度的接口，调用方法如下：</p>
+<ul>
+<li><strong>HTTP方法</strong>：POST</li>
+<li><strong>请求URL</strong> ：<a href="https://aip.baidubce.com/rest/2.0/face/v3/match" target="_blank" rel="noopener">https://aip.baidubce.com/rest/2.0/face/v3/match</a></li>
+<li><p><strong>URL参数</strong>：access_token,通过API Key和Secret Key获取的access_token,参考“<a href="http://ai.baidu.com/docs#/Auth" target="_blank" rel="noopener">Access Token获取</a>”</p>
+</li>
+<li><p><strong>Header</strong>：Content-Type：application/json</p>
+</li>
+<li><strong>请求参数</strong>：<ul>
+<li>image：必选，string，图片信息，根据Image_type来判断；</li>
+<li>image_type：必选，string，图片类型[BASE64, URL, FACE_TOKEN]，BASE64是对图片的二进制流的一个BASE64编码，URL是从互联网上进行下载的链接，FACE_TOKEN是人脸检测返回的标识。</li>
+<li>face_type：非必选，详情看<a href="https://ai.baidu.com/docs#/Face-Match-V3/top" target="_blank" rel="noopener">文档</a></li>
+<li>quality_control：非必选，详情看<a href="https://ai.baidu.com/docs#/Face-Match-V3/top" target="_blank" rel="noopener">文档</a></li>
+<li>liveness_control：非必选，详情看<a href="https://ai.baidu.com/docs#/Face-Match-V3/top" target="_blank" rel="noopener">文档</a></li>
+</ul>
+</li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/08/22/python-baidu-aip/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/21/python-pool-executor/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1673,7 +1835,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">109</span>
+                  <span class="site-state-item-count">110</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1695,7 +1857,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">206</span>
+                  <span class="site-state-item-count">207</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -1750,7 +1912,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

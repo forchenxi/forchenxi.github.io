@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="nlp,transformer,position encoding,residual,layer norm,ner,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="使用Transformer Encoder进行NER任务我们都知道命名实体识别任务最常用的网络结构是BiLSTM + CRF的结构，在transformer被提出之后，transformer也被用于命名实体识别任务，但是一般是使用Transformer的Encoder模块作为特征提取器，后面还是使用softmax、线性层或CRF层，也就是说Transformer的Decoder模块是不使用的（例如">
+<meta name="keywords" content="nlp,transformer,position encoding,residual,layer norm,ner">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Transformer Encoder进行NER任务">
+<meta property="og:url" content="http://yoursite.com/2023/12/28/nlp-transformer-ner/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="使用Transformer Encoder进行NER任务我们都知道命名实体识别任务最常用的网络结构是BiLSTM + CRF的结构，在transformer被提出之后，transformer也被用于命名实体识别任务，但是一般是使用Transformer的Encoder模块作为特征提取器，后面还是使用softmax、线性层或CRF层，也就是说Transformer的Decoder模块是不使用的（例如">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2024-01-25T12:55:28.346Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用Transformer Encoder进行NER任务">
+<meta name="twitter:description" content="使用Transformer Encoder进行NER任务我们都知道命名实体识别任务最常用的网络结构是BiLSTM + CRF的结构，在transformer被提出之后，transformer也被用于命名实体识别任务，但是一般是使用Transformer的Encoder模块作为特征提取器，后面还是使用softmax、线性层或CRF层，也就是说Transformer的Decoder模块是不使用的（例如">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2023/12/28/nlp-transformer-ner/">
+
+
+
+
+
+  <title>使用Transformer Encoder进行NER任务 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2023/12/28/nlp-transformer-ner/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">使用Transformer Encoder进行NER任务</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-12-28T11:46:54+08:00">
+                2023-12-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="使用Transformer-Encoder进行NER任务"><a href="#使用Transformer-Encoder进行NER任务" class="headerlink" title="使用Transformer Encoder进行NER任务"></a>使用Transformer Encoder进行NER任务</h2><p>我们都知道命名实体识别任务最常用的网络结构是BiLSTM + CRF的结构，在transformer被提出之后，transformer也被用于命名实体识别任务，但是一般是使用Transformer的Encoder模块作为特征提取器，后面还是使用softmax、线性层或CRF层，也就是说Transformer的Decoder模块是不使用的（例如预训练模型BERT也是仅堆叠transformer encoder）。</p>
+<p>那么为什么在命名实体识别任务中不使用Decoder模型呢？<br>其实答案是比较容易理解的，我们都知道Decoder是利用Encoder得到的memory和当前的输出，自回归的不断给出下一个概率最高的输出，所以Decoder是一个主要用于生成的模型，也是目前最火热的大模型如GPT最主要的核心结构，即主要用于生成大段的文本，而命名实体识别任务本质上是一个序列标注任务，其并不需要根据输入文本去生成其他文本，它只需要判断给定文本每个字是否属于实体以及实体的类型，所以并不需要Decoder模块，同样的序列的分类任务也不需要Decoder模块。<br>当然不需要不等于不能用，你也可以把序列标注、序列分类任务转变成生成任务，但是这样会使得你的模型结构变得更加复杂，效率会下降，效果也并不一定能得到提升。</p>
+<p>在<a href="https://forchenxi.github.io/2023/08/20/nlp-annotated-transformer/" target="_blank" rel="noopener">Transformer一步步实现</a>一文中我们已经理解了transformer的实现过程，在这一篇中我们要将transformer的encoder部分应用于命名实体识别任务。</p>
+<a id="more"></a>
+<h3 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h3><p>第一部分是transformer的实现相关代码，但是剔除了Decoder部分，因为命名实体识别任务无需Decoder。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">最简单版本的transformer encoder实现（非BERT）</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="keyword">import</span> copy</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F</span><br><span class="line"><span class="keyword">from</span> torch.autograd <span class="keyword">import</span> Variable</span><br><span class="line"><span class="keyword">from</span> torchcrf <span class="keyword">import</span> CRF</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">clones</span><span class="params">(module, n)</span>:</span></span><br><span class="line">    <span class="string">""" 将给定的网络clone n次 """</span></span><br><span class="line">    <span class="keyword">return</span> nn.ModuleList([copy.deepcopy(module) <span class="keyword">for</span> _ <span class="keyword">in</span> range(n)])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># LayerNorm可以自行实现，也可以使用Pytorch内置的</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LayerNorm</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="string">""" Construct a layer norm module (See citation for details)"""</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, features, eps=<span class="number">1e-6</span>)</span>:</span></span><br><span class="line">        super(LayerNorm, self).__init__()</span><br><span class="line">        self.a_2 = nn.Parameter(torch.ones(features))  <span class="comment"># features等于dmodel词向量维度</span></span><br><span class="line">        self.b_2 = nn.Parameter(torch.zeros(features))</span><br><span class="line">        self.eps = eps</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x)</span>:</span></span><br><span class="line">        mean = x.mean(<span class="number">-1</span>, keepdim=<span class="literal">True</span>)</span><br><span class="line">        std = x.std(<span class="number">-1</span>, keepdim=<span class="literal">True</span>)</span><br><span class="line">        <span class="keyword">return</span> self.a_2 * (x - mean) / (std + self.eps) + self.b_2</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SublayerConnection</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="string">""" 残差连接 """</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, size, dropout)</span>:</span></span><br><span class="line">        super(SublayerConnection, self).__init__()</span><br><span class="line">        self.norm = LayerNorm(size)   <span class="comment"># size等于dmodel词向量维度</span></span><br><span class="line">        self.dropout = nn.Dropout(dropout)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x, sublayer)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> x + self.dropout(sublayer(self.norm(x)))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TransformerEncoder</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="string">"""Encoder 堆叠了N层 Encoder Layer"""</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, layer, n)</span>:</span></span><br><span class="line">        super(TransformerEncoder, self).__init__()</span><br><span class="line">        self.layers = clones(layer, n)   <span class="comment"># 这个layer实际就是Encoder Layer</span></span><br><span class="line">        self.norm = LayerNorm(layer.size)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x, mask)</span>:</span></span><br><span class="line">        <span class="comment"># layers里有N个EncoderLayer，EncoderLayer中包括multi-head、feedforward、sublayer</span></span><br><span class="line">        <span class="keyword">for</span> layer <span class="keyword">in</span> self.layers:</span><br><span class="line">            x = layer(x, mask)</span><br><span class="line">        <span class="keyword">return</span> self.norm(x)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EncoderLayer</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    EncoderLayer层里包括一个Multi-head attention + 残差连接 + feedforward + 残差链接</span></span><br><span class="line"><span class="string">    Encoder 由N个 EncoderLayer组成</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, size, self_attn, feed_forward, dropout)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        :param size: 词向量维度（d_model）</span></span><br><span class="line"><span class="string">        :param self_attn: Multi-Head Attention</span></span><br><span class="line"><span class="string">        :param feed_forward:</span></span><br><span class="line"><span class="string">        :param dropout:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        super(EncoderLayer, self).__init__()</span><br><span class="line">        self.self_attn = self_attn</span><br><span class="line">        self.feed_forward = feed_forward</span><br><span class="line">        <span class="comment"># 初始化得到两个残差连接层</span></span><br><span class="line">        self.sub_layer = clones(SublayerConnection(size, dropout), <span class="number">2</span>)</span><br><span class="line">        self.size = size</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x, mask)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">         Follow Figure 1 (left) for connections</span></span><br><span class="line"><span class="string">        :param x: size(batch, seq_length, d_model)</span></span><br><span class="line"><span class="string">        :param mask: size(batch, 1, seq_length)，mask在encoder中没啥用，主要是在decoder中实现遮蔽的多头注意力</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="comment"># 先使用第一个残差连接层，连接x和多头注意力后的值</span></span><br><span class="line">        <span class="comment"># (lambda y: self.self_attn(y, y, y, mask)，这只是一个参数，在这里并不执行)</span></span><br><span class="line">        x = self.sub_layer[<span class="number">0</span>](x, <span class="keyword">lambda</span> y: self.self_attn(y, y, y, mask))</span><br><span class="line">        <span class="keyword">return</span> self.sub_layer[<span class="number">1</span>](x, self.feed_forward)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">subsequent_mask</span><span class="params">(size)</span>:</span></span><br><span class="line">    <span class="string">""" Masked attention 在训练期间，当前解码位置的词不能Attend到后续位置的词  """</span></span><br><span class="line">    attn_shape = (<span class="number">1</span>, size, size)</span><br><span class="line">    <span class="comment"># np.triu(a, k)是取矩阵a的上三角数据，k=0 的时候就是包含对角线和上（下）方的元素，其他值为 0</span></span><br><span class="line">    <span class="comment"># k = 1, 2, ...的时候，对角线向上（下）移动</span></span><br><span class="line">    subsequent_mask = np.triu(np.ones(attn_shape), k=<span class="number">1</span>).astype(<span class="string">'uint8'</span>)</span><br><span class="line">    <span class="keyword">return</span> torch.from_numpy(subsequent_mask) == <span class="number">0</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">attention</span><span class="params">(query, key, value, mask=None, dropout=None)</span>:</span></span><br><span class="line">    <span class="string">""" Compute 'Scaled Dot Produce Attention' """</span></span><br><span class="line">    d_k = query.size(<span class="number">-1</span>)</span><br><span class="line">    scores = torch.matmul(query, key.transpose(<span class="number">-2</span>, <span class="number">-1</span>)) / math.sqrt(d_k)</span><br><span class="line">    <span class="keyword">if</span> mask <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:  <span class="comment"># masked_fill(tensor, value)，在tensor中为True的位置，填充value</span></span><br><span class="line">        scores = scores.masked_fill(mask == <span class="number">0</span>, <span class="number">-1e9</span>)</span><br><span class="line">    p_attn = F.softmax(scores, dim=<span class="number">-1</span>)</span><br><span class="line">    <span class="keyword">if</span> dropout <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">        p_attn = dropout(p_attn)</span><br><span class="line">    <span class="keyword">return</span> torch.matmul(p_attn, value), p_attn</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MultiHeadAttention</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, h, d_model, dropout=<span class="number">0.1</span>)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        Take in model size and number of heads</span></span><br><span class="line"><span class="string">        :param h: 注意力头个数</span></span><br><span class="line"><span class="string">        :param d_model: 词向量维度</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        super(MultiHeadAttention, self).__init__()</span><br><span class="line">        <span class="keyword">assert</span> d_model % h == <span class="number">0</span></span><br><span class="line">        <span class="comment"># We assume d_v always equals d_k</span></span><br><span class="line">        self.d_k = d_model // h  <span class="comment"># 每个注意力头要计算的词向量维度</span></span><br><span class="line">        self.h = h</span><br><span class="line">        self.linears = clones(nn.Linear(d_model, d_model), <span class="number">4</span>)</span><br><span class="line">        self.attn = <span class="literal">None</span></span><br><span class="line">        self.dropout = nn.Dropout(p=dropout)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, query, key, value, mask=None)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        Implements Figure 2</span></span><br><span class="line"><span class="string">        query、key、value都是输入x的副本</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">if</span> mask <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="comment"># Same mask applied to all h heads</span></span><br><span class="line">            mask = mask.unsqueeze(<span class="number">1</span>)</span><br><span class="line">        n_batches = query.size(<span class="number">0</span>)</span><br><span class="line">        <span class="comment"># 1) Do all the linear projections in batch from d_model =&gt; h x dk</span></span><br><span class="line">        <span class="comment"># 先经过一个线性层，然后在第1维增加一维(自适应大小)，将d_model拆分成 h x dk，最后再将第1维和第2维交换</span></span><br><span class="line">        query, key, value = [</span><br><span class="line">            l(x).view(n_batches, <span class="number">-1</span>, self.h, self.d_k,).transpose(<span class="number">1</span>, <span class="number">2</span>)</span><br><span class="line">            <span class="keyword">for</span> l, x <span class="keyword">in</span> zip(self.linears, (query, key, value))]</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 2) Apply attention on all the projected vectors in batch</span></span><br><span class="line">        x, self.attn = attention(query, key, value, mask=mask, dropout=self.dropout)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 2) "Concat" using a view and apply a final linear</span></span><br><span class="line">        <span class="comment"># 这里多头注意力计算完成，再将x恢复成最初的形状</span></span><br><span class="line">        x = x.transpose(<span class="number">1</span>, <span class="number">2</span>).contiguous().view(n_batches, <span class="number">-1</span>, self.h*self.d_k)</span><br><span class="line">        <span class="keyword">return</span> self.linears[<span class="number">-1</span>](x)  <span class="comment"># 怎么还要过一层线性层？</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PositionWiseFeedForward</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="string">"""Implements FFN equation."""</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, d_model, d_ff, dropout=<span class="number">0.1</span>)</span>:</span></span><br><span class="line">        super(PositionWiseFeedForward, self).__init__()</span><br><span class="line">        self.w_1 = nn.Linear(d_model, d_ff)</span><br><span class="line">        self.w_2 = nn.Linear(d_ff, d_model)</span><br><span class="line">        self.dropout = nn.Dropout(dropout)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.w_2(self.dropout(F.relu(self.w_1(x))))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Embeddings</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, d_model, vocab)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        :param d_model: 词向量维度大小</span></span><br><span class="line"><span class="string">        :param vocab: 词表大小</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        super(Embeddings, self).__init__()</span><br><span class="line">        self.lut = nn.Embedding(vocab, d_model)</span><br><span class="line">        self.d_model = d_model</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.lut(x) * math.sqrt(self.d_model)  <span class="comment"># 为啥要乘以sqrt(d_model)</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PositionEncoding</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="string">"""Implement the PE function"""</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, d_model, dropout, max_len=<span class="number">5000</span>)</span>:</span></span><br><span class="line">        super(PositionEncoding, self).__init__()</span><br><span class="line">        self.dropout = nn.Dropout(p=dropout)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Compute the positional encoding once in log space</span></span><br><span class="line">        pe = torch.zeros(max_len, d_model)  <span class="comment"># pe用来存储，每个位置-每个维度的位置信息</span></span><br><span class="line">        position = torch.arange(<span class="number">0</span>, max_len).unsqueeze(<span class="number">1</span>)  <span class="comment"># 位置张量，size为(句子长度, 1)</span></span><br><span class="line">        <span class="comment"># torch.arange(0, d_model, 2) ==&gt; 2i，size为d_model/2</span></span><br><span class="line">        div_term = torch.exp(torch.arange(<span class="number">0</span>, d_model, <span class="number">2</span>)*-(math.log(<span class="number">10000.0</span>)/d_model))</span><br><span class="line">        <span class="comment"># position * div_term 的 size为(句子长度, d_model/2)</span></span><br><span class="line">        pe[:, <span class="number">0</span>::<span class="number">2</span>] = torch.sin(position * div_term)  <span class="comment"># 偶数维度(2i)，注意不是位置</span></span><br><span class="line">        pe[:, <span class="number">1</span>::<span class="number">2</span>] = torch.cos(position * div_term)  <span class="comment"># 奇数维度(2i+1)</span></span><br><span class="line">        pe = pe.unsqueeze(<span class="number">0</span>)  <span class="comment"># 增加一维为了保持和x的size一致，可以直接加和</span></span><br><span class="line">        <span class="comment"># 定义pe参数在模型训练时不可更新，即optimizer.step()后不会被更新</span></span><br><span class="line">        self.register_buffer(<span class="string">'pe'</span>, pe)  <span class="comment"># 并且同时还有self.pe = pe的功效</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x)</span>:</span></span><br><span class="line">        <span class="comment"># x的size为(batch, seq_length, d_model),x.size(1)为句子长度</span></span><br><span class="line">        <span class="comment"># 取出给定x的句子长度的位置向量，前提是x&lt;5000,pe的size为(1, 5000, d_model)</span></span><br><span class="line">        x = x + Variable(self.pe[:, :x.size(<span class="number">1</span>)], requires_grad=<span class="literal">True</span>)</span><br><span class="line">        <span class="keyword">return</span> self.dropout(x)</span><br></pre></td></tr></table></figure></p>
+<p>第2部分是将Transformer Encoder作为命名实体识别的编码器，并增加embedding层、线性层和前向计算等方法组成一个完整的命名实体识别模型。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NerTransformerModel</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    使用最原始的transformer encoder作为编码器的NER模型</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, configs)</span>:</span>  <span class="comment"># 因为要传的参数较多，所以这里将所有的参数都存储在字典中</span></span><br><span class="line">        super(NerTransformerModel, self).__init__()</span><br><span class="line">        self.embedding_dim = configs[<span class="string">'embedding_dim'</span>]  <span class="comment"># 词向量维度（长度），即用多少维度向量表示一个词</span></span><br><span class="line">        self.hidden_size = configs[<span class="string">'hidden_size'</span>]</span><br><span class="line">        self.vocab_size = configs[<span class="string">'vocab_size'</span>]  <span class="comment"># 词表大小</span></span><br><span class="line">        self.label_to_id = configs[<span class="string">'label_to_id'</span>]    <span class="comment"># 标签序号的映射字典</span></span><br><span class="line">        self.label_nums = len(configs[<span class="string">'label_to_id'</span>])  <span class="comment"># 标签数量/类别数</span></span><br><span class="line">        self.layer_nums = configs[<span class="string">'layer_nums'</span>]  <span class="comment"># encoder layer层数</span></span><br><span class="line">        self.use_crf = configs[<span class="string">'use_crf'</span>]  <span class="comment"># 是否使用CRF层（先不考虑crf）</span></span><br><span class="line">        self.seq_length = configs[<span class="string">'seq_length'</span>]  <span class="comment"># 句子最大长度，超过截断，小于填充,会将所有输入神经网络的句子向量统一为该长度</span></span><br><span class="line">        self.dropout_rate = configs[<span class="string">'dropout_rate'</span>]</span><br><span class="line">        self.heads_num = configs[<span class="string">'heads_num'</span>]  <span class="comment"># 注意力头个数</span></span><br><span class="line">        self.feed_forward_size = configs[<span class="string">'feed_forward_size'</span>]  <span class="comment"># feedforward层内部隐层大小</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 词嵌入层</span></span><br><span class="line">        self.embedding_layer = Embeddings(self.embedding_dim, self.vocab_size)</span><br><span class="line">        <span class="comment"># 位置嵌入层</span></span><br><span class="line">        self.position_layer = PositionEncoding(self.embedding_dim, self.dropout_rate, self.seq_length)</span><br><span class="line">        <span class="comment"># LayerNorm层</span></span><br><span class="line">        self.layer_norm = LayerNorm(self.embedding_dim)</span><br><span class="line">        <span class="comment"># dropout层</span></span><br><span class="line">        self.dropout = nn.Dropout(self.dropout_rate)</span><br><span class="line">        <span class="comment"># 注意力层</span></span><br><span class="line">        self.attention_layer = MultiHeadAttention(self.heads_num, self.embedding_dim)</span><br><span class="line">        self.feed_forward_layer = PositionWiseFeedForward(self.embedding_dim, self.feed_forward_size)</span><br><span class="line">        <span class="comment"># 编码器</span></span><br><span class="line">        self.encoder = TransformerEncoder(</span><br><span class="line">            EncoderLayer(self.embedding_dim, copy.deepcopy(self.attention_layer),</span><br><span class="line">                         copy.deepcopy(self.feed_forward_layer), self.dropout_rate),</span><br><span class="line">            self.layer_nums)</span><br><span class="line">        <span class="comment"># 将Transformer提取的特征向量映射到特征空间，即经过全连接得到发射分数</span></span><br><span class="line">        self.hidden2tag = nn.Linear(self.hidden_size, self.label_nums)</span><br><span class="line">        <span class="keyword">if</span> self.use_crf:</span><br><span class="line">            <span class="comment"># crf层，可以使用pytorch的crf包</span></span><br><span class="line">            self.crf = CRF(self.label_nums, batch_first=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, sentence, targets_mask, targets=None)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        NER model的前向传播过程</span></span><br><span class="line"><span class="string">        :param sentence: 传入句子，size(batch_size, seq_length)</span></span><br><span class="line"><span class="string">        :param targets_mask: 标签是否有效的标志，=1的部分是句子的有效部分，size(batch_size, seq_length)</span></span><br><span class="line"><span class="string">        也可以理解为bert的segment 因为只有一个句子所以属于这个句子的部分为1，其他的为0</span></span><br><span class="line"><span class="string">        :param targets:  标签，计算损失时需要, size(batch_size, seq_length)</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="comment"># 得到词向量</span></span><br><span class="line">        embeddings = self.embedding_layer(sentence)</span><br><span class="line">        embeddings = self.position_layer(embeddings)</span><br><span class="line">        output = self.encoder(embeddings, targets_mask)</span><br><span class="line">        <span class="comment"># 经过全连接层得到发射分数,size:(batch_size, seq_length, label_nums)</span></span><br><span class="line">        features = self.hidden2tag(output)</span><br><span class="line">        <span class="keyword">if</span> self.use_crf:</span><br><span class="line">            targets_mask = targets_mask.type(torch.uint8)</span><br><span class="line">            targets_mask = targets_mask.squeeze(<span class="number">1</span>)  <span class="comment"># transformer encoder在开始处理时mask增加了一维，这里需要复原</span></span><br><span class="line">            pred = self.crf.decode(features, mask=targets_mask)</span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> range(len(pred)):</span><br><span class="line">                <span class="comment"># 以STOP_TAG的id填充至seq_length长度</span></span><br><span class="line">                <span class="keyword">while</span> len(pred[j]) &lt; self.seq_length:</span><br><span class="line">                    pred[j].append(self.label_nums<span class="number">-1</span>)</span><br><span class="line">            <span class="comment"># 从(batch_size, seq_length)转成(batch_size*seq_length)一维</span></span><br><span class="line">            pred = torch.tensor(pred).contiguous().view(<span class="number">-1</span>)</span><br><span class="line">            <span class="comment"># 传入targets时，计算损失</span></span><br><span class="line">            <span class="keyword">if</span> targets <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">                <span class="comment"># targets_mask=1的部分计算损失</span></span><br><span class="line">                loss = -self.crf(F.log_softmax(features, <span class="number">2</span>), targets, mask=targets_mask, reduction=<span class="string">'mean'</span>)</span><br><span class="line">                <span class="keyword">return</span> loss, pred</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">None</span>, pred</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">if</span> targets <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">                total_loss = <span class="number">0.0</span></span><br><span class="line">                batch_size = features.size()[<span class="number">0</span>]</span><br><span class="line">                <span class="keyword">for</span> i <span class="keyword">in</span> range(batch_size):</span><br><span class="line">                    length = torch.sum(targets_mask[i])  <span class="comment"># 求出来的值就是1的数量，也就表示这个句子的长度</span></span><br><span class="line">                    single_feature = features[i][:length]  <span class="comment"># 只计算句子有效部分的损失</span></span><br><span class="line">                    single_target = targets[i][:length]</span><br><span class="line">                    <span class="comment"># 使用mean和sum所需的学习率可能有不同的要求</span></span><br><span class="line">                    loss_f = nn.CrossEntropyLoss(reduction=<span class="string">'sum'</span>)</span><br><span class="line">                    loss = loss_f(single_feature, single_target)</span><br><span class="line">                    total_loss += loss</span><br><span class="line">                batch_loss = total_loss / batch_size</span><br><span class="line">                <span class="comment"># 为了统一返回的pred的size</span></span><br><span class="line">                features = features.contiguous().view(<span class="number">-1</span>, self.label_nums)</span><br><span class="line">                pred = features.argmax(dim=<span class="number">-1</span>)</span><br><span class="line">                <span class="keyword">return</span> batch_loss, pred</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                features = features.contiguous().view(<span class="number">-1</span>, self.label_nums)</span><br><span class="line">                pred = features.argmax(dim=<span class="number">-1</span>)</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">None</span>, pred</span><br></pre></td></tr></table></figure>
+<p>第3部分是一个简单的代码有效性测试。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">prepare_data</span><span class="params">(data, to_ix, seq_length, label_to_id)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    获取传入文本在词典中的序号</span></span><br><span class="line"><span class="string">    :param data: 训练数据，tuple形式，第一个元素是分割好的文本，以列表形式；第二个元素是标签，以列表形式</span></span><br><span class="line"><span class="string">    :param to_ix: 单词/词语 到 序号的映射字典</span></span><br><span class="line"><span class="string">    :param seq_length: 需要统一的句子长度</span></span><br><span class="line"><span class="string">    :param label_to_id: 标签序号的映射字典</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    seq = data[<span class="number">0</span>]</span><br><span class="line">    labels = data[<span class="number">1</span>]</span><br><span class="line">    text_ids = [to_ix[w] <span class="keyword">for</span> w <span class="keyword">in</span> seq]</span><br><span class="line">    targets = [label_to_id[t] <span class="keyword">for</span> t <span class="keyword">in</span> labels]</span><br><span class="line">    targets_mask = [<span class="number">1</span>] * len(text_ids)</span><br><span class="line">    <span class="keyword">if</span> len(text_ids) &gt; seq_length:</span><br><span class="line">        text_ids = text_ids[:seq_length]</span><br><span class="line">        targets = targets[:seq_length]</span><br><span class="line">        targets_mask = targets_mask[:seq_length]</span><br><span class="line">    <span class="keyword">while</span> len(text_ids) &lt; seq_length:</span><br><span class="line">        text_ids.append(to_ix[<span class="string">"[PAD]"</span>])</span><br><span class="line">        targets.append(label_to_id[STOP_TAG])</span><br><span class="line">        targets_mask.append(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> text_ids, targets_mask, targets</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_transformer_encoder_params</span><span class="params">()</span>:</span></span><br><span class="line">    params = &#123;</span><br><span class="line">        <span class="string">"embedding_dim"</span>: <span class="number">384</span>,</span><br><span class="line">        <span class="string">"hidden_size"</span>: <span class="number">384</span>,</span><br><span class="line">        <span class="string">"layer_nums"</span>: <span class="number">3</span>,</span><br><span class="line">        <span class="string">"use_crf"</span>: <span class="literal">True</span>,</span><br><span class="line">        <span class="string">"seq_length"</span>: <span class="number">512</span>,  <span class="comment"># 根据数据集情况调整，将句子全部处理成一致的长度(一般按照最长的句子设定)</span></span><br><span class="line">        <span class="string">"epoch_nums"</span>: <span class="number">100</span>,</span><br><span class="line">        <span class="string">"batch_size"</span>: <span class="number">16</span>,</span><br><span class="line">        <span class="string">"learning_rate"</span>: <span class="number">0.001</span>,</span><br><span class="line">        <span class="string">"weight_decay"</span>: <span class="number">1e-4</span>,</span><br><span class="line">        <span class="string">"momentum"</span>: <span class="number">0.9</span>,</span><br><span class="line">        <span class="string">"heads_num"</span>: <span class="number">6</span>,</span><br><span class="line">        <span class="string">"dropout_rate"</span>: <span class="number">0.1</span>,</span><br><span class="line">        <span class="string">"feed_forward_size"</span>: <span class="number">1536</span>,</span><br><span class="line">        <span class="string">"hidden_activation"</span>: <span class="string">"gelu"</span>,  <span class="comment"># 目前暂未使用</span></span><br><span class="line">        <span class="string">"attention_head_size"</span>: <span class="number">64</span>,  <span class="comment"># 一般情况下这个参数用不到，head_size = d_model / heads_num</span></span><br><span class="line">        <span class="string">"optimizer"</span>: <span class="string">"SGD"</span>,  <span class="comment"># SGD/Adam/AdamW</span></span><br><span class="line">        <span class="string">"scheduler"</span>: <span class="string">"linear"</span>,  <span class="comment"># 学习率调整策略</span></span><br><span class="line">        <span class="string">"warmup"</span>: <span class="number">0.1</span>,</span><br><span class="line">        <span class="comment"># word2vec训练的词向量</span></span><br><span class="line">        <span class="comment"># "vocab_path": "word_embedding/word2vec-384/vocab.txt",</span></span><br><span class="line">        <span class="comment"># "pretrained_embedding": "word_embedding/word2vec-384/embedding_matrix.npy",</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> params</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    configs = CONFIG</span><br><span class="line">    transformer_params = get_transformer_encoder_params()</span><br><span class="line">    configs.update(transformer_params)</span><br><span class="line">    <span class="comment"># configs.update(get_small_bert_params())</span></span><br><span class="line">    STOP_TAG = <span class="string">"&lt;STOP&gt;"</span></span><br><span class="line">    START_TAG = <span class="string">"&lt;START&gt;"</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># Make up some training data</span></span><br><span class="line">    training_data = [(</span><br><span class="line">        <span class="string">"the wall street journal reported today that apple corporation made money"</span>.split(),</span><br><span class="line">        <span class="string">"B I I I O O O B I O O"</span>.split()</span><br><span class="line">    ), (</span><br><span class="line">        <span class="string">"georgia tech is a university in georgia"</span>.split(),</span><br><span class="line">        <span class="string">"B I O O O O B"</span>.split()</span><br><span class="line">    )]</span><br><span class="line"></span><br><span class="line">    word_to_id = &#123;&#125;  <span class="comment"># 词典</span></span><br><span class="line">    <span class="keyword">for</span> sentence, tags <span class="keyword">in</span> training_data:</span><br><span class="line">        <span class="keyword">for</span> word <span class="keyword">in</span> sentence:</span><br><span class="line">            <span class="keyword">if</span> word <span class="keyword">not</span> <span class="keyword">in</span> word_to_id:</span><br><span class="line">                word_to_id[word] = len(word_to_id)</span><br><span class="line">    word_to_id[<span class="string">"[PAD]"</span>] = len(word_to_id)</span><br><span class="line">    configs[<span class="string">'word_to_id'</span>] = word_to_id</span><br><span class="line">    configs[<span class="string">'vocab_size'</span>] = len(word_to_id)</span><br><span class="line"></span><br><span class="line">    label_to_id = &#123;<span class="string">"B"</span>: <span class="number">0</span>, <span class="string">"I"</span>: <span class="number">1</span>, <span class="string">"O"</span>: <span class="number">2</span>, START_TAG: <span class="number">3</span>, STOP_TAG: <span class="number">4</span>&#125;</span><br><span class="line">    configs[<span class="string">'label_to_id'</span>] = label_to_id</span><br><span class="line"></span><br><span class="line">    <span class="comment"># model = NerModel(configs)</span></span><br><span class="line">    model = NerTransformerModel(configs)</span><br><span class="line">    optimizer = optim.SGD(model.parameters(), lr=<span class="number">0.001</span>, weight_decay=<span class="number">1e-4</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 训练前检查模型预测结果</span></span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        sentence0_length = len(training_data[<span class="number">0</span>][<span class="number">0</span>])</span><br><span class="line">        sentence1_length = len(training_data[<span class="number">1</span>][<span class="number">0</span>])</span><br><span class="line">        seq_length = configs[<span class="string">'seq_length'</span>]</span><br><span class="line">        sentence0, targets_mask_0, targets_0 = prepare_data(training_data[<span class="number">0</span>], word_to_id, seq_length, label_to_id)</span><br><span class="line">        sentence1, targets_mask_1, targets_1 = prepare_data(training_data[<span class="number">1</span>], word_to_id, seq_length, label_to_id)</span><br><span class="line">        batch_sentence_0 = torch.tensor([sentence0, sentence1])</span><br><span class="line">        <span class="comment"># batch_targets_0 = torch.tensor([targets_0])</span></span><br><span class="line">        batch_targets_mask_0 = torch.tensor([targets_mask_0, targets_mask_1])</span><br><span class="line">        batch_targets_mask_0 = batch_targets_mask_0.unsqueeze(<span class="number">-2</span>)  <span class="comment"># transformer的mask需要多一步处理</span></span><br><span class="line">        _, batch_pred0 = model(batch_sentence_0, batch_targets_mask_0)  <span class="comment"># 返回损失和预测</span></span><br><span class="line">        print(<span class="string">f"句子1训练前网络得到的标签为：<span class="subst">&#123;batch_pred0[:sentence0_length]&#125;</span>"</span>)</span><br><span class="line">        print(<span class="string">f"句子2训练前网络得到的标签为：<span class="subst">&#123;batch_pred0[seq_length:seq_length+sentence1_length]&#125;</span>"</span>)</span><br><span class="line">        print(<span class="string">f"句子1正确的标签为：<span class="subst">&#123;targets_0[:sentence0_length]&#125;</span>"</span>)</span><br><span class="line">        print(<span class="string">f"句子2正确的标签为：<span class="subst">&#123;targets_1[:sentence1_length]&#125;</span>"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> epoch <span class="keyword">in</span> range(<span class="number">100</span>):</span><br><span class="line">        <span class="comment"># 第一步，pytorch梯度积累，需要先清零梯度</span></span><br><span class="line">        model.zero_grad()</span><br><span class="line"></span><br><span class="line">        sentence0, targets_mask_0, targets_0 = prepare_data(training_data[<span class="number">0</span>], word_to_id, seq_length, label_to_id)</span><br><span class="line">        sentence1, targets_mask_1, targets_1 = prepare_data(training_data[<span class="number">1</span>], word_to_id, seq_length, label_to_id)</span><br><span class="line">        batch_sentence = torch.tensor([sentence0, sentence1])</span><br><span class="line">        batch_targets = torch.tensor([targets_0, targets_1])</span><br><span class="line">        batch_targets_mask = torch.tensor([targets_mask_0, targets_mask_1])</span><br><span class="line">        batch_targets_mask = batch_targets_mask.unsqueeze(<span class="number">-2</span>)  <span class="comment"># transformer的mask需要多一步处理</span></span><br><span class="line">        <span class="comment"># 第三步，进行前向计算，得到crf loss，当传入target时会自动计算loss</span></span><br><span class="line">        loss, _ = model(batch_sentence, batch_targets_mask, batch_targets)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 第四步，计算loss,梯度，通过optimizer更新参数</span></span><br><span class="line">        loss.backward()</span><br><span class="line">        optimizer.step()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 训练结束查看模型预测结果，对比观察模型是否学到东西</span></span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        _, batch_pred0 = model(batch_sentence_0, batch_targets_mask_0)  <span class="comment"># 返回损失和预测</span></span><br><span class="line">        print(<span class="string">f"句子1训练后网络得到的标签为：<span class="subst">&#123;batch_pred0[:sentence0_length]&#125;</span>"</span>)</span><br><span class="line">        print(<span class="string">f"句子2训练后网络得到的标签为：<span class="subst">&#123;batch_pred0[seq_length:seq_length+sentence1_length]&#125;</span>"</span>)</span><br><span class="line">    <span class="comment"># We got it!</span></span><br></pre></td></tr></table></figure></p>
+<p>以上只是测试模型能够进行有效的学习，还未涉及正式的项目训练，在实际训练时与前面的BiLSTM模型的输入格式是一致的，也是UER-py框架中命名实体识别任务的数据格式，具体可以参考这篇：<a href="https://forchenxi.github.io/2022/10/06/nlp-UER-cluener/" target="_blank" rel="noopener">https://forchenxi.github.io/2022/10/06/nlp-UER-cluener/</a></p>
+<p>另外，因为我使用的同一套训练框架，使用自行实现的transformer进行训练时还要注意一点就是mask的size会和lstm略有不同，在data_loader里需要增加一行代码进行size调整<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">targets_mask_batch = targets_mask_batch.unsqueeze(<span class="number">-2</span>)  <span class="comment"># transformer的mask需要多一步处理</span></span><br></pre></td></tr></table></figure></p>
+<p>同时，在使用CRF的情况下，计算损失时需要将mask的size复原<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">targets_mask = targets_mask.squeeze(<span class="number">1</span>)  <span class="comment"># transformer encoder在开始处理时mask增加了一维，这里需要复原</span></span><br></pre></td></tr></table></figure></p>
+<p>增加CRF层的情况下，损失依然可以使用mean。<br>最后，在预测的predict.py中，保存预测结果部分，针对mask的size也需要复原<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">targets_mask_batch = targets_mask_batch.squeeze(<span class="number">1</span>)  <span class="comment"># transformer encoder在开始处理时mask增加了一维，这里需要复原</span></span><br></pre></td></tr></table></figure></p>
+<p>最后还有一点值得记录的是，在最初的训练过程中，尝试不使用CRF层，损失使用mean会导致一开始损失值就比较低，然后难以下降的问题，改成sum之后损失可以下降，召回率可以学习到90%多，但是准确率较低，所以增加CRF层后开始记录实验数据。</p>
+<h3 id="实验数据（自行实现的transformer作为编码器）"><a href="#实验数据（自行实现的transformer作为编码器）" class="headerlink" title="实验数据（自行实现的transformer作为编码器）"></a>实验数据（自行实现的transformer作为编码器）</h3><p>目前在训练第6行（第2、4行效果很差）</p>
+<table>
+<thead>
+<tr>
+<th>模型配置</th>
+<th>precision</th>
+<th>recall</th>
+<th>f1</th>
+<th>f2</th>
+<th>weight</th>
+<th>test_special f1</th>
+<th>f2</th>
+<th>参数量</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tiny</td>
+<td>98.5%</td>
+<td>98.5%</td>
+<td>98.5%</td>
+<td>89.9%</td>
+<td>58.9MB</td>
+<td>92.9%</td>
+<td>76.3%</td>
+<td>15,253,938</td>
+</tr>
+<tr>
+<td>tiny(word2vec)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>9,046,962</td>
+</tr>
+<tr>
+<td>small</td>
+<td>98.9%</td>
+<td>98.9%</td>
+<td>98.9%</td>
+<td>92.0%</td>
+<td>126MB</td>
+<td>94.6%</td>
+<td>79.7%</td>
+<td>32,938,674</td>
+</tr>
+<tr>
+<td>small(word2vec)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>25,393,842</td>
+</tr>
+<tr>
+<td>base</td>
+<td>98.8%</td>
+<td>98.8%</td>
+<td>98.8%</td>
+<td>91.2%</td>
+<td>414MB</td>
+<td>94.2%</td>
+<td>79.7%</td>
+<td>108,446,130</td>
+</tr>
+<tr>
+<td>base(bert-pre)</td>
+<td>79.1%</td>
+<td>95.4%</td>
+<td>86.5%</td>
+<td>80.3%</td>
+<td>414MB</td>
+<td>68.4%</td>
+<td>69.5%</td>
+<td>108,446,130</td>
+</tr>
+</tbody>
+</table>
+<p>以上表格记录的数据均是包含CRF层的结果（precision、recall和f1是根据标签的，f2是根据单条数据统计的（evaluate方法评估,只看accuracy值即可））</p>
+<p>学习率为0.001，因为学习过程中学习率会先增大到设定的学习率，再逐渐减小到0，故设置的学习率为最大学习率，如果设置为bert类似的学习率2e-5，则无法有效学习。<br>上表第2行、第4行使用word2vec训练好的embedding作为整个模型的embedding层初始化参数，但是最终学习效果不佳，无论是尝试增大学习率到0.01还是减小学习率至2e-5均无法有效学习，所以证明word2vec的静态词向量在transformer上不起作用？</p>
+<p><em>tiny使用的word2vec是60W条文本训练的，small使用的word2vec是200W条文本训练的</em><br>第6行，虽然使用了bert的预训练权重，但是实际上因为自定义的transformer架构，层的名称与bert并不一致，故只初始化了embedding层。</p>
+<h3 id="与BERT的区别"><a href="#与BERT的区别" class="headerlink" title="与BERT的区别"></a>与BERT的区别</h3><p>为了进一步对比上面自行实现的Transformer相比BERT的性能差异，所以在此又针对三种Bert大小进行了训练测试，先观察实验对比结果，然后再分析BERT中改进的点。</p>
+<p>BERT各版本对比<br>| version | emb_size | feedforward_size |hidden_size|heads_num|layers_num|<br>| ——–| ——– | —————-| ———–| ——–| ———|<br>| tiny  | 384 | 1536 | 384 | 6 | 3 |<br>| small | 512 | 2048 | 512 | 8 | 6 |<br>| base  | 768 | 3072 | 768 | 12 | 12 |<br>| large | 1024 | 4096 | 1024 | 16 | 24 |</p>
+<p><em>tiny、small BERT是无法使用预训练的权重的</em></p>
+<p>我在的训练框架中同样集成了原始的BERT代码，之所以强调原始代码是因为BERT的预训练权重是跟模型每一层的名称相匹配的，如果层名称不一致会导致加载预训练权重时实际参数初始化失败，还是用的随机初始化的情况，我在将BERT集成到我的框架内部时也遇到了一些问题，主要包括以下方面：</p>
+<ol>
+<li>关于attention_head_size参数设置的错误；</li>
+<li>缩放点积部分的bug;（很重要）</li>
+<li>crf.decode未传入mask参数；（很重要）</li>
+<li>优化器配置错误，过去一直用的SGD优化器（很重要）</li>
+<li>优化器的correct_bias=FALSE，这个参数需要复制bert自行实现的AdamW优化器代码，pytorch内置的代码不包含此参数；</li>
+<li>LayerNorm的实现，使用transformer的自主实现版本，不使用pytorch内置版本；</li>
+<li>从relu激活函数切换为gelu激活函数（这个与原始的transformer有区别）。</li>
+<li>整个模型结构的self变量命名（相当于模型各个的层名称）需要与bert预训练权重的源代码保持完全一致，否则加载预训练权重时命名不一致的层的参数是没有初始化成功的。（很重要）</li>
+</ol>
+<p>使用pytorch-nlp框架训练BERT,记录结果：<br>|模型配置    |learning_rate|    precision    |recall|    F1    |F2    |test_special f1|    test_special f2    |修正后的special F2|<br>| – | – | – | – | – | – | – | – | – |<br>|tiny    |1.00E-04    |0.995    |0.995    |0.995    |0.961    |0.977    |0.847    |0.881|<br>|small    |2.00E-05    |0.993|    0.992    |0.992    |0.942    |0.964|    0.814|    0.847|<br>|base    |2.00E-05    |0.994    |0.993|    0.994|    0.955    |0.969    |0.831|    0.864|<br>|base(pre_train)|    2.00E-05|    0.999|    0.998|    0.999|    0.99|    0.99|    0.915|    0.949|</p>
+<p>基本上与使用UER-py框架训练得到的结果一致，如果直接将UER-py中训练得到的模型放到pytorch-nlp中调用进行预测，准确率与在UER中预测的一致，也就是说在pytorch-nlp框架中实现的模型已经与UER中完全一致。</p>
+<p><em>如果seq_length=512，batch_size=8的条件下，11G的显存跑不起来BERT-Base，所以设置seq_length=300（数据长度基本不会超过300）</em></p>
+<p>目前针对真实标注集的最好F2值就是base bert基于预训练权重得到的，93.2%（其实说不定还有提升空间，因为还没有finetune）。</p>
+<p>这篇文章主要是为了学习从头实现transformer然后将其用于NER任务的方法，只能算作是一个baseline，其实还有很多改进的方法可供学习和使用。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/nlp/" rel="tag"># nlp</a>
+          
+            <a href="/tags/transformer/" rel="tag"># transformer</a>
+          
+            <a href="/tags/position-encoding/" rel="tag"># position encoding</a>
+          
+            <a href="/tags/residual/" rel="tag"># residual</a>
+          
+            <a href="/tags/layer-norm/" rel="tag"># layer norm</a>
+          
+            <a href="/tags/ner/" rel="tag"># ner</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2023/10/20/python-doc2docx/" rel="next" title="doc文件转docx文件">
+                <i class="fa fa-chevron-left"></i> doc文件转docx文件
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">110</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">207</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用Transformer-Encoder进行NER任务"><span class="nav-text">使用Transformer Encoder进行NER任务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#代码示例"><span class="nav-text">代码示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实验数据（自行实现的transformer作为编码器）"><span class="nav-text">实验数据（自行实现的transformer作为编码器）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#与BERT的区别"><span class="nav-text">与BERT的区别</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

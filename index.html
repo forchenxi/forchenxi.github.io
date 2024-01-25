@@ -259,6 +259,154 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2023/12/28/nlp-transformer-ner/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2023/12/28/nlp-transformer-ner/" itemprop="url">使用Transformer Encoder进行NER任务</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-12-28T11:46:54+08:00">
+                2023-12-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="使用Transformer-Encoder进行NER任务"><a href="#使用Transformer-Encoder进行NER任务" class="headerlink" title="使用Transformer Encoder进行NER任务"></a>使用Transformer Encoder进行NER任务</h2><p>我们都知道命名实体识别任务最常用的网络结构是BiLSTM + CRF的结构，在transformer被提出之后，transformer也被用于命名实体识别任务，但是一般是使用Transformer的Encoder模块作为特征提取器，后面还是使用softmax、线性层或CRF层，也就是说Transformer的Decoder模块是不使用的（例如预训练模型BERT也是仅堆叠transformer encoder）。</p>
+<p>那么为什么在命名实体识别任务中不使用Decoder模型呢？<br>其实答案是比较容易理解的，我们都知道Decoder是利用Encoder得到的memory和当前的输出，自回归的不断给出下一个概率最高的输出，所以Decoder是一个主要用于生成的模型，也是目前最火热的大模型如GPT最主要的核心结构，即主要用于生成大段的文本，而命名实体识别任务本质上是一个序列标注任务，其并不需要根据输入文本去生成其他文本，它只需要判断给定文本每个字是否属于实体以及实体的类型，所以并不需要Decoder模块，同样的序列的分类任务也不需要Decoder模块。<br>当然不需要不等于不能用，你也可以把序列标注、序列分类任务转变成生成任务，但是这样会使得你的模型结构变得更加复杂，效率会下降，效果也并不一定能得到提升。</p>
+<p>在<a href="https://forchenxi.github.io/2023/08/20/nlp-annotated-transformer/" target="_blank" rel="noopener">Transformer一步步实现</a>一文中我们已经理解了transformer的实现过程，在这一篇中我们要将transformer的encoder部分应用于命名实体识别任务。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2023/12/28/nlp-transformer-ner/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2023/10/20/python-doc2docx/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1606,155 +1754,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2023/02/11/pytorch-autograd/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2023/02/11/pytorch-autograd/" itemprop="url">PyTorch的自动微分</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-02-11T17:45:05+08:00">
-                2023-02-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/pytorch/" itemprop="url" rel="index">
-                    <span itemprop="name">pytorch</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="PyTorch的自动微分-autograd"><a href="#PyTorch的自动微分-autograd" class="headerlink" title="PyTorch的自动微分(autograd)"></a>PyTorch的自动微分(autograd)</h2><h3 id="计算图"><a href="#计算图" class="headerlink" title="计算图"></a>计算图</h3><p><strong>计算图是用来描述运算的有向无环图</strong><br>计算图有两个主要元素：结点（Node）和边（Edge）<br><strong>结点表示数据</strong>，如向量、矩阵、张量<br><strong>边表示运算</strong>，如加减乘除卷积等</p>
-<p>用计算图表示：y = (x + w) <em> (w + 1)<br>令 a = x + w，b = w + 1<br>则 y = a </em> b</p>
-<p>用计算图来表示这一计算过程：<br><img src="/2023/02/11/pytorch-autograd/p1.png" alt></p>
-<p>使用计算图可以更方便的求导</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2023/02/11/pytorch-autograd/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1807,7 +1806,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">109</span>
+                  <span class="site-state-item-count">110</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1829,7 +1828,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">206</span>
+                  <span class="site-state-item-count">207</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -1884,7 +1883,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2023</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
