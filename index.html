@@ -408,6 +408,458 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2024/04/27/nlp-simple-lexicon-code/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2024/04/27/nlp-simple-lexicon-code/" itemprop="url">Simple Lexicon代码剖析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-04-27T15:55:04+08:00">
+                2024-04-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="Simple-Lexicon代码剖析"><a href="#Simple-Lexicon代码剖析" class="headerlink" title="Simple Lexicon代码剖析"></a>Simple Lexicon代码剖析</h2><p>Simple Lexicon的原理比较简单，至少不涉及模型架构方面的改写，只是将所有词的embedding融合到字符的embedding中（详情请看原论文，上一篇），其项目源码其实是用了Lattice LSTM的源代码，然后在此基础上改成了python3.6的版本，并且加上词向量融合部分的代码。</p>
+<p>项目地址：<a href="https://github.com/v-mipeng/LexiconAugmentedNER" target="_blank" rel="noopener">GitHub - v-mipeng/LexiconAugmentedNER: Reject complicated operations for incorporating lexicon for Chinese NER.</a></p>
+<p>下面直接进行代码分析，在剖析代码的过程中联系论文来深入理解</p>
+<h3 id="data-initialization"><a href="#data-initialization" class="headerlink" title="data_initialization"></a>data_initialization</h3><p>首先在构建语料库这里，依然还是有</p>
+<p>build_alphabet、build_gaz_file，这两个方法与Lattice LSTM是一致的；</p>
+<p>有变化的是build_gaz_alphabet，新增了一个count参数（用于统计词频）</p>
+<p>在Lattice LSTM中build_gaz_alphabet方法是建立gaz_alphabet，即找到了<strong>所有可能的词语</strong>（具体逻辑就是利用trie属性保存的词典，然后调用gaz.enumerateMatchList，这里面调用的又是trie.enumerateMatch方法）</p>
+<p>在Simple Lexicon中这个方法内部也是先找到所有可能的词语（<strong>但是也会返回单个的字</strong>），其次是计算词频；</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2024/04/27/nlp-simple-lexicon-code/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2024/04/13/nlp-simple-lexicon-paper/" itemprop="url">Simplify the Usage of Lexicon in Chinese NER论文</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-04-13T18:32:04+08:00">
+                2024-04-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="Simplify-the-Usage-of-Lexicon-in-Chinese-NER"><a href="#Simplify-the-Usage-of-Lexicon-in-Chinese-NER" class="headerlink" title="Simplify the Usage of Lexicon in Chinese NER"></a>Simplify the Usage of Lexicon in Chinese NER</h2><h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h3><p>有很多工作尝试利用词汇信息提升中文NER的性能,例如LatticeLSTM, 但是它有一个复杂的网络结构,速度也比较慢;</p>
+<p>在这项工作中,我们提出了一个将词汇信息融入字符表示的简单而有效的方法,这个方法没有设计复杂的序列模型结构,对于任何神经NER模型，它<strong>只需要对字符表示层进行细微的调整就可以引入词典信息</strong>. </p>
+<p>实验表明与之前最优的各种方法相比,我们的方法速度更快且效果更好,而且也比较方便配合预训练模型如BERT一起使用.</p>
+<p>GitHub项目:<a href="https://github.com/v-mipeng/LexiconAugmentedNER" target="_blank" rel="noopener">GitHub - v-mipeng/LexiconAugmentedNER: Reject complicated operations for incorporating lexicon for Chinese NER.</a></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2024/04/13/nlp-simple-lexicon-paper/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2024/03/24/nlp-lattice-lstm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2024/03/24/nlp-lattice-lstm/" itemprop="url">LatticeLSTM原理解读与模型实现</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-03-24T10:20:04+08:00">
+                2024-03-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="LatticeLSTM原理解读与模型实现"><a href="#LatticeLSTM原理解读与模型实现" class="headerlink" title="LatticeLSTM原理解读与模型实现"></a>LatticeLSTM原理解读与模型实现</h2><p>深入剖析文章：<a href="https://zhuanlan.zhihu.com/p/545489418/?utm_id=0" target="_blank" rel="noopener">一文详解中文实体识别模型 Lattice LSTM - 知乎 (zhihu.com)</a></p>
+<p>最容易想到同时也是最简单的词信息利用方法就是<strong>直接拼接词表征与字向量</strong>或者<strong>直接拼接词表征与LSTM的输出</strong>。16年的论文<strong><a href="https://link.zhihu.com/?target=https%3A//eprints.lancs.ac.uk/id/eprint/83783/1/160.pdf" target="_blank" rel="noopener">《A Convolution BiLSTM Neural Network Model for Chinese Event Extraction》</a></strong>就采用了这样的方法构建了<strong>中文事件抽取模型</strong>。</p>
+<p>Lattcie LSTM的实现方式是怎么样的呢？</p>
+<p><img src="/2024/03/24/nlp-lattice-lstm/structure.webp" alt></p>
+<p><strong>Lattice LSTM</strong> 模型结构如上图右侧所示。在正式开始介绍 <strong>Lattice LSTM</strong> 前，我们先来看看上图左半部分。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2024/03/24/nlp-lattice-lstm/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2023/12/28/nlp-transformer-ner/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1299,461 +1751,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2023/03/11/spider-experience/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2023/03/11/spider-experience/" itemprop="url">业务爬取经验总结</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-03-11T14:33:42+08:00">
-                2023-03-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/爬虫/" itemprop="url" rel="index">
-                    <span itemprop="name">爬虫</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="业务爬取经验总结"><a href="#业务爬取经验总结" class="headerlink" title="业务爬取经验总结"></a>业务爬取经验总结</h2><p><strong>注意代理有没有挂上</strong>，如果没有挂上也不会有什么提示，会直接使用本机<code>IP</code>，风险极高。</p>
-<p>在平时业务开发时，遇到的网站一般分为两种类型，搜索式和列表式，当然列表式居多</p>
-<h3 id="列表式爬取方法"><a href="#列表式爬取方法" class="headerlink" title="列表式爬取方法"></a>列表式爬取方法</h3><p>拿到一个待开发的网站，一般开发完成之后，先爬取一遍全部历史数据，再上线增量爬取。</p>
-<h4 id="历史数据爬取过程中需要注意的点"><a href="#历史数据爬取过程中需要注意的点" class="headerlink" title="历史数据爬取过程中需要注意的点"></a>历史数据爬取过程中需要注意的点</h4><p>首先是要测试，要多看爬取日志，不要直接就推送入库；<br>查看日志可以看第一页、第二页、中间随机抽取几页和最后一页，日志是否和网站上的数据对应的上，避免一些程序bug压根没有成功翻页，然后也要看字段解析的是否正确，如果有比较明显的大规模错误那就要优化程序。</p>
-<p>如果该业务的数据源是比较多的情况，就要考虑不同的源是不是会造成重复，比如当前的数据源数据质量本身很差（结构化错误比例较高或缺少关键字段信息等），那最好先看下这个源的数据是否已经被其他源覆盖（在开发之前也可以进行评估），如果已被其他源覆盖就可以不爬取历史数据或者直接不开发，避免这个源的数据覆盖其他更优质的源的数据。</p>
-<p>其他还有一些针对数据质量不太好的源的爬取方法，比如增加过滤逻辑，缺失某些字段的数据丢弃；或者根据页码或者发布日期只爬取部分质量较好的数据。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2023/03/11/spider-experience/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2023/03/04/pytorch-regularization/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2023/03/04/pytorch-regularization/" itemprop="url">PyTorch正则化和批标准化</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-03-04T13:08:05+08:00">
-                2023-03-04
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/pytorch/" itemprop="url" rel="index">
-                    <span itemprop="name">pytorch</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="PyTorch正则化和批标准化"><a href="#PyTorch正则化和批标准化" class="headerlink" title="PyTorch正则化和批标准化"></a><code>PyTorch</code>正则化和批标准化</h2><p>Regularization-正则化：<strong>减小方差的策略</strong></p>
-<p>误差可分为解为：偏差，方差与噪声之和，即误差=偏差+方差+噪声之和；</p>
-<p><strong>偏差</strong>：度量了学习算法的期望预测与真实结果的偏离程度，即刻画了学习算法本身的拟合能力；<br><strong>方差</strong>：度量了同样大小的训练集的变动所导致的学习性能的变化，即刻画了数据扰动所造成的影响；<br><strong>噪声</strong>：表达了在当前任务上任何学习算法所能达到的期望泛化误差的下界。</p>
-<p>简而言之，偏差是指在<strong>所有训练数据</strong>上训练得到的模型性能和在真实数据上表现的差异，方差是指模型在<strong>训练集和验证集（测试集）上的差异</strong>，方差重点在于不同数据集；噪声则是指给定的数据集（其可能存在噪声），那么当前数据集的数据质量已经决定了学习性能的上限，学习的目标就是尽可能的接近这个上限。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2023/03/04/pytorch-regularization/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2023/02/25/pytorch-optim/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2023/02/25/pytorch-optim/" itemprop="url">Pytorch中的优化器Optimizer</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-02-25T16:34:05+08:00">
-                2023-02-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/pytorch/" itemprop="url" rel="index">
-                    <span itemprop="name">pytorch</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="Pytorch中的优化器Optimizer"><a href="#Pytorch中的优化器Optimizer" class="headerlink" title="Pytorch中的优化器Optimizer"></a>Pytorch中的优化器Optimizer</h2><h3 id="什么是优化器"><a href="#什么是优化器" class="headerlink" title="什么是优化器"></a>什么是优化器</h3><p><code>pytorch</code>的优化器：<strong>管理并更新</strong>模型中可学习参数的值，使得模型输出更接近真实标签</p>
-<p><strong>导数</strong>：函数在指定坐标轴上的变化率<br><strong>方向导数</strong>：指定方向上的变化率（二元及以上函数，偏导数）<br><strong>梯度</strong>：一个向量，方向是使得方向导数取得最大值的方向</p>
-<h3 id="Pytorch的Optimizer"><a href="#Pytorch的Optimizer" class="headerlink" title="Pytorch的Optimizer"></a><code>Pytorch</code>的Optimizer</h3><p><img src="/2023/02/25/pytorch-optim/p1.png" alt></p>
-<p>参数</p>
-<ul>
-<li>defaults：优化器超参数</li>
-<li>state：参数的缓存，如momentum的缓存</li>
-<li><code>param_groups</code>：管理的参数组</li>
-<li>_step_count：记录更新次数，学习率调整中使用</li>
-</ul>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2023/02/25/pytorch-optim/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1806,7 +1803,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">111</span>
+                  <span class="site-state-item-count">114</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1828,7 +1825,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">207</span>
+                  <span class="site-state-item-count">209</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

@@ -259,6 +259,454 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/09/03/nlp-decoding-sampling/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2022/09/03/nlp-decoding-sampling/" itemprop="url">NLG 采样策略</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-09-03T10:29:54+08:00">
+                2022-09-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="NLG-采样策略"><a href="#NLG-采样策略" class="headerlink" title="NLG 采样策略"></a><code>NLG</code> 采样策略</h2><p>上篇文章中学习了<code>NLG</code>的解码策略，主要包括greedy search、beam search，如果不太记得了可以再去温习一下，然后接下来我们来看看这些解码策略会存在哪些问题，是否还可以从其他角度来提高文本的生成效果。</p>
+<p><img src="/2022/09/03/nlp-decoding-sampling/p1.png" alt></p>
+<p>这幅图展示了每个时间步，生成某个单词的可能性，我们发现beam search在每一步的概率值都是比较大的，但是如果是真实人类的话，其实是比较随机的（人说话的内容比较随机，富有多样性）。这主要是因为beam search本身就是在根据最大概率去生成句子，但是<strong>最大概率不等于最好</strong>，上篇文章中我们有提到</p>
+<ul>
+<li>当k比较小时，生成的句子可能会不符合语法规则，不自然，无意义，不正确（比较死板）；</li>
+<li>当k比较大时，计算量会增大，虽然生成的句子更通顺，但是也存在偏离主题的可能性。</li>
+</ul>
+<p>此外因为模型生成时，一定程度上依赖于已经生成的句子，所以一味的选取概率最大的，可能会使句子的生成陷入不断地重复循环中，所以针对beam search这些特点，为了可以生成更多样化的句子(引入一定的随机性)又不偏离主题，以下几种采样策略被研究者提出。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2022/09/03/nlp-decoding-sampling/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/08/28/nlp-decoding-strategy/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2022/08/28/nlp-decoding-strategy/" itemprop="url">NLG解码策略</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-28T20:19:54+08:00">
+                2022-08-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="NLG解码策略"><a href="#NLG解码策略" class="headerlink" title="NLG解码策略"></a><code>NLG</code>解码策略</h2><p>自然语言生成（Natural Language Generation，简称<code>NLG</code>），是自然语言处理领域的一个重要分支，在文本摘要生成任务中，另一个重要的分支是自然语言理解（Natural Language Understanding，简称<code>NLU</code>）。前面我们已经学习了<code>seq2seq</code>模型结构，其主要分为Encoder和Decoder两大组件，其实正是对应了<code>NLU</code>和<code>NLG</code>两大分支，<code>seq2seq</code>模型最后经过一个<code>softmax</code>层，<strong>在每个时间步均得到一个词表大小的概率分布，如何利用这些概率分布得到最终的预测句子就是本节学习的解码策略</strong>。</p>
+<p>上篇构建文本摘要baseline时，我们就有提到过解码方法，当时采用的Teacher forcing的技巧，使用了真实标签，避免前面的步骤预测出错被无限放大的问题，但是在实际预测时因为没有真实标签，往往实际预测效果不一定好，所以寻找可行的解码策略是一项重点工作。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2022/08/28/nlp-decoding-strategy/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/08/27/nlp-text-summarize-baseline/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2022/08/27/nlp-text-summarize-baseline/" itemprop="url">构建文本摘要Baseline并且开始训练</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-27T15:19:54+08:00">
+                2022-08-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="构建文本摘要Baseline并且开始训练"><a href="#构建文本摘要Baseline并且开始训练" class="headerlink" title="构建文本摘要Baseline并且开始训练"></a>构建文本摘要Baseline并且开始训练</h2><p>基于前面<code>word2vec</code>的原理与训练实践、<code>seq2seq</code>模型的原理与实践以及attention机制，已经分别写了相关的文章来记录，此篇文章就是基于前面所学，开始着手训练文本摘要模型，当然仅是一个比较普通的baseline，后面还会不断优化模型。</p>
+<h3 id="构建seq2seq模型"><a href="#构建seq2seq模型" class="headerlink" title="构建seq2seq模型"></a>构建<code>seq2seq</code>模型</h3><p>首先利用上一节<code>seq2seq</code>实践中，封装的encoder、decoder和attention，集成到此模型中来，另外就是增加了一个训练技巧–<strong>teacher forcing</strong>。那么teacher forcing是啥意思呢？</p>
+<p><img src="/2022/08/27/nlp-text-summarize-baseline/teacher_forcing.png" style="zoom:67%;"></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2022/08/27/nlp-text-summarize-baseline/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/08/21/nlp-seq2seq-code/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1296,486 +1744,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/05/18/nlp-bert-finetune/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2022/05/18/nlp-bert-finetune/" itemprop="url">BERT finetune</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-05-18T15:34:54+08:00">
-                2022-05-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
-                    <span itemprop="name">自然语言处理</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="BERT-finetune"><a href="#BERT-finetune" class="headerlink" title="BERT finetune"></a>BERT finetune</h2><p>本文代码部分参考github项目：<br><a href="https://github.com/BSlience/search-engine-zerotohero/tree/main/public/bert_wwm_pretrain" target="_blank" rel="noopener">https://github.com/BSlience/search-engine-zerotohero/tree/main/public/bert_wwm_pretrain</a></p>
-<h3 id="项目概述"><a href="#项目概述" class="headerlink" title="项目概述"></a>项目概述</h3><p>本文的主要内容是基于huggingface transformer的chinese-bert-wwm模型，在自己的语料集上进行finetune的整体步骤和代码实现。</p>
-<p>关于chinese-bert-wwm：</p>
-<p><a href="https://huggingface.co/hfl/chinese-bert-wwm" target="_blank" rel="noopener">https://huggingface.co/hfl/chinese-bert-wwm</a></p>
-<p><a href="https://github.com/ymcui/Chinese-BERT-wwm" target="_blank" rel="noopener">https://github.com/ymcui/Chinese-BERT-wwm</a></p>
-<p>主要步骤包括：预处理和训练两个部分</p>
-<p><strong>预处理(pre-processing)</strong></p>
-<ol>
-<li>下载chinese-bert-wwm模型的预训练词表(vocab.txt)、config.json和pytorch_model.bin；</li>
-<li>读取自己的原始数据集（比如大量的文章、文本），做句子分割，然后保存成语料集；</li>
-<li>根据自己的语料集进行分词（BERT是分割成单个字），并将自己语料集中相比原始的词表多的字（或者词）添加到原始词表中（就是一个扩充操作），然后就生成了自己的词表；</li>
-</ol>
-<p>步骤1的下载地址：<a href="https://huggingface.co/hfl/chinese-bert-wwm/tree/main" target="_blank" rel="noopener">https://huggingface.co/hfl/chinese-bert-wwm/tree/main</a></p>
-<p>如果生成的语料集比较大，为了后续加载方便可以存储至内存型的数据库中（比如Redis）</p>
-<p><strong>训练(train)</strong></p>
-<ol>
-<li>加载BertTokenizer，读取语料集，生成数据；</li>
-<li>针对1中得到的数据，进行填充、截断和mask等操作，借助data collator类；</li>
-<li>加载chinese-bert-wwm模型的预训练权重文件，基于当前数据开始训练（微调）；</li>
-<li>保存模型，测试效果。</li>
-</ol>
-<p>关于data collator的实现可以查看我的上一篇文章whole word mask；</p>
-<p>步骤3加载的预训练权重文件就是上述预处理步骤1下载的，不过要注意把config.json和pytorch_model.bin放在同一个目录下，然后加载这个目录即可。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2022/05/18/nlp-bert-finetune/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/05/10/nlp-whole-word-mask/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2022/05/10/nlp-whole-word-mask/" itemprop="url">Whole Word Masking (wwm)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-05-10T11:29:54+08:00">
-                2022-05-10
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
-                    <span itemprop="name">自然语言处理</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="Whole-Word-Masking-wwm"><a href="#Whole-Word-Masking-wwm" class="headerlink" title="Whole Word Masking (wwm)"></a>Whole Word Masking (wwm)</h2><p>本文代码部分参考github项目：<br><a href="https://github.com/BSlience/search-engine-zerotohero/tree/main/public/bert_wwm_pretrain" target="_blank" rel="noopener">https://github.com/BSlience/search-engine-zerotohero/tree/main/public/bert_wwm_pretrain</a></p>
-<p>Whole Word Masking (wwm)，暂翻译为<strong>全词Mask</strong>或整词Mask，是谷歌在2019年5月31日发布的一项<strong>BERT的升级版本</strong>，主要更改了原预训练阶段的训练样本生成策略。我们先看下BERT原文的遮蔽语言模型。</p>
-<h3 id="BERT–遮蔽语言模型"><a href="#BERT–遮蔽语言模型" class="headerlink" title="BERT–遮蔽语言模型"></a>BERT–遮蔽语言模型</h3><p>在BERT之前，标准的条件语言模型只能从左到右或从右到左进行训练，因为双向条件作用将允许每个单词在多层上下文中<strong>间接地看到自己</strong>，为了训练深度双向表示，BERT采用了一种简单的方法，即随机遮蔽一定比例的输入标记，然后仅预测那些被遮蔽的标记，这一过程被称为<strong>遮蔽语言模型</strong>（MLM， masked language model），尽管在文献中它通常被称为完型填词任务。</p>
-<p>在这种情况下，就像在标准语言模型中一样，与遮蔽标记相对应的最终隐藏向量被输入到与词汇表对应的输出 softmax 中（也就是要把被遮蔽的标记对应为词汇表中的一个词语）。在所有的实验中，BERT在每个序列中<strong>随机遮蔽 15% 的标记</strong>。</p>
-<p>虽然这确实允许我们获得一个双向预训练模型，但这种方法有两个缺点。第一个缺点是，我们在预训练和微调之间造成了不匹配，因为 [MASK] 标记在微调期间从未出现过。为了缓和这种情况，我们并不总是用真的用 [MASK] 标记替换被选择的单词。而是，训练数据生成器随机选择 15% 的标记，例如，在my dog is hairy 这句话中，它选择 hairy。然后执行以下步骤:</p>
-<ul>
-<li>80% 的情况下：用 [MASK] 替换被选择的单词，例如，my dog is hairy → my dog is [MASK]</li>
-<li>10% 的情况下：用一个随机单词替换被选择的单词，例如，my dog is hairy → my dog is apple</li>
-<li>10% 的情况下：保持被选择的单词不变，例如，my dog is hairy → my dog is hairy。这样做的目<br>的是使表示偏向于实际观察到的词。</li>
-</ul>
-<p>Transformer 编码器不知道它将被要求预测哪些单词，或者哪些单词已经被随机单词替换，因此它被迫保持每个输入标记的分布的上下文表示。另外，因为随机替换只发生在 1.5% 的标记（即，15% 的10%）这似乎不会损害模型的语言理解能力。</p>
-<p>第二个缺点是，使用 Transformer 的每批次数据中只有 15% 的标记被预测，这意味着模型可能需要更多的预训练步骤来收敛。在 5.3 节中，我们证明了 Transformer 确实比从左到右的模型（预测每个标记）稍微慢一点，但是 Transformer 模型的实验效果远远超过了它增加的预训练模型的成本。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2022/05/10/nlp-whole-word-mask/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/04/29/nlp-hf-transformer-ner/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2022/04/29/nlp-hf-transformer-ner/" itemprop="url">利用huggingface-transformers进行命名实体识别</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-04-29T14:19:54+08:00">
-                2022-04-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
-                    <span itemprop="name">自然语言处理</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="利用huggingface-transformers进行命名实体识别"><a href="#利用huggingface-transformers进行命名实体识别" class="headerlink" title="利用huggingface-transformers进行命名实体识别"></a>利用huggingface-transformers进行命名实体识别</h2><p>项目地址：<a href="https://github.com/huggingface/transformers" target="_blank" rel="noopener">https://github.com/huggingface/transformers</a></p>
-<p>文档地址：<a href="https://huggingface.co/docs/transformers/pipeline_tutorial" target="_blank" rel="noopener">https://huggingface.co/docs/transformers/pipeline_tutorial</a></p>
-<h3 id="寻找你要的模型"><a href="#寻找你要的模型" class="headerlink" title="寻找你要的模型"></a>寻找你要的模型</h3><p>Transformers 提供了数以千计的预训练模型，支持 100 多种语言的文本分类、信息抽取、问答、摘要、翻译、文本生成。</p>
-<p>从这里：<a href="https://huggingface.co/models" target="_blank" rel="noopener">https://huggingface.co/models</a> 可以查找你要的模型，可以根据任务、语言、框架、数据集等筛选。</p>
-<p>这里我们想要进行基于中文的ner任务，筛选出这个模型：<a href="https://huggingface.co/ckiplab/bert-base-chinese-ner" target="_blank" rel="noopener"> bert-base-chinese-ner</a></p>
-<p>打开之后，通过介绍我们发现这是一个基于<strong>繁体中文</strong>的模型，对应的github地址是：</p>
-<p><a href="https://github.com/ckiplab/ckip-transformers" target="_blank" rel="noopener">https://github.com/ckiplab/ckip-transformers</a></p>
-<p>有需要的小伙伴可以尝试。</p>
-<p>我们继续筛选，找到了这个模型：<a href="https://huggingface.co/uer/roberta-base-finetuned-cluener2020-chinese" target="_blank" rel="noopener">uer/roberta-base-finetuned-cluener2020-chinese</a></p>
-<h3 id="模型使用"><a href="#模型使用" class="headerlink" title="模型使用"></a>模型使用</h3>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2022/04/29/nlp-hf-transformer-ner/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1828,7 +1796,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">111</span>
+                  <span class="site-state-item-count">114</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1850,7 +1818,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">207</span>
+                  <span class="site-state-item-count">209</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="deep learning,nlp,NER,lattice lstm,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="LatticeLSTM原理解读与模型实现深入剖析文章：一文详解中文实体识别模型 Lattice LSTM - 知乎 (zhihu.com) 最容易想到同时也是最简单的词信息利用方法就是直接拼接词表征与字向量或者直接拼接词表征与LSTM的输出。16年的论文《A Convolution BiLSTM Neural Network Model for Chinese Event Extraction》就">
+<meta name="keywords" content="deep learning,nlp,NER,lattice lstm">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LatticeLSTM原理解读与模型实现">
+<meta property="og:url" content="http://yoursite.com/2024/03/24/nlp-lattice-lstm/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="LatticeLSTM原理解读与模型实现深入剖析文章：一文详解中文实体识别模型 Lattice LSTM - 知乎 (zhihu.com) 最容易想到同时也是最简单的词信息利用方法就是直接拼接词表征与字向量或者直接拼接词表征与LSTM的输出。16年的论文《A Convolution BiLSTM Neural Network Model for Chinese Event Extraction》就">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2024/03/24/nlp-lattice-lstm/structure.webp">
+<meta property="og:image" content="http://yoursite.com/2024/03/24/nlp-lattice-lstm/structure1.webp">
+<meta property="og:image" content="http://yoursite.com/2024/03/24/nlp-lattice-lstm/cell_input.webp">
+<meta property="og:image" content="http://yoursite.com/2024/03/24/nlp-lattice-lstm/cell_output.webp">
+<meta property="og:image" content="http://yoursite.com/2024/03/24/nlp-lattice-lstm/cell.png">
+<meta property="og:image" content="http://yoursite.com/2024/03/24/nlp-lattice-lstm/信息融合.png">
+<meta property="og:image" content="http://yoursite.com/2024/03/24/nlp-lattice-lstm/信息融合1.webp">
+<meta property="og:image" content="http://yoursite.com/2024/03/24/nlp-lattice-lstm/信息融合2.png">
+<meta property="og:image" content="http://yoursite.com/2024/03/24/nlp-lattice-lstm/hidden_state.png">
+<meta property="og:image" content="http://yoursite.com/2024/03/24/nlp-lattice-lstm/LatticeLSTM.png">
+<meta property="og:image" content="http://yoursite.com/2024/03/24/nlp-lattice-lstm/词汇增强ner.webp">
+<meta property="og:updated_time" content="2024-09-21T10:14:58.296Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="LatticeLSTM原理解读与模型实现">
+<meta name="twitter:description" content="LatticeLSTM原理解读与模型实现深入剖析文章：一文详解中文实体识别模型 Lattice LSTM - 知乎 (zhihu.com) 最容易想到同时也是最简单的词信息利用方法就是直接拼接词表征与字向量或者直接拼接词表征与LSTM的输出。16年的论文《A Convolution BiLSTM Neural Network Model for Chinese Event Extraction》就">
+<meta name="twitter:image" content="http://yoursite.com/2024/03/24/nlp-lattice-lstm/structure.webp">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2024/03/24/nlp-lattice-lstm/">
+
+
+
+
+
+  <title>LatticeLSTM原理解读与模型实现 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2024/03/24/nlp-lattice-lstm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">LatticeLSTM原理解读与模型实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-03-24T10:20:04+08:00">
+                2024-03-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="LatticeLSTM原理解读与模型实现"><a href="#LatticeLSTM原理解读与模型实现" class="headerlink" title="LatticeLSTM原理解读与模型实现"></a>LatticeLSTM原理解读与模型实现</h2><p>深入剖析文章：<a href="https://zhuanlan.zhihu.com/p/545489418/?utm_id=0" target="_blank" rel="noopener">一文详解中文实体识别模型 Lattice LSTM - 知乎 (zhihu.com)</a></p>
+<p>最容易想到同时也是最简单的词信息利用方法就是<strong>直接拼接词表征与字向量</strong>或者<strong>直接拼接词表征与LSTM的输出</strong>。16年的论文<strong><a href="https://link.zhihu.com/?target=https%3A//eprints.lancs.ac.uk/id/eprint/83783/1/160.pdf" target="_blank" rel="noopener">《A Convolution BiLSTM Neural Network Model for Chinese Event Extraction》</a></strong>就采用了这样的方法构建了<strong>中文事件抽取模型</strong>。</p>
+<p>Lattcie LSTM的实现方式是怎么样的呢？</p>
+<p><img src="/2024/03/24/nlp-lattice-lstm/structure.webp" alt></p>
+<p><strong>Lattice LSTM</strong> 模型结构如上图右侧所示。在正式开始介绍 <strong>Lattice LSTM</strong> 前，我们先来看看上图左半部分。</p>
+<a id="more"></a>
+<p><strong>(1) Lattice LSTM 名字来由</strong></p>
+<p>我们可以发现在上图左侧所示网络中，除主干部分 <strong>基于字的LSTM</strong> 外，还连接了许多「格子」，每个「格子」里各含有一个潜在的词，这些潜在词所含有的信息将会与主干<strong>LSTM</strong>中相应的 <strong>Cell</strong> 融合，看起来像一个「网格（<strong>Lattice</strong>）」。所以论文模型的名字就叫做 <strong>Lattice LSTM</strong>，也就是有<strong>网格结构的LSTM模型</strong>。</p>
+<p><strong>(2) 词典匹配获得潜在词</strong></p>
+<p>网格中的这些潜在词是通过<strong>匹配输入文本与词典</strong>获得的。比如通过匹配词典， “南京市长江大桥”一句中就有“南京”、“市长”，“南京市”，“长江”，“大桥“，“长江大桥”等词。</p>
+<p>疑问一：<strong>词典</strong>是哪里来的呢？</p>
+<p>解疑问：从预训练的词向量文件中读取（Lattice LSTM中是ctb.50d.vec文件）</p>
+<p><strong>(3) 潜在词的影响</strong></p>
+<p>首先，“南京市长江大桥” 一句的正确结果应当是 “南京市-地点”、“长江大桥-地点”。如果我们直接利用 <strong>Character-based model</strong> 来进行实体识别，可能获得的结果是：“南京-地点”、“市长-职务”、“江大桥-人名”。现在利用词典信息获得了文本句的潜在词：“南京”、“市长”，“南京市”，“长江”，“大桥“，“长江大桥” 等潜在词。其中，“长江”、“大桥” 与 “长江大桥” 等词信息的引入<strong>有利于模型</strong>，可以帮助模型避免犯 “江大桥-人名” 这样的错误；而 “市长” 这个词的引入却可能会带来歧义从而<strong>误导模型</strong>，导致 “南京-地点”，“市长-职务” 这样的错误。</p>
+<p>换句话说，通过词典引入的词信息有的具有正向作用，有的则不然。当然，人为去筛除对模型不利的词是不可能的，所以我们希望<strong>把潜在词通通都丢给模型，让模型自己去选择有正向作用的词，从而避免歧义</strong>。<strong>Lattice LSTM</strong> 正是这么做的：<strong>它在Character-based LSTM+CRF的基础上，将潜在词汇信息融合进去，从而使得模型在获得字信息的同时，也可以有效地利用词的先验信息</strong>。</p>
+<h3 id="模型细节"><a href="#模型细节" class="headerlink" title="模型细节"></a>模型细节</h3><p><img src="/2024/03/24/nlp-lattice-lstm/structure1.webp" alt></p>
+<p>如上图所示，<strong>Lattice LSTM</strong>模型的主干部分是<strong>基于字的LSTM-CRF</strong>（<strong>Character-based LSTM+CRF</strong>）：</p>
+<ul>
+<li><strong>若当前输入的字在词典中不存在任何以它结尾的词时</strong>：<strong>主干上Cell之间的传递就和正常的LSTM一样。也就是说，这个时候Lattice LSTM退化成了基本LSTM</strong>。</li>
+<li><strong>若当前输入的字在词典中存在以它结尾的词时</strong>：<strong>需要通过红色Cell引入相关的潜在词信息，然后与主干上基于字的LSTM中相应的Cell进行融合</strong>。</li>
+</ul>
+<p>接下来，我们先简单展示下 <strong>LSTM的基本单元</strong>，再介绍 <strong>红色Cell</strong>，最后再介绍<strong>信息融合</strong>部分。</p>
+<h4 id="LSTM的基本单元"><a href="#LSTM的基本单元" class="headerlink" title="LSTM的基本单元"></a>LSTM的基本单元</h4><p>略</p>
+<h4 id="红色cell"><a href="#红色cell" class="headerlink" title="红色cell"></a>红色cell</h4><p>前面我们提过「如果当前字在词典中存在以它结尾的词时，需要通过红色Cell引入相关潜在词信息，与主干上基于字的LSTM中相应Cell进行融合」。以下图中 “市” 字为例，<strong>句子中潜在的以它结尾的词</strong>有：”南京市”。所以，对于”市”字对应的<strong>Cell</strong> 而言，还需要考虑 “南京市” 这个词的信息。</p>
+<p><strong>红色Cell</strong>的内部结构与主干上<strong>LSTM</strong>的<strong>Cell</strong>很类似。接下来，我们具体来看下 <strong>红色Cell</strong> 内部计算过程。</p>
+<p><strong>(1) 红色Cell 的输入</strong></p>
+<p><img src="/2024/03/24/nlp-lattice-lstm/cell_input.webp" alt></p>
+<p>与上图左侧<strong>LSTM</strong>的<strong>Cell</strong>对比，上图右侧 <strong>红色Cell</strong> 有两种类型的输入：</p>
+<ul>
+<li><strong>潜在词的首字</strong>对应的<strong>LSTM</strong>单元输出的<strong>Hidden State</strong>(上图右侧h) 以及<strong>Cell State</strong>(上图右侧c)</li>
+<li><strong>潜在词的词向量</strong>(上图右侧x)。</li>
+</ul>
+<p><strong>(2) 红色Cell 的输出</strong></p>
+<p><img src="/2024/03/24/nlp-lattice-lstm/cell_output.webp" alt></p>
+<p>可以发现，因为<strong>序列标记是在字级别</strong>，所以与左侧 <strong>LSTM</strong> 的 <strong>Cell</strong> 相比，<strong>红色Cell</strong> <strong>没有输出门</strong>，即它不输出<strong>hidden state</strong>。以“市”字为例，其潜在词为“南京市“，所以 ℎ、c来自于”南”字， x 代表“南京市”的词向量，红色<strong>Cell</strong> 内部具体计算过程如下所示：</p>
+<p><img src="/2024/03/24/nlp-lattice-lstm/cell.png" alt></p>
+<h4 id="信息融合"><a href="#信息融合" class="headerlink" title="信息融合"></a>信息融合</h4><p><img src="/2024/03/24/nlp-lattice-lstm/信息融合.png" alt></p>
+<p><img src="/2024/03/24/nlp-lattice-lstm/信息融合1.webp" alt></p>
+<p>简单地说，就是<strong>当前字相应的输入门和所有以当前字为尾字的候选词的输入门做归一计算出权重，然后利用计算出的权重进行向量加权融合</strong>。</p>
+<p><img src="/2024/03/24/nlp-lattice-lstm/信息融合2.png" alt></p>
+<p><img src="/2024/03/24/nlp-lattice-lstm/hidden_state.png" alt></p>
+<p>疑问二：所以原来LSTM cell中Ct的计算方法里的遗忘门已经不需要了？</p>
+<p>解疑问：如果当前字存在潜在词，那么遗忘门部分确实不需要了，状态C的计算方式发生改变（因为不使用遗忘门，所以也没有使用上一个状态C，这里其实是Lattice LSTM的缺点，会造成信息丢失）；如果当前字不存在潜在词，那么计算方式还是与LSTM Cell保持一致。</p>
+<p>反过来理解这个公式：h的计算还是和LSTM的一致，输出门依然保持不变，只不过状态C的计算方式有所改变，首先C是由一系列输入门和其潜在词的Cell State C计算得到的。</p>
+<p>其次，这个外部的<strong>输入门是额外定义</strong>的，由当前字的词向量和其潜在词的Cell State计算得到；</p>
+<p>最后，潜在词的Cell State就是红色cell的输出（具体看红色cell输出部分）。</p>
+<h2 id="项目实战"><a href="#项目实战" class="headerlink" title="项目实战"></a>项目实战</h2><p>LatticeLSTM项目地址：<a href="https://github.com/jiesutd/LatticeLSTM" target="_blank" rel="noopener">GitHub - jiesutd/LatticeLSTM: Chinese NER using Lattice LSTM. Code for ACL 2018 paper.</a></p>
+<p>这个项目是python2.7写的，需要改成python3的版本；（或者是pytorch较低的版本，用法需要改为较高的版本）</p>
+<p>如：</p>
+<ol>
+<li><p>print函数语法规则</p>
+</li>
+<li><p>str类型不用加decode</p>
+</li>
+<li><p>open文件增加encoding参数</p>
+</li>
+<li><p>字典迭代使用items()替代iteritems()</p>
+</li>
+<li><p>xrange使用range替代</p>
+</li>
+<li><p>pickle.dump和pickle.load必须是二进制文件</p>
+</li>
+<li><p>修改张量，需要加with torch.no_grad()，并且删除.data，例如</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">For example, change:</span><br><span class="line">    x.data.set_(y)</span><br><span class="line">to:</span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        x.set_(y)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>import _pickle as pickle</p>
+</li>
+</ol>
+<p><a href="https://blog.csdn.net/kz_java/article/details/124693949" target="_blank" rel="noopener">【琐碎】Python3安装/运行cPickle以及cPickle的使用-CSDN博客</a></p>
+<p>下载character embedding（gigaword_chn.all.a2b.uni.ite50.vec）和word embedding（ctb.50d.vec）放到data目录</p>
+<ol start="9">
+<li><p>map方法的使用</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">word_seq_lengths = torch.LongTensor(map(len, words))</span><br><span class="line">max_seq_len = word_seq_lengths.max()</span><br></pre></td></tr></table></figure>
+<p>这里应该是为了获取words中最长的句子，等价的写法是这样的（上述是简写）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">word_seq_lengths = torch.LongTensor(map(<span class="keyword">lambda</span> x: len(x), words))</span><br></pre></td></tr></table></figure>
+<p>但是这样写还是有问题，TypeError: new(): data must be a sequence (got map)</p>
+<p>这就是python版本的问题，在python2.x版本，map返回列表，在python3.x版本，map返回迭代器，所以这里应该改为</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">word_seq_lengths = torch.LongTensor(list(map(<span class="keyword">lambda</span> x: len(x), words)))</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>torch.split方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">torch.split(wh_b + wi, split_size=self.hidden_size, dim=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<p>split_size参数已废弃</p>
+<p>参数：</p>
+<ul>
+<li>tesnor：input，待分输入</li>
+<li>split_size_or_sections：需要切分的大小(int or list )</li>
+<li>dim：切分维度</li>
+<li>output：切分后块结构 <class 'tuple'></class></li>
+<li>当split_size_or_sections为<strong>int</strong>时，tenor结构和split_size_or_sections，正好匹配，那么ouput就是大小相同的块结构。如果按照split_size_or_sections结构，tensor不够了，那么就把剩下的那部分做一个块处理。</li>
+<li>当split_size_or_sections 为<strong>list</strong>时，那么tensor结构会一共切分成len(list)这么多的小块，每个小块中的大小按照list中的大小决定，其中list中的数字总和应等于该维度的大小，否则会报错（注意这里与split_size_or_sections为int时的情况不同）。</li>
+</ul>
+</li>
+<li><p>next方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">seq_iter = enumerate(scores)</span><br><span class="line">_, inivalues = seq_iter.next()</span><br></pre></td></tr></table></figure>
+<p>在python3.x中，.next()方法已废弃，可以改成next(seq_iter)</p>
+</li>
+<li><p>tensor.item()</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sample_loss += loss.data[<span class="number">0</span>]</span><br><span class="line">total_loss += loss.data[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
+<p>使用tensor.item()来处理只有1个元素的张量</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sample_loss += loss.item()</span><br><span class="line">total_loss += loss.item()</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="data-initialization"><a href="#data-initialization" class="headerlink" title="data_initialization"></a>data_initialization</h3><p>build_alphabet(alphabet字母表): 根据数据集建立语料库，包括</p>
+<ul>
+<li><p>label_alphabet：所有标签的集合，Alphabet类的实例，如[‘B-PER’, ‘E-PER’, …]</p>
+</li>
+<li><p>word_alphabet：所有文字的集合，Alphabet类的实例，如[‘\&lt;/unk>‘, ‘陈’, ‘元’, …]</p>
+</li>
+<li><p>biword_alphabet（两个连续的字组成的词，很多时候可能并不是真正意义上的的汉语词语）:例如句子”陈元呼吁加强国际合作推动世界经济发展”，会得到以下二元词的词表</p>
+<p>[‘\&lt;/unk>‘, ‘陈元’, ‘元呼’, ‘呼吁’, ‘吁加’, ‘加强’, ‘强国’, ‘国际’, ‘际合’, ‘合作’, ‘作推’, ‘推动’, ‘动世’, ‘世界’, ‘界经’, ‘经济’, ‘济发’, ‘发展’, ‘展-null-‘]</p>
+</li>
+<li><p>char_alphabet：在中文字符级别的NER任务中与word是一致的，因为word本来就是单个字；</p>
+</li>
+</ul>
+<p>Alphabet类中有一个列表用于保存得到的标签、文字和二元词等，还有一个字典保存了相应的文字在列表中的索引，还封装了一些方法方便对列表和词典的写入和读取；</p>
+<p>build_gaz_file(Gazetteer地名录)：加载预训练好的词向量（ctb.50d.vec，词向量维度=50，总共704368个字符或词语，按照论文中的记录其中单个字、两个字和三个字的词语数量分别是5.7k，分别为291.5k和278.1k，也就是说也包含更多字数的词语），并储存到self.gaz（这里应该理解为建立词典库）</p>
+<p>self.gaz依赖Gazetteer类，其中有个trie属性（self.trie = Trie()），其中保存了TrieNode（保存了类似子词的东西，用于build_gaz_alphabet）</p>
+<p>build_gaz_alphabet：建立gaz_alphabet，即找到了<strong>所有可能的词语</strong>（具体逻辑就是利用上面trie属性保存的词典，然后调用gaz.enumerateMatchList，这里面调用的又是trie.enumerateMatch方法）</p>
+<p>这个Trie的类是Lattice LSTM中关于词这块的核心代码，所以单独拎出来研究下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> collections</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TrieNode</span>:</span></span><br><span class="line">    <span class="comment"># Initialize your data structure here.</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.children = collections.defaultdict(TrieNode)</span><br><span class="line">        self.is_word = <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Trie</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.root = TrieNode()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">insert</span><span class="params">(self, word)</span>:</span></span><br><span class="line">        </span><br><span class="line">        current = self.root</span><br><span class="line">        <span class="keyword">for</span> letter <span class="keyword">in</span> word:</span><br><span class="line">            current = current.children[letter]</span><br><span class="line">        current.is_word = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">search</span><span class="params">(self, word)</span>:</span></span><br><span class="line">        current = self.root</span><br><span class="line">        <span class="keyword">for</span> letter <span class="keyword">in</span> word:</span><br><span class="line">            current = current.children.get(letter)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> current <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">        <span class="keyword">return</span> current.is_word</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">startsWith</span><span class="params">(self, prefix)</span>:</span></span><br><span class="line">        current = self.root</span><br><span class="line">        <span class="keyword">for</span> letter <span class="keyword">in</span> prefix:</span><br><span class="line">            current = current.children.get(letter)</span><br><span class="line">            <span class="keyword">if</span> current <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">enumerateMatch</span><span class="params">(self, word, space=<span class="string">"_"</span>, backward=False)</span>:</span></span><br><span class="line">        matched = []</span><br><span class="line">        <span class="comment"># while len(word) &gt; 1 does not keep character itself, while word keed character itself</span></span><br><span class="line">        <span class="keyword">while</span> len(word) &gt; <span class="number">1</span>:</span><br><span class="line">            <span class="keyword">if</span> self.search(word):</span><br><span class="line">                matched.append(space.join(word[:]))</span><br><span class="line">            <span class="keyword">del</span> word[<span class="number">-1</span>]</span><br><span class="line">        <span class="keyword">return</span> matched</span><br></pre></td></tr></table></figure>
+<p>Python中通过Key访问字典，当Key不存在时，会引发‘KeyError’异常。为了避免这种情况的发生，这里使用collections类中的defaultdict()方法来为字典提供默认值</p>
+<p>defaultdict是内置数据类型dict的一个子类，基本功能与dict一样，只是重写了一个方法missing(key)和增加了一个可写的对象变量default_factory。</p>
+<p>语法格式：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">collections.defaultdict([default_factory[, …]])</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果default_factory属性为None，就报出以key作为遍历的KeyError异常；</li>
+<li>如果default_factory不为None，就会向给定的key提供一个默认值，这个值插入到词典中，并返回；</li>
+</ul>
+<p>这里TrieNode类有两个属性，属性is_word是标记当前这个Node是否为词（准确的说应该是是否这个词会以这个Node为结束词），children属性就是一个defaultdict，并且默认值为类本身，即当children获取不到指定的key时，则插入这个key，且值为这个类，并返回这个key对应的类。</p>
+<p>Trie类的root属性就是TrieNode类，insert时就是遍历一个word的每一个字符，然后存储到root中，如果是多个字符的，就形成了一种嵌套关系，例如<strong>中国人</strong></p>
+<p>“中”是最外层Node，这个Node的children是”国”这个Node，”国”的children是”人”，然后给”人”打上标记is_word=True。</p>
+<p>gaz_alphabet也是Alphabet类的实例，例如句子”陈元呼吁加强国际合作推动世界经济发展”，根据gaz保存的预训练的词表，计算出这个句子中哪些可能是词，从而得到如下结果：</p>
+<p>[‘陈元’, ‘呼吁’, ‘吁加’, ‘加强’, ‘强国’, ‘国际’, ‘合作’, ‘推动’, ‘世界’, ‘经济’, ‘发展’]</p>
+<h3 id="generate-instance-with-gaz"><a href="#generate-instance-with-gaz" class="headerlink" title="generate_instance_with_gaz"></a>generate_instance_with_gaz</h3><p>read_instance_with_gaz：最终生成两个列表instance_texts和instance_ids，其分别又包含5个列表</p>
+<p>instance_texts.append([words, biwords, chars, gazs, labels])<br>instance_ids.append([word_Ids, biword_Ids, char_Ids, gaz_Ids, label_Ids])</p>
+<p>即每句话的word、biword、char、词和标签以及对应的id</p>
+<p>words、biwords、chars和labels倒是没啥特别的，逻辑与上面build alphabet是一致的，只不过上面是把训练集、测试集、验证集中所有句子得到的结果汇总到一起，而这里每个句子得到一个列表而已，重要的是gazs，部分核心代码如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">w_length = len(words)</span><br><span class="line"><span class="keyword">for</span> idx <span class="keyword">in</span> range(w_length):</span><br><span class="line">    matched_list = gaz.enumerateMatchList(words[idx:])</span><br><span class="line">    matched_length = [len(a) <span class="keyword">for</span> a <span class="keyword">in</span> matched_list]</span><br><span class="line">   </span><br><span class="line">    gazs.append(matched_list)</span><br><span class="line">    matched_Id = [gaz_alphabet.get_index(entity) <span class="keyword">for</span> entity <span class="keyword">in</span> matched_list]</span><br><span class="line">    <span class="keyword">if</span> matched_Id:</span><br><span class="line">        gaz_Ids.append([matched_Id, matched_length])</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        gaz_Ids.append([])</span><br></pre></td></tr></table></figure>
+<p>enumeraterMatchList实现如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">enumerateMatchList</span><span class="params">(self, word_list)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> self.lower:</span><br><span class="line">        word_list = [word.lower() <span class="keyword">for</span> word <span class="keyword">in</span> word_list]</span><br><span class="line">    match_list = self.trie.enumerateMatch(word_list, self.space)</span><br><span class="line">    <span class="keyword">return</span> match_list</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">enumerateMatch</span><span class="params">(self, word, space=<span class="string">"_"</span>, backward=False)</span>:</span></span><br><span class="line">    matched = []</span><br><span class="line">    <span class="comment"># while len(word) &gt; 1 does not keep character itself, while word keed character itself</span></span><br><span class="line">    <span class="keyword">while</span> len(word) &gt; <span class="number">1</span>:</span><br><span class="line">        <span class="keyword">if</span> self.search(word):  <span class="comment"># 判断当前的word中，以首个字到最后一个字之间是否可以全部连成一个词</span></span><br><span class="line">            matched.append(space.join(word[:]))  <span class="comment"># 如果可以连成词，则添加到结果集中</span></span><br><span class="line">        <span class="keyword">del</span> word[<span class="number">-1</span>]  <span class="comment"># 如果连不成词，那就减去最后一个字再重试</span></span><br><span class="line">    <span class="keyword">return</span> matched  <span class="comment"># 返回的是word list中，以0号元素为开头的所有可能的词（注意是连续的词）</span></span><br></pre></td></tr></table></figure>
+<p>根据代码可以理解，gazs首先是和句子长度（len(word)）保持一致，然后每个元素是一个列表，这个列表的内容是以这个字为开始的所有可能的词（这个字在word中的索引，对应这个match_list在gaz中的索引）；gaz_list的长度依然与句子长度一致，其每个元素也是一个列表，但是这个列表中，又包含两个列表，第1个列表是这些词在gaz_alphabet中的id，第2个列表是每一个词的长度。</p>
+<p>例如句子：新华社华盛顿0月00日电（记者翟景升）</p>
+<p>对应的word_list为：[‘新’, ‘华’, ‘社’, ‘华’, ‘盛’, ‘顿’, ‘0’, ‘月’, ‘0’, ‘0’, ‘日’, ‘电’, ‘（’, ‘记’, ‘者’, ‘翟’, ‘景’, ‘升’, ‘）’]</p>
+<p>gazs为：[[‘新华社’, ‘新华’], [‘华社’], [‘社华’], [‘华盛顿’, ‘华盛’], [‘盛顿’], [], [‘0月’], [], [‘00’], [‘0日’], [], [], [], [‘记者’], [], [‘翟景升’, ‘翟景’], [‘景升’], [], []]</p>
+<p>gaz_ids为：[[[13, 14], [3, 2]], [[15], [2]], [[16], [2]], [[17, 18], [3, 2]], [[19], [2]], [], [[20], [2]], [], [[21], [2]], [[22], [2]], [], [], [], [[23], [2]], [], [[24, 25], [3, 2]], [[26], [2]], [], []]</p>
+<h3 id="build-xx-pretrain-emb"><a href="#build-xx-pretrain-emb" class="headerlink" title="build_xx_pretrain_emb"></a>build_xx_pretrain_emb</h3><p>build_pretrain_embedding：加载预训练好的embedding（’gigaword_chn.all.a2b.uni.ite50.vec’）</p>
+<p>gigaword_chn.all.a2b.uni.ite50.vec每行是字符串（使用空格分隔，split之后size是embedding_dim+1）,首号元素是字符或词，后面的embedding_dim个元素是表征这个字符或词语的向量；</p>
+<p>最终转换成一个pretrain_emb（二维向量，size=(word数量, 相应word对应的embedding)）</p>
+<p>实际上word2vec模型训练完之后保存的直接就是这么一个二维向量</p>
+<p>ps：不过build_biword_pretrain_emb时，bichar_emb是None，其词向量是随机初始化的</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">np.random.uniform(-scale, scale, [<span class="number">1</span>, embedd_dim])</span><br></pre></td></tr></table></figure>
+<p>build_gaz_pretrain_emb时，加载的词向量是’ctb.50d.vec’，不过格式与上面所说的是一致的</p>
+<h3 id="batchify-with-label"><a href="#batchify-with-label" class="headerlink" title="batchify_with_label"></a>batchify_with_label</h3><p>此方法传入的是generate_instance_with_gaz方法获取的instance_ids，不过并非全部，而是一个批次大小的instance_ids，其size为(batch_size, 5, sentence_length)。sentence_length是这一批次中最长句子的长度，其他的句子会自动补齐至这一长度。</p>
+<p>返回以下参数：</p>
+<ul>
+<li>gaz_list：gaz_list其实没有什么改变，只不过在列表最外层保存了volatile参数，返回的gaz_list最外层包含两个元素，第一个还是词的ids，第二个元素是volatile的值（True or False），这个参数用于决定pytorch的Variable是否不需要保留记录用的参数（实际上已废弃，使用with torch.no_grad()代替，主要目的是在evaluate和predict时，不需要保留梯度，因为不需要反向传播），True表示不需要，False表示需要。</li>
+<li>batch_word：返回的size为(batch_size, sentence_length)，句子中的字在词表中的id；</li>
+<li>batch_biword：返回的size为(batch_size, sentence_length)，句子中的二元词在二元词表中的id；</li>
+<li>batch_wordlen：记录这一批次句子的长度（多少个字）</li>
+<li>batch_wordrecover：未知</li>
+<li>batch_char：返回的size为(sentence_length, batch_size)</li>
+<li>batch_charlen：</li>
+<li>batch_charrecover：未知</li>
+<li>batch_label：返回的size为(batch_size, sentence_length)，句子中每个字的标签在所有类别中的id；</li>
+<li>mask ：返回的size为(batch_size, sentence_length)，为1的部分表示这个句子的实际有效部分</li>
+</ul>
+<h3 id="SeqModel"><a href="#SeqModel" class="headerlink" title="SeqModel"></a>SeqModel</h3><p>主模型：BiLSTM_CRF</p>
+<p>主模型包含两个子模型：BiLSTM模型和CRF模型</p>
+<p>BiLSTM子模型中又包含三个子模型：CharBiLSTM、CharCNN、LatticeLSTM 模型。</p>
+<p>但是charBiLSTM和CharCNN只在use_char=True时，才会使用，当char_features=CNN时，会使用CharCNN，当char_features=LSTM时，会使用CharBiLSTM</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">neg_log_likelihood_loss</span><span class="params">(self, gaz_list, word_inputs, biword_inputs, word_seq_lengths,  char_inputs, char_seq_lengths, char_seq_recover, batch_label, mask)</span>:</span></span><br><span class="line">    outs = self.lstm.get_output_score(gaz_list, word_inputs, biword_inputs, word_seq_lengths,  char_inputs, char_seq_lengths, char_seq_recover)</span><br><span class="line">    batch_size = word_inputs.size(<span class="number">0</span>)</span><br><span class="line">    seq_len = word_inputs.size(<span class="number">1</span>)</span><br><span class="line">    total_loss = self.crf.neg_log_likelihood_loss(outs, mask, batch_label)</span><br><span class="line">    scores, tag_seq = self.crf._viterbi_decode(outs, mask)</span><br><span class="line">    <span class="keyword">return</span> total_loss, tag_seq</span><br></pre></td></tr></table></figure>
+<p>模型在训练时，调用model.neg_log_likelihood_loss，里面分别调用BiLSTM的get_output_score、crf的neg_log_likelihood_loss和_viterbi_decode。</p>
+<p>模型的预测时，调用model.forward()，其实里面就是去掉了crf.neg_log_likeihood_loss这一步骤，因为不需要计算损失进行反向传播。</p>
+<p>outs的输出size为(batch_size, sentence_length, label_size)（label_size意思是标签的总数量）</p>
+<p>这里计算损失是调用了CRF类里面自定义的neg_log_likelihood_loss方法，其本质上应该与我之前使用的torchcrf包一样</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">loss = -self.crf(F.log_softmax(features, <span class="number">2</span>), targets, mask=targets_mask, reduction=<span class="string">'mean'</span>)</span><br></pre></td></tr></table></figure>
+<p>下一步骤的解码（预测）与我之前使用的torchcrf包的decode应该本质也是一样的</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pred = self.crf.decode(features, mask=targets_mask)</span><br></pre></td></tr></table></figure>
+<h4 id="BiLSTM"><a href="#BiLSTM" class="headerlink" title="BiLSTM"></a>BiLSTM</h4><p>BiLSTM模型中包含两个embedding(biword_embedding只有在use_bigram=True时才有用)</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">self.word_embeddings = nn.Embedding(data.word_alphabet.size(), self.embedding_dim)</span><br><span class="line">self.biword_embeddings = nn.Embedding(data.biword_alphabet.size(), data.biword_emb_dim)</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line">self.word_embeddings.weight.data.copy_(torch.from_numpy(data.pretrain_word_embedding))</span><br><span class="line">self.biword_embeddings.weight.data.copy_(torch.from_numpy(data.pretrain_biword_embedding))</span><br></pre></td></tr></table></figure>
+<p>默认的embedding_dim是Word和char的embedding(测试时发现use_char=False，即char_hidden_dim=0)</p>
+<p><code>lstm_input = self.embedding_dim + self.char_hidden_dim</code></p>
+<p>如果使用bi-gram（测试时发现use_bigram=False）<br><code>lstm_input += data.biword_emb_dim</code></p>
+<p>BiLSTM模型中包含一个forward_lstm和一个backward_lstm，均是LatticeLSTM</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">self.forward_lstm = LatticeLSTM(lstm_input, lstm_hidden, data.gaz_dropout, data.gaz_alphabet.size(), data.gaz_emb_dim, data.pretrain_gaz_embedding, <span class="literal">True</span>, data.HP_fix_gaz_emb, self.gpu)</span><br><span class="line"></span><br><span class="line">self.backward_lstm = LatticeLSTM(lstm_input, lstm_hidden, data.gaz_dropout, data.gaz_alphabet.size(), data.gaz_emb_dim, data.pretrain_gaz_embedding, <span class="literal">False</span>, data.HP_fix_gaz_emb, self.gpu)</span><br></pre></td></tr></table></figure>
+<p>最后还有一个线性层</p>
+<p><code>self.hidden2tag = nn.Linear(data.HP_hidden_dim, data.label_alphabet_size)</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_output_score</span><span class="params">(self, gaz_list,  word_inputs, biword_inputs, word_seq_lengths, char_inputs, char_seq_lengths, char_seq_recover)</span>:</span></span><br><span class="line">    lstm_out = self.get_lstm_features(gaz_list, word_inputs, biword_inputs, word_seq_lengths, char_inputs, char_seq_lengths, char_seq_recover)</span><br><span class="line">    <span class="comment"># lstm_out (batch_size, sent_len, hidden_dim)</span></span><br><span class="line">    outputs = self.hidden2tag(lstm_out)</span><br><span class="line">    <span class="keyword">return</span> outputs</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_lstm_features</span><span class="params">(self, gaz_list, word_inputs, biword_inputs, word_seq_lengths, char_inputs, char_seq_lengths, char_seq_recover)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">            input:</span></span><br><span class="line"><span class="string">                word_inputs: (batch_size, sent_len)</span></span><br><span class="line"><span class="string">                gaz_list:</span></span><br><span class="line"><span class="string">                word_seq_lengths: list of batch_size, (batch_size,1)</span></span><br><span class="line"><span class="string">                char_inputs: (batch_size*sent_len, word_length)</span></span><br><span class="line"><span class="string">                char_seq_lengths: list of whole batch_size for char, (batch_size*sent_len, 1)</span></span><br><span class="line"><span class="string">                char_seq_recover: variable which records the char order information, used to recover char order</span></span><br><span class="line"><span class="string">            output: </span></span><br><span class="line"><span class="string">                Variable(sent_len, batch_size, hidden_dim)</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">    batch_size = word_inputs.size(<span class="number">0</span>)</span><br><span class="line">    sent_len = word_inputs.size(<span class="number">1</span>)</span><br><span class="line">    word_embs = self.word_embeddings(word_inputs)</span><br><span class="line">    <span class="keyword">if</span> self.use_bigram:</span><br><span class="line">        biword_embs = self.biword_embeddings(biword_inputs)</span><br><span class="line">        word_embs = torch.cat([word_embs, biword_embs],<span class="number">2</span>)</span><br><span class="line">    <span class="keyword">if</span> self.use_char:</span><br><span class="line">        <span class="comment"># calculate char lstm last hidden</span></span><br><span class="line">        char_features = self.char_feature.get_last_hiddens(char_inputs, char_seq_lengths.cpu().numpy())</span><br><span class="line">        char_features = char_features[char_seq_recover]</span><br><span class="line">        char_features = char_features.view(batch_size,sent_len,<span class="number">-1</span>)</span><br><span class="line">        <span class="comment"># concat word and char together</span></span><br><span class="line">        word_embs = torch.cat([word_embs, char_features], <span class="number">2</span>)</span><br><span class="line">    word_embs = self.drop(word_embs)</span><br><span class="line">    <span class="comment"># packed_words = pack_padded_sequence(word_embs, word_seq_lengths.cpu().numpy(), True)</span></span><br><span class="line">    hidden = <span class="literal">None</span></span><br><span class="line">    lstm_out, hidden = self.forward_lstm(word_embs, gaz_list, hidden)</span><br><span class="line">    <span class="keyword">if</span> self.bilstm_flag:</span><br><span class="line">        backward_hidden = <span class="literal">None</span> </span><br><span class="line">        backward_lstm_out, backward_hidden = self.backward_lstm(word_embs, gaz_list, backward_hidden)</span><br><span class="line">        lstm_out = torch.cat([lstm_out, backward_lstm_out], <span class="number">2</span>)</span><br><span class="line">    <span class="comment"># lstm_out, _ = pad_packed_sequence(lstm_out)</span></span><br><span class="line">    lstm_out = self.droplstm(lstm_out)</span><br><span class="line">    <span class="keyword">return</span> lstm_out</span><br></pre></td></tr></table></figure>
+<p>这里get_lstm_features返回的lstm_out的size为(batch_size, sent_len, hidden_dim)，是前向lstm的hidden_out和后向lstm的hidden_out拼接而成，单个方向的lstm的输出则为(sentence, hidden_dim/2)。</p>
+<h4 id="LatticeLSTM"><a href="#LatticeLSTM" class="headerlink" title="LatticeLSTM"></a>LatticeLSTM</h4><p>LatticeLSTM中也有一个预训练的词向量</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">self.word_emb = nn.Embedding(word_alphabet_size, word_emb_dim)</span><br><span class="line"><span class="keyword">if</span> pretrain_word_emb <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">    print(<span class="string">"load pretrain word emb..."</span>, pretrain_word_emb.shape)</span><br><span class="line">    self.word_emb.weight.data.copy_(torch.from_numpy(pretrain_word_emb))</span><br></pre></td></tr></table></figure>
+<p>这里的pretrain_word_emb在BiLSTM初始化LatticeLSTM时传入的是pretrain_gaz_embedding</p>
+<p>LatticeLSTM模型中包含两个子层：WordLSTMCell、MultiInputLSTMCell</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">self.rnn = MultiInputLSTMCell(input_dim, hidden_dim)</span><br><span class="line">self.word_rnn = WordLSTMCell(word_emb_dim, hidden_dim)</span><br></pre></td></tr></table></figure>
+<p><img src="/2024/03/24/nlp-lattice-lstm/LatticeLSTM.png" alt></p>
+<p>这里WordLSTMCell对应上面模型细节中的红色Cell部分；</p>
+<p>MultiInputLSTMCell对应上面模型细节中的信息融合部分。</p>
+<p>BiLSTM中的forward_lstm和backward_lstm都是LatitceLSTM，forward方法如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, input, skip_input_list, hidden=None)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">        input: variable (batch, seq_len), batch = 1</span></span><br><span class="line"><span class="string">        skip_input_list: [skip_input, volatile_flag]</span></span><br><span class="line"><span class="string">        skip_input: three dimension list, with length is seq_len. Each element is a list of matched word id and its length. </span></span><br><span class="line"><span class="string">        example: [[], [[25,13],[2,3]]] 25/13 is word id, 2,3 is word length . </span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    volatile_flag = skip_input_list[<span class="number">1</span>]</span><br><span class="line">    skip_input = skip_input_list[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> self.left2right:</span><br><span class="line">        skip_input = convert_forward_gaz_to_backward(skip_input)</span><br><span class="line">    input = input.transpose(<span class="number">1</span>,<span class="number">0</span>)</span><br><span class="line">    seq_len = input.size(<span class="number">0</span>)</span><br><span class="line">    batch_size = input.size(<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">assert</span>(batch_size == <span class="number">1</span>)</span><br><span class="line">    hidden_out = []</span><br><span class="line">    memory_out = []</span><br><span class="line">    <span class="keyword">if</span> hidden:</span><br><span class="line">        (hx,cx)= hidden</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        hx = autograd.Variable(torch.zeros(batch_size, self.hidden_dim))</span><br><span class="line">        cx = autograd.Variable(torch.zeros(batch_size, self.hidden_dim))</span><br><span class="line">        <span class="keyword">if</span> self.gpu:</span><br><span class="line">            hx = hx.cuda()</span><br><span class="line">            cx = cx.cuda()</span><br><span class="line">    </span><br><span class="line">    id_list = range(seq_len)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> self.left2right:</span><br><span class="line">        id_list = list(reversed(id_list))</span><br><span class="line">    input_c_list = init_list_of_objects(seq_len)</span><br><span class="line">    <span class="keyword">for</span> t <span class="keyword">in</span> id_list:</span><br><span class="line">        (hx,cx) = self.rnn(input[t], input_c_list[t], (hx,cx))</span><br><span class="line">        hidden_out.append(hx)</span><br><span class="line">        memory_out.append(cx)</span><br><span class="line">        <span class="keyword">if</span> skip_input[t]:</span><br><span class="line">            matched_num = len(skip_input[t][<span class="number">0</span>])</span><br><span class="line">            word_var = autograd.Variable(torch.LongTensor(skip_input[t][<span class="number">0</span>]),volatile =  volatile_flag)</span><br><span class="line">            <span class="keyword">if</span> self.gpu:</span><br><span class="line">                word_var = word_var.cuda()</span><br><span class="line">            word_emb = self.word_emb(word_var)</span><br><span class="line">            word_emb = self.word_dropout(word_emb)</span><br><span class="line">            ct = self.word_rnn(word_emb, (hx,cx))</span><br><span class="line">            <span class="keyword">assert</span>(ct.size(<span class="number">0</span>)==len(skip_input[t][<span class="number">1</span>]))</span><br><span class="line">            <span class="keyword">for</span> idx <span class="keyword">in</span> range(matched_num):</span><br><span class="line">                length = skip_input[t][<span class="number">1</span>][idx]</span><br><span class="line">                <span class="keyword">if</span> self.left2right:</span><br><span class="line">                    <span class="comment"># if t+length &lt;= seq_len -1:</span></span><br><span class="line">                    input_c_list[t+length<span class="number">-1</span>].append(ct[idx,:].unsqueeze(<span class="number">0</span>))</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    <span class="comment"># if t-length &gt;=0:</span></span><br><span class="line">                    input_c_list[t-length+<span class="number">1</span>].append(ct[idx,:].unsqueeze(<span class="number">0</span>))</span><br><span class="line">            <span class="comment"># print len(a)</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> self.left2right:</span><br><span class="line">        hidden_out = list(reversed(hidden_out))</span><br><span class="line">        memory_out = list(reversed(memory_out))</span><br><span class="line">    output_hidden, output_memory = torch.cat(hidden_out, <span class="number">0</span>), torch.cat(memory_out, <span class="number">0</span>)</span><br><span class="line">    <span class="comment">#(batch, seq_len, hidden_dim)</span></span><br><span class="line">    <span class="comment"># print output_hidden.size()</span></span><br><span class="line">    <span class="keyword">return</span> output_hidden.unsqueeze(<span class="number">0</span>), output_memory.unsqueeze(<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+<p>第一次进入forward方法时，hidden是None，hx, cx被初始化为(batch_size, hidden_dim)的张量，每个元素值均为0。后续hx, cx取自传入的hidden。</p>
+<p>input对应的句子每个字的embedding，size为(batch_size, sentence_length, embedding_dim)；</p>
+<p>skip_input得到的就是generate_instance_with_gaz里gaz_ids，是一个三维的列表（函数注释里写的也很清晰）</p>
+<p>input后续经过transpose(1, 0)的操作，变成(sentence_length, batch_size, embedding_dim)，按照句子长度，每次输入到rnn中(batch_size, embedding_dim)大小</p>
+<p>这里还有一个反向的backward lstm(其self.left2right=False)，简单理一下他的计算原理，还是以这个句子举例</p>
+<p>新华社华盛顿0月00日电（记者翟景升）</p>
+<p>对应的word_list为：[‘新’, ‘华’, ‘社’, ‘华’, ‘盛’, ‘顿’, ‘0’, ‘月’, ‘0’, ‘0’, ‘日’, ‘电’, ‘（’, ‘记’, ‘者’, ‘翟’, ‘景’, ‘升’, ‘）’]</p>
+<p>gazs为：[[‘新华社’, ‘新华’], [‘华社’], [‘社华’], [‘华盛顿’, ‘华盛’], [‘盛顿’], [], [‘0月’], [], [‘00’], [‘0日’], [], [], [], [‘记者’], [], [‘翟景升’, ‘翟景’], [‘景升’], [], []]</p>
+<p>gaz_ids为：[[[13, 14], [3, 2]], [[15], [2]], [[16], [2]], [[17, 18], [3, 2]], [[19], [2]], [], [[20], [2]], [], [[21], [2]], [[22], [2]], [], [], [], [[23], [2]], [], [[24, 25], [3, 2]], [[26], [2]], [], []]</p>
+<p>在反向lstm网络的计算时，首先将这里的gaz_ids（也就是skip_input）进行如下转换操作</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">convert_forward_gaz_to_backward</span><span class="params">(forward_gaz)</span>:</span></span><br><span class="line">    <span class="comment"># print forward_gaz</span></span><br><span class="line">    length = len(forward_gaz)</span><br><span class="line">    backward_gaz = init_list_of_objects(length)</span><br><span class="line">    <span class="keyword">for</span> idx <span class="keyword">in</span> range(length):</span><br><span class="line">        <span class="keyword">if</span> forward_gaz[idx]:</span><br><span class="line">            <span class="keyword">assert</span>(len(forward_gaz[idx]) == <span class="number">2</span>)</span><br><span class="line">            num = len(forward_gaz[idx][<span class="number">0</span>])</span><br><span class="line">            <span class="keyword">for</span> idy <span class="keyword">in</span> range(num):</span><br><span class="line">                the_id = forward_gaz[idx][<span class="number">0</span>][idy]</span><br><span class="line">                the_length = forward_gaz[idx][<span class="number">1</span>][idy]</span><br><span class="line">                new_pos = idx+the_length - <span class="number">1</span></span><br><span class="line">                <span class="keyword">if</span> backward_gaz[new_pos]:</span><br><span class="line">                    backward_gaz[new_pos][<span class="number">0</span>].append(the_id)</span><br><span class="line">                    backward_gaz[new_pos][<span class="number">1</span>].append(the_length)</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    backward_gaz[new_pos] = [[the_id], [the_length]]</span><br><span class="line">    <span class="keyword">return</span> backward_gaz</span><br></pre></td></tr></table></figure>
+<p>[‘新华社’, ‘新华’]对应的id是[13, 14]，在句子skip_input中的位置本来是”新”字的位置，即[0]号元素，经过转换后</p>
+<p>[‘新华社’]换到了”社”字的位置，即[2]号元素，[‘新华’]则换到了”华”字的位置，即[1]号元素；</p>
+<p>即现在的可选词的id所在的位置不是词的开始字位置了，而是词的结束字位置；</p>
+<p>接下来按照句子顺序进行计算时，是逆序计算</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> self.left2right:</span><br><span class="line">    id_list = list(reversed(id_list))</span><br><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> id_list:</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+<p>与前向计算的原理类似（这里先看一下后面WordLSTMCell的计算说明更好理解），前向计算时是在”新”字时，会计算出”新华社”和”新华”的Cell值，之后在计算到”华”时融合”新华”的Cell值，在计算到”社”时融合”新华社”的Cell值，这里反向计算时（句子逆序），是会先计算到”社”字，这时同样也会先计算出”新华社”的Cell值，等到计算”新”字时将Cell值融合计算。</p>
+<p>这步操作猛地很难理解，一直在讲的是<strong>如果当前字在词典中存在以它结尾的词时，需要通过红色Cell引入相关潜在词信息，与主干上基于字的LSTM中相应Cell进行融合</strong>，这里”新”又不是词的末尾，”社”才是词的末尾，怎么计算逻辑不符合这一规则？这时候需要把脑子倒过来思考，毕竟<strong>句子是逆序的</strong>，在逆序情况下，其实是认为”社华新”是一个词，”新”就是词的末尾，是不是突然悟了！</p>
+<p>最后返回时，再把逆序计算得到的结果反转过来</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> self.left2right:</span><br><span class="line">    hidden_out = list(reversed(hidden_out))</span><br><span class="line">    memory_out = list(reversed(memory_out))</span><br></pre></td></tr></table></figure>
+<h5 id="MultiInputLSTMCell"><a href="#MultiInputLSTMCell" class="headerlink" title="MultiInputLSTMCell"></a>MultiInputLSTMCell</h5><p>self.rnn对应的MultiInputLSTMCell，其forward方法如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, input_, c_input, hx)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    Args:</span></span><br><span class="line"><span class="string">        batch = 1</span></span><br><span class="line"><span class="string">        input_: A (batch, input_size) tensor containing input</span></span><br><span class="line"><span class="string">            features.</span></span><br><span class="line"><span class="string">        c_input: A  list with size c_num,each element is the input ct from skip word (batch, hidden_size).</span></span><br><span class="line"><span class="string">        hx: A tuple (h_0, c_0), which contains the initial hidden</span></span><br><span class="line"><span class="string">            and cell state, where the size of both states is</span></span><br><span class="line"><span class="string">            (batch, hidden_size).</span></span><br><span class="line"><span class="string">    Returns:</span></span><br><span class="line"><span class="string">        h_1, c_1: Tensors containing the next hidden and cell state.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line"></span><br><span class="line">    h_0, c_0 = hx</span><br><span class="line">    batch_size = h_0.size(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">assert</span>(batch_size == <span class="number">1</span>)</span><br><span class="line">    bias_batch = (self.bias.unsqueeze(<span class="number">0</span>).expand(batch_size, *self.bias.size()))</span><br><span class="line">    wh_b = torch.addmm(bias_batch, h_0, self.weight_hh)</span><br><span class="line">    wi = torch.mm(input_, self.weight_ih)</span><br><span class="line">    i, o, g = torch.split(wh_b + wi, split_size_or_sections=self.hidden_size, dim=<span class="number">1</span>)</span><br><span class="line">    i = torch.sigmoid(i)</span><br><span class="line">    g = torch.tanh(g)</span><br><span class="line">    o = torch.sigmoid(o)</span><br><span class="line">    c_num = len(c_input)</span><br><span class="line">    <span class="keyword">if</span> c_num == <span class="number">0</span>:</span><br><span class="line">        f = <span class="number">1</span> - i  <span class="comment"># 为什么遗忘门=1-输入门（LSTM内部也是这么实现的吗？）</span></span><br><span class="line">        c_1 = f*c_0 + i*g</span><br><span class="line">        h_1 = o * torch.tanh(c_1)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        c_input_var = torch.cat(c_input, <span class="number">0</span>)</span><br><span class="line">        alpha_bias_batch = (self.alpha_bias.unsqueeze(<span class="number">0</span>).expand(batch_size, *self.alpha_bias.size()))</span><br><span class="line">        c_input_var = c_input_var.squeeze(<span class="number">1</span>)  <span class="comment"># (c_num, hidden_dim)</span></span><br><span class="line">        alpha_wi = torch.addmm(self.alpha_bias, input_, self.alpha_weight_ih).expand(c_num, self.hidden_size)</span><br><span class="line">        alpha_wh = torch.mm(c_input_var, self.alpha_weight_hh)</span><br><span class="line">        alpha = torch.sigmoid(alpha_wi + alpha_wh)</span><br><span class="line">        <span class="comment"># alpha  = i concat alpha</span></span><br><span class="line">        alpha = torch.exp(torch.cat([i, alpha], <span class="number">0</span>))</span><br><span class="line">        alpha_sum = alpha.sum(<span class="number">0</span>)</span><br><span class="line">        <span class="comment"># alpha = softmax for each hidden element</span></span><br><span class="line">        alpha = torch.div(alpha, alpha_sum)</span><br><span class="line">        merge_i_c = torch.cat([g, c_input_var], <span class="number">0</span>)</span><br><span class="line">        c_1 = merge_i_c * alpha</span><br><span class="line">        c_1 = c_1.sum(<span class="number">0</span>).unsqueeze(<span class="number">0</span>)</span><br><span class="line">        h_1 = o * torch.tanh(c_1)</span><br><span class="line">    <span class="keyword">return</span> h_1, c_1</span><br></pre></td></tr></table></figure>
+<p>wh_b = torch.addmm(bias_batch, h_0, self.weight_hh)</p>
+<p>意思是h_0与weight_hh进行矩阵点乘，之后再加上bias_batch，与我们熟知的神经元计算方法一致；</p>
+<p>torch.mm的功能是矩阵点乘，即左行乘右列</p>
+<p>然后这里在计算时分两种情况：</p>
+<ol>
+<li><p>c_input是空列表（每个句子的首字进去计算时肯定是空列表，或者不存在以这个字为末尾的词时也是空列表），就是进行正常的lstm网络的cell计算，但是这里的遗忘门(f)的计算方法是使用1-输入门(i)，不确定这一原理是什么；（这种情况下LatticeLSTM的计算退化为基本的LSTM）</p>
+</li>
+<li><p>c_input是非空列表，其每一个元素是以这个字为结尾的词的embedding，其元素个数记为c_num，即这个句子中有c_num个以这个字为结尾的词，而每个元素的size为(batch_size, hidden_size)；</p>
+<p>在这里，首先利用input和c_input_var计算出alpha_wi和alpha_wh，然后两者相加进行sigmoid得到alpha（这几个步骤对应额外的输入门计算部分）</p>
+<p>接下来要做的是加权所有可选词的输入门(alpha)和当前字的输入门（i），这里alpha的尺寸为(c_num, hidden_size)，即有几个可选词，c_num则为几，所以下面这几个步骤是计算权重值</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">alpha = torch.exp(torch.cat([i, alpha], <span class="number">0</span>))</span><br><span class="line">alpha_sum = alpha.sum(<span class="number">0</span>)</span><br><span class="line"><span class="comment"># alpha = softmax for each hidden element</span></span><br><span class="line">alpha = torch.div(alpha, alpha_sum)</span><br></pre></td></tr></table></figure>
+<p>再然后利用当前字的输入门权重(alpha中的一部分)*当前字的更新候选值(g)加上每一个可选词的输入门权重（alpha中的其余部分）*相应可选词的cell state（c_input_var，size(0)为可选词的个数），最终得到C_1</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">merge_i_c = torch.cat([g, c_input_var], <span class="number">0</span>)</span><br><span class="line">c_1 = merge_i_c * alpha</span><br></pre></td></tr></table></figure>
+<p>最后得到h1的值（在c_input非空的情况下，c_0并没有使用,所以这里算信息丢失）</p>
+</li>
+</ol>
+<h5 id="WordLSTMCell"><a href="#WordLSTMCell" class="headerlink" title="WordLSTMCell"></a>WordLSTMCell</h5><p>self.word_rnn对应的是WordLSTMCell，其forward方法如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, input_, hx)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    Args:</span></span><br><span class="line"><span class="string">        input_: A (batch, input_size) tensor containing input</span></span><br><span class="line"><span class="string">            features.</span></span><br><span class="line"><span class="string">        hx: A tuple (h_0, c_0), which contains the initial hidden</span></span><br><span class="line"><span class="string">            and cell state, where the size of both states is</span></span><br><span class="line"><span class="string">            (batch, hidden_size).</span></span><br><span class="line"><span class="string">    Returns:</span></span><br><span class="line"><span class="string">        h_1, c_1: Tensors containing the next hidden and cell state.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line"></span><br><span class="line">    h_0, c_0 = hx</span><br><span class="line">    batch_size = h_0.size(<span class="number">0</span>)</span><br><span class="line">    bias_batch = (self.bias.unsqueeze(<span class="number">0</span>).expand(batch_size, *self.bias.size()))</span><br><span class="line">    wh_b = torch.addmm(bias_batch, h_0, self.weight_hh)</span><br><span class="line">    wi = torch.mm(input_, self.weight_ih)</span><br><span class="line">    f, i, g = torch.split(wh_b + wi, split_size_or_sections=self.hidden_size, dim=<span class="number">1</span>)</span><br><span class="line">    c_1 = torch.sigmoid(f)*c_0 + torch.sigmoid(i)*torch.tanh(g)</span><br><span class="line">    <span class="keyword">return</span> c_1</span><br></pre></td></tr></table></figure>
+<p>这个里面的计算相对来说比较容易理解，对照红色cell部分的输出公式，基本就能理解；</p>
+<p>但是需要注意的是输入参数的含义，input_并非是句子中当前字的embedding，而是以这个字为开始的所有可能词的embedding，hx中的h_0和c_0则来自这个字经过lstm之后的输出h和c。</p>
+<p>前面我们提过<strong>如果当前字在词典中存在以它结尾的词时，需要通过红色Cell引入相关潜在词信息，与主干上基于字的LSTM中相应Cell进行融合</strong>，所以得到的输出c_1并不是用于这里输入的字（input_是以这个字为开始的所有可能词的embedding）的信息融合的，而是在这里先计算出来，保存到input_c_list中，当计算到这个词的末尾的字时，再拿出来进行信息融合。</p>
+<p>例如”中国人”，这里输入的是”中国人”的embedding，hx中的h_0和c_0则是”中”字得到的状态值，所以这里计算得到的c_1并不是给”中”字用的，而是后续给”人”用的。</p>
+<h4 id="CRF模型"><a href="#CRF模型" class="headerlink" title="CRF模型"></a>CRF模型</h4><p>Lattice LSTM源代码中，CRF模型是自行实现的，其主要实现了以下方法：</p>
+<p><code>_viterbi_decode</code>：解码，其中有一行代码可能是错了</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># bat_size * to_target_size</span></span><br><span class="line"><span class="comment"># partition = inivalues[:, START_TAG, :].clone().view(batch_size, tag_size, 1) </span></span><br><span class="line"><span class="comment"># 上面这个可能是bug</span></span><br><span class="line">partition = inivalues[:, START_TAG, :].clone().view(batch_size, tag_size)  </span><br><span class="line">partition_history.append(partition)</span><br></pre></td></tr></table></figure>
+<p>原来的代码是view成(batch_size, tag_size, 1)，但是这样到最后会导致partition_history中首号元素的尺寸与其余元素的尺寸不一致，从而 torch.cat(partition_history, 0)会报错，这里这样改了一下就好了，但是不确定这样改对不对。</p>
+<p><code>forward</code>：方法定义错误，缺失了mask参数（不过在代码中倒是没有调用forward方法，而是直接调用了._viterbi_decode方法）</p>
+<p>原来的代码是：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, feats)</span>:</span></span><br><span class="line">    path_score, best_path = self._viterbi_decode(feats)</span><br><span class="line">    <span class="keyword">return</span> path_score, best_path</span><br></pre></td></tr></table></figure>
+<p>应该修改为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, feats, mask)</span>:</span></span><br><span class="line">    path_score, best_path = self._viterbi_decode(feats, mask)</span><br><span class="line">    <span class="keyword">return</span> path_score, best_path</span><br></pre></td></tr></table></figure>
+<p>这样修改完之后，调用crf._viterbi_decode的地方可以改为self.crf()（即调用forward方法）</p>
+<p><code>neg_log_likelihood_loss</code>：计算损失，分别调用<code>_calculate_PZ</code>和<code>_score_sentence</code></p>
+<h3 id="模型评估"><a href="#模型评估" class="headerlink" title="模型评估"></a>模型评估</h3><p>acc：统计模型每一个字符的输出与真实标签之间的准确率，一般会得到一个比较高的值</p>
+<p>p、r、f则是以一个实体作为基本单位评估模型</p>
+<p>main.py中的main函数，status=”train”，表示训练，会同时针对训练集做训练，验证集和测试集做验证和测试；如果仅评估验证集或测试集，可以设置status=”dev”or”test”，如果需要将预测结果保存下来，status=”decode”，并设置–output，即要保存的文件地址和名称。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python main.py --status decode --output data/predict.txt --loadmodel data/model/saved_model.lstmcrf.model --raw data/demo.test.char</span><br></pre></td></tr></table></figure>
+<h3 id="关于数据集的标注规范问题"><a href="#关于数据集的标注规范问题" class="headerlink" title="关于数据集的标注规范问题"></a>关于数据集的标注规范问题</h3><p>Lattice LSTM项目支持两种标注规范的数据集训练，BIO和BIOES（GitHub主页上写推荐使用BIOES），其实关于这两种标注规范没啥可说的，领域内的人都非常清楚，但是这个项目还涉及到<strong>BMES</strong>的问题，所以简单介绍下更好理解：</p>
+<p>BIO标注法：B-begin，I-inside，O-outside，B-X 代表实体X的开头， I-X代表实体的结尾 O代表不属于任何类型的；</p>
+<p>BIOES标注法：B-begin，I-inside，O-outside，E-end，S-single，B 表示开始，I表示内部， O表示非实体 ，E实体尾部，S表示该词（当然如果中文字符NER的话，就是单个字）本身就是一个实体；</p>
+<p>但是通过看LatticeLSTM的源代码和训练数据样例是区分两种标注schema，即<strong>BMES</strong>和BIO</p>
+<p>BMES实际上是一种<strong>中文分词的标注方法</strong>：</p>
+<p>B表示一个词的词首位值，M表示一个词的中间位置，E表示一个词的末尾位置，S表示一个单独的字词。</p>
+<p>训练数据样例的标签也是采用的M而并非I，而且有O的出现，所以可以理解采用的标注方法为BMOES，只是用M代替了I，本质上与BIOES是一样的（网上经常会有人问BMES标注能不能做NER，我的答案是能做，但是要做思想上的转化即M代替I，并引入O标签，BMOES和BIOES本质一样，只不过命名不一样而已，但是和分词的BMES有一定的区别）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">中 B-ORG</span><br><span class="line">国 M-ORG</span><br><span class="line">人 M-ORG</span><br><span class="line">民 M-ORG</span><br><span class="line">保 M-ORG</span><br><span class="line">险 M-ORG</span><br><span class="line">公 M-ORG</span><br><span class="line">司 E-ORG</span><br><span class="line">甘 B-GPE</span><br><span class="line">肃 M-GPE</span><br><span class="line">省 E-GPE</span><br></pre></td></tr></table></figure>
+<p>研究表明，BIO和BIOES标注方法对训练效果的影响不大，我首选了BIO标注方法进行训练，如果有必要的话，我会切换BIOES标注方法再进行测试.</p>
+<h3 id="关于LatticeLSTM的缺点"><a href="#关于LatticeLSTM的缺点" class="headerlink" title="关于LatticeLSTM的缺点"></a>关于LatticeLSTM的缺点</h3><p>在剖析了LatticeLSTM的源码之后,我们在其源代码中发现两点问题</p>
+<ol>
+<li>LatticeLSTM只能支持batch_size=1;</li>
+<li>当前字符有词汇融入时，则进行融合计算；如当前字符没有词汇时，则采取原生的LSTM进行计算。当有词汇信息时，Lattice LSTM并没有利用前一时刻的记忆向量C ，即不保留对词汇信息的持续记忆。</li>
+</ol>
+<p>所以LatticeLSTM存在一些缺点:</p>
+<ol>
+<li><strong>计算性能低下，不能batch并行化</strong>。究其原因主要是每个字符之间的增加word cell（看作节点）数目不一致；</li>
+<li><strong>信息损失</strong>：1）每个字符只能获取以它为结尾的词汇信息，对于其之前的词汇信息也没有持续记忆。如对于「药」，并无法获得‘inside’的「人和药店」信息。2）由于RNN特性，采取BiLSTM时其前向和后向的词汇信息不能共享。</li>
+<li><strong>可迁移性差</strong>：只适配于LSTM，不具备向其他网络迁移的特性。</li>
+</ol>
+<p>但是不可否认的是LatticeLSTM作为中文字符NER融入词汇信息进行增强的开山之作,其在当时的提升以及对这一领域的贡献是巨大的.</p>
+<h3 id="关于LatticeLSTM的实践"><a href="#关于LatticeLSTM的实践" class="headerlink" title="关于LatticeLSTM的实践"></a>关于LatticeLSTM的实践</h3><p>关于Lattice LSTM的一些超参数设置,学习率是一个递减(初始值0.015)的方式,优化空间不大,优化器源码使用的SGD,我尝试使用Adam/AdamW效果均没有SGD好(有点疑惑),SGD优化器设置的weight_decay=0.05,momentum=0,我尝试将momentum设置为0.9,效果比较差,经过几十轮的学习,F1值只有20%~30%.</p>
+<p>源代码中LSTM的层数设置为1,我本来想设置为2测试,后发现并不生效,通过查看源代码发现这个配置其实并没有用到,因为将LSTM改写成了LatticeLSTM,且作者只实现了一层的代码,所以如果想设置更多的层,需要自己改源代码,难度较大.</p>
+<p>数据和模型同步到GPU的代码可能还有地方需要改进,因为训练的时候,发现基本上是占用的CPU,GPU基本没有使用</p>
+<p>还有模型的预测部分有bug(status=test),在status=test时,模型加载了两次,每次都将标签数+2,所以导致第二次加载模型后,总的标签数量对应不上…</p>
+<p>模型不支持训练句子中包含空格(有空格的处理有问题,虽然不影响训练,但是从逻辑上得到的句子不正确),可以增加逻辑处理句子包含空格的情形</p>
+<p>模型默认会将数字全部转换成0训练,可以更改参数配置(number_normalized=False)</p>
+<h3 id="词汇增强的中文NER方法"><a href="#词汇增强的中文NER方法" class="headerlink" title="词汇增强的中文NER方法"></a>词汇增强的中文NER方法</h3><p>中文NER模型对比评测:<a href="https://zhuanlan.zhihu.com/p/142615620" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/142615620</a></p>
+<p><a href="https://github.com/loujie0822/DeepIE" target="_blank" rel="noopener">loujie0822/DeepIE: DeepIE: Deep Learning for Information Extraction (github.com)</a></p>
+<p>近年来，基于词汇增强的中文NER主要分为2条主线：</p>
+<ol>
+<li><strong>Dynamic Architecture</strong>：设计一个动态框架，能够兼容词汇输入；</li>
+<li><strong>Adaptive Embedding</strong> ：基于词汇信息，构建自适应Embedding；</li>
+</ol>
+<p>本文按照上述2条主线，将近年来各大顶会的相关论文归纳如下：</p>
+<p><img src="/2024/03/24/nlp-lattice-lstm/词汇增强ner.webp" alt></p>
+<p>接下来可以研究:</p>
+<p>Simple-Lexicon和Flat</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/nlp/" rel="tag"># nlp</a>
+          
+            <a href="/tags/NER/" rel="tag"># NER</a>
+          
+            <a href="/tags/lattice-lstm/" rel="tag"># lattice lstm</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2023/12/28/nlp-transformer-ner/" rel="next" title="使用Transformer Encoder进行NER任务">
+                <i class="fa fa-chevron-left"></i> 使用Transformer Encoder进行NER任务
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2024/04/13/nlp-simple-lexicon-paper/" rel="prev" title="Simplify the Usage of Lexicon in Chinese NER论文">
+                Simplify the Usage of Lexicon in Chinese NER论文 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">114</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">209</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#LatticeLSTM原理解读与模型实现"><span class="nav-text">LatticeLSTM原理解读与模型实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#模型细节"><span class="nav-text">模型细节</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#LSTM的基本单元"><span class="nav-text">LSTM的基本单元</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#红色cell"><span class="nav-text">红色cell</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#信息融合"><span class="nav-text">信息融合</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#项目实战"><span class="nav-text">项目实战</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#data-initialization"><span class="nav-text">data_initialization</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#generate-instance-with-gaz"><span class="nav-text">generate_instance_with_gaz</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#build-xx-pretrain-emb"><span class="nav-text">build_xx_pretrain_emb</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#batchify-with-label"><span class="nav-text">batchify_with_label</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SeqModel"><span class="nav-text">SeqModel</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#BiLSTM"><span class="nav-text">BiLSTM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LatticeLSTM"><span class="nav-text">LatticeLSTM</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#MultiInputLSTMCell"><span class="nav-text">MultiInputLSTMCell</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#WordLSTMCell"><span class="nav-text">WordLSTMCell</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CRF模型"><span class="nav-text">CRF模型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模型评估"><span class="nav-text">模型评估</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关于数据集的标注规范问题"><span class="nav-text">关于数据集的标注规范问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关于LatticeLSTM的缺点"><span class="nav-text">关于LatticeLSTM的缺点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#关于LatticeLSTM的实践"><span class="nav-text">关于LatticeLSTM的实践</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#词汇增强的中文NER方法"><span class="nav-text">词汇增强的中文NER方法</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

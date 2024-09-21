@@ -259,6 +259,461 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2023/03/11/spider-experience/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2023/03/11/spider-experience/" itemprop="url">业务爬取经验总结</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-03-11T14:33:42+08:00">
+                2023-03-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/爬虫/" itemprop="url" rel="index">
+                    <span itemprop="name">爬虫</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="业务爬取经验总结"><a href="#业务爬取经验总结" class="headerlink" title="业务爬取经验总结"></a>业务爬取经验总结</h2><p><strong>注意代理有没有挂上</strong>，如果没有挂上也不会有什么提示，会直接使用本机<code>IP</code>，风险极高。</p>
+<p>在平时业务开发时，遇到的网站一般分为两种类型，搜索式和列表式，当然列表式居多</p>
+<h3 id="列表式爬取方法"><a href="#列表式爬取方法" class="headerlink" title="列表式爬取方法"></a>列表式爬取方法</h3><p>拿到一个待开发的网站，一般开发完成之后，先爬取一遍全部历史数据，再上线增量爬取。</p>
+<h4 id="历史数据爬取过程中需要注意的点"><a href="#历史数据爬取过程中需要注意的点" class="headerlink" title="历史数据爬取过程中需要注意的点"></a>历史数据爬取过程中需要注意的点</h4><p>首先是要测试，要多看爬取日志，不要直接就推送入库；<br>查看日志可以看第一页、第二页、中间随机抽取几页和最后一页，日志是否和网站上的数据对应的上，避免一些程序bug压根没有成功翻页，然后也要看字段解析的是否正确，如果有比较明显的大规模错误那就要优化程序。</p>
+<p>如果该业务的数据源是比较多的情况，就要考虑不同的源是不是会造成重复，比如当前的数据源数据质量本身很差（结构化错误比例较高或缺少关键字段信息等），那最好先看下这个源的数据是否已经被其他源覆盖（在开发之前也可以进行评估），如果已被其他源覆盖就可以不爬取历史数据或者直接不开发，避免这个源的数据覆盖其他更优质的源的数据。</p>
+<p>其他还有一些针对数据质量不太好的源的爬取方法，比如增加过滤逻辑，缺失某些字段的数据丢弃；或者根据页码或者发布日期只爬取部分质量较好的数据。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2023/03/11/spider-experience/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2023/03/04/pytorch-regularization/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2023/03/04/pytorch-regularization/" itemprop="url">PyTorch正则化和批标准化</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-03-04T13:08:05+08:00">
+                2023-03-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/pytorch/" itemprop="url" rel="index">
+                    <span itemprop="name">pytorch</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="PyTorch正则化和批标准化"><a href="#PyTorch正则化和批标准化" class="headerlink" title="PyTorch正则化和批标准化"></a><code>PyTorch</code>正则化和批标准化</h2><p>Regularization-正则化：<strong>减小方差的策略</strong></p>
+<p>误差可分为解为：偏差，方差与噪声之和，即误差=偏差+方差+噪声之和；</p>
+<p><strong>偏差</strong>：度量了学习算法的期望预测与真实结果的偏离程度，即刻画了学习算法本身的拟合能力；<br><strong>方差</strong>：度量了同样大小的训练集的变动所导致的学习性能的变化，即刻画了数据扰动所造成的影响；<br><strong>噪声</strong>：表达了在当前任务上任何学习算法所能达到的期望泛化误差的下界。</p>
+<p>简而言之，偏差是指在<strong>所有训练数据</strong>上训练得到的模型性能和在真实数据上表现的差异，方差是指模型在<strong>训练集和验证集（测试集）上的差异</strong>，方差重点在于不同数据集；噪声则是指给定的数据集（其可能存在噪声），那么当前数据集的数据质量已经决定了学习性能的上限，学习的目标就是尽可能的接近这个上限。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2023/03/04/pytorch-regularization/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2023/02/25/pytorch-optim/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2023/02/25/pytorch-optim/" itemprop="url">Pytorch中的优化器Optimizer</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2023-02-25T16:34:05+08:00">
+                2023-02-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/pytorch/" itemprop="url" rel="index">
+                    <span itemprop="name">pytorch</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="Pytorch中的优化器Optimizer"><a href="#Pytorch中的优化器Optimizer" class="headerlink" title="Pytorch中的优化器Optimizer"></a>Pytorch中的优化器Optimizer</h2><h3 id="什么是优化器"><a href="#什么是优化器" class="headerlink" title="什么是优化器"></a>什么是优化器</h3><p><code>pytorch</code>的优化器：<strong>管理并更新</strong>模型中可学习参数的值，使得模型输出更接近真实标签</p>
+<p><strong>导数</strong>：函数在指定坐标轴上的变化率<br><strong>方向导数</strong>：指定方向上的变化率（二元及以上函数，偏导数）<br><strong>梯度</strong>：一个向量，方向是使得方向导数取得最大值的方向</p>
+<h3 id="Pytorch的Optimizer"><a href="#Pytorch的Optimizer" class="headerlink" title="Pytorch的Optimizer"></a><code>Pytorch</code>的Optimizer</h3><p><img src="/2023/02/25/pytorch-optim/p1.png" alt></p>
+<p>参数</p>
+<ul>
+<li>defaults：优化器超参数</li>
+<li>state：参数的缓存，如momentum的缓存</li>
+<li><code>param_groups</code>：管理的参数组</li>
+<li>_step_count：记录更新次数，学习率调整中使用</li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2023/02/25/pytorch-optim/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2023/02/18/pytorch-loss/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1315,456 +1770,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/11/19/nlp-ner-summarize/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2022/11/19/nlp-ner-summarize/" itemprop="url">一篇基于深度学习的命名实体识别技术的研究报告</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-11-19T14:29:24+08:00">
-                2022-11-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
-                    <span itemprop="name">自然语言处理</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="一篇基于深度学习的命名实体识别技术的研究报告"><a href="#一篇基于深度学习的命名实体识别技术的研究报告" class="headerlink" title="一篇基于深度学习的命名实体识别技术的研究报告"></a>一篇基于深度学习的命名实体识别技术的研究报告</h1><p>本篇文章主要是自己刚接触NER领域时，研读这篇《 A Survey on Deep Learning for Named Entity Recognition 》NER综述论文时翻译的中文版，这篇综述时间是2020年，可能近两年的部分成果暂未包含，很多内容是通过百度翻译直接翻的，部分内容进行了一定的调整。有少部分内容省略了，具体可以参考原论文，所有涉及的文献引用也请参考原论文。</p>
-<h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>命名实体识别（NER）是从属于预定义语义类型（如人、地点、组织等）的文本中识别固定指示符的任务；NER常作为问答系统、文本摘要和机器翻译等许多自然语言应用的基础；早期的NER系统通过消耗人力设计特定领域的特征和规则取得了巨大的成功，近年来，由连续实值向量表示和通过非线性处理的语义合成所支持的深度学习已被应用于NER系统，并产生了最先进的性能。在本文中，我们全面回顾了现有的面向NER的深度学习技术。 我们首先介绍现有的NER资源，包括已标记的NER语料库和现成的NER工具。然后，我们将NER现有的工作分为三类来进行系统的介绍：<strong>输入的分布式表示、上下文编码器和标记解码器</strong>。接下来，我们调研了在新的NER问题设置和应用上最具代表性的深度学习技术。最后，我们向读者介绍了NER系统面临的挑战和未来的研究方向。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2022/11/19/nlp-ner-summarize/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/11/05/nlp-ktgg_ner4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2022/11/05/nlp-ktgg_ner4/" itemprop="url">使用UER进行开庭公告命名实体识别-续3</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-11-05T11:24:04+08:00">
-                2022-11-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
-                    <span itemprop="name">自然语言处理</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="使用UER进行开庭公告命名实体识别-续3"><a href="#使用UER进行开庭公告命名实体识别-续3" class="headerlink" title="使用UER进行开庭公告命名实体识别-续3"></a>使用UER进行开庭公告命名实体识别-续3</h2><h3 id="模型训练和测试"><a href="#模型训练和测试" class="headerlink" title="模型训练和测试"></a>模型训练和测试</h3><h4 id="未使用CRF层"><a href="#未使用CRF层" class="headerlink" title="未使用CRF层"></a>未使用CRF层</h4><p>将上次的问题全部解决之后，并且增加了一些特定法院名称和案由的训练数据，并且兼容了劳动仲裁开庭公告的抽取，模型的训练日志如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[2022-10-15 09:09:03,601 INFO] Epoch id: 5, Training steps: 1900, Avg loss: 0.000</span><br><span class="line">[2022-10-15 09:09:25,614 INFO] Epoch id: 5, Training steps: 2000, Avg loss: 0.001</span><br><span class="line">[2022-10-15 09:09:47,766 INFO] Epoch id: 5, Training steps: 2100, Avg loss: 0.000</span><br><span class="line">[2022-10-15 09:10:09,830 INFO] Epoch id: 5, Training steps: 2200, Avg loss: 0.001</span><br><span class="line">[2022-10-15 09:10:31,829 INFO] Epoch id: 5, Training steps: 2300, Avg loss: 0.001</span><br><span class="line">[2022-10-15 09:10:53,881 INFO] Epoch id: 5, Training steps: 2400, Avg loss: 0.001</span><br><span class="line">[2022-10-15 09:11:15,982 INFO] Epoch id: 5, Training steps: 2500, Avg loss: 0.001</span><br><span class="line">[2022-10-15 09:11:38,139 INFO] Epoch id: 5, Training steps: 2600, Avg loss: 0.000</span><br><span class="line">[2022-10-15 09:13:33,811 INFO] Report precision, recall, and f1:</span><br><span class="line">[2022-10-15 09:13:33,812 INFO] 0.994, 0.994, 0.994</span><br></pre></td></tr></table></figure></p>
-<p>测试的结果如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">correct/total: 2567/2600</span><br><span class="line">accuracy: 0.9873076923076923</span><br><span class="line">correct/total: 2570/2600</span><br><span class="line">precision: 0.9884615384615385</span><br><span class="line">correct/total: 2567/2600</span><br><span class="line">precision: 0.9873076923076923</span><br></pre></td></tr></table></figure></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2022/11/05/nlp-ktgg_ner4/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/10/29/nlp-ktgg_ner3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2022/10/29/nlp-ktgg_ner3/" itemprop="url">使用UER进行开庭公告命名实体识别-续2</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-10-29T19:54:09+08:00">
-                2022-10-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
-                    <span itemprop="name">自然语言处理</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="使用UER进行开庭公告命名实体识别-续2"><a href="#使用UER进行开庭公告命名实体识别-续2" class="headerlink" title="使用UER进行开庭公告命名实体识别-续2"></a>使用UER进行开庭公告命名实体识别-续2</h2><p>再接着上篇博客，本次依然采用自己生成训练数据的方式来训练，经过上一次的实验和优化，本次生成的训练数据标注错误的问题将会大大减少，因为很多实体是根据已有数据进行收集的，没有耗费大量的人力去逐条核验，难免会存在噪音，这一次修复了上篇中存在的各种噪音问题，并且还做了较多优化，具体效果如何，继续来看看吧。</p>
-<h3 id="优化方案"><a href="#优化方案" class="headerlink" title="优化方案"></a>优化方案</h3><p>这一次在上一次的训练结果上做了以下优化点：</p>
-<ol>
-<li>修复了目前见过的在数据集生成方面的噪音；</li>
-<li>生成的数据种类大幅增加，增加了6种模板；</li>
-<li>大幅度减少每种模板生成的数量，防止过拟合；</li>
-<li>通过在生成的文本中增加一定的冗余数据，来让模型学会识别哪些信息并不是我们需要的实体；</li>
-<li>生成了一定比例当事人之间没有任何分隔符号的数据，以此来进一步提升训练模型的抽取能力；</li>
-<li>修复了一个“意料之外，又在情理之中”的问题，这个问题下面会说明；</li>
-<li>修复了有空白字符开头的句子预测实体的位置索引不准确的问题。</li>
-</ol>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2022/10/29/nlp-ktgg_ner3/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1817,7 +1822,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">111</span>
+                  <span class="site-state-item-count">114</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1839,7 +1844,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">207</span>
+                  <span class="site-state-item-count">209</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

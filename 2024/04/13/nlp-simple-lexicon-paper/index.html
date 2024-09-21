@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="deep learning,nlp,NER,simple lexicon,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Simplify the Usage of Lexicon in Chinese NERAbstract有很多工作尝试利用词汇信息提升中文NER的性能,例如LatticeLSTM, 但是它有一个复杂的网络结构,速度也比较慢; 在这项工作中,我们提出了一个将词汇信息融入字符表示的简单而有效的方法,这个方法没有设计复杂的序列模型结构,对于任何神经NER模型，它只需要对字符表示层进行细微的调整就可以引入">
+<meta name="keywords" content="deep learning,nlp,NER,simple lexicon">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Simplify the Usage of Lexicon in Chinese NER论文">
+<meta property="og:url" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="Simplify the Usage of Lexicon in Chinese NERAbstract有很多工作尝试利用词汇信息提升中文NER的性能,例如LatticeLSTM, 但是它有一个复杂的网络结构,速度也比较慢; 在这项工作中,我们提出了一个将词汇信息融入字符表示的简单而有效的方法,这个方法没有设计复杂的序列模型结构,对于任何神经NER模型，它只需要对字符表示层进行细微的调整就可以引入">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/网络结构图.png">
+<meta property="og:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/char_embedding.png">
+<meta property="og:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/char_bichar.png">
+<meta property="og:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/BMESO.png">
+<meta property="og:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/Exsoftword.png">
+<meta property="og:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/SoftLexicon.png">
+<meta property="og:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/mean_pooling.png">
+<meta property="og:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/frequency.png">
+<meta property="og:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/combine.png">
+<meta property="og:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/table2.png">
+<meta property="og:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/speed_comparison.png">
+<meta property="og:updated_time" content="2024-09-21T10:47:34.180Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Simplify the Usage of Lexicon in Chinese NER论文">
+<meta name="twitter:description" content="Simplify the Usage of Lexicon in Chinese NERAbstract有很多工作尝试利用词汇信息提升中文NER的性能,例如LatticeLSTM, 但是它有一个复杂的网络结构,速度也比较慢; 在这项工作中,我们提出了一个将词汇信息融入字符表示的简单而有效的方法,这个方法没有设计复杂的序列模型结构,对于任何神经NER模型，它只需要对字符表示层进行细微的调整就可以引入">
+<meta name="twitter:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/网络结构图.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/">
+
+
+
+
+
+  <title>Simplify the Usage of Lexicon in Chinese NER论文 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Simplify the Usage of Lexicon in Chinese NER论文</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-04-13T18:32:04+08:00">
+                2024-04-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Simplify-the-Usage-of-Lexicon-in-Chinese-NER"><a href="#Simplify-the-Usage-of-Lexicon-in-Chinese-NER" class="headerlink" title="Simplify the Usage of Lexicon in Chinese NER"></a>Simplify the Usage of Lexicon in Chinese NER</h2><h3 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h3><p>有很多工作尝试利用词汇信息提升中文NER的性能,例如LatticeLSTM, 但是它有一个复杂的网络结构,速度也比较慢;</p>
+<p>在这项工作中,我们提出了一个将词汇信息融入字符表示的简单而有效的方法,这个方法没有设计复杂的序列模型结构,对于任何神经NER模型，它<strong>只需要对字符表示层进行细微的调整就可以引入词典信息</strong>. </p>
+<p>实验表明与之前最优的各种方法相比,我们的方法速度更快且效果更好,而且也比较方便配合预训练模型如BERT一起使用.</p>
+<p>GitHub项目:<a href="https://github.com/v-mipeng/LexiconAugmentedNER" target="_blank" rel="noopener">GitHub - v-mipeng/LexiconAugmentedNER: Reject complicated operations for incorporating lexicon for Chinese NER.</a></p>
+<a id="more"></a>
+<h3 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h3><p>中文不像英文一样,单词之间有自然分割,所以中文NER很多研究者会先进行分词,再进行NER,但是分词可能会存在错误,从而影响NER任务的准确率,其他研究者直接干脆基于字符进行中文NER,也被证明直接基于字符的NER效果会比基于分词的效果好.</p>
+<p>但是基于字符的NER确实没有利用词汇信息,基于这一思想,LatticeLSTM提出了融入词汇信息的字符NER方法,当一个字符匹配多个词语时,作者提出要保留所有词汇而不是启发式的为这个字符选择一个词语,然后让后续的NER模型来选择哪一个词更合适,为了实现这一想法，他们对LSTM-CRF模型的序列建模层进行了详细的修改.实验结果也确实表明在4个中文NER数据集上,LatticeLSTM是有改进的.</p>
+<p>然而，Lattice LSTM的模型体系结构相当复杂。为了引入词典信息，Lattice LSTM在输入序列中不相邻的字符之间添加了几个额外的边，这显著降低了其训练和推理速度。此外，很难将Lattice LSTM的结构转移到其他可能更适合某些特定任务的神经网络架构（例如，卷积神经网络和transformer）。</p>
+<p>我们的工作贡献:</p>
+<ol>
+<li>我们提出了一种简单而有效的方法来将词语词典纳入中文NER的字符表示中。</li>
+<li>所提出的方法可以转移到不同的序列标记体系结构，并且可以很容易地与BERT等预训练的模型相结合</li>
+</ol>
+<p>实验结果表明，当用<strong>单层Bi-LSTM</strong>实现序列建模层时，我们的方法在推理速度和序列标记性能方面都比现有技术的方法有了很大的改进</p>
+<h3 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h3><h4 id="Soft-word-feature"><a href="#Soft-word-feature" class="headerlink" title="Soft word feature"></a>Soft word feature</h4><p>Softword技术最初用于将分词信息合并到下游任务中,它通过嵌入相应的分割标签来增强字符表示</p>
+<h4 id="LatticeLSTM"><a href="#LatticeLSTM" class="headerlink" title="LatticeLSTM"></a>LatticeLSTM</h4><p>关于LatticeLSTM的原理,我们在别的地方已经记录的比较清楚了,这里就略了</p>
+<h3 id="Approach"><a href="#Approach" class="headerlink" title="Approach"></a>Approach</h3><p>我们试图保留Lattice LSTM的优点并克服其缺点,为此，我们提出了一种新的方法，通过简单地调整NER模型的字符表示层来引入词汇信息。我们称这个方法为: <strong>SoftLexicon</strong>, 首先，将输入序列的每个字符映射到密集向量中。接下来，构建SoftLexicon功能，并将其添加到每个字符的表示中, 最后输入到序列模型层(如LSTM网络)中.</p>
+<p><img src="/2024/04/13/nlp-simple-lexicon-paper/网络结构图.png" alt></p>
+<h4 id="Character-Representation-Layer"><a href="#Character-Representation-Layer" class="headerlink" title="Character Representation Layer"></a>Character Representation Layer</h4><p>对于基于字符的中文NER模型来说,输入序列可以看作是字符序列, s = {c1, c2, c3, …, cn} ∈ Vc , Vc是字符表(词表,叫做字典更贴切), 每个字符ci用向量表示  </p>
+<p><img src="/2024/04/13/nlp-simple-lexicon-paper/char_embedding.png" alt>)</p>
+<p><strong>char + bichar</strong>: char bigrams被证明对字符表示是有效的, 特别是那些没有使用词汇信息的方法, 所以使用bigram embeddings加强字符表示是很常见的操作</p>
+<p><img src="/2024/04/13/nlp-simple-lexicon-paper/char_bichar.png" alt></p>
+<p>eb表示bichar的词向量表</p>
+<h4 id="Incorporating-Lexicon-Information"><a href="#Incorporating-Lexicon-Information" class="headerlink" title="Incorporating Lexicon Information"></a>Incorporating Lexicon Information</h4><p>融合词汇信息有两种方式</p>
+<p><strong>ExSoftword Feature</strong></p>
+<p>这种方式保留所有的分割结果,而不是为每个字符只选择一种分割结果</p>
+<p><img src="/2024/04/13/nlp-simple-lexicon-paper/BMESO.png" alt></p>
+<p><img src="/2024/04/13/nlp-simple-lexicon-paper/Exsoftword.png" alt></p>
+<p>这里以西举例,分割结果里有 山西(西是end),中山西路(西是middle),所以eseg的五维one-hot编码中,第2,3维是1,其他维度是0。</p>
+<p>但是这一方法的缺点是没有完全继承LatticeLSTM的两个优点,第1没有引入预训练词向量,第2它依然丢失了匹配结果的部分信息;如figure2中,针对{c5, c6, c7, c8} 的Exsoftword特征是{{B}, {B, M, E}, {M, E}, {E}},以西字举例,虽然知道存在的匹配结果中西可能是E或者M,但是作为M,可能的词有”中山西路”和”山西路”,作为E可能的词有”山西”和”中山西”,所以我们无法判断哪一个是要恢复的正确结果。</p>
+<p><strong>SoftLexicon</strong></p>
+<p>这种方法主要分为三个步骤:第1步: 每个字符的所有匹配的分割结果都会被分到四个集合中,即BMES,如果没有的话,则集合中包含特殊标记None,如figure3所示;这样不仅可以引入词向量,而且因为所有的匹配结果都保存在四个集合中,所以没有信息丢失</p>
+<p><img src="/2024/04/13/nlp-simple-lexicon-paper/SoftLexicon.png" alt></p>
+<p>第2步:针对得到的集合,每个集合都会被转化成一个固定维度的向量,我们提出了两种将集合转化为向量的方法，第1种:</p>
+<p><img src="/2024/04/13/nlp-simple-lexicon-paper/mean_pooling.png" style="zoom:50%;"></p>
+<p>但是如table8所示,实验结果表明这种方式效果并不是太理想,所以我们提出一个权重算法用于利用词信息,为了保持计算效率,我们没有采用类似注意力机制的动态权重算法,相反，我们建议使用每个单词的频率作为其权重的指示。由于单词的频率是一个可以离线获得的静态值，这可以大大加快每个单词权重的计算。</p>
+<p><img src="/2024/04/13/nlp-simple-lexicon-paper/frequency.png" style="zoom:50%;"></p>
+<p>这里，对四个集中的所有词语执行权重归一化，以进行整体比较。</p>
+<p>在这项工作中，统计数据集是由任务的训练和验证数据集相结合构建的。当然，如果任务中存在未标记数据，则未标记数据集可以作为统计数据集。此外，请注意，如果w被与词典匹配的另一个子序列覆盖，则w的频率不会增加。这防止了较短单词的频率总是小于覆盖它的较长单词的频率的问题。(这里的表述有点疑问?)</p>
+<p>第3步:最后一步就是将这四个集合的表示合并到一个固定维度的表示,然后加到每个字符的表示, 为了保留尽可能多的信息，我们选择将四个单词集的表示连接起来，每个字符的最终表示:</p>
+<p><img src="/2024/04/13/nlp-simple-lexicon-paper/combine.png" alt></p>
+<h4 id="Sequence-Modeling-Layer"><a href="#Sequence-Modeling-Layer" class="headerlink" title="Sequence Modeling Layer"></a>Sequence Modeling Layer</h4><p>一般可选的模型有BiLSTM,CNN和Transformer,我们这里选择的是一个<strong>单层的BiLSTM</strong></p>
+<h4 id="Label-Inference-Layer"><a href="#Label-Inference-Layer" class="headerlink" title="Label Inference Layer"></a>Label Inference Layer</h4><p>CRF模型</p>
+<h3 id="Experiments"><a href="#Experiments" class="headerlink" title="Experiments"></a>Experiments</h3><p>实验配置与Lattice LSTM是一致的, 包括测试数据集、比较基线、评估指标（P、R、F1）等;</p>
+<p>甚至连词典(5.7k个单个字符的词,291.5k个两个字符的词,278.1k个三个字符的词以及129.1k个其他词)和预训练的词向量也是用的和Lattice LSTM一样的</p>
+<h4 id="Computational-Efficiency-Study"><a href="#Computational-Efficiency-Study" class="headerlink" title="Computational Efficiency Study"></a>Computational Efficiency Study</h4><p><img src="/2024/04/13/nlp-simple-lexicon-paper/table2.png" alt></p>
+<p>为了进一步说明Soft-Lexicon方法的有效性，我们还进行了一个实验来评估它对不同长度句子的推理速度,为了确保公平,我们将所有的对比方法batchsize均设置为1,对比结果如图4</p>
+<p><img src="/2024/04/13/nlp-simple-lexicon-paper/speed_comparison.png" alt></p>
+<h4 id="Effectiveness-Study"><a href="#Effectiveness-Study" class="headerlink" title="Effectiveness Study"></a>Effectiveness Study</h4><p>表3-6显示了我们的方法相对于比较基线的性能</p>
+<h4 id="Transferability-Study"><a href="#Transferability-Study" class="headerlink" title="Transferability Study"></a>Transferability Study</h4><p>表7显示了SoftLexicon方法在实现具有不同神经架构的序列建模层时的性能。从表中，我们首先可以看到，基于LSTM的架构比基于CNN和transformer的架构表现更好。此外，我们具有不同序列建模层的方法始终优于其相应的ExSoftword基线。这证实了我们的方法在不同的神经NER模型中建模词典信息的优越性。</p>
+<h4 id="Combining-Pre-trained-Model"><a href="#Combining-Pre-trained-Model" class="headerlink" title="Combining Pre-trained Model"></a>Combining Pre-trained Model</h4><p>我们还在四个数据集上进行了实验，以进一步验证SoftLexicon与预训练模型相结合的有效性，结果如表3-6所示。在这些实验中，我们首先使用BERT编码器来获得每个序列的上下文表示，然后将它们连接到字符表示中。从表中我们可以看出，带有BERT的SoftLexicon方法在所有四个数据集上都优于BERT标记器。这些结果表明，SoftLexicon方法可以有效地与预先训练的模型相结合。此外，结果还验证了我们的方法在利用词典信息方面的有效性，这意味着它可以补充从预先训练的模型中获得的信息。</p>
+<h4 id="Ablation-Study-消融研究"><a href="#Ablation-Study-消融研究" class="headerlink" title="Ablation Study(消融研究)"></a>Ablation Study(消融研究)</h4><ol>
+<li>在Lattice LSTM中，每个字符只接收以其开头或结尾的单词的单词信息。因此，包含字符内部的单词的信息被忽略。然而，SoftLexicon通过合并“中间”单词组来防止这些信息的丢失。在“-‘M’ group”实验中，我们删除了SoftLexicon中的“中间”组，就像Lattice LSTM中一样。所有四个数据集的性能下降表明了“M”字组的重要性，并证实了我们方法的优势。</li>
+<li>我们的方法建议对四类“BMES”匹配词进行明确区分。为了研究这种设计的相对贡献，我们进行了实验来消除这种区别，即我们简单地将所有加权词相加，而不考虑它们的类别。表现的下降验证了对不同匹配单词进行明确区分的重要性。</li>
+<li>我们在第3.2节中提出了两种汇集四个集合的策略。在“- weighted pooling”实验中，加权池策略被平均池取代，这降低了性能。与均值池相比，该加权策略不仅成功地根据不同词语的重要性对其进行了加权，而且还引入了统计数据中每个词语的频率信息，这被证明是有帮助的。</li>
+<li>尽管现有的基于词典的方法（如Lattice LSTM）也使用单词加权，但与所提出的SoftLexicon方法不同，它们无法在所有匹配的单词之间执行权重归一化。例如，Lattice LSTM仅对“B”组或“E”组内的权重进行归一化。在“- Overall weighting”实验中，我们像Lattice LSTM一样在每个“BMES”组内进行了权重归一化，发现结果性能下降。这一结果表明，<strong>在所有匹配单词之间执行整体权重归一化</strong>的能力也是我们方法的优势。</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/nlp/" rel="tag"># nlp</a>
+          
+            <a href="/tags/NER/" rel="tag"># NER</a>
+          
+            <a href="/tags/simple-lexicon/" rel="tag"># simple lexicon</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2024/03/24/nlp-lattice-lstm/" rel="next" title="LatticeLSTM原理解读与模型实现">
+                <i class="fa fa-chevron-left"></i> LatticeLSTM原理解读与模型实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2024/04/27/nlp-simple-lexicon-code/" rel="prev" title="Simple Lexicon代码剖析">
+                Simple Lexicon代码剖析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">114</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">209</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Simplify-the-Usage-of-Lexicon-in-Chinese-NER"><span class="nav-text">Simplify the Usage of Lexicon in Chinese NER</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Abstract"><span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction"><span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Background"><span class="nav-text">Background</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Soft-word-feature"><span class="nav-text">Soft word feature</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LatticeLSTM"><span class="nav-text">LatticeLSTM</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Approach"><span class="nav-text">Approach</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Character-Representation-Layer"><span class="nav-text">Character Representation Layer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Incorporating-Lexicon-Information"><span class="nav-text">Incorporating Lexicon Information</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Sequence-Modeling-Layer"><span class="nav-text">Sequence Modeling Layer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Label-Inference-Layer"><span class="nav-text">Label Inference Layer</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Experiments"><span class="nav-text">Experiments</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Computational-Efficiency-Study"><span class="nav-text">Computational Efficiency Study</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Effectiveness-Study"><span class="nav-text">Effectiveness Study</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Transferability-Study"><span class="nav-text">Transferability Study</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Combining-Pre-trained-Model"><span class="nav-text">Combining Pre-trained Model</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Ablation-Study-消融研究"><span class="nav-text">Ablation Study(消融研究)</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
