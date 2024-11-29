@@ -91,14 +91,14 @@
 <meta property="og:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/char_embedding.png">
 <meta property="og:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/char_bichar.png">
 <meta property="og:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/BMESO.png">
-<meta property="og:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/Exsoftword.png">
-<meta property="og:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/SoftLexicon.png">
+<meta property="og:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/ExSoftword.png">
+<meta property="og:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/softLexicon.png">
 <meta property="og:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/mean_pooling.png">
 <meta property="og:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/frequency.png">
 <meta property="og:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/combine.png">
 <meta property="og:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/table2.png">
 <meta property="og:image" content="http://yoursite.com/2024/04/13/nlp-simple-lexicon-paper/speed_comparison.png">
-<meta property="og:updated_time" content="2024-09-21T10:47:34.180Z">
+<meta property="og:updated_time" content="2024-11-29T00:47:47.831Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Simplify the Usage of Lexicon in Chinese NER论文">
 <meta name="twitter:description" content="Simplify the Usage of Lexicon in Chinese NERAbstract有很多工作尝试利用词汇信息提升中文NER的性能,例如LatticeLSTM, 但是它有一个复杂的网络结构,速度也比较慢; 在这项工作中,我们提出了一个将词汇信息融入字符表示的简单而有效的方法,这个方法没有设计复杂的序列模型结构,对于任何神经NER模型，它只需要对字符表示层进行细微的调整就可以引入">
@@ -391,12 +391,12 @@
 <p><strong>ExSoftword Feature</strong></p>
 <p>这种方式保留所有的分割结果,而不是为每个字符只选择一种分割结果</p>
 <p><img src="/2024/04/13/nlp-simple-lexicon-paper/BMESO.png" alt></p>
-<p><img src="/2024/04/13/nlp-simple-lexicon-paper/Exsoftword.png" alt></p>
+<p><img src="/2024/04/13/nlp-simple-lexicon-paper/ExSoftword.png" alt></p>
 <p>这里以西举例,分割结果里有 山西(西是end),中山西路(西是middle),所以eseg的五维one-hot编码中,第2,3维是1,其他维度是0。</p>
 <p>但是这一方法的缺点是没有完全继承LatticeLSTM的两个优点,第1没有引入预训练词向量,第2它依然丢失了匹配结果的部分信息;如figure2中,针对{c5, c6, c7, c8} 的Exsoftword特征是{{B}, {B, M, E}, {M, E}, {E}},以西字举例,虽然知道存在的匹配结果中西可能是E或者M,但是作为M,可能的词有”中山西路”和”山西路”,作为E可能的词有”山西”和”中山西”,所以我们无法判断哪一个是要恢复的正确结果。</p>
 <p><strong>SoftLexicon</strong></p>
 <p>这种方法主要分为三个步骤:第1步: 每个字符的所有匹配的分割结果都会被分到四个集合中,即BMES,如果没有的话,则集合中包含特殊标记None,如figure3所示;这样不仅可以引入词向量,而且因为所有的匹配结果都保存在四个集合中,所以没有信息丢失</p>
-<p><img src="/2024/04/13/nlp-simple-lexicon-paper/SoftLexicon.png" alt></p>
+<p><img src="/2024/04/13/nlp-simple-lexicon-paper/softLexicon.png" alt></p>
 <p>第2步:针对得到的集合,每个集合都会被转化成一个固定维度的向量,我们提出了两种将集合转化为向量的方法，第1种:</p>
 <p><img src="/2024/04/13/nlp-simple-lexicon-paper/mean_pooling.png" style="zoom:50%;"></p>
 <p>但是如table8所示,实验结果表明这种方式效果并不是太理想,所以我们提出一个权重算法用于利用词信息,为了保持计算效率,我们没有采用类似注意力机制的动态权重算法,相反，我们建议使用每个单词的频率作为其权重的指示。由于单词的频率是一个可以离线获得的静态值，这可以大大加快每个单词权重的计算。</p>
