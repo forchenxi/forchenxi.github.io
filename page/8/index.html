@@ -259,6 +259,320 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/04/23/nlp-rnn/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/23/nlp-rnn/" itemprop="url">理解循环神经网络</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-23T18:19:54+08:00">
+                2021-04-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p><em>本文章参考《python深度学习》</em></p>
+<h2 id="理解循环神经网络"><a href="#理解循环神经网络" class="headerlink" title="理解循环神经网络"></a>理解循环神经网络</h2><p>密集连接网络和卷积神经网络都有一个主要特点，就是没有记忆，它们单独处理每个输入，在输入与输入之间没有保存任何状态。对于这 样的网络，要想处理数据点的序列或时间序列，你需要向网络同时展示<strong>整个序列</strong>，即将序列转换成单个数据点。例如，你在<code>IMDB</code> 示例中就是这么做的：将全部电影评论转换为一个大向量， 然后一次性处理。这种网络叫作<strong>前馈网络</strong>（<strong><code>feedforward network</code></strong>）。</p>
+<p>与此相反，当你在阅读这个句子时，你是一个词一个词地阅读（或者说，眼睛一次扫视一 次扫视地阅读），同时会记住之前的内容。这让你能够<strong>动态理解</strong>这个句子所传达的含义。<strong>生物智能以渐进的方式处理信息</strong>，同时保存一个关于所处理内容的内部模型，这个模型是根据过去的信息构建的，并随着新信息的进入而不断更新。 </p>
+<p>循环神经网络（<code>RNN，recurrent neural network</code>）采用同样的原理，不过是一个极其简化的版本：它处理序列的方式是，<strong>遍历所有序列元素，并保存一个状态（state），其中包含与已查看内容相关的信息</strong>。实际上，<code>RNN</code> 是一类具有内部环的神经网络。</p>
+<p><img src="/2021/04/23/nlp-rnn/1.png" alt></p>
+<p>在处理两个不同的独立序列（比如两条不同的<code>IMDB</code> 评论）之间，<code>RNN</code> 状态会被重置，因此，你仍<strong>可以将一个序列看作单个数据点</strong>，即网络的单个输入。真正改变的是，数据点不再是在单个步骤中进行处理， 相反，网络内部会对序列元素进行遍历。</p>
+<p>在介绍使用<code>Numpy</code>模拟实现<code>RNN</code>的前向传递之前先补充一些<code>Numpy</code>中张量点积的知识</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/04/23/nlp-rnn/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/03/15/nlp-vectorize/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/15/nlp-vectorize/" itemprop="url">深度学习用于文本和序列</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-15T20:19:54+08:00">
+                2021-03-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p><em>本文章参考《python深度学习》</em></p>
+<h2 id="深度学习用于文本和序列"><a href="#深度学习用于文本和序列" class="headerlink" title="深度学习用于文本和序列"></a>深度学习用于文本和序列</h2><p>深度学习用于自然语言处理是<strong>将模式识别应用于单词、 句子和段落</strong>，这与计算机视觉是将模式识别应用于像素大致相同。</p>
+<h3 id="文本向量化"><a href="#文本向量化" class="headerlink" title="文本向量化"></a>文本向量化</h3><p> 与其他所有神经网络一样，深度学习模型不会接收原始文本作为输入，它<strong>只能处理数值张量</strong>。 <strong>文本向量化（<code>vectorize</code>）</strong>是指将文本转换为数值张量的过程。它有多种实现方法。</p>
+<ul>
+<li>将文本分割为单词，并将每个单词转换为一个向量。</li>
+<li>将文本分割为字符，并将每个字符转换为一个向量。 </li>
+<li>提取单词或字符的 n-gram，并将每个 n-gram 转换为一个向量。n-gram 是多个连续单词 或字符的集合（n-gram 之间可重叠）。</li>
+</ul>
+<p>将文本分解而成的单元（单词、字符或 n-gram）叫作<strong>标记（token）</strong>，将文本分解成标记的过程叫作<strong>分词（<code>tokenization</code>）</strong>。英文分词相较中文分词简单一些，本身句子的空格就分割了不同的单词，而中文分词需要考虑一些歧义性等问题，比较复杂，<strong>后面会有单独的篇章介绍中文分词</strong>，这里是针对英文的文本向量化处理。</p>
+<p>所有文本向量化过程都是应用某种分词方案，然后<strong>将数值向量与生成的标记相关联</strong>。这些向量组合成序列张量，被输入到深度神经网络中。</p>
+<p>将向量与标记相关联的方法有很多种。这里将介绍两种主要方法：</p>
+<ol>
+<li><p>对标记做<strong>one-hot 编码</strong>（one-hot encoding）</p>
+</li>
+<li><p><strong>标记嵌入</strong>［token embedding，通常只用于单词，叫作<strong>词嵌入（word embedding）</strong>］。 </p>
+</li>
+</ol>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/03/15/nlp-vectorize/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/03/12/dl-computer-vision3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1493,306 +1807,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/16/python-aes/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/11/16/python-aes/" itemprop="url">Python AES加解密</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-16T12:33:54+08:00">
-                2020-11-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/python编程/" itemprop="url" rel="index">
-                    <span itemprop="name">python编程</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h4 id="Python-AES加解密"><a href="#Python-AES加解密" class="headerlink" title="Python AES加解密"></a>Python AES加解密</h4><p>AES加密方式有五种：ECB, CBC, CTR, CFB, OFB</p>
-<p>从安全性角度推荐CBC加密方法，本文介绍了CBC,ECB两种加密方法的python实现</p>
-<p>python 在 <strong>Windows</strong>下使用AES时要安装的是pycryptodome 模块  pip install pycryptodome </p>
-<p>python 在 <strong>Linux</strong>下使用AES时要安装的是pycrypto模块  pip install pycrypto </p>
-<p>CBC加密需要一个十六位的key(密钥)和一个十六位iv(偏移量)</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/11/16/python-aes/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/28/ip-slider-captcha/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="chenxi">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sunrise">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/09/28/ip-slider-captcha/" itemprop="url">Python图像处理识别滑动验证码缺口</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-28T14:03:54+08:00">
-                2020-09-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/图像处理/" itemprop="url" rel="index">
-                    <span itemprop="name">图像处理</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="Python图像处理识别滑动验证码缺口"><a href="#Python图像处理识别滑动验证码缺口" class="headerlink" title="Python图像处理识别滑动验证码缺口"></a>Python图像处理识别滑动验证码缺口</h3><p>参考文章</p>
-<p><a href="https://www.jianshu.com/p/5f4bb5c78184" target="_blank" rel="noopener">OpenCV_Python模板匹配</a></p>
-<h4 id="网易易盾"><a href="#网易易盾" class="headerlink" title="网易易盾"></a>网易易盾</h4><h5 id="模板匹配"><a href="#模板匹配" class="headerlink" title="模板匹配"></a>模板匹配</h5><p>近期在破解网易易盾的滑动验证码，涉及到缺口识别的问题时，由于没有经验，上网查了一些资料，发现一个比较火的方式是利用<code>opencv</code>的模板匹配。</p>
-<p>模板匹配是一种在较大图像中搜索和查找模板图像位置的方法。<code>OpenCV</code>提供了一个函数<code>cv2.matchTemplate()</code>。它只是在输入图像上滑动模板图像（如在<code>2D</code>卷积中），并比较模板图像下的输入图像的模板和补丁。在<code>OpenCV</code>中实现了几种比较方法。它返回一个灰度图像，其中每个像素表示该像素的邻域与模板匹配的程度。</p>
-<p>假设输入图像的大小（<code>W*H</code>）且模板图像的大小（<code>w*h</code>），则输出图像的大小为（W-w + 1，H-h + 1）。获得结果后，可以使用<code>cv2.minMaxLoc()</code>函数查找最大/最小值的位置。将其作为矩形的左上角，并将（w，h）作为矩形的宽度和高度。那个矩形是你的模板区域匹配后得到的区域。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/09/28/ip-slider-captcha/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1845,7 +1859,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">114</span>
+                  <span class="site-state-item-count">116</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1867,7 +1881,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">209</span>
+                  <span class="site-state-item-count">213</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -1922,7 +1936,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2024</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2025</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

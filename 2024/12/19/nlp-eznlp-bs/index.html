@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="deep learning,nlp,NER,boundary smoothing,span,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="基于boundary smoothing的中文NER论文解读论文《Boundary Smoothing for Named Entity Recognition》 GitHub：GitHub - syuoni/eznlp: Easy Natural Language Processing 解读略 环境安装packaging包要根据requirements要求安装指定版本：packaging==20">
+<meta name="keywords" content="deep learning,nlp,NER,boundary smoothing,span">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于boundary smoothing的中文NER">
+<meta property="og:url" content="http://yoursite.com/2024/12/19/nlp-eznlp-bs/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="基于boundary smoothing的中文NER论文解读论文《Boundary Smoothing for Named Entity Recognition》 GitHub：GitHub - syuoni/eznlp: Easy Natural Language Processing 解读略 环境安装packaging包要根据requirements要求安装指定版本：packaging==20">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2024/12/19/nlp-eznlp-bs/p1.png">
+<meta property="og:updated_time" content="2025-02-18T14:55:35.777Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基于boundary smoothing的中文NER">
+<meta name="twitter:description" content="基于boundary smoothing的中文NER论文解读论文《Boundary Smoothing for Named Entity Recognition》 GitHub：GitHub - syuoni/eznlp: Easy Natural Language Processing 解读略 环境安装packaging包要根据requirements要求安装指定版本：packaging==20">
+<meta name="twitter:image" content="http://yoursite.com/2024/12/19/nlp-eznlp-bs/p1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2024/12/19/nlp-eznlp-bs/">
+
+
+
+
+
+  <title>基于boundary smoothing的中文NER | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2024/12/19/nlp-eznlp-bs/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">基于boundary smoothing的中文NER</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2024-12-19T10:31:54+08:00">
+                2024-12-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/自然语言处理/" itemprop="url" rel="index">
+                    <span itemprop="name">自然语言处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="基于boundary-smoothing的中文NER"><a href="#基于boundary-smoothing的中文NER" class="headerlink" title="基于boundary smoothing的中文NER"></a>基于boundary smoothing的中文NER</h2><h3 id="论文解读"><a href="#论文解读" class="headerlink" title="论文解读"></a>论文解读</h3><p>论文《Boundary Smoothing for Named Entity Recognition》</p>
+<p>GitHub：<a href="https://github.com/syuoni/eznlp" target="_blank" rel="noopener">GitHub - syuoni/eznlp: Easy Natural Language Processing</a></p>
+<p>解读略</p>
+<h3 id="环境安装"><a href="#环境安装" class="headerlink" title="环境安装"></a>环境安装</h3><p>packaging包要根据requirements要求安装指定版本：<code>packaging==20.4</code> ，否则运行程序会报错，这个包最好在所有包安装完成之后再更新至这个版本，因为这个包版本比较老，可能会影响其他包的安装（安装不上）。如果这个包版本是20.4的情况下去安装其他包，可能会报类似下面的错误。<br><code>TypeError: canonicalize_version() got an unexpected keyword argument &#39;strip_trailing_zero&#39;</code></p>
+<p><code>numpy==1.18.5</code>死活安装不上，<code>ModuleNotFoundError: No module named &#39;distutils.msvccompiler&#39;</code>；安装1.19.5代替<br><code>pandas=1.0.5</code>死活安装不上，错误同上；安装1.2.0代替</p>
+<p>安装<code>flair=0.8</code>还是安装不上，需要C++环境，安装build Tools工具选择安装C++相关的组件之后就可以成功安装了</p>
+<a id="more"></a>
+<p><img src="/2024/12/19/nlp-eznlp-bs/p1.png" alt></p>
+<p><code>spacy==2.3.2</code>安装有问题，会报下面两种问题（调整setuptools和wheel包的版本后分别遇到的）</p>
+<ol>
+<li><code>python setup.py bdist_wheel did not run successfully.</code></li>
+<li><code>ERROR: ERROR: Failed to build installable wheels for some pyproject.toml based projects (blis)</code><br>未能解决，安装2.3.4版本代替</li>
+</ol>
+<h3 id="代码剖析"><a href="#代码剖析" class="headerlink" title="代码剖析"></a>代码剖析</h3><h4 id="load-data"><a href="#load-data" class="headerlink" title="load_data()"></a>load_data()</h4><p>返回数据的格式为：<br>train、test和dev均为列表，每个列表的元素内容如下：<br><code>{&#39;tokens&#39;: [1, 9, 5, 6, 年, 5, 月, 2, 9, 日, 出, 生, ，, 中, 共, 党, 员, ，, 大, 学, 文, 化, ，, 高, 级, 工, 程, 师, ，, 历, 任, 重, 庆, 万, 里, 蓄, 电, 池, 股, 份, 有, 限, 公, 司, 技, 改, 办, 主, 任, 、, 研, 究, 所, 所, 长, 、, 总, 工, 程, 师, 、, 董, 事, 。], &#39;chunks&#39;: [(&#39;TITLE&#39;, 13, 17), (&#39;EDU&#39;, 18, 22), (&#39;TITLE&#39;, 23, 28), (&#39;ORG&#39;, 31, 44), (&#39;TITLE&#39;, 44, 49), (&#39;TITLE&#39;, 50, 55), (&#39;TITLE&#39;, 56, 60), (&#39;TITLE&#39;, 61, 63)], &#39;doc_idx&#39;: &#39;0&#39;}</code></p>
+<h4 id="build-ER-config"><a href="#build-ER-config" class="headerlink" title="build_ER_config()"></a>build_ER_config()</h4><p>主要是初始化一些配置，又分为两个主要的方法<br><strong>BoundarySelectionDecoderConfig</strong></p>
+<ul>
+<li>EncoderConfig：主要配置一个Encoder类型，有FFN、LSTM、Conv、transformer等，默认是FFN，即FFNEncoder–&gt;FeedForwardBlock(线性层+激活函数+dropout)</li>
+</ul>
+<p><strong>ExtractorConfig</strong></p>
+<ul>
+<li>collect_IE_assembly_config<ul>
+<li>load_vectors</li>
+<li>OneHotConfig（单个字的集合，build_vocab建立单个字的词表，exemplify根据句子返回句子在词表中的id，另外还构建了一个embedding层）</li>
+<li>MultiHotConfig（默认没有使用）</li>
+<li>SoftLexiconConfig（默认没有使用）</li>
+<li>load_pretrained（使用bert的话，<strong>加载预训练的模型结构和tokenizer</strong>）</li>
+<li>BertLikeConfig（instantiate方法是BertLikeEmbedder，）</li>
+<li>SpanBertLikeConfig（默认没有使用）</li>
+</ul>
+</li>
+<li>build_vocabs_and_dims，建立词表和标签集，通过后面的Dataset来调用</li>
+</ul>
+<p>EncoderConfig（这里是一个LSTM网络，RNNEncoder）（暂时未发现有使用）</p>
+<p>load_pretrained：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bert_like, tokenizer = load_pretrained(args.bert_arch, args, cased=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure></p>
+<p>bert_like是BERT模型结构，Base Model分为</p>
+<ul>
+<li>BertEmbeddings</li>
+<li>BertEncoder</li>
+<li>BertPooler</li>
+</ul>
+<p>接下来bert_like作为BertLikeConfig的一个参数进行了初始化，然后又得到一个实例依然叫做bert_like，所以最终bert_like里面有一个属性也叫bert_like，但是他俩本质不一样；</p>
+<p>ExtractorConfig内部主要分为两个部分，一个是bert_like（BertLikeConfig的实例），另一个就是decoder(BoundarySelectionDecoderConfig的实例)。</p>
+<p>build_ER_config()最终返回的是一个ExtractorConfig的实例config，通过<code>config.instantiate()</code>来生成model。</p>
+<p>ExtractorConfig的instantiate()方法返回的是另一个类Extractor实例<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">instantiate</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="comment"># Only check validity at the most outside level</span></span><br><span class="line">    <span class="keyword">assert</span> self.valid</span><br><span class="line">    <span class="keyword">return</span> Extractor(self)</span><br></pre></td></tr></table></figure></p>
+<p>Extractor<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Extractor</span><span class="params">(ModelBase)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, config: ExtractorConfig)</span>:</span></span><br><span class="line">        super().__init__(config)</span><br></pre></td></tr></table></figure></p>
+<p>这里是在继承ModelBase时，初始化调用每一个模块的instantiate()</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ModelBase</span><span class="params">(torch.nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, config: ModelConfigBase)</span>:</span></span><br><span class="line">        super().__init__()</span><br><span class="line">        <span class="keyword">for</span> name <span class="keyword">in</span> config._all_names:</span><br><span class="line">            <span class="keyword">if</span> (c := getattr(config, name)) <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">                setattr(self, name, c.instantiate())</span><br></pre></td></tr></table></figure>
+<p>所以会调用BertLikeConfig的instantiate<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">instantiate</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> BertLikeEmbedder(self)</span><br></pre></td></tr></table></figure></p>
+<h4 id="process-IE-data"><a href="#process-IE-data" class="headerlink" title="process_IE_data"></a>process_IE_data</h4><p>默认配置进去啥也没做</p>
+<p><strong>Dataset</strong><br>分别生成train_set、dev_set和test_set</p>
+<p>在模型开始训练时，通过逐步调试代码来看一下是如何前向传播和计算损失的：<br>trainer.py<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> torch.cuda.amp.autocast(enabled=self.use_amp):</span><br><span class="line">    loss_with_possible_y_pred = self.forward_batch(batch)</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">forward_batch</span><span class="params">(self, batch: Batch)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    Forward to the loss (scalar). </span></span><br><span class="line"><span class="string">    Optionally return the predicted labels of the batch for evaluation. </span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Returns</span></span><br><span class="line"><span class="string">    -------</span></span><br><span class="line"><span class="string">    A scalar Tensor of loss, or</span></span><br><span class="line"><span class="string">    A Tuple of (loss, y_pred_1, y_pred_2, ...)</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    losses, states = self.model(batch, return_states=<span class="literal">True</span>)</span><br><span class="line">    loss = losses.mean()</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> self.num_metrics == <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">return</span> loss</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> loss, *self.model.decoder._unsqueezed_decode(batch, **states)</span><br></pre></td></tr></table></figure>
+<p>这里的batch是每个批次返回的数据，包括以下数据：</p>
+<ul>
+<li>tokenized_text：这一批次的文本数据，list类型，大小(batch_size, seq_len)</li>
+<li>seq_lens：这一批次每个句子的长度，tensor类型，size为(batch_size, )</li>
+<li>mask：遮蔽，貌似是反的</li>
+<li>ohots：dict类型，key=text，value是一个list类型，大小(batch_size, seq_len)</li>
+<li>bert_like：dict类型，有三个key，分别为<ul>
+<li>sub_tok_ids</li>
+<li>sub_mask</li>
+<li>ori_indexes </li>
+</ul>
+</li>
+<li>boundaries_objs：list类型，每个元素都是eznlp/model/decoder/boundaries.py中Boundaries类的实例，这里是基于span的ner任务的核心思想，也是标签平滑这篇论文的核心改进点。</li>
+</ul>
+<p>batch的内容主要是通过Dataset类的<strong>getitem</strong>方法进行加载<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">__getitem__</span><span class="params">(self, i)</span>:</span></span><br><span class="line">    entry = self._get_entry(i)</span><br><span class="line">    example = &#123;&#125;</span><br><span class="line">    <span class="keyword">if</span> <span class="string">'tokens'</span> <span class="keyword">in</span> self.data[<span class="number">0</span>]:</span><br><span class="line">        example[<span class="string">'tokenized_text'</span>] = entry[<span class="string">'tokens'</span>].text</span><br><span class="line">    </span><br><span class="line">    example.update(self.config.exemplify(entry, training=self.training))</span><br><span class="line">    <span class="keyword">return</span> example</span><br></pre></td></tr></table></figure></p>
+<p>这里又继续调用了self.config的exemplify方法，这里的self.config是ExtractorConfig实例，所以调用这个类的exemplify方法<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">exemplify</span><span class="params">(self, data_entry: dict, training: bool=True)</span>:</span></span><br><span class="line">    example = &#123;&#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> self.ohots <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">        example[<span class="string">'ohots'</span>] = &#123;f: c.exemplify(data_entry[<span class="string">'tokens'</span>]) <span class="keyword">for</span> f, c <span class="keyword">in</span> self.ohots.items()&#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> self.mhots <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">        example[<span class="string">'mhots'</span>] = &#123;f: c.exemplify(data_entry[<span class="string">'tokens'</span>]) <span class="keyword">for</span> f, c <span class="keyword">in</span> self.mhots.items()&#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> self.nested_ohots <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">        example[<span class="string">'nested_ohots'</span>] = &#123;f: c.exemplify(data_entry[<span class="string">'tokens'</span>]) <span class="keyword">for</span> f, c <span class="keyword">in</span> self.nested_ohots.items()&#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> name <span class="keyword">in</span> self._pretrained_names:</span><br><span class="line">        <span class="keyword">if</span> getattr(self, name) <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            example[name] = getattr(self, name).exemplify(data_entry[<span class="string">'tokens'</span>])</span><br><span class="line">    </span><br><span class="line">    example.update(self.decoder.exemplify(data_entry, training=training))</span><br><span class="line">    <span class="keyword">return</span> example</span><br></pre></td></tr></table></figure></p>
+<p>这里分别调用几个子模块的exemplify方法，ohots、_pretrained_names（例如bert_like）、self.decoder（这里是BoundarySelectionDecoderConfig的实例），BoundarySelectionDecoderConfig继承父类BoundariesDecoderMixin，在其父类中有exemplify方法<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">exemplify</span><span class="params">(self, data_entry: dict, training: bool=True)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">'boundaries_obj'</span>: Boundaries(data_entry, self, training=training)&#125;</span><br></pre></td></tr></table></figure></p>
+<p>即通过Boundaries类的实例化生成boundaries_obj，下面先重点剖析一下boundaries_objs<br>以下面的样本举例：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="string">'chunks'</span>: [(<span class="string">'ORG'</span>, <span class="number">2</span>, <span class="number">16</span>), (<span class="string">'TITLE'</span>, <span class="number">16</span>, <span class="number">19</span>), (<span class="string">'TITLE'</span>, <span class="number">20</span>, <span class="number">25</span>)], <span class="string">'doc_idx'</span>: <span class="string">'0'</span>, <span class="string">'tokens'</span>: [曾, 任, 深, 圳, 市, 建, 筑, 机, 械, 动, 力, 公, 司, 分, 公, 司, 副, 经, 理, 、, 主, 任, 工, 程, 师, ；]&#125;</span><br></pre></td></tr></table></figure></p>
+<p>按照正常的基于span的NER任务思想，生成所有的span（也就是跨度），判断每一个跨度是否为某种实体类型，以上面的句子长度为26为例，有多种跨度呢？<br>对于位置0，有26种跨度，对于位置1，有25种跨度，…，对于位置25，有1种跨度，即对于位置i，有n-i种跨度（n为句子长度），但是为了方便用张量表示，张量的形状为(n, n)，第0维是表示这个位置往后面的跨度，第1维表示跨到哪个位置。另外，还需要表示这个跨度的实体类型，普通的基于span的方法，就是第1维跨到的位置处，将这个位置的值设置为实体的类型id</p>
+<p>实体类型例如：<br>{‘<none>‘: 0, ‘CONT’: 2, ‘EDU’: 5, ‘LOC’: 8, ‘NAME’: 1, ‘ORG’: 6, ‘PRO’: 7, ‘RACE’: 3, ‘TITLE’: 4}，共9种，label_nums=9。在没有标签平滑的情况下，张量根据实际的实体位置和类型按照下述方式构建：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> config.sb_epsilon &lt;= <span class="number">0</span> <span class="keyword">and</span> config.sl_epsilon &lt;= <span class="number">0</span>:</span><br><span class="line">    <span class="comment"># Cross entropy loss for non-smoothing</span></span><br><span class="line">    self.label_ids = torch.full((self.num_tokens, self.num_tokens), config.none_idx, dtype=torch.long)</span><br><span class="line">    <span class="keyword">for</span> label, start, end <span class="keyword">in</span> self.chunks:</span><br><span class="line">        self.label_ids[start, end<span class="number">-1</span>] = config.label2idx[label]</span><br></pre></td></tr></table></figure></none></p>
+<p>而为了进行标签平滑，即在跨度的位置让他有一个概率表示的含义，所以又增加一维，这一维度的大小为标签的总数（假设用label_nums表示），那么最终的张量size应该为(n, n, label_nums)<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> label, start, end <span class="keyword">in</span> self.chunks:</span><br><span class="line">    label_id = config.label2idx[label]</span><br><span class="line">    <span class="comment"># 这个跨度位置size为label_nums，在对应的实体类型id处设置一个置信度=1-sb_epsilon</span></span><br><span class="line">    <span class="comment"># sb_epsilon是可以设置的一个超参数，论文介绍一般可以设置0.1、0.2、0.3</span></span><br><span class="line">    <span class="comment"># 因为上面('ORG', 2, 16)，16是开区间，所以这里end-1(包括后面的sur_end、end都减1)</span></span><br><span class="line">    self.label_ids[start, end<span class="number">-1</span>, label_id] += (<span class="number">1</span> - config.sb_epsilon)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># sb_size是另一个超参数，将真实标签的边界周围平滑几个跨度，可以设置1、2、3</span></span><br><span class="line">    <span class="keyword">for</span> dist <span class="keyword">in</span> range(<span class="number">1</span>, config.sb_size+<span class="number">1</span>):</span><br><span class="line">        <span class="comment"># 给真实边界周围的边界多少的置信度，当sb_size=1时，置信度是0.025 </span></span><br><span class="line">        eps_per_span = config.sb_epsilon / (config.sb_size * dist * <span class="number">4</span>)</span><br><span class="line">        <span class="comment"># 针对('ORG', 2, 16)，得到四个平滑跨度[(2, 15), (1, 16), (2, 17), (3, 16)]</span></span><br><span class="line">        sur_spans = list(_spans_from_surrounding((start, end), dist, self.num_tokens))</span><br><span class="line">        <span class="comment"># 分别这四个跨度增加一个小的置信度</span></span><br><span class="line">        <span class="keyword">for</span> sur_start, sur_end <span class="keyword">in</span> sur_spans:</span><br><span class="line">            self.label_ids[sur_start, sur_end<span class="number">-1</span>, label_id] += (eps_per_span*config.sb_adj_factor)</span><br><span class="line">        <span class="comment"># Absorb the probabilities assigned to illegal positions</span></span><br><span class="line">        self.label_ids[start, end<span class="number">-1</span>, label_id] += eps_per_span * (dist * <span class="number">4</span> - len(sur_spans))</span><br></pre></td></tr></table></figure></p>
+<p>总结一下，当sb_size=1时，针对每个真实的实体跨度，会额外增加四个平滑后的跨度，这五个跨度的置信度加和是1；当sb_size=2时，会生成四个平滑步长为1的跨度和8个平滑步长为2的跨度，最终这些跨度的置信度加和依然是1。<br>最后统一修改0号即非标签的位置的值（虽然不太确定这一步骤的目的）<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">self.label_ids[:, :, config.none_idx] = <span class="number">1</span> - self.label_ids.sum(dim=<span class="number">-1</span>)</span><br></pre></td></tr></table></figure></p>
+<p>这里大概搞清楚batch的数据内容之后，继续回到forward-前向传播的部分，self.model是Extractor实例，Extractor继承了ModelBase，ModelBase的forward方法：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, batch: Batch, return_states: bool=False)</span>:</span></span><br><span class="line">    states = self.forward2states(batch)</span><br><span class="line">    losses = self.decoder(batch, **states)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># Return `states` for the `decode` method, to avoid duplicated computation. </span></span><br><span class="line">    <span class="keyword">if</span> return_states:</span><br><span class="line">        <span class="keyword">return</span> losses, states</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> losses</span><br></pre></td></tr></table></figure></p>
+<p>Extractor自行实现的forward2states()方法：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_get_full_embedded</span><span class="params">(self, batch: Batch)</span>:</span></span><br><span class="line">    embedded = []</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> hasattr(self, <span class="string">'ohots'</span>):</span><br><span class="line">        ohots_embedded = [self.ohots[f](batch.ohots[f]) <span class="keyword">for</span> f <span class="keyword">in</span> self.ohots]</span><br><span class="line">        embedded.extend(ohots_embedded)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> hasattr(self, <span class="string">'mhots'</span>):</span><br><span class="line">        mhots_embedded = [self.mhots[f](batch.mhots[f]) <span class="keyword">for</span> f <span class="keyword">in</span> self.mhots]</span><br><span class="line">        embedded.extend(mhots_embedded)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> hasattr(self, <span class="string">'nested_ohots'</span>):</span><br><span class="line">        nested_ohots_embedded = [self.nested_ohots[f](**batch.nested_ohots[f], seq_lens=batch.seq_lens) <span class="keyword">for</span> f <span class="keyword">in</span> self.nested_ohots]</span><br><span class="line">        embedded.extend(nested_ohots_embedded)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> torch.cat(embedded, dim=<span class="number">-1</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_get_full_hidden</span><span class="params">(self, batch: Batch)</span>:</span></span><br><span class="line">    full_hidden = []</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> any([hasattr(self, name) <span class="keyword">for</span> name <span class="keyword">in</span> ExtractorConfig._embedder_names]):</span><br><span class="line">        <span class="comment"># 这里过ohots层的词向量编码，得到embedded：(batch_size, seq_len, embed_dim)</span></span><br><span class="line">        embedded = self._get_full_embedded(batch)</span><br><span class="line">        <span class="keyword">if</span> hasattr(self, <span class="string">'intermediate1'</span>):</span><br><span class="line">            full_hidden.append(self.intermediate1(embedded, batch.mask))</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            full_hidden.append(embedded)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 这里再过一层Bert，得到：（batch_size, seq_len, 768）</span></span><br><span class="line">    <span class="keyword">for</span> name <span class="keyword">in</span> ExtractorConfig._pretrained_names:</span><br><span class="line">        <span class="keyword">if</span> hasattr(self, name):</span><br><span class="line">            full_hidden.append(getattr(self, name)(**getattr(batch, name)))</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 将两处得到的embed进行拼接得到：（batch_size, seq_len, 768+embed_dim）</span></span><br><span class="line">    full_hidden = torch.cat(full_hidden, dim=<span class="number">-1</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> hasattr(self, <span class="string">'intermediate2'</span>):</span><br><span class="line">        <span class="keyword">return</span> self.intermediate2(full_hidden, batch.mask)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> full_hidden</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">forward2states</span><span class="params">(self, batch: Batch)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">'full_hidden'</span>: self._get_full_hidden(batch)&#125;</span><br></pre></td></tr></table></figure></p>
+<p>接下来self.decoder是BoundarySelectionDecoder的实例，其forward方法：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, batch: Batch, full_hidden: torch.Tensor)</span>:</span></span><br><span class="line">    batch_scores = self.compute_scores(batch, full_hidden)</span><br><span class="line">    </span><br><span class="line">    losses = []</span><br><span class="line">    <span class="keyword">for</span> curr_scores, boundaries_obj, curr_len <span class="keyword">in</span> zip(batch_scores, batch.boundaries_objs, batch.seq_lens.cpu().tolist()):</span><br><span class="line">        curr_non_mask = getattr(boundaries_obj, <span class="string">'non_mask'</span>, self._get_span_non_mask(curr_len))</span><br><span class="line">        </span><br><span class="line">        loss = self.criterion(curr_scores[:curr_len, :curr_len][curr_non_mask], boundaries_obj.label_ids[curr_non_mask])</span><br><span class="line">        losses.append(loss)</span><br><span class="line">    <span class="keyword">return</span> torch.stack(losses)</span><br></pre></td></tr></table></figure></p>
+<p><strong>compute_scores</strong><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">compute_scores</span><span class="params">(self, batch: Batch, full_hidden: torch.Tensor)</span>:</span></span><br><span class="line">    <span class="comment"># full_hidden是上面得到的</span></span><br><span class="line">    <span class="keyword">if</span> hasattr(self, <span class="string">'affine_start'</span>):</span><br><span class="line">        <span class="comment"># 得到的affined_start为(batch_size, seq_len, affine_dim) </span></span><br><span class="line">        affined_start = self.affine_start(full_hidden, batch.mask)</span><br><span class="line">        affined_end = self.affine_end(full_hidden, batch.mask)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        affined_start = self.affine(full_hidden, batch.mask)</span><br><span class="line">        affined_end = self.affine(full_hidden, batch.mask)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> hasattr(self, <span class="string">'U'</span>):</span><br><span class="line">        <span class="comment"># affined_start: (batch, start_step, affine_dim) -&gt; (batch, 1, start_step, affine_dim)</span></span><br><span class="line">        <span class="comment"># affined_end: (batch, end_step, affine_dim) -&gt; (batch, 1, affine_dim, end_step)</span></span><br><span class="line">        <span class="comment"># scores1: (batch, 1, start_step, affine_dim) * (voc_dim, affine_dim, affine_dim) * (batch, 1, affine_dim, end_step) -&gt; (batch, voc_dim, start_step, end_step)</span></span><br><span class="line">        scores1 = self.dropout(affined_start).unsqueeze(<span class="number">1</span>).matmul(self.U).matmul(self.dropout(affined_end).permute(<span class="number">0</span>, <span class="number">2</span>, <span class="number">1</span>).unsqueeze(<span class="number">1</span>))</span><br><span class="line">        <span class="comment"># scores: (batch, start_step, end_step, voc_dim)</span></span><br><span class="line">        scores = scores1.permute(<span class="number">0</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">1</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        scores = <span class="number">0</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment"># affined_cat: (batch, start_step, end_step, affine_dim*2)</span></span><br><span class="line">    affined_cat = torch.cat([self.dropout(affined_start).unsqueeze(<span class="number">2</span>).expand(<span class="number">-1</span>, <span class="number">-1</span>, affined_end.size(<span class="number">1</span>), <span class="number">-1</span>), </span><br><span class="line">                              self.dropout(affined_end).unsqueeze(<span class="number">1</span>).expand(<span class="number">-1</span>, affined_start.size(<span class="number">1</span>), <span class="number">-1</span>, <span class="number">-1</span>)], dim=<span class="number">-1</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> hasattr(self, <span class="string">'size_embedding'</span>):</span><br><span class="line">        <span class="comment"># size_embedded: (start_step, end_step, emb_dim)</span></span><br><span class="line">        size_embedded = self.size_embedding(self._get_span_size_ids(full_hidden.size(<span class="number">1</span>)))</span><br><span class="line">        <span class="comment"># affined_cat: (batch, start_step, end_step, affine_dim*2 + emb_dim)</span></span><br><span class="line">        affined_cat = torch.cat([affined_cat, self.dropout(size_embedded).unsqueeze(<span class="number">0</span>).expand(full_hidden.size(<span class="number">0</span>), <span class="number">-1</span>, <span class="number">-1</span>, <span class="number">-1</span>)], dim=<span class="number">-1</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># scores2: (voc_dim, affine_dim*2 + emb_dim) * (batch, start_step, end_step, affine_dim*2 + emb_dim, 1) -&gt; (batch, start_step, end_step, voc_dim, 1)</span></span><br><span class="line">    scores2 = self.W.matmul(affined_cat.unsqueeze(<span class="number">-1</span>))</span><br><span class="line">    <span class="comment"># scores: (batch, start_step, end_step, voc_dim)</span></span><br><span class="line">    scores = scores + scores2.squeeze(<span class="number">-1</span>)</span><br><span class="line">    <span class="keyword">return</span> scores + self.b</span><br></pre></td></tr></table></figure></p>
+<p>这里默认使用双仿射编码，affine_start和affine_end的结构如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">FFNEncoder(</span><br><span class="line">  (dropout): CombinedDropout(</span><br><span class="line">    (dropout): Dropout(p=0.4, inplace=False)</span><br><span class="line">  )</span><br><span class="line">  (ff_blocks): ModuleList(</span><br><span class="line">    (0): FeedForwardBlock(</span><br><span class="line">      (proj_layer): Linear(in_features=868, out_features=150, bias=True)</span><br><span class="line">      (activation): ReLU()</span><br><span class="line">      (dropout): Dropout(p=0.0, inplace=False)</span><br><span class="line">    )</span><br><span class="line">  )</span><br><span class="line">)</span><br></pre></td></tr></table></figure></p>
+<p>这里affined_cat的拼接部分看代码能看懂，但是不太确定这样做的理论依据；</p>
+<p>关于size_embedding部分，其是一个随机初始化的embedding层，其含义是为span size构建的embedding，embd_dim=25（默认值）<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> config.size_emb_dim &gt; <span class="number">0</span>:</span><br><span class="line">    self.size_embedding = torch.nn.Embedding(config.max_size_id+<span class="number">1</span>, config.size_emb_dim)</span><br><span class="line">    reinit_embedding_(self.size_embedding)</span><br></pre></td></tr></table></figure></p>
+<p>这里max_size_id是根据所有实体的长度统计出来的最大长度（简单理解是这样的，但是实际上是使用numpy.quantile根据实体长度的分布来选择一个相对来说可以覆盖绝大多数实体的长度）<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">span_sizes = [end-start <span class="keyword">for</span> data <span class="keyword">in</span> partitions <span class="keyword">for</span> entry <span class="keyword">in</span> data <span class="keyword">for</span> label, start, end <span class="keyword">in</span> entry[<span class="string">'chunks'</span>]]</span><br><span class="line">self.max_size_id = math.ceil(numpy.quantile(span_sizes, MAX_SIZE_ID_COV_RATE)) - <span class="number">1</span></span><br><span class="line"><span class="comment"># 统计所有数据集中最长的句子长度</span></span><br><span class="line">self.max_len = max(len(data_entry[<span class="string">'tokens'</span>]) <span class="keyword">for</span> data <span class="keyword">in</span> partitions <span class="keyword">for</span> data_entry <span class="keyword">in</span> data)</span><br></pre></td></tr></table></figure></p>
+<p>size_embedding传入的参数值为self._get_span_size_ids(full_hidden.size(1))<br>full_hidden.size(1)是这一批次句子的最大长度<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_get_span_size_ids</span><span class="params">(self, seq_len: int)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> self._span_size_ids[:seq_len, :seq_len]</span><br></pre></td></tr></table></figure></p>
+<p>span_size_ids是根据最长的句子提前构建好的所有可能的跨度<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">self.register_buffer(<span class="string">'_span_size_ids'</span>, torch.arange(config.max_len) - torch.arange(config.max_len).unsqueeze(<span class="number">-1</span>))</span><br><span class="line"><span class="comment"># Create `_span_non_mask` before changing values of `_span_size_ids`</span></span><br><span class="line">self.register_buffer(<span class="string">'_span_non_mask'</span>, self._span_size_ids &gt;= <span class="number">0</span>)</span><br><span class="line">self._span_size_ids.masked_fill_(self._span_size_ids &lt; <span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">self._span_size_ids.masked_fill_(self._span_size_ids &gt; config.max_size_id, config.max_size_id)</span><br></pre></td></tr></table></figure></p>
+<p>举个例子，假设句子长度为6<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">max_len = <span class="number">6</span></span><br><span class="line">torch.arange(max_len) - torch.arange(max_len).unsqueeze(<span class="number">-1</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 得到如下张量</span></span><br><span class="line">tensor([[ <span class="number">0</span>,  <span class="number">1</span>,  <span class="number">2</span>,  <span class="number">3</span>,  <span class="number">4</span>,  <span class="number">5</span>],</span><br><span class="line">        [<span class="number">-1</span>,  <span class="number">0</span>,  <span class="number">1</span>,  <span class="number">2</span>,  <span class="number">3</span>,  <span class="number">4</span>],</span><br><span class="line">        [<span class="number">-2</span>, <span class="number">-1</span>,  <span class="number">0</span>,  <span class="number">1</span>,  <span class="number">2</span>,  <span class="number">3</span>],</span><br><span class="line">        [<span class="number">-3</span>, <span class="number">-2</span>, <span class="number">-1</span>,  <span class="number">0</span>,  <span class="number">1</span>,  <span class="number">2</span>],</span><br><span class="line">        [<span class="number">-4</span>, <span class="number">-3</span>, <span class="number">-2</span>, <span class="number">-1</span>,  <span class="number">0</span>,  <span class="number">1</span>],</span><br><span class="line">        [<span class="number">-5</span>, <span class="number">-4</span>, <span class="number">-3</span>, <span class="number">-2</span>, <span class="number">-1</span>,  <span class="number">0</span>]])</span><br></pre></td></tr></table></figure></p>
+<p>上面每一行表示这个位置往后续位置的跨度，所以负值是没有意义的，因为当前位置只会和后面的位置形成跨度，所以代码中也将所有为负值的位置修改为了0。<br>另外有些跨度太大也是不符合实际情况的，所以代码中进一步将跨度大于max_size的统一修改为max_size，例如这里句子长度为6，最大的跨度为3，那么经过调整后的span_size_ids为<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">tensor([[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">3</span>, <span class="number">3</span>],</span><br><span class="line">        [<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">3</span>],</span><br><span class="line">        [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],</span><br><span class="line">        [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>],</span><br><span class="line">        [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>],</span><br><span class="line">        [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]])</span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>接下来再回到BoundarySelectionDecoder的forward方法，第一步compute_score方法完成之后，得到的batch_score的size为(batch_size, seq_len, seq_len, 标签数量)，最后一步就是计算损失了：<br>得到的batch_score最后一维的dim已经是标签总数了，也就表示已经是预测的最终值了，只差一个softmax了，然后boundaries_obj中的label_ids上面也详细介绍过，就是根据真实标签进行了一个标签平滑得到的概率值，所以就是以这两者来计算损失。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">soft_label_cross_entropy</span><span class="params">(logits: torch.Tensor, soft_target: torch.Tensor, weight: torch.Tensor=None, reduction: str=<span class="string">'none'</span>)</span>:</span></span><br><span class="line">    <span class="string">"""Soft label cross entropy loss.</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Parameters</span></span><br><span class="line"><span class="string">    ----------</span></span><br><span class="line"><span class="string">    logits : torch.Tensor (num_entries, logit_dim)</span></span><br><span class="line"><span class="string">        Logits before softmax. </span></span><br><span class="line"><span class="string">    soft_target : torch.Tensor (num_entries, logit_dim)</span></span><br><span class="line"><span class="string">        The ground-truth distribution over indexes, s.t. `target.sum(dim=-1)` equals 1 in all entries.</span></span><br><span class="line"><span class="string">    weight : torch.Tensor (logit_dim, )</span></span><br><span class="line"><span class="string">        A manual rescaling weight given to each class. </span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    _check_soft_target(soft_target)</span><br><span class="line">    </span><br><span class="line">    log_prob = logits.log_softmax(dim=<span class="number">-1</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> weight <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">        log_prob = log_prob * weight</span><br><span class="line">    </span><br><span class="line">    losses = -(log_prob * soft_target).sum(dim=<span class="number">-1</span>)</span><br><span class="line">    <span class="keyword">return</span> _reduce_losses(losses, sample_weight=<span class="literal">None</span>, reduction=reduction)</span><br></pre></td></tr></table></figure>
+<h3 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h3><p>不使用bert的结果：<br>[2024-12-08 16:47:37 INFO] Evaluating on dev-set<br>[2024-12-08 16:47:37 INFO] ER | Micro Precision: 86.340%<br>[2024-12-08 16:47:37 INFO] ER | Micro Recall: 88.243%<br>[2024-12-08 16:47:37 INFO] ER | Micro F1-score: 87.281%<br>[2024-12-08 16:47:37 INFO] ER | Macro Precision: 91.373%<br>[2024-12-08 16:47:37 INFO] ER | Macro Recall: 87.017%<br>[2024-12-08 16:47:37 INFO] ER | Macro F1-score: 88.133%<br>[2024-12-08 16:47:37 INFO] Evaluating on test-set<br>[2024-12-08 16:47:37 INFO] ER | Micro Precision: 88.380%<br>[2024-12-08 16:47:37 INFO] ER | Micro Recall: 90.061%<br>[2024-12-08 16:47:37 INFO] ER | Micro F1-score: 89.213%<br>[2024-12-08 16:47:37 INFO] ER | Macro Precision: 86.640%<br>[2024-12-08 16:47:37 INFO] ER | Macro Recall: 85.124%<br>[2024-12-08 16:47:37 INFO] ER | Macro F1-score: 85.496%</p>
+<p>使用bert：<br>Evaluating on dev-set<br>[2024-12-10 12:55:57 INFO] ER | Micro Precision: 96.862%<br>[2024-12-10 12:55:57 INFO] ER | Micro Recall: 96.927%<br>[2024-12-10 12:55:57 INFO] ER | Micro F1-score: 96.895%<br>[2024-12-10 12:55:57 INFO] ER | Macro Precision: 97.073%<br>[2024-12-10 12:55:57 INFO] ER | Macro Recall: 98.928%<br>[2024-12-10 12:55:57 INFO] ER | Macro F1-score: 97.931%<br>[2024-12-10 12:55:57 INFO] Evaluating on test-set<br>[2024-12-10 12:55:59 INFO] ER | Micro Precision: 95.856%<br>[2024-12-10 12:55:59 INFO] ER | Micro Recall: 96.503%<br>[2024-12-10 12:55:59 INFO] ER | Micro F1-score: 96.179%<br>[2024-12-10 12:55:59 INFO] ER | Macro Precision: 97.306%<br>[2024-12-10 12:55:59 INFO] ER | Macro Recall: 98.834%<br>[2024-12-10 12:55:59 INFO] ER | Macro F1-score: 98.030%</p>
+<p>应该是看micro F1，这里针对ResumeNER数据集，得到的结果是96.179%，比论文中的结果略低一些。</p>
+<p>我的数据集：<br>目前最优：<br>默认emb_dim=100：99.274%~99.31%</p>
+<p>还需要做一些对比实验</p>
+<p>–scheduler LinearDecayWithWarmup  99.275%<br>–emb_dim 0   99.233%<br>–emd_dim 100+softword/softlexicon  F1-score: 99.354%<br>–emd_dim 0+softword/softlexicon  F1-score: 99.234%<br>–use_interm2</p>
+<p>默认emb_dim=100，然后如果使用bert的话，默认emd_dim=0，那么就缺少了OneHotConfig那一层，在计算full_hidden的时候就少了经过ohots层的词向量编码，embedded：(batch_size, seq_len, embed_dim)，就只有bert的编码。</p>
+<p>目前是未使用单个字的预训练embedding的；<br>也未使用词信息，所以改进就是融合词信息，借鉴simple lexicon的思想，并且额外增加大模型词向量</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/nlp/" rel="tag"># nlp</a>
+          
+            <a href="/tags/NER/" rel="tag"># NER</a>
+          
+            <a href="/tags/boundary-smoothing/" rel="tag"># boundary smoothing</a>
+          
+            <a href="/tags/span/" rel="tag"># span</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2024/11/29/nlp-flat-transformer/" rel="next" title="中文命名实体识别——flat lattice transformer">
+                <i class="fa fa-chevron-left"></i> 中文命名实体识别——flat lattice transformer
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">116</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">213</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基于boundary-smoothing的中文NER"><span class="nav-text">基于boundary smoothing的中文NER</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#论文解读"><span class="nav-text">论文解读</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#环境安装"><span class="nav-text">环境安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码剖析"><span class="nav-text">代码剖析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#load-data"><span class="nav-text">load_data()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#build-ER-config"><span class="nav-text">build_ER_config()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#process-IE-data"><span class="nav-text">process_IE_data</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实验结果"><span class="nav-text">实验结果</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
