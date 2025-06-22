@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="LLMs,LoRA,DDP,FSDP,peft,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="大模型LoRA微调实践准备工作数据集：采用 GitHub 上的 Chinese-medical-dialogue-data 中文医疗对话数据集 Github地址如下：https://github.com/Toyhom/Chinese-medical-dialogue-data 微调模型：Qwen 1.5B模型（Qwen2、2.5均可以，可以自由选择）模型权重文件可以先从huggingface官网下">
+<meta name="keywords" content="LLMs,LoRA,DDP,FSDP,peft">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大模型LoRA微调实践">
+<meta property="og:url" content="http://yoursite.com/2025/03/29/llm-lora-ft/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="大模型LoRA微调实践准备工作数据集：采用 GitHub 上的 Chinese-medical-dialogue-data 中文医疗对话数据集 Github地址如下：https://github.com/Toyhom/Chinese-medical-dialogue-data 微调模型：Qwen 1.5B模型（Qwen2、2.5均可以，可以自由选择）模型权重文件可以先从huggingface官网下">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2025/03/29/llm-lora-ft/accelerate_config.png">
+<meta property="og:image" content="http://yoursite.com/2025/03/29/llm-lora-ft/accelerate_FSDP.png">
+<meta property="og:updated_time" content="2025-06-22T03:09:07.266Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="大模型LoRA微调实践">
+<meta name="twitter:description" content="大模型LoRA微调实践准备工作数据集：采用 GitHub 上的 Chinese-medical-dialogue-data 中文医疗对话数据集 Github地址如下：https://github.com/Toyhom/Chinese-medical-dialogue-data 微调模型：Qwen 1.5B模型（Qwen2、2.5均可以，可以自由选择）模型权重文件可以先从huggingface官网下">
+<meta name="twitter:image" content="http://yoursite.com/2025/03/29/llm-lora-ft/accelerate_config.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2025/03/29/llm-lora-ft/">
+
+
+
+
+
+  <title>大模型LoRA微调实践 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2025/03/29/llm-lora-ft/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">大模型LoRA微调实践</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-03-29T15:01:54+08:00">
+                2025-03-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/大语言模型/" itemprop="url" rel="index">
+                    <span itemprop="name">大语言模型</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="大模型LoRA微调实践"><a href="#大模型LoRA微调实践" class="headerlink" title="大模型LoRA微调实践"></a>大模型LoRA微调实践</h1><h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>数据集：采用 GitHub 上的 Chinese-medical-dialogue-data 中文医疗对话数据集</p>
+<p>Github地址如下：<br><a href="https://github.com/Toyhom/Chinese-medical-dialogue-data" target="_blank" rel="noopener">https://github.com/Toyhom/Chinese-medical-dialogue-data</a></p>
+<p>微调模型：<br>Qwen 1.5B模型（Qwen2、2.5均可以，可以自由选择）<br>模型权重文件可以先从huggingface官网下载，或者从魔塔社区下载速度更快：<br><a href="https://modelscope.cn/models/Qwen/Qwen2.5-1.5B-Instruct" target="_blank" rel="noopener">https://modelscope.cn/models/Qwen/Qwen2.5-1.5B-Instruct</a></p>
+<p>本实验环境：</p>
+<p>GPU 显存 &gt;= 8GB</p>
+<p>pytorch==2.5.0+cu118</p>
+<p>transformers==4.47.1</p>
+<p>peft==0.14.0</p>
+<p>参考资料：</p>
+<p><a href="https://blog.csdn.net/YoungOne2333/article/details/144718615" target="_blank" rel="noopener">https://blog.csdn.net/YoungOne2333/article/details/144718615</a></p>
+<a id="more"></a>
+<h3 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理</h3><p>数据集是Excel文件，主要是ask+question的问答对，需要处理成大模型微调的数据格式，这里可以参考<br>LLaMA Factory的数据处理文档：<a href="https://llamafactory.readthedocs.io/zh-cn/latest/getting_started/data_preparation.html" target="_blank" rel="noopener">https://llamafactory.readthedocs.io/zh-cn/latest/getting_started/data_preparation.html</a></p>
+<p>本文采用<strong>指令监督微调数据集</strong>，instruction 列对应的内容为人类指令， input 列对应的内容为人类输入， output 列对应的内容为模型回答。下面是一个例子：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"instruction"</span>: <span class="string">"计算这些物品的总费用。 "</span>,</span><br><span class="line">  <span class="attr">"input"</span>: <span class="string">"输入：汽车 - $3000，衣服 - $100，书 - $20。"</span>,</span><br><span class="line">  <span class="attr">"output"</span>: <span class="string">"汽车、衣服和书的总费用为 $3000 + $100 + $20 = $3120。"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>通过以下代码读取文件构建数据加载类：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> torch.utils.data <span class="keyword">import</span> Dataset</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">QADataset</span><span class="params">(Dataset)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, data_path, tokenizer, max_source_length, max_target_length)</span> -&gt; <span class="keyword">None</span>:</span></span><br><span class="line">        super().__init__()</span><br><span class="line">        self.tokenizer = tokenizer</span><br><span class="line">        self.max_source_length = max_source_length</span><br><span class="line">        self.max_target_length = max_target_length</span><br><span class="line">        self.max_seq_length = self.max_source_length + self.max_target_length</span><br><span class="line"></span><br><span class="line">        self.data = []</span><br><span class="line">        <span class="keyword">if</span> data_path:</span><br><span class="line">            <span class="keyword">with</span> open(data_path, <span class="string">"r"</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:</span><br><span class="line">                <span class="keyword">for</span> line <span class="keyword">in</span> f:</span><br><span class="line">                    <span class="keyword">if</span> <span class="keyword">not</span> line <span class="keyword">or</span> line == <span class="string">""</span>:</span><br><span class="line">                        <span class="keyword">continue</span></span><br><span class="line">                    json_line = json.loads(line)</span><br><span class="line">                    question = json_line[<span class="string">"question"</span>]</span><br><span class="line">                    answer = json_line[<span class="string">"answer"</span>]</span><br><span class="line">                    self.data.append(&#123;</span><br><span class="line">                        <span class="string">"question"</span>: question,</span><br><span class="line">                        <span class="string">"answer"</span>: answer</span><br><span class="line">                    &#125;)</span><br><span class="line">        print(<span class="string">"data load ， size："</span>, len(self.data))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">preprocess</span><span class="params">(self, question, answer)</span>:</span></span><br><span class="line">        messages = [</span><br><span class="line">            &#123;<span class="string">"role"</span>: <span class="string">"system"</span>, <span class="string">"content"</span>: <span class="string">"你是一个医疗方面的专家，可以根据患者的问题进行解答。"</span>&#125;,</span><br><span class="line">            &#123;<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: question&#125;</span><br><span class="line">        ]</span><br><span class="line">        <span class="comment"># 经历过一段时间对于输入和输出的思考和探索，发现这个代码里的输入和输出格式是暂且发现的最优的方式</span></span><br><span class="line">        prompt = self.tokenizer.apply_chat_template(messages, tokenize=<span class="literal">False</span>, add_generation_prompt=<span class="literal">True</span>)</span><br><span class="line">        instruction = self.tokenizer(prompt, add_special_tokens=<span class="literal">False</span>, max_length=self.max_source_length, truncation=<span class="literal">True</span>)</span><br><span class="line">        <span class="comment"># 因为是训练，所以有输出</span></span><br><span class="line">        response = self.tokenizer(answer, add_special_tokens=<span class="literal">False</span>, max_length=self.max_target_length, truncation=<span class="literal">True</span>)</span><br><span class="line">        <span class="comment"># 输入是 question+answer</span></span><br><span class="line">        input_ids = instruction[<span class="string">"input_ids"</span>] + response[<span class="string">"input_ids"</span>] + [self.tokenizer.pad_token_id]</span><br><span class="line">        attention_mask = (instruction[<span class="string">"attention_mask"</span>] + response[<span class="string">"attention_mask"</span>] + [<span class="number">1</span>])</span><br><span class="line">        <span class="comment"># 输出是 answer，而不去计算question部分的loss，-100 是一个约定俗成的用于忽略损失计算的值。</span></span><br><span class="line">        labels = [<span class="number">-100</span>] * len(instruction[<span class="string">"input_ids"</span>]) + response[<span class="string">"input_ids"</span>] + [self.tokenizer.pad_token_id]</span><br><span class="line">        <span class="keyword">if</span> len(input_ids) &gt; self.max_seq_length:</span><br><span class="line">            input_ids = input_ids[:self.max_seq_length]</span><br><span class="line">            attention_mask = attention_mask[:self.max_seq_length]</span><br><span class="line">            labels = labels[:self.max_seq_length]</span><br><span class="line">        <span class="comment"># 注意！！！这里这三个list的长度是完全一致的，否则无法训练</span></span><br><span class="line">        <span class="keyword">return</span> input_ids, attention_mask, labels</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getitem__</span><span class="params">(self, index)</span>:</span></span><br><span class="line">        item_data = self.data[index]</span><br><span class="line"></span><br><span class="line">        input_ids, attention_mask, labels = self.preprocess(**item_data)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="string">"input_ids"</span>: torch.LongTensor(np.array(input_ids)),</span><br><span class="line">            <span class="string">"attention_mask"</span>: torch.LongTensor(np.array(attention_mask)),</span><br><span class="line">            <span class="string">"labels"</span>: torch.LongTensor(np.array(labels))</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__len__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> len(self.data)</span><br></pre></td></tr></table></figure></p>
+<p>原文章中先通过一个预处理代码读取Excel中的部分数据保存为json文件，所以这里直接从json文件读取数据。<br>这里要注意的就是输入和输出的构建，以及哪部分进行损失计算。</p>
+<h3 id="模型加载测试"><a href="#模型加载测试" class="headerlink" title="模型加载测试"></a>模型加载测试</h3><p>模型加载使用transformer库的因果语言模型类，因果语言模型是一种自回归模型，其目标是根据前面的 token 预测下一个 token（即从左到右的单向预测），即现在所流行的大语言模型。</p>
+<table>
+<thead>
+<tr>
+<th>类名</th>
+<th>适用任务</th>
+<th>示例模型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AutoModelForCausalLM</td>
+<td>因果语言模型（文本生成）</td>
+<td>GPT-2、Llama</td>
+</tr>
+<tr>
+<td>AutoModelForSeq2SeqLM</td>
+<td>序列到序列模型（翻译、摘要）</td>
+<td>T5、BART</td>
+</tr>
+<tr>
+<td>AutoModelForMaskedLM</td>
+<td>掩码语言模型（填空、特征提取）</td>
+<td>BERT、RoBERTa</td>
+</tr>
+<tr>
+<td>AutoModelForQuestionAnswering</td>
+<td>问答任务</td>
+<td>BERT-QA、RoBERTa-QA</td>
+</tr>
+</tbody>
+</table>
+<p>使用peft库进行LoRA微调，这里也先简单展示使用peft库进行LoRA微调配置后，实际参与训练的参数量。<br>先把模型权重文件下载下来，然后使用以下代码可以加载模型进行对话测试：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoModelForCausalLM, AutoModel, AutoTokenizer</span><br><span class="line"><span class="keyword">from</span> peft <span class="keyword">import</span> LoraConfig, get_peft_model, TaskType</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">demo</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="comment"># 加载模型</span></span><br><span class="line">    model = AutoModelForCausalLM.from_pretrained(</span><br><span class="line">        <span class="string">"../modelscope/Qwen/Qwen2.5-1.5B-Instruct"</span>,  <span class="comment"># 先手动将模型下载到本地</span></span><br><span class="line">        torch_dtype=<span class="string">'auto'</span>,  <span class="comment"># 使用auto会根据硬件配置情况自行选择精度，如果不设置此参数，默认使用float32</span></span><br><span class="line">        device_map=<span class="string">"auto"</span>  <span class="comment"># 如果有GPU，可以自动加载到GPU</span></span><br><span class="line">    )</span><br><span class="line">    <span class="comment"># 可以打印查看模型的网络结构</span></span><br><span class="line">    <span class="comment"># 例如qwen2 1.5B 由28 层 Qwen2DecoderLayer 构成，每个 Decoder 主要的核心是 self_attention 和 mlp</span></span><br><span class="line">    print(model)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 增加Lora结构之后，打印模型结构查看变化</span></span><br><span class="line">    peft_config = LoraConfig(</span><br><span class="line">        task_type=TaskType.CAUSAL_LM,</span><br><span class="line">        target_modules=[<span class="string">"q_proj"</span>, <span class="string">"k_proj"</span>, <span class="string">"v_proj"</span>, <span class="string">"o_proj"</span>, <span class="string">"gate_proj"</span>, <span class="string">"up_proj"</span>, <span class="string">"down_proj"</span>],</span><br><span class="line">        inference_mode=<span class="literal">False</span>,</span><br><span class="line">        r=<span class="number">8</span>,</span><br><span class="line">        lora_alpha=<span class="number">32</span>,</span><br><span class="line">        lora_dropout=<span class="number">0.1</span></span><br><span class="line">    )</span><br><span class="line">    model = get_peft_model(model, peft_config)</span><br><span class="line">    <span class="comment"># trainable params: 9,232,384 || all params: 1,552,946,688 || trainable%: 0.5945</span></span><br><span class="line">    model.print_trainable_parameters()</span><br><span class="line">    <span class="comment"># 下面通过自行计算参与训练的参数量，与上面的参数量对比是否一致</span></span><br><span class="line">    total_trainable_params = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> param <span class="keyword">in</span> model.parameters():</span><br><span class="line">        <span class="keyword">if</span> param.requires_grad:</span><br><span class="line">            total_trainable_params += param.numel()</span><br><span class="line"></span><br><span class="line">    print(<span class="string">f"参与训练的参数数量: <span class="subst">&#123;total_trainable_params&#125;</span>"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Lora 之后在每一层(q_proj这些线性层)都增加了一个 lora_A 和 lora_B 结构来实现降维升维的作用，</span></span><br><span class="line">    print(model)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 对话测试</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># todo tokenizer具体是什么？</span></span><br><span class="line">    tokenizer = AutoTokenizer.from_pretrained(<span class="string">"../modelscope/Qwen/Qwen2.5-1.5B-Instruct"</span>)</span><br><span class="line">    device = torch.device(<span class="string">"cuda"</span> <span class="keyword">if</span> torch.cuda.is_available() <span class="keyword">else</span> <span class="string">"cpu"</span>)</span><br><span class="line"></span><br><span class="line">    prompt = <span class="string">"5月至今上腹靠右隐痛，右背隐痛带酸，便秘，喜睡，时有腹痛，头痛，腰酸症状？"</span></span><br><span class="line">    messages = [</span><br><span class="line">        &#123;<span class="string">"role"</span>: <span class="string">"system"</span>, <span class="string">"content"</span>: <span class="string">'你是一个医疗方面的专家，可以根据患者的问题进行解答。'</span>&#125;,</span><br><span class="line">        &#123;<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: prompt&#125;</span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line">    text = tokenizer.apply_chat_template(</span><br><span class="line">        messages,</span><br><span class="line">        tokenize=<span class="literal">False</span>,</span><br><span class="line">        add_generation_prompt=<span class="literal">True</span></span><br><span class="line">    )</span><br><span class="line">    model_inputs = tokenizer([text], return_tensors=<span class="string">"pt"</span>).to(device)</span><br><span class="line">    start = time.time()</span><br><span class="line">    generated_ids = model.generate(</span><br><span class="line">        model_inputs.input_ids,</span><br><span class="line">        max_new_tokens=<span class="number">512</span></span><br><span class="line">    )</span><br><span class="line">    end = time.time()</span><br><span class="line">    response = tokenizer.batch_decode(generated_ids, skip_special_tokens=<span class="literal">True</span>)[<span class="number">0</span>]</span><br><span class="line">    <span class="comment"># 初始回复：您的描述表明您可能患有慢性胃炎或者胃溃疡等疾病。建议尽快就医并做进一步检查以明确诊断，并根据医生的指导进行治疗。同时注意饮食健康，避免辛辣、油腻食物，保持良好的生活习惯和心态。</span></span><br><span class="line">    print(<span class="string">f"耗时：<span class="subst">&#123;end-start&#125;</span>s，<span class="subst">&#123;response&#125;</span>"</span>)</span><br></pre></td></tr></table></figure></p>
+<p>这里关于tokenizer实际上有必须要再深入研究一下，不同的大模型所采用的的分词算法可能会有所区别，也会表现在针对相同的一段文本但是实际token数量不一致。</p>
+<h2 id="LoRA微调——手动实现版本"><a href="#LoRA微调——手动实现版本" class="headerlink" title="LoRA微调——手动实现版本"></a>LoRA微调——手动实现版本</h2><p>接下来开始正式进行Lora微调，这里是一种比较简单的实现方式，除了transformers和peft库，没有使用其他封装好的库或者训练框架，更易于理解，整体流程与常规的深度学习模型训练代码并无太大的区别<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoModelForCausalLM, AutoTokenizer</span><br><span class="line"><span class="keyword">from</span> peft <span class="keyword">import</span> LoraConfig, get_peft_model, TaskType</span><br><span class="line"><span class="keyword">from</span> torch.utils.data <span class="keyword">import</span> DataLoader</span><br><span class="line"><span class="keyword">from</span> torch.utils.tensorboard <span class="keyword">import</span> SummaryWriter</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> qa_dataset <span class="keyword">import</span> QADataset</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    model_name = <span class="string">"../modelscope/Qwen/Qwen2.5-1.5B-Instruct"</span></span><br><span class="line">    train_json_path = <span class="string">"./data/train.json"</span></span><br><span class="line">    val_json_path = <span class="string">"./data/val.json"</span></span><br><span class="line">    max_source_length = <span class="number">128</span>   <span class="comment">#  输入长度可根据数据集调整，显存会随之变化</span></span><br><span class="line">    max_target_length = <span class="number">256</span>   </span><br><span class="line">    epochs = <span class="number">10</span></span><br><span class="line">    batch_size = <span class="number">1</span>   <span class="comment"># 可根据显存使用情况调整，一般单卡很难设置的比较大</span></span><br><span class="line">    lr = <span class="number">1e-4</span></span><br><span class="line">    gradient_accumulation_steps = <span class="number">16</span></span><br><span class="line">    lora_rank = <span class="number">8</span>   <span class="comment"># 8或16或32</span></span><br><span class="line">    lora_alpha = <span class="number">32</span></span><br><span class="line">    model_output_dir = <span class="string">"output"</span></span><br><span class="line">    logs_dir = <span class="string">"logs"</span></span><br><span class="line">    <span class="comment"># 设备（这里先简单介绍单卡训练版本，后面会测试多卡训练）</span></span><br><span class="line">    device = torch.device(<span class="string">"cuda:0"</span> <span class="keyword">if</span> torch.cuda.is_available() <span class="keyword">else</span> <span class="string">"cpu"</span>)</span><br><span class="line">    <span class="comment"># 加载分词器和模型</span></span><br><span class="line">    tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=<span class="literal">True</span>)</span><br><span class="line">    <span class="comment"># 如果显存够，这里可以使用float32，不设置的话默认float32(1.5B模型8G显存使用float16、11G显存使用float32)</span></span><br><span class="line">    model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16, trust_remote_code=<span class="literal">True</span>)</span><br><span class="line">    <span class="comment"># setup peft</span></span><br><span class="line">    peft_config = LoraConfig(</span><br><span class="line">        task_type=TaskType.CAUSAL_LM,  <span class="comment"># 任务类型：CAUSAL_LM 表示因果语言模型（Causal Language Model），即生成式任务</span></span><br><span class="line">        target_modules=[<span class="string">"q_proj"</span>, <span class="string">"k_proj"</span>, <span class="string">"v_proj"</span>, <span class="string">"o_proj"</span>, <span class="string">"gate_proj"</span>, <span class="string">"up_proj"</span>, <span class="string">"demo_proj"</span>],</span><br><span class="line">        inference_mode=<span class="literal">False</span>,</span><br><span class="line">        r=lora_rank,</span><br><span class="line">        lora_alpha=lora_alpha,</span><br><span class="line">        lora_dropout=<span class="number">0.1</span></span><br><span class="line">    )</span><br><span class="line">    model = get_peft_model(model, peft_config)</span><br><span class="line">    model.is_parallelizable = <span class="literal">True</span></span><br><span class="line">    model.model_parallel = <span class="literal">True</span></span><br><span class="line">    print(<span class="string">"start load train data..."</span>)</span><br><span class="line">    train_params = &#123;<span class="string">"batch_size"</span>: batch_size, <span class="string">"shuffle"</span>: <span class="literal">True</span>, <span class="string">"num_workers"</span>: <span class="number">0</span>&#125;</span><br><span class="line">    training_set = QADataset(train_json_path, tokenizer, max_source_length, max_target_length)</span><br><span class="line">    training_loader = DataLoader(training_set, **train_params)</span><br><span class="line">    print(<span class="string">"start load validation data..."</span>)</span><br><span class="line">    val_params = &#123;<span class="string">"batch_size"</span>: batch_size, <span class="string">"shuffle"</span>: <span class="literal">True</span>, <span class="string">"num_workers"</span>: <span class="number">0</span>&#125;</span><br><span class="line">    val_set = QADataset(val_json_path, tokenizer, max_source_length, max_target_length)</span><br><span class="line">    val_loader = DataLoader(val_set, **val_params)</span><br><span class="line">    <span class="comment"># 日志记录</span></span><br><span class="line">    writer = SummaryWriter(logs_dir)</span><br><span class="line">    <span class="comment"># 优化器</span></span><br><span class="line">    optimizer = torch.optim.AdamW(params=model.parameters(), lr=lr)</span><br><span class="line">    model = model.to(device)</span><br><span class="line">    <span class="comment"># 开始训练</span></span><br><span class="line">    print(<span class="string">"Start Training..."</span>)</span><br><span class="line">    train_model(</span><br><span class="line">        model=model,</span><br><span class="line">        train_loader=training_loader,</span><br><span class="line">        val_loader=val_loader,</span><br><span class="line">        optimizer=optimizer,</span><br><span class="line">        gradient_accumulation_steps=gradient_accumulation_steps,</span><br><span class="line">        device=device,</span><br><span class="line">        num_epochs=epochs,</span><br><span class="line">        model_output_dir=model_output_dir,</span><br><span class="line">        writer=writer</span><br><span class="line">    )</span><br></pre></td></tr></table></figure></p>
+<p>train_model的实现如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> tqdm <span class="keyword">import</span> tqdm</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">train_model</span><span class="params">(model, train_loader, val_loader, optimizer, gradient_accumulation_steps,</span></span></span><br><span class="line"><span class="function"><span class="params">                device, num_epochs, model_output_dir, writer)</span>:</span></span><br><span class="line">    batch_step = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> epoch <span class="keyword">in</span> range(num_epochs):</span><br><span class="line">        time1 = time.time()</span><br><span class="line">        model.train()</span><br><span class="line">        <span class="keyword">for</span> index, data <span class="keyword">in</span> enumerate(tqdm(train_loader, file=sys.stdout, desc=<span class="string">"Train Epoch: "</span> + str(epoch))):</span><br><span class="line">            input_ids = data[<span class="string">'input_ids'</span>].to(device, dtype=torch.long)</span><br><span class="line">            attention_mask = data[<span class="string">'attention_mask'</span>].to(device, dtype=torch.long)</span><br><span class="line">            labels = data[<span class="string">'labels'</span>].to(device, dtype=torch.long)</span><br><span class="line">            <span class="comment"># 前向传播</span></span><br><span class="line">            outputs = model(input_ids, attention_mask=attention_mask, labels=labels)</span><br><span class="line">            loss = outputs.loss   <span class="comment"># 交叉熵损失函数计算得来</span></span><br><span class="line">            <span class="comment"># 反向传播， 计算当前梯度</span></span><br><span class="line">            loss.backward()</span><br><span class="line">            <span class="comment"># 梯度累积步数</span></span><br><span class="line">            <span class="keyword">if</span> (index % gradient_accumulation_steps == <span class="number">0</span> <span class="keyword">and</span> index != <span class="number">0</span>) <span class="keyword">or</span> index == len(train_loader) - <span class="number">1</span>:</span><br><span class="line">                <span class="comment"># 更新网络参数</span></span><br><span class="line">                optimizer.step()</span><br><span class="line">                <span class="comment"># 清空过往梯度</span></span><br><span class="line">                optimizer.zero_grad()</span><br><span class="line">                writer.add_scalar(<span class="string">'Loss/train'</span>, loss, batch_step)</span><br><span class="line">                batch_step += <span class="number">1</span></span><br><span class="line">            <span class="comment"># 100条数据打印一次 loss</span></span><br><span class="line">            <span class="keyword">if</span> (index % <span class="number">100</span> == <span class="number">0</span> <span class="keyword">and</span> index != <span class="number">0</span>) <span class="keyword">or</span> index == len(train_loader) - <span class="number">1</span>:</span><br><span class="line">                time2 = time.time()</span><br><span class="line">                tqdm.write(</span><br><span class="line">                    <span class="string">f"<span class="subst">&#123;index&#125;</span>, epoch: <span class="subst">&#123;epoch&#125;</span> -loss: <span class="subst">&#123;str(loss)&#125;</span> ; "</span></span><br><span class="line">                    <span class="string">f"each step's time spent: <span class="subst">&#123;(str(float(time2 - time1) / float(index + <span class="number">0.0001</span>)))&#125;</span>"</span>)</span><br><span class="line">        <span class="comment"># 验证</span></span><br><span class="line">        model.eval()</span><br><span class="line">        val_loss = validate_model(model, val_loader, device)</span><br><span class="line">        writer.add_scalar(<span class="string">'Loss/val'</span>, val_loss, epoch)</span><br><span class="line">        print(<span class="string">f'val_loss: <span class="subst">&#123;val_loss&#125;</span>, epoch: <span class="subst">&#123;epoch&#125;</span>'</span>)</span><br><span class="line">        print(<span class="string">'Save Model To'</span>, model_output_dir)</span><br><span class="line">        <span class="comment"># 保存的模型只包含微调的参数部分，后面还需要合并模型</span></span><br><span class="line">        model.save_pretrained(model_output_dir)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">validate_model</span><span class="params">(model, val_loader, device)</span>:</span></span><br><span class="line">    running_loss = <span class="number">0.0</span></span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        <span class="keyword">for</span> _, data <span class="keyword">in</span> enumerate(tqdm(val_loader, file=sys.stdout, desc=<span class="string">"Validation Data"</span>)):</span><br><span class="line">            input_ids = data[<span class="string">'input_ids'</span>].to(device, dtype=torch.long)</span><br><span class="line">            attention_mask = data[<span class="string">'attention_mask'</span>].to(device, dtype=torch.long)</span><br><span class="line">            labels = data[<span class="string">'labels'</span>].to(device, dtype=torch.long)</span><br><span class="line">            outputs = model(input_ids, attention_mask=attention_mask, labels=labels)</span><br><span class="line">            loss = outputs.loss</span><br><span class="line">            running_loss += loss.item()</span><br><span class="line">    <span class="keyword">return</span> running_loss / len(val_loader)</span><br></pre></td></tr></table></figure></p>
+<p>以上是所有的训练代码，可以在单卡（显存&gt;=8GB）上Lora微调1.5B的模型，前提是上下文长度不易过长；<br>估算模型占用显存大小可以使用如下公式：<br>1.5（参数量：1.5B）<em>2</em>1.3=3.9GB<br>即在模型推理时，仅将模型加载到显存中就需要占用这么大的显存，如果是全参数微调，则需要准备再乘以10倍的显存大小；而Lora微调的实际参数量只占1%左右，一般情况比推理所需的显存略大一些即可，因为需要保存额外的参数、优化器和梯度等，但是如果上下文长度较长时，显存要求相应也会更大。</p>
+<p>全参数微调的区别只不过是需要的显存更大，而且不需要使用peft库，其他代码与上述代码并无本质区别。</p>
+<h2 id="模型推理和权重合并"><a href="#模型推理和权重合并" class="headerlink" title="模型推理和权重合并"></a>模型推理和权重合并</h2><p>微调结束之后，Lora微调的参数会单独保存为一个权重文件，这一权重文件与原始的大模型权重文件是分开的，需要同时加载这两个模型文件进行推理，实现方式如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoModelForCausalLM, AutoTokenizer</span><br><span class="line"><span class="keyword">from</span> peft <span class="keyword">import</span> PeftModel</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">test_lora</span><span class="params">()</span>:</span></span><br><span class="line">    model_path = <span class="string">"../modelscope/Qwen/Qwen2.5-1.5B-Instruct"</span></span><br><span class="line">    lora_dir = <span class="string">"output"</span></span><br><span class="line"></span><br><span class="line">    device = torch.device(<span class="string">"cuda:0"</span> <span class="keyword">if</span> torch.cuda.is_available() <span class="keyword">else</span> <span class="string">"cpu"</span>)</span><br><span class="line">    model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=<span class="string">'auto'</span>, device_map=<span class="string">'auto'</span>)</span><br><span class="line">    tokenizer = AutoTokenizer.from_pretrained(model_path)</span><br><span class="line">    model = PeftModel.from_pretrained(model, lora_dir)</span><br><span class="line">    model.to(device)</span><br><span class="line">    prompt = <span class="string">"5月至今上腹靠右隐痛，右背隐痛带酸，便秘，喜睡，时有腹痛，头痛，腰酸症状？"</span></span><br><span class="line">    messages = [</span><br><span class="line">        &#123;<span class="string">"role"</span>: <span class="string">"system"</span>, <span class="string">"content"</span>: <span class="string">'你是一个医疗方面的专家，可以根据患者的问题进行解答。'</span>&#125;,</span><br><span class="line">        &#123;<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: prompt&#125;</span><br><span class="line">    ]</span><br><span class="line">    text = tokenizer.apply_chat_template(</span><br><span class="line">        messages,</span><br><span class="line">        tokenize=<span class="literal">False</span>,</span><br><span class="line">        add_generation_prompt=<span class="literal">True</span></span><br><span class="line">    )</span><br><span class="line">    model_inputs = tokenizer([text], return_tensors=<span class="string">"pt"</span>).to(device)</span><br><span class="line">    start = time.time()</span><br><span class="line">    generated_ids = model.generate(</span><br><span class="line">        model_inputs.input_ids,</span><br><span class="line">        max_new_tokens=<span class="number">512</span></span><br><span class="line">    )</span><br><span class="line">    end = time.time()</span><br><span class="line">    <span class="comment"># generated_ids中包含输入，这一步骤可以去除输入部分</span></span><br><span class="line">    generated_ids = [</span><br><span class="line">        output_ids[len(input_ids):] <span class="keyword">for</span> input_ids, output_ids <span class="keyword">in</span> zip(model_inputs.input_ids, generated_ids)</span><br><span class="line">    ]</span><br><span class="line">    response = tokenizer.batch_decode(generated_ids, skip_special_tokens=<span class="literal">True</span>)[<span class="number">0</span>]</span><br><span class="line">    <span class="comment"># 实际测试确实有思考过程</span></span><br><span class="line">    print(<span class="string">f"耗时：<span class="subst">&#123;end - start&#125;</span>s，<span class="subst">&#123;response&#125;</span>"</span>)</span><br></pre></td></tr></table></figure></p>
+<p>如果不想每次加载两个模型文件，则可以将两个模型文件进行合并：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoModelForCausalLM, AutoTokenizer</span><br><span class="line"><span class="keyword">from</span> peft <span class="keyword">import</span> PeftModel</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">merge_model</span><span class="params">()</span>:</span></span><br><span class="line">    device = torch.device(<span class="string">"cuda:0"</span> <span class="keyword">if</span> torch.cuda.is_available() <span class="keyword">else</span> <span class="string">"cpu"</span>)</span><br><span class="line">    model_path = <span class="string">"../modelscope/Qwen/Qwen2.5-1.5B-Instruct"</span></span><br><span class="line">    lora_dir = <span class="string">"output"</span></span><br><span class="line">    tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=<span class="literal">True</span>)</span><br><span class="line">    model = AutoModelForCausalLM.from_pretrained(model_path, trust_remote_code=<span class="literal">True</span>)</span><br><span class="line">    model = PeftModel.from_pretrained(model, lora_dir).to(device)</span><br><span class="line">    print(model)</span><br><span class="line">    <span class="comment"># 合并model, 同时保存 token</span></span><br><span class="line">    model = model.merge_and_unload()</span><br><span class="line">    model.save_pretrained(<span class="string">"lora_output"</span>)</span><br><span class="line">    tokenizer.save_pretrained(<span class="string">"lora_output"</span>)</span><br></pre></td></tr></table></figure></p>
+<p>后面就不需要再通过 PeftModel加载模型了，直接与加载原始大模型文件一样即可。</p>
+<h2 id="模型评估"><a href="#模型评估" class="headerlink" title="模型评估"></a>模型评估</h2><p>其实模型微调并不难，难点在于另外两点：</p>
+<ol>
+<li>微调的数据集，一般需要针对领域或者特定任务的高质量数据集，且量要相对来说大一些，标注成本相对来说会高一些，你能做到别人做不到的，关键就在于你独有的数据集；</li>
+<li>微调后的模型如何评估，这个其实是很难的，因为现在的大模型是生成式模型，而不是像以前的文本分类、实体识别等任务，以前这种任务对就是对，错就是错，评估比较简单，但是大语言模型是无法对比文本内容来判断是否正确的，所以对于评估集的构建和评估方案的制定是非常难的。</li>
+</ol>
+<h2 id="分布式训练"><a href="#分布式训练" class="headerlink" title="分布式训练"></a>分布式训练</h2><p>这里讨论的分布式训练仅考虑单机多卡的情况，暂不考虑多机多卡的情况。<br>单机多卡训练一般分为两种分布式技术：</p>
+<ul>
+<li>DDP (DistributedDataParallel) 通过实现模型并行和数据并行实现训练加速。 使用 DDP 的程序需要生成多个进程并且为每个进程创建一个 DDP 实例，他们之间通过 torch.distributed 库同步。</li>
+<li>FSDP 通过全切片数据并行技术（Fully Sharded Data Parallel）来处理更多更大的模型。在 DDP 中，每张 GPU 都各自保留了一份完整的模型参数和优化器参数。而 FSDP 切分了模型参数、梯度与优化器参数，使得每张 GPU 只保留这些参数的一部分。 除了并行技术之外，FSDP 还支持将模型参数卸载至CPU，从而进一步降低显存需求。</li>
+</ul>
+<h3 id="DDP"><a href="#DDP" class="headerlink" title="DDP"></a>DDP</h3><p>DDP是每张卡上都有一份完整的模型参数，所以使用此方法的前提是单张卡显存可以加载你要训练的模型全部参数，然后将待训练的数据划分到多张卡上，自然训练速度就会提高。<br>一般情况下有两种比较简单的实现方式：</p>
+<ol>
+<li>通过torch自带的DistributedDataParallel实现；</li>
+<li>结合accelerate实现。</li>
+</ol>
+<p>通过DistributedDataParallel的实现方式如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.distributed <span class="keyword">as</span> dist</span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoModelForCausalLM, AutoTokenizer</span><br><span class="line"><span class="keyword">from</span> peft <span class="keyword">import</span> LoraConfig, get_peft_model, TaskType</span><br><span class="line"><span class="keyword">from</span> torch.utils.data <span class="keyword">import</span> DataLoader, DistributedSampler</span><br><span class="line"><span class="keyword">from</span> torch.utils.tensorboard <span class="keyword">import</span> SummaryWriter</span><br><span class="line"><span class="keyword">from</span> torch.nn.parallel <span class="keyword">import</span> DistributedDataParallel</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    model_name = <span class="string">"../modelscope/Qwen/Qwen2.5-1.5B-Instruct"</span></span><br><span class="line">    train_json_path = <span class="string">"./data/train.json"</span></span><br><span class="line">    val_json_path = <span class="string">"./data/val.json"</span></span><br><span class="line">    max_source_length = <span class="number">128</span>  </span><br><span class="line">    max_target_length = <span class="number">256</span>  </span><br><span class="line">    epochs = <span class="number">10</span></span><br><span class="line">    batch_size = <span class="number">1</span>  </span><br><span class="line">    lr = <span class="number">1e-4</span></span><br><span class="line">    gradient_accumulation_steps = <span class="number">16</span></span><br><span class="line">    lora_rank = <span class="number">8</span>   <span class="comment"># 8或16或32</span></span><br><span class="line">    lora_alpha = <span class="number">32</span></span><br><span class="line">    model_output_dir = <span class="string">"output"</span></span><br><span class="line">    logs_dir = <span class="string">"logs"</span></span><br><span class="line">    <span class="comment"># 设备</span></span><br><span class="line">    local_rank = int(os.environ.get(<span class="string">"LOCAL_RANK"</span>, <span class="number">-1</span>))</span><br><span class="line">    device = torch.device(<span class="string">"cuda"</span>, local_rank)</span><br><span class="line">    <span class="comment"># 初始化分布式环境</span></span><br><span class="line">    <span class="keyword">if</span> local_rank != <span class="number">-1</span>:</span><br><span class="line">        dist.init_process_group(backend=<span class="string">'nccl'</span>)</span><br><span class="line">        torch.cuda.set_device(local_rank)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 加载分词器和模型</span></span><br><span class="line">    tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=<span class="literal">True</span>)</span><br><span class="line">    <span class="comment"># 如果显存够，这里可以使用float32，不设置的话默认float32(8G显存使用float16、11G显存使用float32)</span></span><br><span class="line">    model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16, trust_remote_code=<span class="literal">True</span>)</span><br><span class="line">    <span class="comment"># setup peft</span></span><br><span class="line">    peft_config = LoraConfig(</span><br><span class="line">        task_type=TaskType.CAUSAL_LM,  <span class="comment"># 任务类型：CAUSAL_LM 表示因果语言模型（Causal Language Model），即生成式任务</span></span><br><span class="line">        target_modules=[<span class="string">"q_proj"</span>, <span class="string">"k_proj"</span>, <span class="string">"v_proj"</span>, <span class="string">"o_proj"</span>, <span class="string">"gate_proj"</span>, <span class="string">"up_proj"</span>, <span class="string">"demo_proj"</span>],</span><br><span class="line">        inference_mode=<span class="literal">False</span>,</span><br><span class="line">        r=lora_rank,</span><br><span class="line">        lora_alpha=lora_alpha,</span><br><span class="line">        lora_dropout=<span class="number">0.1</span></span><br><span class="line">    )</span><br><span class="line">    model = get_peft_model(model, peft_config)</span><br><span class="line">    model.is_parallelizable = <span class="literal">True</span></span><br><span class="line">    model.model_parallel = <span class="literal">True</span></span><br><span class="line">    print(<span class="string">"start load train data..."</span>)</span><br><span class="line">    <span class="comment"># sampler参数和shuffle参数互斥</span></span><br><span class="line">    train_params = &#123;<span class="string">"batch_size"</span>: batch_size, <span class="string">"shuffle"</span>: <span class="literal">False</span>, <span class="string">"num_workers"</span>: <span class="number">0</span>&#125;</span><br><span class="line">    training_set = QADataset(train_json_path, tokenizer, max_source_length, max_target_length)</span><br><span class="line">    <span class="comment"># 区别1：使用DistributedSampler实现分布式数据采样，此时的训练参数中就不要设置随机打乱</span></span><br><span class="line">    train_sampler = DistributedSampler(training_set)</span><br><span class="line">    training_loader = DataLoader(training_set, **train_params, sampler=train_sampler)</span><br><span class="line">    print(<span class="string">"start load validation data..."</span>)</span><br><span class="line"></span><br><span class="line">    val_params = &#123;<span class="string">"batch_size"</span>: batch_size, <span class="string">"shuffle"</span>: <span class="literal">False</span>, <span class="string">"num_workers"</span>: <span class="number">0</span>&#125;</span><br><span class="line">    val_set = QADataset(val_json_path, tokenizer, max_source_length, max_target_length)</span><br><span class="line">    val_sampler = DistributedSampler(val_set)</span><br><span class="line">    val_loader = DataLoader(val_set, **val_params, sampler=val_sampler)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 日志记录</span></span><br><span class="line">    writer = SummaryWriter(logs_dir)</span><br><span class="line">    <span class="comment"># 优化器</span></span><br><span class="line">    optimizer = torch.optim.AdamW(params=model.parameters(), lr=lr)</span><br><span class="line">    model = model.to(device)</span><br><span class="line">    <span class="comment"># 区别2：将模型传递给DistributedDataParallel</span></span><br><span class="line">    model = DistributedDataParallel(model)</span><br><span class="line">    <span class="comment"># 开始训练</span></span><br><span class="line">    print(<span class="string">"Start Training..."</span>)</span><br><span class="line">    train_model(</span><br><span class="line">        model=model,</span><br><span class="line">        train_loader=training_loader,</span><br><span class="line">        val_loader=val_loader,</span><br><span class="line">        optimizer=optimizer,</span><br><span class="line">        gradient_accumulation_steps=gradient_accumulation_steps,</span><br><span class="line">        device=device,</span><br><span class="line">        num_epochs=epochs,</span><br><span class="line">        model_output_dir=model_output_dir,</span><br><span class="line">        writer=writer,</span><br><span class="line">        sampler=train_sampler</span><br><span class="line">    )</span><br></pre></td></tr></table></figure></p>
+<p>与单卡训练除了上述代码中注释的两点区别之外，就是需要使用<code>torchrun</code>来启动训练程序<br><code>torchrun --nproc_per_node=8 pytorch_ddp.py</code><br> 其中nproc_per_node表示GPU数量</p>
+<p>使用accelerate实现，代码改动的地方也很少，只需要把模型、优化器、数据集等传递给Accelerate即可<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> accelerate <span class="keyword">import</span> Accelerator</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    model_name = <span class="string">"../modelscope/Qwen/Qwen2.5-1.5B-Instruct"</span></span><br><span class="line">    train_json_path = <span class="string">"./data/train.json"</span></span><br><span class="line">    val_json_path = <span class="string">"./data/val.json"</span></span><br><span class="line">    max_source_length = <span class="number">128</span>   <span class="comment"># todo 输入长度最大可以设置为多少？</span></span><br><span class="line">    max_target_length = <span class="number">256</span>   <span class="comment"># todo 输出呢？</span></span><br><span class="line">    epochs = <span class="number">10</span></span><br><span class="line">    batch_size = <span class="number">1</span>   <span class="comment"># todo 显存大了之后可以增大，如何控制多卡训练</span></span><br><span class="line">    lr = <span class="number">1e-4</span></span><br><span class="line">    gradient_accumulation_steps = <span class="number">16</span></span><br><span class="line">    lora_rank = <span class="number">8</span>   <span class="comment"># 8或16或32</span></span><br><span class="line">    lora_alpha = <span class="number">32</span></span><br><span class="line">    model_output_dir = <span class="string">"output"</span></span><br><span class="line">    logs_dir = <span class="string">"logs"</span></span><br><span class="line">    <span class="comment"># 设备</span></span><br><span class="line">    <span class="comment"># device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")</span></span><br><span class="line">    <span class="comment"># 加载分词器和模型</span></span><br><span class="line">    tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=<span class="literal">True</span>)</span><br><span class="line">    <span class="comment"># 使用accelerate 混合精度训练bf16,这里也设置为bfloat16，否则可能会导致冲突报错</span></span><br><span class="line">    model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16, trust_remote_code=<span class="literal">True</span>)</span><br><span class="line">    <span class="comment"># setup peft</span></span><br><span class="line">    peft_config = LoraConfig(</span><br><span class="line">        task_type=TaskType.CAUSAL_LM,  <span class="comment"># 任务类型：CAUSAL_LM 表示因果语言模型（Causal Language Model），即生成式任务</span></span><br><span class="line">        target_modules=[<span class="string">"q_proj"</span>, <span class="string">"k_proj"</span>, <span class="string">"v_proj"</span>, <span class="string">"o_proj"</span>, <span class="string">"gate_proj"</span>, <span class="string">"up_proj"</span>, <span class="string">"demo_proj"</span>],</span><br><span class="line">        inference_mode=<span class="literal">False</span>,</span><br><span class="line">        r=lora_rank,</span><br><span class="line">        lora_alpha=lora_alpha,</span><br><span class="line">        lora_dropout=<span class="number">0.1</span></span><br><span class="line">    )</span><br><span class="line">    model = get_peft_model(model, peft_config)</span><br><span class="line">    model.is_parallelizable = <span class="literal">True</span></span><br><span class="line">    model.model_parallel = <span class="literal">True</span></span><br><span class="line">    print(<span class="string">"start load train data..."</span>)</span><br><span class="line">    train_params = &#123;<span class="string">"batch_size"</span>: batch_size, <span class="string">"shuffle"</span>: <span class="literal">True</span>, <span class="string">"num_workers"</span>: <span class="number">0</span>&#125;</span><br><span class="line">    training_set = QADataset(train_json_path, tokenizer, max_source_length, max_target_length)</span><br><span class="line">    training_loader = DataLoader(training_set, **train_params)</span><br><span class="line">    print(<span class="string">"start load validation data..."</span>)</span><br><span class="line">    val_params = &#123;<span class="string">"batch_size"</span>: batch_size, <span class="string">"shuffle"</span>: <span class="literal">True</span>, <span class="string">"num_workers"</span>: <span class="number">0</span>&#125;</span><br><span class="line">    val_set = QADataset(val_json_path, tokenizer, max_source_length, max_target_length)</span><br><span class="line">    val_loader = DataLoader(val_set, **val_params)</span><br><span class="line">    <span class="comment"># 日志记录</span></span><br><span class="line">    writer = SummaryWriter(logs_dir)</span><br><span class="line">    <span class="comment"># 优化器</span></span><br><span class="line">    optimizer = torch.optim.AdamW(params=model.parameters(), lr=lr)</span><br><span class="line"></span><br><span class="line">    accelerate = Accelerator()</span><br><span class="line">    model, optimizer, train_data, val_data = accelerate.prepare(model, optimizer, training_loader, val_loader)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 开始训练</span></span><br><span class="line">    print(<span class="string">"Start Training..."</span>)</span><br><span class="line">    train_model(</span><br><span class="line">        model=model,</span><br><span class="line">        train_loader=train_data,</span><br><span class="line">        val_loader=val_data,</span><br><span class="line">        optimizer=optimizer,</span><br><span class="line">        gradient_accumulation_steps=gradient_accumulation_steps,</span><br><span class="line">        num_epochs=epochs,</span><br><span class="line">        model_output_dir=model_output_dir,</span><br><span class="line">        writer=writer,</span><br><span class="line">        accelerate=accelerate</span><br><span class="line">    )</span><br></pre></td></tr></table></figure></p>
+<p>除了代码改动，还需要初始化配置：<br><code>accelerate config</code><br>根据提示，选择配置即可，例如：<br><img src="/2025/03/29/llm-lora-ft/accelerate_config.png" alt></p>
+<p>配置文件示例：<br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">compute_environment:</span> <span class="string">LOCAL_MACHINE</span></span><br><span class="line"><span class="attr">debug:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">distributed_type:</span> <span class="string">MULTI_GPU</span></span><br><span class="line"><span class="attr">downcast_bf16:</span> <span class="string">'no'</span></span><br><span class="line"><span class="attr">enable_cpu_affinity:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">gpu_ids:</span> <span class="number">0</span><span class="string">,1,2,3,4,5,6,7</span></span><br><span class="line"><span class="attr">machine_rank:</span> <span class="number">0</span></span><br><span class="line"><span class="attr">main_training_function:</span> <span class="string">main</span></span><br><span class="line"><span class="attr">mixed_precision:</span> <span class="string">bf16</span></span><br><span class="line"><span class="attr">num_machines:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">num_processes:</span> <span class="number">8</span></span><br><span class="line"><span class="attr">rdzv_backend:</span> <span class="string">static</span></span><br><span class="line"><span class="attr">same_network:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">tpu_env:</span> <span class="string">[]</span></span><br><span class="line"><span class="attr">tpu_use_cluster:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">tpu_use_sudo:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">use_cpu:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure></p>
+<p>配置好之后，可以先进行配置运行测试：<br><code>accelerate test</code><br>如果正常运行可以看到如下提示：<br><code>Test is a success! You are ready for your distributed training!</code></p>
+<p>当测试指定配置文件时，使用 –config_file 参数 <code>accelerate test --config_file path_to_config.yaml</code></p>
+<p>启动训练脚本：<br><code>accelerate launch accelerate_test.py</code></p>
+<p>如果需要指定配置文件，与test同理示例：<br><code>accelerate launch --config_file path_to_config.yaml accelerate_test.py</code><br>注意：–config_file 放在要运行的脚本前面</p>
+<p>此外，还可以通过命令行参数覆盖配置文件中的默认参数。</p>
+<h3 id="FSDP"><a href="#FSDP" class="headerlink" title="FSDP"></a>FSDP</h3><p>因为现在有很多千亿级规模的大模型，单卡的显存是一定无法加载模型的，所以需要一种技术可以将模型参数分配到多张卡上，FSDP 切分了模型参数、梯度与优化器参数，使得每张 GPU 只保留这些参数的一部分。<br>上面实现DDP的两种方式只有accelerate支持FSDP训练，在初始化配置时，在这一步：<br><code>Do you want to use FullyShardedDataParallel?</code>选择<code>yes</code><br>例如（不过我这个里面很多配置是随便选的，不一定合理）<br><img src="/2025/03/29/llm-lora-ft/accelerate_FSDP.png" alt></p>
+<p>FSDP 的参数 ShardingStrategy 的不同取值决定了模型的划分方式：</p>
+<ul>
+<li><p>FULL_SHARD: 将模型参数、梯度和优化器状态都切分到不同的GPU上，类似ZeRO-3。</p>
+</li>
+<li><p>SHARD_GRAD_OP: 将梯度、优化器状态切分到不同的GPU上，每个GPU仍各自保留一份完整的模型参数。类似ZeRO-2。</p>
+</li>
+<li><p>NO_SHARD: 不切分任何参数。类似ZeRO-0。</p>
+</li>
+</ul>
+<p>以下是来自LLamaFactory的一个FSDP配置文件示例<br><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">compute_environment:</span> <span class="string">LOCAL_MACHINE</span></span><br><span class="line"><span class="attr">debug:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">distributed_type:</span> <span class="string">FSDP</span></span><br><span class="line"><span class="attr">downcast_bf16:</span> <span class="string">'no'</span></span><br><span class="line"><span class="attr">fsdp_config:</span></span><br><span class="line">    <span class="attr">fsdp_auto_wrap_policy:</span> <span class="string">TRANSFORMER_BASED_WRAP</span></span><br><span class="line">    <span class="attr">fsdp_backward_prefetch:</span> <span class="string">BACKWARD_PRE</span></span><br><span class="line">    <span class="attr">fsdp_forward_prefetch:</span> <span class="literal">false</span></span><br><span class="line">    <span class="attr">fsdp_cpu_ram_efficient_loading:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">fsdp_offload_params:</span> <span class="literal">true</span> <span class="comment"># offload may affect training speed</span></span><br><span class="line">    <span class="attr">fsdp_sharding_strategy:</span> <span class="string">FULL_SHARD</span></span><br><span class="line">    <span class="attr">fsdp_state_dict_type:</span> <span class="string">FULL_STATE_DICT</span></span><br><span class="line">    <span class="attr">fsdp_sync_module_states:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">fsdp_use_orig_params:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">machine_rank:</span> <span class="number">0</span></span><br><span class="line"><span class="attr">main_training_function:</span> <span class="string">main</span></span><br><span class="line"><span class="attr">mixed_precision:</span> <span class="string">fp16</span> <span class="comment"># or bf16</span></span><br><span class="line"><span class="attr">num_machines:</span> <span class="number">1</span> <span class="comment"># the number of nodes</span></span><br><span class="line"><span class="attr">num_processes:</span> <span class="number">2</span> <span class="comment"># the number of GPUs in all nodes</span></span><br><span class="line"><span class="attr">rdzv_backend:</span> <span class="string">static</span></span><br><span class="line"><span class="attr">same_network:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">tpu_env:</span> <span class="string">[]</span></span><br><span class="line"><span class="attr">tpu_use_cluster:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">tpu_use_sudo:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">use_cpu:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure></p>
+<p>配置完成之后，同样通过accelerate命令可以启动训练脚本，为了测试DDP、FSDP策略确实已经生效，我进行了如下实验：</p>
+<p>方案一：速度和显存占用对比<br>7B模型，同一批数据，同样的上下文长度，同样的精度：bf16<br>使用pytorch_ddp可以单卡跑，并实现多卡同时训练，单卡占用显存20G+，训练需要20分钟+<br>使用accelerate ddp配置，单卡占用显存20G+，训练需要20分钟+<br>（1.5B模型上述两种方式占用显存和耗时也基本一致）<br>但是使用accelerate fsdp配置，当设置加载模型的精度为bfloat16时，会报错：<br>ValueError: Must flatten tensors with uniform dtype but got torch.bfloat16 and torch.float32</p>
+<p>如果针对1.5B模型，统一去除设定的bf16精度，即采用float32和bf16混合精度训练<br>使用pytorch_ddp可以单卡跑，并实现多卡同时训练，单卡占用显存12G+，训练需要16分钟+<br>使用accelerate ddp配置，单卡占用显存12G+，训练需要16分钟+<br>使用accelerate fsdp，单卡占用显存6G+，训练需要6小时+<br>这里就证明了，fsdp与ddp的区别，表示配置生效</p>
+<p>如果针对7B模型，统一去除设定的bf16精度，即采用float32和bf16混合精度训练，<br>pytorch_ddp和accelerate ddp均显存不够，但是accelerate fsdp可以跑<br>训练需要30小时+，单卡占用显存15~22G（根据不同批次数据上下文长度有关）<br>这里也证明了，fsdp可以跑需要更大显存的精度</p>
+<p>方案二：<br>使用14B模型，使得单卡无法运行，然后再使用fsdp来运行<br>pytorch_ddp 无法运行<br>accelerate ddp无法运行<br>accelerate fsdp配置，因为无法设置bfloat16精度，暂时也跑不起来，如果解决这一问题，应该就可以跑起来了</p>
+<p>这个问题搞了很久都没有解决，推测是优化器或者损失函数等相关计算过程引入float32类型，因为使用Trainer实现的训练代码跑起来没有问题。关于使用Trainer实现的LoRA微调代码，下一篇会继续介绍。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/LLMs/" rel="tag"># LLMs</a>
+          
+            <a href="/tags/LoRA/" rel="tag"># LoRA</a>
+          
+            <a href="/tags/DDP/" rel="tag"># DDP</a>
+          
+            <a href="/tags/FSDP/" rel="tag"># FSDP</a>
+          
+            <a href="/tags/peft/" rel="tag"># peft</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2024/12/19/nlp-eznlp-bs/" rel="next" title="基于boundary smoothing的中文NER">
+                <i class="fa fa-chevron-left"></i> 基于boundary smoothing的中文NER
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2025/04/14/llm-lora-cot_ft/" rel="prev" title="大模型Lora微调实践（思维链版）">
+                大模型Lora微调实践（思维链版） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">120</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">224</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#大模型LoRA微调实践"><span class="nav-text">大模型LoRA微调实践</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#准备工作"><span class="nav-text">准备工作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据预处理"><span class="nav-text">数据预处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模型加载测试"><span class="nav-text">模型加载测试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LoRA微调——手动实现版本"><span class="nav-text">LoRA微调——手动实现版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模型推理和权重合并"><span class="nav-text">模型推理和权重合并</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模型评估"><span class="nav-text">模型评估</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式训练"><span class="nav-text">分布式训练</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#DDP"><span class="nav-text">DDP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FSDP"><span class="nav-text">FSDP</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

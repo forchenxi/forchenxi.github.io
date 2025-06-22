@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="LLMs,MCP,play wright,FastMCP,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="使用FastMCP开发MCP服务简单尝试FastMCP安装和资料汇总FastMCP 的完整文档： https://gofastmcp.com/ FactMCP安装指南：https://gofastmcp.com/getting-started/installation 从官方 MCP SDK 的 FastMCP 1.0 升级到 FastMCP 2.0 通常很简单。核心服务器 API 高度兼容，在许">
+<meta name="keywords" content="LLMs,MCP,play wright,FastMCP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用FastMCP开发MCP服务简单尝试">
+<meta property="og:url" content="http://yoursite.com/2025/06/22/mcp-fastmcp-demo/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="使用FastMCP开发MCP服务简单尝试FastMCP安装和资料汇总FastMCP 的完整文档： https://gofastmcp.com/ FactMCP安装指南：https://gofastmcp.com/getting-started/installation 从官方 MCP SDK 的 FastMCP 1.0 升级到 FastMCP 2.0 通常很简单。核心服务器 API 高度兼容，在许">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2025-06-22T04:03:51.404Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用FastMCP开发MCP服务简单尝试">
+<meta name="twitter:description" content="使用FastMCP开发MCP服务简单尝试FastMCP安装和资料汇总FastMCP 的完整文档： https://gofastmcp.com/ FactMCP安装指南：https://gofastmcp.com/getting-started/installation 从官方 MCP SDK 的 FastMCP 1.0 升级到 FastMCP 2.0 通常很简单。核心服务器 API 高度兼容，在许">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2025/06/22/mcp-fastmcp-demo/">
+
+
+
+
+
+  <title>使用FastMCP开发MCP服务简单尝试 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2025/06/22/mcp-fastmcp-demo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">使用FastMCP开发MCP服务简单尝试</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-06-22T12:02:33+08:00">
+                2025-06-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/大语言模型/" itemprop="url" rel="index">
+                    <span itemprop="name">大语言模型</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="使用FastMCP开发MCP服务简单尝试"><a href="#使用FastMCP开发MCP服务简单尝试" class="headerlink" title="使用FastMCP开发MCP服务简单尝试"></a>使用FastMCP开发MCP服务简单尝试</h1><h2 id="FastMCP安装和资料汇总"><a href="#FastMCP安装和资料汇总" class="headerlink" title="FastMCP安装和资料汇总"></a>FastMCP安装和资料汇总</h2><p>FastMCP 的完整文档： <a href="https://gofastmcp.com/" target="_blank" rel="noopener">https://gofastmcp.com/</a></p>
+<p>FactMCP安装指南：<a href="https://gofastmcp.com/getting-started/installation" target="_blank" rel="noopener">https://gofastmcp.com/getting-started/installation</a></p>
+<p>从官方 MCP SDK 的 FastMCP 1.0 升级到 FastMCP 2.0 通常很简单。核心服务器 API 高度兼容，在许多情况下，将您的 import 语句从<br><code>from mcp.server.fastmcp import FastMCP</code><br>更改为<br><code>from fastmcp import FastMCP</code> 就足够了。</p>
+<p>另外mcp/fastmcp包对python版本要求&gt;=python3.10，所以在本地另外安装了python3.11，然后在pycharm中配置虚拟环境，base环境指向安装的python3.11路径。<br>安装fastmcp (V2版本)</p>
+<p><code>pip install fastmcp</code></p>
+<p>如果想要在命令行中使用此环境，可以打开git bash，切换到该虚拟环境目录下：</p>
+<p><code>source python311/Scripts/activate</code></p>
+<p>FastMCP：<a href="https://github.com/jlowin/fastmcp" target="_blank" rel="noopener">https://github.com/jlowin/fastmcp</a></p>
+<a id="more"></a>
+<h2 id="FastMCP传输协议"><a href="#FastMCP传输协议" class="headerlink" title="FastMCP传输协议"></a>FastMCP传输协议</h2><p>FastMCP框架支持三种传输协议：STDIO、Streamable HTTP、SSE</p>
+<ul>
+<li>STDIO：传输是本地 MCP 服务器执行的默认且兼容性最广的选项。它非常适合本地工具、命令行集成和 Claude Desktop 等客户端。但是，它的缺点是必须在本地运行 MCP 代码，这可能会给第三方服务器带来安全问题。</li>
+<li>Streamable HTTP：是一种现代、高效的传输方式，用于通过 HTTP 公开您的 MCP 服务器。它是基于 Web 的部署的推荐传输方式。</li>
+<li>SSE：是一种基于 HTTP 的协议，用于服务器到客户端流式处理。虽然 FastMCP 仍然支持 SSE，但它已被弃用，Streamable HTTP 是新项目的首选。</li>
+</ul>
+<h3 id="STDIO协议"><a href="#STDIO协议" class="headerlink" title="STDIO协议"></a>STDIO协议</h3><p>STDIO是默认传输方式，因此在调用 run（） 时无需指定它。但是，您可以明确指定它以明确您的意图：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> fastmcp <span class="keyword">import</span> FastMCP</span><br><span class="line"></span><br><span class="line">mcp = FastMCP()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    <span class="comment"># mcp.run()  # 默认为stdio</span></span><br><span class="line">    mcp.run(transport=<span class="string">"stdio"</span>)</span><br></pre></td></tr></table></figure></p>
+<p><strong>注意</strong>：使用 Stdio 传输时，您通常不会自己将服务器作为单独的进程运行。相反，您的 Client 端将为每个会话启动一个新的 server 进程。因此，不需要其他配置。</p>
+<p>客户端调用示例：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"><span class="keyword">from</span> fastmcp <span class="keyword">import</span> Client</span><br><span class="line"></span><br><span class="line"><span class="comment"># Client with keep_alive=True (default)</span></span><br><span class="line">client = Client(<span class="string">"my_mcp_server.py"</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">example</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="comment"># First session</span></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">with</span> client:</span><br><span class="line">        <span class="keyword">await</span> client.ping()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Second session - uses the same subprocess</span></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">with</span> client:</span><br><span class="line">        <span class="keyword">await</span> client.ping()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Manually close the session</span></span><br><span class="line">    <span class="keyword">await</span> client.close()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Third session - will start a new subprocess</span></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">with</span> client:</span><br><span class="line">        <span class="keyword">await</span> client.ping()</span><br><span class="line"></span><br><span class="line">asyncio.run(example())</span><br></pre></td></tr></table></figure></p>
+<p>或者使用<code>fastmcp.client.transports.PythonStdioTransport</code>、<code>fastmcp.client.transports.NodeStdioTransport</code>类来启动服务，这是在开发过程中或与希望启动服务器脚本的工具集成时与本地 FastMCP 服务器交互的最常用方式。</p>
+<p>具体服务端的启动方式可以参考文档：<a href="https://gofastmcp.com/deployment/running-server" target="_blank" rel="noopener">https://gofastmcp.com/deployment/running-server</a></p>
+<p>客户端的调用方式可以参考：<a href="https://gofastmcp.com/clients/transports" target="_blank" rel="noopener">https://gofastmcp.com/clients/transports</a></p>
+<h3 id="Streamable-HTTP协议"><a href="#Streamable-HTTP协议" class="headerlink" title="Streamable HTTP协议"></a>Streamable HTTP协议</h3><p>Streamable HTTP 是一种现代、高效的传输方式，用于通过 HTTP 公开您的 MCP 服务器。它是基于 Web 的部署的推荐传输方式。</p>
+<p>要使用 Streamable HTTP 运行服务器，您可以使用 run（） 方法，并将 transport 参数设置为 “streamable-http”。 这将在默认主机 （127.0.0.1）、端口 （8000） 和路径 （/mcp） 上启动 Uvicorn 服务器。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> fastmcp <span class="keyword">import</span> FastMCP</span><br><span class="line"></span><br><span class="line">mcp = FastMCP()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    mcp.run(transport=<span class="string">"streamable-http"</span>)</span><br></pre></td></tr></table></figure></p>
+<p>要自定义主机、端口、路径或日志级别，请为 run（） 方法提供适当的关键字参数。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> fastmcp <span class="keyword">import</span> FastMCP</span><br><span class="line"></span><br><span class="line">mcp = FastMCP()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    mcp.run(</span><br><span class="line">        transport=<span class="string">"streamable-http"</span>,</span><br><span class="line">        host=<span class="string">"127.0.0.1"</span>,</span><br><span class="line">        port=<span class="number">4200</span>,</span><br><span class="line">        path=<span class="string">"/my-custom-path"</span>,</span><br><span class="line">        log_level=<span class="string">"debug"</span>,</span><br><span class="line">    )</span><br></pre></td></tr></table></figure></p>
+<p>客户端调用时：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"><span class="keyword">from</span> fastmcp <span class="keyword">import</span> Client</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">example</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">with</span> Client(<span class="string">"http://127.0.0.1:4200/my-custom-path"</span>) <span class="keyword">as</span> client:</span><br><span class="line">        <span class="keyword">await</span> client.ping()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    asyncio.run(example())</span><br></pre></td></tr></table></figure></p>
+<p>即使服务端是同步服务，也不影响客户端异步调用。</p>
+<p>虽然 Client 经常自动推断正确的传输方式，但您也可以显式实例化传输方式以获得更多控制。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"><span class="keyword">from</span> fastmcp <span class="keyword">import</span> Client</span><br><span class="line"><span class="keyword">from</span> fastmcp.client.transports <span class="keyword">import</span> StreamableHttpTransport</span><br><span class="line"></span><br><span class="line"><span class="comment"># option1</span></span><br><span class="line"><span class="comment"># client = Client("http://127.0.0.1:10005/weather_tool")</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># option2</span></span><br><span class="line">transport = StreamableHttpTransport(url=<span class="string">"http://127.0.0.1:10005/weather_tool"</span>)</span><br><span class="line">client = Client(transport)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">example</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">with</span> client:</span><br><span class="line">        tools = <span class="keyword">await</span> client.list_tools()</span><br><span class="line">        print(<span class="string">f"Available tools: <span class="subst">&#123;tools&#125;</span>"</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    asyncio.run(example())</span><br></pre></td></tr></table></figure></p>
+<h3 id="SSE协议"><a href="#SSE协议" class="headerlink" title="SSE协议"></a>SSE协议</h3><p>因为这个协议是即将被废弃的方式，所以就不再深入介绍。</p>
+<h2 id="FastMCP异步服务"><a href="#FastMCP异步服务" class="headerlink" title="FastMCP异步服务"></a>FastMCP异步服务</h2><p>FastMCP 提供同步和异步 API 来运行您的服务器。前面例子中看到的 run（） 方法是一个同步方法，它在内部使用 anyio.run（） 来运行异步服务器。对于已经在异步上下文中运行的应用程序，FastMCP 提供了 run_async（） 方法。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> fastmcp <span class="keyword">import</span> FastMCP</span><br><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"></span><br><span class="line">mcp = FastMCP(name=<span class="string">"MyServer"</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">@mcp.tool</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">(name: str)</span> -&gt; str:</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">f"Hello, <span class="subst">&#123;name&#125;</span>!"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="comment"># Use run_async() in async contexts</span></span><br><span class="line">    <span class="keyword">await</span> mcp.run_async(transport=<span class="string">"streamable-http"</span>)</span><br><span class="line">    <span class="comment"># await mcp.run_streamable_http_async()  # 也可以这么调用</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    asyncio.run(main())</span><br></pre></td></tr></table></figure>
+<p>始终在异步函数中使用 run_async（）， 在同步上下文中使用 run（）。<br>run（） 和 run_async（） 都接受相同的传输参数，因此上面的所有示例都适用于这两种方法。</p>
+<h2 id="MCP服务端和客户端开发"><a href="#MCP服务端和客户端开发" class="headerlink" title="MCP服务端和客户端开发"></a>MCP服务端和客户端开发</h2><h3 id="简单的网页导航MCP服务开发"><a href="#简单的网页导航MCP服务开发" class="headerlink" title="简单的网页导航MCP服务开发"></a>简单的网页导航MCP服务开发</h3><p>计划是重写一套自定义的关于浏览器交互的MCP方法，目前已经有开源的play wright的MCP方法，但是部分方法的使用不够灵活，而且无法在代码中使用；所以尝试使用FastMCP框架来自己实现，这里先实现一个使用浏览器打开指定网页链接的方法。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> fastmcp <span class="keyword">import</span> FastMCP</span><br><span class="line"><span class="keyword">from</span> playwright.async_api <span class="keyword">import</span> async_playwright, Playwright</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mcp = FastMCP(name=<span class="string">"play wright mcp server"</span>, instructions=<span class="string">"涉及与浏览器交互的相关操作，例如导航至指定网页、点击操作、截图操作等"</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@mcp.tool(name="browser_navigate", description="使用浏览器打开指定url")</span></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">browser_navigate</span><span class="params">(url: str)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    使用浏览器导航至指定url</span></span><br><span class="line"><span class="string">    :param url: 待打开的网页链接</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">with</span> async_playwright() <span class="keyword">as</span> playwright:</span><br><span class="line">        chromium = playwright.chromium</span><br><span class="line">        browser = <span class="keyword">await</span> chromium.launch(headless=<span class="literal">False</span>)</span><br><span class="line">        page = <span class="keyword">await</span> browser.new_page()</span><br><span class="line">        <span class="keyword">await</span> page.goto(url)</span><br><span class="line">        html_code = <span class="keyword">await</span> page.content()</span><br><span class="line">        <span class="keyword">await</span> browser.close()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> html_code</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    print(<span class="string">"异步启动MCP Server"</span>)</span><br><span class="line">    <span class="keyword">await</span> mcp.run_async(transport=<span class="string">"streamable-http"</span>,</span><br><span class="line">                        host=<span class="string">"127.0.0.1"</span>,</span><br><span class="line">                        port=<span class="number">10005</span>,</span><br><span class="line">                        path=<span class="string">"/play_wright"</span>,</span><br><span class="line">                        log_level=<span class="string">"debug"</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    asyncio.run(main())</span><br></pre></td></tr></table></figure>
+<h3 id="调用的客户端开发"><a href="#调用的客户端开发" class="headerlink" title="调用的客户端开发"></a>调用的客户端开发</h3><p>客户端可以通过以下方法与服务端进行连接和调用测试<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"><span class="keyword">from</span> fastmcp.client <span class="keyword">import</span> Client</span><br><span class="line"><span class="keyword">from</span> fastmcp.client.transports <span class="keyword">import</span> StreamableHttpTransport</span><br><span class="line"></span><br><span class="line">transport = StreamableHttpTransport(url=<span class="string">"http://127.0.0.1:10005/play_wright"</span>)</span><br><span class="line">client = Client(transport)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">example</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">with</span> client:</span><br><span class="line">        <span class="keyword">await</span> client.ping()  <span class="comment"># 连接测试</span></span><br><span class="line"></span><br><span class="line">        tools = <span class="keyword">await</span> client.list_tools()</span><br><span class="line">        print(<span class="string">f"可用工具: <span class="subst">&#123;tools&#125;</span>"</span>)</span><br><span class="line"></span><br><span class="line">        resources = <span class="keyword">await</span> client.list_resources()</span><br><span class="line">        print(<span class="string">f"可用资源：<span class="subst">&#123;resources&#125;</span>"</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">call_tool</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">with</span> client:</span><br><span class="line">        result = <span class="keyword">await</span> client.call_tool(<span class="string">"browser_navigate"</span>, &#123;<span class="string">"url"</span>: <span class="string">"https://www.baidu.com"</span>&#125;)</span><br><span class="line">        print(<span class="string">f"调用工具返回：<span class="subst">&#123;result&#125;</span>"</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    asyncio.run(call_tool())</span><br></pre></td></tr></table></figure></p>
+<h3 id="通过大模型进行调用"><a href="#通过大模型进行调用" class="headerlink" title="通过大模型进行调用"></a>通过大模型进行调用</h3><p>开发MCP方法的目的是为了让大模型使用，以下案例将会展示如何让大模型来调用，这一部分也参考了这篇资料：<a href="https://github.com/liaokongVFX/MCP-Chinese-Getting-Started-Guide" target="_blank" rel="noopener">https://github.com/liaokongVFX/MCP-Chinese-Getting-Started-Guide</a></p>
+<p>让大模型调用工具的思想也比较简单，首先大模型需要知道有哪些工具且清晰的知道每个方法的使用场景和入参（这也是为什么MCP提出要定义一个统一的工具方法定义标准）；<br>其次让大模型根据任务需要选择要调用的工具和要传入的参数。</p>
+<p>一种思路是通过提示词控制，告诉大模型目前已有的工具方法，如果需要调用大模型，按照特定格式返回，例如<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">system_prompt = <span class="string">f'''</span></span><br><span class="line"><span class="string">    你是一个智能助手，拥有以下工具可以调用：</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    # 工具列表</span></span><br><span class="line"><span class="string">    <span class="subst">&#123;tool_descriptions&#125;</span></span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    # 注意事项</span></span><br><span class="line"><span class="string">    1，请优先判断是否使用【工具列表】中的工具，如使用工具，则返回格式为：</span></span><br><span class="line"><span class="string">        &#123;&#123;"tool_calls": </span></span><br><span class="line"><span class="string">            [</span></span><br><span class="line"><span class="string">                &#123;&#123;"name": "xxx", "arguments": &#123;&#123;"xxx": "xxx"&#125;&#125;&#125;&#125;</span></span><br><span class="line"><span class="string">            ]</span></span><br><span class="line"><span class="string">        &#125;&#125;</span></span><br><span class="line"><span class="string">        其中arguments格式务必与工具的【入参要求】保持一致</span></span><br><span class="line"><span class="string">    2，不要捏造不存在的工具</span></span><br><span class="line"><span class="string">    3，如无需使用工具，则结合上下文回复用户最终结果</span></span><br><span class="line"><span class="string">    4，如果使用工具，只返回JSON格式，不要解释</span></span><br><span class="line"><span class="string">    '''</span></span><br></pre></td></tr></table></figure></p>
+<p>当大模型的返回符合特定格式时，提取其中要调用的方法名输入和参数，然后自行去调用MCP方法，再将方法返回的内容增加到对话列表中再次输入给大模型，不断循环，直到大模型给出最终的答案。<br>这种方法比较通用一些，基本适配于所有指令遵循能力较好的大模型。</p>
+<p>另一种方法是使用<code>client.chat.completions.create()</code>方法中的tools参数，这个参数支持直接将所有可用的工具方法按照格式输入</p>
+<p>并且可以通过返回结果中的特定标记来判断是否调用工具，例如<code>completion.choices[0].finish_reason == &quot;tool_calls&quot;</code></p>
+<p>但是这种方式并不适配所有大模型，例如我实际测试豆包1.5thinking模型支持，但是豆包1.5pro模型则不会返回这个标记，但是会在输出的content里包含工具调用的方法名和参数，所以要根据不同的大模型略微调整逻辑。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> openai <span class="keyword">import</span> OpenAI</span><br><span class="line"><span class="keyword">from</span> fastmcp.client <span class="keyword">import</span> Client</span><br><span class="line"><span class="keyword">from</span> fastmcp.client.transports <span class="keyword">import</span> StreamableHttpTransport</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">api_key = <span class="string">"xxx"</span></span><br><span class="line">model_id = <span class="string">"xxx"</span>  <span class="comment"># doubao-1.5-thinking</span></span><br><span class="line"><span class="comment"># model_id = "xxx"   # doubao-1.5-pro</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">doubao_1_5</span><span class="params">(messages, tools)</span>:</span></span><br><span class="line">    client = OpenAI(</span><br><span class="line">        api_key=api_key,</span><br><span class="line">        base_url=<span class="string">"https://ark.cn-beijing.volces.com/api/v3"</span>,</span><br><span class="line">        max_retries=<span class="number">2</span>,</span><br><span class="line">        timeout=<span class="number">600</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        start_time = time.time()</span><br><span class="line">        completion = client.chat.completions.create(</span><br><span class="line">            model=model_id,  <span class="comment"># your model endpoint ID</span></span><br><span class="line">            temperature=<span class="number">0</span>,</span><br><span class="line">            messages=messages,</span><br><span class="line">            tools=tools</span><br><span class="line">        )</span><br><span class="line">        end_time = time.time()</span><br><span class="line">        request_id = completion.id</span><br><span class="line">        prompt_tokens = completion.usage.prompt_tokens</span><br><span class="line">        completion_token = completion.usage.completion_tokens</span><br><span class="line">        print(<span class="string">f'request_id: <span class="subst">&#123;request_id&#125;</span>, 耗时: <span class="subst">&#123;end_time - start_time&#125;</span>s, prompt tokens数量: <span class="subst">&#123;prompt_tokens&#125;</span>, '</span></span><br><span class="line">              <span class="string">f'output tokens数量: <span class="subst">&#123;completion_token&#125;</span>'</span>)</span><br><span class="line">        <span class="keyword">if</span> completion.choices[<span class="number">0</span>].finish_reason == <span class="string">'length'</span>:</span><br><span class="line">            error_message = <span class="string">'exceeded length limit'</span></span><br><span class="line">            print(error_message)</span><br><span class="line">        <span class="keyword">if</span> completion.choices[<span class="number">0</span>].finish_reason == <span class="string">'content_filter'</span>:</span><br><span class="line">            error_message = <span class="string">'content filtered'</span></span><br><span class="line">            print(error_message)</span><br><span class="line">        <span class="keyword">return</span> completion</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> _e:</span><br><span class="line">        <span class="keyword">if</span> hasattr(_e, <span class="string">'response'</span>):</span><br><span class="line">            error_response = _e.response.json()</span><br><span class="line">            err = error_response.get(<span class="string">'error'</span>, &#123;&#125;).get(<span class="string">'code'</span>)</span><br><span class="line">            request_id = error_response.get(<span class="string">'error'</span>, &#123;&#125;).get(<span class="string">'message'</span>)</span><br><span class="line">            print(<span class="string">f"<span class="subst">&#123;request_id&#125;</span>, <span class="subst">&#123;err&#125;</span>"</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            err = str(_e)</span><br><span class="line">            print(err)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    transport = StreamableHttpTransport(url=<span class="string">"http://127.0.0.1:10005/play_wright"</span>)</span><br><span class="line">    client = Client(transport)</span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">with</span> client:  <span class="comment"># 连接server</span></span><br><span class="line">        tools = <span class="keyword">await</span> client.list_tools()</span><br><span class="line">        tool_descriptions = <span class="string">"\n"</span>.join(<span class="string">f"- 工具名称：<span class="subst">&#123;t.name&#125;</span> \n工具描述：<span class="subst">&#123;t.description&#125;</span> \n入参要求：<span class="subst">&#123;t.inputSchema&#125;</span>"</span></span><br><span class="line">                                      <span class="keyword">for</span> t <span class="keyword">in</span> tools)</span><br><span class="line">        available_tools = [&#123;</span><br><span class="line">            <span class="string">"type"</span>: <span class="string">"function"</span>,</span><br><span class="line">            <span class="string">"function"</span>: &#123;</span><br><span class="line">                <span class="string">"name"</span>: tool.name,</span><br><span class="line">                <span class="string">"description"</span>: tool.description,</span><br><span class="line">                <span class="string">"input_schema"</span>: tool.inputSchema</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">for</span> tool <span class="keyword">in</span> tools]</span><br><span class="line"></span><br><span class="line">    system_prompt = <span class="string">f'''</span></span><br><span class="line"><span class="string">        你是一个智能助手，拥有以下工具可以调用：</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">        # 工具列表</span></span><br><span class="line"><span class="string">        <span class="subst">&#123;tool_descriptions&#125;</span></span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">        # 注意事项</span></span><br><span class="line"><span class="string">        1，请优先判断是否使用【工具列表】中的工具</span></span><br><span class="line"><span class="string">        2，不要捏造不存在的工具</span></span><br><span class="line"><span class="string">        3，如无需使用工具，则结合上下文回复用户最终结果</span></span><br><span class="line"><span class="string">        4，如果使用工具，只返回JSON格式，不要解释</span></span><br><span class="line"><span class="string">    '''</span></span><br><span class="line">    user_prompt = <span class="string">"获取当前百度热搜上，热搜榜前10的新闻标题和对应链接, 轻以json格式输出，&#123;'title': '', 'url': ''&#125;"</span></span><br><span class="line">    messages = [</span><br><span class="line">        &#123;<span class="string">"role"</span>: <span class="string">"system"</span>, <span class="string">"content"</span>: system_prompt&#125;,</span><br><span class="line">        &#123;<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: user_prompt&#125;</span><br><span class="line">    ]</span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        <span class="comment"># 返回的内容可能是大模型给出的最终结果，也有可能是大模型调用工具的返回结果</span></span><br><span class="line">        completion = doubao_1_5(messages, available_tools)</span><br><span class="line">        <span class="keyword">if</span> completion.choices[<span class="number">0</span>].finish_reason == <span class="string">"tool_calls"</span>:</span><br><span class="line">            <span class="comment"># 如何是需要使用工具，就解析工具</span></span><br><span class="line">            tool_call = completion.choices[<span class="number">0</span>].message.tool_calls[<span class="number">0</span>]</span><br><span class="line">            tool_name = tool_call.function.name</span><br><span class="line">            tool_args = json.loads(tool_call.function.arguments)</span><br><span class="line">            print(completion.choices[<span class="number">0</span>].message.model_extra)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 执行工具</span></span><br><span class="line">            <span class="keyword">async</span> <span class="keyword">with</span> client:</span><br><span class="line">                tool_result = <span class="keyword">await</span> client.call_tool(tool_name, tool_args)</span><br><span class="line">            print(<span class="string">f"\n\n[Calling tool <span class="subst">&#123;tool_name&#125;</span> with args <span class="subst">&#123;tool_args&#125;</span>]\n\n"</span>)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># 将大模型返回的调用哪个工具数据和工具执行完成后的数据都存入messages中</span></span><br><span class="line">            messages.append(completion.choices[<span class="number">0</span>].message.model_dump())</span><br><span class="line">            messages.append(&#123;</span><br><span class="line">                <span class="string">"role"</span>: <span class="string">"tool"</span>,</span><br><span class="line">                <span class="string">"content"</span>: tool_result[<span class="number">0</span>].text,</span><br><span class="line">                <span class="string">"tool_call_id"</span>: tool_call.id,</span><br><span class="line">            &#125;)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            llm_result = completion.choices[<span class="number">0</span>].message.content</span><br><span class="line">            print(<span class="string">f'大模型最终答案：<span class="subst">&#123;llm_result&#125;</span>'</span>)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    asyncio.run(main())</span><br></pre></td></tr></table></figure>
+<p>运行server之后，执行上述通过大模型调用的代码，得到以下结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">request_id: 02175024911655756afd8cf7a6506981cdac07b340234ca939842, 耗时: 6.227264404296875s, prompt tokens数量: 270, output tokens数量: 181</span><br><span class="line">&#123;&apos;reasoning_content&apos;: &apos;好的，用户需要获取百度热搜前10的新闻标题和对应链接，并以指定JSON格式输出。首先，我需要访问百度热搜的页面。根据提供的工具，有browser_navigate可以打开指定URL。百度热搜的URL通常是https://top.baidu.com/board?tab=realtime，所以需要调用这个工具来打开该页面。但工具只能打开URL，之后还需要获取页面内容并提取数据。不过当前工具只有browser_navigate，可能需要先打开页面，后续可能需要其他工具，但根据现有工具，只能先执行打开操作。所以应该调用browser_navigate工具，参数是百度热搜的URL。\n&apos;&#125;</span><br><span class="line"></span><br><span class="line">[Calling tool browser_navigate with args &#123;&apos;url&apos;: &apos;https://top.baidu.com/board?tab=realtime&apos;&#125;]</span><br><span class="line"></span><br><span class="line">request_id: 0217502491248538712c081c8882c2d0da5da399f1a6864a9453b, 耗时: 175.63855266571045s, prompt tokens数量: 81886, output tokens数量: 3803</span><br><span class="line">大模型最终答案：</span><br><span class="line"></span><br><span class="line">[</span><br><span class="line">  &#123;&quot;title&quot;: &quot;听习主席和中亚好伙伴话合作&quot;, &quot;url&quot;: &quot;https://www.baidu.com/s?wd=%E5%90%AC%E4%B9%A0%E4%B8%BB%E5%B8%AD%E5%92%8C%E4%B8%AD%E4%BA%9A%E5%A5%BD%E4%BC%99%E4%BC%B4%E8%AF%9D%E5%90%88%E4%BD%9C&amp;sa=fyb_news&amp;rsv_dl=fyb_news&quot;&#125;,</span><br><span class="line">  &#123;&quot;title&quot;: &quot;多地“国补”暂停？有关部门回应&quot;, &quot;url&quot;: &quot;https://www.baidu.com/s?wd=%E5%A4%9A%E5%9C%B0%E2%80%9C%E5%9B%BD%E8%A1%A5%E2%80%9D%E6%9A%82%E5%81%9C%EF%BC%9F%E6%9C%89%E5%85%B3%E9%83%A8%E9%97%A8%E5%9B%9E%5%BA%94&amp;sa=fyb_news&amp;rsv_dl=fyb_news&quot;&#125;,</span><br><span class="line">  &#123;&quot;title&quot;: &quot;中方回应朝鲜向俄加派6000名工程兵&quot;, &quot;url&quot;: &quot;https://www.baidu.com/s?wd=%E4%B8%AD%E6%96%B9%E5%9B%9E%5%BA%94%E6%9C%9D%E9%B2%9C%5%90%91%E4%BF%84%E5%8A%A0%E6%B4%BE6000%E5%90%8D%E5%B7%A5%E7%A8%8B%E5%85%B5&amp;sa=fyb_news&amp;rsv_dl=fyb_news&quot;&#125;,</span><br><span class="line">  &#123;&quot;title&quot;: &quot;第二届中国—中亚峰会成果清单&quot;, &quot;url&quot;: &quot;https://www.baidu.com/s?wd=%E7%AC%AC%E4%BA%8C%E5%B1%8A%E4%B8%AD%E5%9B%BD%E2%80%94%E4%B8%AD%E4%BA%9A%E5%B3%B0%E4%BC%9A%E6%88%90%E6%9E%9C%E6%B8%85%E5%8D%95&amp;sa=fyb_news&amp;rsv_dl=fyb_news&quot;&#125;,</span><br><span class="line">  &#123;&quot;title&quot;: &quot;伊朗：美国干预将致中东爆发全面战争&quot;, &quot;url&quot;: &quot;https://www.baidu.com/s?wd=%E4%BC%8A%E6%9C%97%EF%BC%9A%E7%BE%8E%5%9B%BD%E5%B9%B2%E9%A2%84%E5%B0%86%E8%87%B4%E4%B8%AD%E4%B8%9C%E7%88%86%E5%8F%91%E5%85%A8%E9%9D%A2%E6%88%98%E4%BA%89&amp;sa=fyb_news&amp;rsv_dl=fyb_news&quot;&#125;,</span><br><span class="line">  &#123;&quot;title&quot;: &quot;旅行博主江小隐在一景区溺水身亡&quot;, &quot;url&quot;: &quot;https://www.baidu.com/s?wd=%E6%97%85%E8%A1%8C%E5%8D%9A%E4%B8%BB%E6%B1%9F%E5%B0%8F%E9%9A%90%E5%9C%A8%E4%B8%80%E6%99%AF%E5%8C%BA%E6%BA%BA%E6%B0%B4%E8%BA%AB%E4%BA%A1&amp;sa=fyb_news&amp;rsv_dl=fyb_news&quot;&#125;,</span><br><span class="line">  &#123;&quot;title&quot;: &quot;618 购物莫忘安全 网警守护你周全&quot;, &quot;url&quot;: &quot;https://www.baidu.com/s?wd=618+%E8%B4%AD%E7%89%A9%E8%8E%AB%E5%BF%98%E5%AE%89%E5%85%A8+%E7%BD%91%E8%AD%A6%E5%AE%88%E6%8A%A4%E4%BD%A0%E5%91%A8%E5%85%A8&amp;sa=fyb_news&amp;rsv_dl=fyb_news&quot;&#125;,</span><br><span class="line">  &#123;&quot;title&quot;: &quot;以军：多国配合下打击超千个伊朗目标&quot;, &quot;url&quot;: &quot;https://www.baidu.com/s?wd=%E4%BB%A5%E5%86%9B%EF%BC%9A%E5%A4%9A%E5%9B%BD%E9%85%8D%E5%90%88%E4%B8%8B%E6%89%93%E5%87%BB%E8%B6%85%E5%8D%83%E4%B8%AA%E4%BC%8A%E6%9C%97%E7%9B%AE%E6%A0%87&amp;sa=fyb_news&amp;rsv_dl=fyb_news&quot;&#125;,</span><br><span class="line">  &#123;&quot;title&quot;: &quot;刘强东：去年工资发了1161亿&quot;, &quot;url&quot;: &quot;https://www.baidu.com/s?wd=%E5%88%98%E5%BC%BA%E4%B8%9C%EF%BC%9A%E5%8E%BB%E5%B9%B4%E5%B7%A5%E8%B5%84%E5%8F%91%E4%BA%861161%E4%BA%BF&amp;sa=fyb_news&amp;rsv_dl=fyb_news&quot;&#125;,</span><br><span class="line">  &#123;&quot;title&quot;: &quot;一文教你“冷”“热”专业怎么选&quot;, &quot;url&quot;: &quot;https://www.baidu.com/s?wd=%E4%B8%80%E6%96%87%E6%95%99%E4%BD%A0%E2%80%9C%E5%86%B7%E2%80%9D%E2%80%9C%E7%83%AD%E2%80%9D%E4%B8%93%E4%B8%9A%E6%80%8E%4%B9%88%E9%80%89&amp;sa=fyb_news&amp;rsv_dl=fyb_news&quot;&#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure></p>
+<p>除了速度太慢，大模型基本利用可用工具完美完成了任务。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/LLMs/" rel="tag"># LLMs</a>
+          
+            <a href="/tags/MCP/" rel="tag"># MCP</a>
+          
+            <a href="/tags/play-wright/" rel="tag"># play wright</a>
+          
+            <a href="/tags/FastMCP/" rel="tag"># FastMCP</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2025/05/18/mcp-test/" rel="next" title="MCP初步探索">
+                <i class="fa fa-chevron-left"></i> MCP初步探索
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">120</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">224</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#使用FastMCP开发MCP服务简单尝试"><span class="nav-text">使用FastMCP开发MCP服务简单尝试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#FastMCP安装和资料汇总"><span class="nav-text">FastMCP安装和资料汇总</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FastMCP传输协议"><span class="nav-text">FastMCP传输协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#STDIO协议"><span class="nav-text">STDIO协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Streamable-HTTP协议"><span class="nav-text">Streamable HTTP协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SSE协议"><span class="nav-text">SSE协议</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FastMCP异步服务"><span class="nav-text">FastMCP异步服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MCP服务端和客户端开发"><span class="nav-text">MCP服务端和客户端开发</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简单的网页导航MCP服务开发"><span class="nav-text">简单的网页导航MCP服务开发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#调用的客户端开发"><span class="nav-text">调用的客户端开发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通过大模型进行调用"><span class="nav-text">通过大模型进行调用</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

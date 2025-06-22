@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="LLMs,LoRA,DDP,FSDP,Cot,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="大模型Lora微调实践（思维链版）上一篇已经介绍基础版的Lora微调实现过程，这一篇记录如何微调大模型使其输出带思维链。 准备工作要求大模型输出带思维链，那么就要求微调数据集本身带有思维链，所以需要选择带有思维链的数据集 数据集来自魔搭社区的 medical-o1-reasoning-SFT： https://modelscope.cn/datasets/AI-ModelScope/medical">
+<meta name="keywords" content="LLMs,LoRA,DDP,FSDP,Cot">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大模型Lora微调实践（思维链版）">
+<meta property="og:url" content="http://yoursite.com/2025/04/14/llm-lora-cot_ft/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="大模型Lora微调实践（思维链版）上一篇已经介绍基础版的Lora微调实现过程，这一篇记录如何微调大模型使其输出带思维链。 准备工作要求大模型输出带思维链，那么就要求微调数据集本身带有思维链，所以需要选择带有思维链的数据集 数据集来自魔搭社区的 medical-o1-reasoning-SFT： https://modelscope.cn/datasets/AI-ModelScope/medical">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2025-06-22T03:10:09.726Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="大模型Lora微调实践（思维链版）">
+<meta name="twitter:description" content="大模型Lora微调实践（思维链版）上一篇已经介绍基础版的Lora微调实现过程，这一篇记录如何微调大模型使其输出带思维链。 准备工作要求大模型输出带思维链，那么就要求微调数据集本身带有思维链，所以需要选择带有思维链的数据集 数据集来自魔搭社区的 medical-o1-reasoning-SFT： https://modelscope.cn/datasets/AI-ModelScope/medical">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2025/04/14/llm-lora-cot_ft/">
+
+
+
+
+
+  <title>大模型Lora微调实践（思维链版） | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2025/04/14/llm-lora-cot_ft/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">大模型Lora微调实践（思维链版）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-04-14T21:20:54+08:00">
+                2025-04-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/大语言模型/" itemprop="url" rel="index">
+                    <span itemprop="name">大语言模型</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="大模型Lora微调实践（思维链版）"><a href="#大模型Lora微调实践（思维链版）" class="headerlink" title="大模型Lora微调实践（思维链版）"></a>大模型Lora微调实践（思维链版）</h1><p>上一篇已经介绍基础版的Lora微调实现过程，这一篇记录如何微调大模型使其输出带思维链。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>要求大模型输出带思维链，那么就要求微调数据集本身带有思维链，所以需要选择带有思维链的数据集</p>
+<p>数据集来自魔搭社区的 medical-o1-reasoning-SFT：</p>
+<p><a href="https://modelscope.cn/datasets/AI-ModelScope/medical-o1-reasoning-SFT" target="_blank" rel="noopener">https://modelscope.cn/datasets/AI-ModelScope/medical-o1-reasoning-SFT</a></p>
+<p>数据集格式为：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"Question"</span>: <span class="string">"在发生医疗事故或事件且临床诊断不能明确死亡原因的情况下，患者死亡后应该在多长时间内进行尸检？"</span>,</span><br><span class="line">    <span class="attr">"Complex_CoT"</span>: <span class="string">"哎，发生医疗事故的时候，真是比较棘手啊。\n\n如果这个时候患者去世了，但具体的死亡原因不清楚，那真得赶紧弄个尸检看看。\n\n尸检不仅能帮助我们找出死亡原因，还有助于解决医疗事故责任问题，保护家属的权益。\n\n其实，我们国家应该对这种情况有相关规定吧，比如《医疗事故处理条例》之类的。\n\n听说很多法律都建议在患者死亡后尽快进行尸检。\n\n对哦，通常法律上是让在48小时内搞定尸检，这样可以保证结果的准确性。\n\n不过有时候，也可能因为家庭的原因或者特殊法律程序的需求，哪怕规定是48小时，实际操作可能会稍有延迟。\n\n但不管怎样，根据法规还是希望尽量在这个时间线内完成检查，以免耽误事情。\n\n除此之外，如果家属同意的话，也许还可以商量延迟的可能性。\n\n所以说，在出现医疗事故这样的敏感情况下，还是真得按法律走，48小时内完成尸检最为稳妥。"</span>,</span><br><span class="line">    <span class="attr">"Response"</span>: <span class="string">"根据中国《医疗事故处理条例》的相关规定，在发生医疗事故或事件并且无法明确死亡原因的情况下，通常建议在患者死亡后的48小时内进行尸检。这个时间限制主要是为了保证尸检结果的准确性，因为在过长的时间后，尸体组织可能发生变化，影响结果的精确性。\n\n不过，确切的时间可能会因为个案的特殊性而略有不同，比如遇到复杂的法律程序或家庭方面的考虑。通常在这种情况下，会在充分沟通的基础上，尽力在法律规定的时间内达成一致。\n\n所以，一般情况下，48小时内进行尸检是一个比较合理和法律支持的时间框架。"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>本实验环境：</p>
+<p>GPU 显存 &gt;= 8GB</p>
+<p>pytorch==2.5.0+cu118</p>
+<p>transformers==4.47.1</p>
+<p>peft==0.14.0</p>
+<p>参考资料：</p>
+<p><a href="https://mp.weixin.qq.com/s/hOgeu6EPbuaQgVHyjij-kg" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/hOgeu6EPbuaQgVHyjij-kg</a></p>
+<a id="more"></a>
+<h3 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> datasets <span class="keyword">import</span> load_dataset</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">data_path = <span class="string">"../modelscope/medical-o1-reasoning-SFT/medical_o1_sft_Chinese.json"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">process_data</span><span class="params">(tokenizer)</span>:</span></span><br><span class="line">    <span class="comment"># 筛选1万条微调，总量24772条</span></span><br><span class="line">    dataset = load_dataset(<span class="string">"json"</span>, data_files=data_path, split=<span class="string">"train[:10000]"</span>)</span><br><span class="line">    max_source_length = <span class="number">256</span></span><br><span class="line">    max_cot_length = <span class="number">512</span></span><br><span class="line">    max_target_length = <span class="number">256</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">format_example</span><span class="params">(example)</span>:</span></span><br><span class="line">        <span class="comment"># 利用标准对话格式进行生成</span></span><br><span class="line">        messages = [</span><br><span class="line">            &#123;<span class="string">"role"</span>: <span class="string">"system"</span>, <span class="string">"content"</span>: <span class="string">"你是一个医疗方面的专家，可以根据患者的问题进行解答。"</span>&#125;,</span><br><span class="line">            &#123;<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: example[<span class="string">'Question'</span>]&#125;</span><br><span class="line">        ]</span><br><span class="line">        prompt = tokenizer.apply_chat_template(messages, tokenize=<span class="literal">False</span>, add_generation_prompt=<span class="literal">True</span>)</span><br><span class="line">        <span class="comment"># 对prompt 进行 tokenize</span></span><br><span class="line">        instruction = tokenizer(prompt, add_special_tokens=<span class="literal">False</span>, max_length=max_source_length)</span><br><span class="line">        <span class="comment"># 对 cot 和 answer 进行 tokenize</span></span><br><span class="line">        cot_tokens = tokenizer(<span class="string">f"详细分析：<span class="subst">&#123;example[<span class="string">'Complex_CoT'</span>]&#125;</span>"</span>, add_special_tokens=<span class="literal">False</span>, max_length=max_cot_length,</span><br><span class="line">                               trust_remote_code=<span class="literal">True</span>)</span><br><span class="line">        answer_tokens = tokenizer(<span class="string">f"答案：<span class="subst">&#123;example[<span class="string">'Response'</span>]&#125;</span>"</span>, add_special_tokens=<span class="literal">False</span>, max_length=max_target_length,</span><br><span class="line">                                  trust_remote_code=<span class="literal">True</span>)</span><br><span class="line">        <span class="comment"># 输入是整个对话内容</span></span><br><span class="line">        input_ids = (instruction[<span class="string">"input_ids"</span>] + cot_tokens[<span class="string">"input_ids"</span>] +</span><br><span class="line">                     answer_tokens[<span class="string">"input_ids"</span>] + [tokenizer.pad_token_id])</span><br><span class="line">        attention_mask = instruction[<span class="string">"input_ids"</span>] + cot_tokens[<span class="string">"input_ids"</span>] + answer_tokens[<span class="string">"input_ids"</span>] + [<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 输出部分，忽略 question部分的损失计算，计算cot 和 answer 部分的损失</span></span><br><span class="line">        labels = ([<span class="number">-100</span>] * len(instruction[<span class="string">"input_ids"</span>]) + cot_tokens[<span class="string">"input_ids"</span>] +</span><br><span class="line">                  answer_tokens[<span class="string">"input_ids"</span>] + [tokenizer.pad_token_id])</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="string">"input_ids"</span>: input_ids,</span><br><span class="line">            <span class="string">"attention_mask"</span>: attention_mask,</span><br><span class="line">            <span class="string">"labels"</span>: labels</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> dataset.map(format_example, remove_columns=dataset.column_names)</span><br></pre></td></tr></table></figure>
+<p>其实这里依然采用的指令微调数据集格式，只不过把cot+answer拼在一起作为输出。<br>在训练时通过”详细分析“和”答案“这两个标记来区分思考过程和实际答案部分，那么微调后的模型在输出时就会分为这两个部分。</p>
+<h2 id="模型训练"><a href="#模型训练" class="headerlink" title="模型训练"></a>模型训练</h2><p>这里与上一篇略有不同的地方在于，使用transformer的Trainer类，可以省去很多自己写的代码。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="comment"># 这个代码不知为啥，在Linux上运行时，会自动占用0号卡显存和算力，所以通过环境变量限制（一定要放在torch导入之前）</span></span><br><span class="line">os.environ[<span class="string">"CUDA_VISIBLE_DEVICES"</span>] = <span class="string">'0'</span></span><br><span class="line"><span class="keyword">import</span> pdb</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> (</span><br><span class="line">    AutoTokenizer,</span><br><span class="line">    AutoModelForCausalLM,</span><br><span class="line">    TrainingArguments,</span><br><span class="line">    Trainer,</span><br><span class="line">    TrainerCallback</span><br><span class="line">)</span><br><span class="line"><span class="keyword">from</span> peft <span class="keyword">import</span> LoraConfig, get_peft_model</span><br><span class="line"><span class="keyword">from</span> datasets <span class="keyword">import</span> load_dataset</span><br><span class="line"><span class="keyword">from</span> torch.nn.utils.rnn <span class="keyword">import</span> pad_sequence</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置路径</span></span><br><span class="line">model_path = <span class="string">"../modelscope/Qwen/Qwen2.5-1.5B-Instruct"</span></span><br><span class="line">data_path = <span class="string">"../modelscope/medical-o1-reasoning-SFT/medical_o1_sft_Chinese.json"</span></span><br><span class="line">output_path = <span class="string">"./output/"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 强制使用GPU</span></span><br><span class="line"><span class="keyword">assert</span> torch.cuda.is_available()</span><br><span class="line"><span class="comment"># 当使用环境变量限制只有3号卡可见时，这里的0就代表3号卡</span></span><br><span class="line">device = torch.device(<span class="string">"cuda:0"</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LossCallback</span><span class="params">(TrainerCallback)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.losses = []</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">on_log</span><span class="params">(self, args, state, control, logs=None, **kwargs)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> <span class="string">"loss"</span> <span class="keyword">in</span> logs:</span><br><span class="line">            self.losses.append(logs[<span class="string">"loss"</span>])</span><br><span class="line"></span><br><span class="line">            </span><br><span class="line"><span class="comment"># LoRA配置</span></span><br><span class="line">peft_config = LoraConfig(</span><br><span class="line">    r=<span class="number">8</span>,</span><br><span class="line">    lora_alpha=<span class="number">32</span>,</span><br><span class="line">    target_modules=[<span class="string">"q_proj"</span>, <span class="string">"k_proj"</span>, <span class="string">"v_proj"</span>, <span class="string">"o_proj"</span>, <span class="string">"gate_proj"</span>, <span class="string">"up_proj"</span>, <span class="string">"down_proj"</span>],   <span class="comment"># 可以设置要微调哪些层</span></span><br><span class="line">    lora_dropout=<span class="number">0.05</span>,</span><br><span class="line">    bias=<span class="string">"none"</span>,</span><br><span class="line">    task_type=<span class="string">"CAUSAL_LM"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练参数配置</span></span><br><span class="line">training_args = TrainingArguments(</span><br><span class="line">    output_dir=output_path,</span><br><span class="line">    per_device_train_batch_size=<span class="number">2</span>,  <span class="comment"># 8G显存上无法设置大于1</span></span><br><span class="line">    gradient_accumulation_steps=<span class="number">8</span>,  <span class="comment"># 累计梯度相当于batch_size=per_device_train_batch_size*gradient_accumulation_steps</span></span><br><span class="line">    num_train_epochs=<span class="number">5</span>,  <span class="comment"># 5个轮次</span></span><br><span class="line">    learning_rate=<span class="number">3e-4</span>,</span><br><span class="line">    fp16=<span class="literal">True</span>,  <span class="comment"># 开启混合精度</span></span><br><span class="line">    logging_steps=<span class="number">20</span>,</span><br><span class="line">    save_strategy=<span class="string">"no"</span>,</span><br><span class="line">    report_to=<span class="string">"none"</span>,</span><br><span class="line">    optim=<span class="string">"adamw_torch"</span>,</span><br><span class="line">    no_cuda=<span class="literal">False</span>,  <span class="comment"># 强制使用CUDA</span></span><br><span class="line">    dataloader_pin_memory=<span class="literal">False</span>,  <span class="comment"># 加速数据加载</span></span><br><span class="line">    remove_unused_columns=<span class="literal">False</span>,  <span class="comment"># 防止删除未使用的列</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    os.makedirs(output_path, exist_ok=<span class="literal">True</span>)</span><br><span class="line">    tokenizer = AutoTokenizer.from_pretrained(model_path)</span><br><span class="line">    tokenizer.pad_token = tokenizer.eos_token</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 加载模型</span></span><br><span class="line">    model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.float16)</span><br><span class="line">    model = get_peft_model(model, peft_config)</span><br><span class="line">    model.print_trainable_parameters()</span><br><span class="line">    model = model.to(device)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 准备数据</span></span><br><span class="line">    dataset = process_data(tokenizer)</span><br><span class="line">    <span class="comment"># 训练回调</span></span><br><span class="line">    loss_callback = LossCallback()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 数据加载器</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">data_collator</span><span class="params">(data)</span>:</span></span><br><span class="line">        <span class="comment"># batch = &#123;</span></span><br><span class="line">        <span class="comment">#     "input_ids": torch.stack([torch.tensor(d["input_ids"]) for d in data]).to(device),</span></span><br><span class="line">        <span class="comment">#     "attention_mask": torch.stack([torch.tensor(d["attention_mask"]) for d in data]).to(device),</span></span><br><span class="line">        <span class="comment">#     "labels": torch.stack([torch.tensor(d["labels"]) for d in data]).to(device)  # 使用input_ids作为labels</span></span><br><span class="line">        <span class="comment"># &#125;</span></span><br><span class="line">        <span class="comment"># return batch</span></span><br><span class="line">        <span class="comment"># 当设置batch_size &gt; 1，防止每条数据的长度不一致</span></span><br><span class="line">        input_ids = [torch.tensor(d[<span class="string">"input_ids"</span>]) <span class="keyword">for</span> d <span class="keyword">in</span> data]</span><br><span class="line">        attention_mask = [torch.tensor(d[<span class="string">"attention_mask"</span>]) <span class="keyword">for</span> d <span class="keyword">in</span> data]</span><br><span class="line">        labels = [torch.tensor(d[<span class="string">"labels"</span>]) <span class="keyword">for</span> d <span class="keyword">in</span> data]</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 对 input_ids 进行填充</span></span><br><span class="line">        input_ids = pad_sequence(input_ids, batch_first=<span class="literal">True</span>, padding_value=tokenizer.pad_token_id).to(device)</span><br><span class="line">        <span class="comment"># 对 attention_mask 进行填充</span></span><br><span class="line">        attention_mask = pad_sequence(attention_mask, batch_first=<span class="literal">True</span>, padding_value=<span class="number">0</span>).to(device)</span><br><span class="line">        <span class="comment"># 对 labels 进行填充</span></span><br><span class="line">        labels = pad_sequence(labels, batch_first=<span class="literal">True</span>, padding_value=<span class="number">-100</span>).to(device)</span><br><span class="line"></span><br><span class="line">        batch = &#123;</span><br><span class="line">            <span class="string">"input_ids"</span>: input_ids,</span><br><span class="line">            <span class="string">"attention_mask"</span>: attention_mask,</span><br><span class="line">            <span class="string">"labels"</span>: labels</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> batch</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 创建Trainer</span></span><br><span class="line"></span><br><span class="line">    trainer = Trainer(</span><br><span class="line">        model=model,</span><br><span class="line">        args=training_args,</span><br><span class="line">        train_dataset=dataset,</span><br><span class="line">        data_collator=data_collator,</span><br><span class="line">        callbacks=[loss_callback]</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 开始训练</span></span><br><span class="line">    print(<span class="string">"开始训练..."</span>)</span><br><span class="line">    trainer.train()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 保存最终模型</span></span><br><span class="line">    trainer.model.save_pretrained(output_path)</span><br><span class="line">    print(<span class="string">f"模型已保存至：<span class="subst">&#123;output_path&#125;</span>"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 绘制训练集损失Loss曲线</span></span><br><span class="line">    plt.figure(figsize=(<span class="number">10</span>, <span class="number">6</span>))</span><br><span class="line">    plt.plot(loss_callback.losses)</span><br><span class="line">    plt.title(<span class="string">"Training Loss Curve"</span>)</span><br><span class="line">    plt.xlabel(<span class="string">"Steps"</span>)</span><br><span class="line">    plt.ylabel(<span class="string">"Loss"</span>)</span><br><span class="line">    plt.savefig(os.path.join(output_path, <span class="string">"loss_curve.png"</span>))</span><br><span class="line">    print(<span class="string">"Loss曲线已保存"</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+<p>不过Trainer类型好像会自动把数据分发到其他卡，当在多卡机器上单卡微调时，目前发现只能通过环境变量来屏蔽其他的卡；否则虽然可以控制模型只加载到某张卡，但是Trainer好像还是会把数据分发到其他卡上，导致报错。</p>
+<p>但是如果想要实现DDP分布式训练则方便许多，只需要将上述代码中涉及device设备指定的地方全部去除，并且也不要通过环境变量来隐藏可见显卡设备。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># LoRA配置</span></span><br><span class="line">peft_config = LoraConfig(</span><br><span class="line">    r=<span class="number">8</span>,</span><br><span class="line">    lora_alpha=<span class="number">32</span>,</span><br><span class="line">    target_modules=[<span class="string">"q_proj"</span>, <span class="string">"k_proj"</span>, <span class="string">"v_proj"</span>, <span class="string">"o_proj"</span>, <span class="string">"gate_proj"</span>, <span class="string">"up_proj"</span>, <span class="string">"down_proj"</span>],</span><br><span class="line">    lora_dropout=<span class="number">0.05</span>,</span><br><span class="line">    bias=<span class="string">"none"</span>,</span><br><span class="line">    task_type=<span class="string">"CAUSAL_LM"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 训练参数配置</span></span><br><span class="line">training_args = TrainingArguments(</span><br><span class="line">    output_dir=output_path,</span><br><span class="line">    per_device_train_batch_size=<span class="number">1</span>,  <span class="comment"># 8G显存上无法设置大于1</span></span><br><span class="line">    gradient_accumulation_steps=<span class="number">8</span>,  <span class="comment"># 累计梯度相当于batch_size=per_device_train_batch_size*gradient_accumulation_steps</span></span><br><span class="line">    num_train_epochs=<span class="number">5</span>,  <span class="comment"># 5个轮次</span></span><br><span class="line">    learning_rate=<span class="number">3e-4</span>,</span><br><span class="line">    fp16=<span class="literal">True</span>,  <span class="comment"># 开启混合精度</span></span><br><span class="line">    logging_steps=<span class="number">20</span>,</span><br><span class="line">    save_strategy=<span class="string">"no"</span>,</span><br><span class="line">    report_to=<span class="string">"none"</span>,</span><br><span class="line">    optim=<span class="string">"adamw_torch"</span>,</span><br><span class="line">    no_cuda=<span class="literal">False</span>,  <span class="comment"># 强制使用CUDA</span></span><br><span class="line">    dataloader_pin_memory=<span class="literal">False</span>,  <span class="comment"># 加速数据加载</span></span><br><span class="line">    remove_unused_columns=<span class="literal">False</span>,  <span class="comment"># 防止删除未使用的列</span></span><br><span class="line">    label_names=[<span class="string">"labels"</span>],  <span class="comment"># 手动指定标签字段名，根据分布式训练时的警告提示而设定的</span></span><br><span class="line">    ddp_find_unused_parameters=<span class="literal">False</span>  <span class="comment"># 明确设置为 False，根据分布式训练时的警告提示而设定的</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    os.makedirs(output_path, exist_ok=<span class="literal">True</span>)</span><br><span class="line">    tokenizer = AutoTokenizer.from_pretrained(model_path)</span><br><span class="line">    tokenizer.pad_token = tokenizer.eos_token</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 加载模型  device_map='auto' 只适合推理，不适合Trainer训练</span></span><br><span class="line">    model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.float16)</span><br><span class="line">    model = get_peft_model(model, peft_config)</span><br><span class="line">    model.print_trainable_parameters()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 准备数据</span></span><br><span class="line">    dataset = process_data(tokenizer)</span><br><span class="line">    <span class="comment"># 训练回调</span></span><br><span class="line">    loss_callback = LossCallback()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 数据加载器</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">data_collator</span><span class="params">(data)</span>:</span></span><br><span class="line">        <span class="comment"># batch = &#123;</span></span><br><span class="line">        <span class="comment">#     "input_ids": torch.stack([torch.tensor(d["input_ids"]) for d in data]).to(device),</span></span><br><span class="line">        <span class="comment">#     "attention_mask": torch.stack([torch.tensor(d["attention_mask"]) for d in data]).to(device),</span></span><br><span class="line">        <span class="comment">#     "labels": torch.stack([torch.tensor(d["labels"]) for d in data]).to(device)  # 使用input_ids作为labels</span></span><br><span class="line">        <span class="comment"># &#125;</span></span><br><span class="line">        <span class="comment"># return batch</span></span><br><span class="line">        <span class="comment"># 当设置batch_size &gt; 1，防止每条数据的长度不一致</span></span><br><span class="line">        input_ids = [torch.tensor(d[<span class="string">"input_ids"</span>]) <span class="keyword">for</span> d <span class="keyword">in</span> data]</span><br><span class="line">        attention_mask = [torch.tensor(d[<span class="string">"attention_mask"</span>]) <span class="keyword">for</span> d <span class="keyword">in</span> data]</span><br><span class="line">        labels = [torch.tensor(d[<span class="string">"labels"</span>]) <span class="keyword">for</span> d <span class="keyword">in</span> data]</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 对 input_ids 进行填充</span></span><br><span class="line">        input_ids = pad_sequence(input_ids, batch_first=<span class="literal">True</span>, padding_value=tokenizer.pad_token_id)  <span class="comment"># .to(device)</span></span><br><span class="line">        <span class="comment"># 对 attention_mask 进行填充</span></span><br><span class="line">        attention_mask = pad_sequence(attention_mask, batch_first=<span class="literal">True</span>, padding_value=<span class="number">0</span>)  <span class="comment"># .to(device)</span></span><br><span class="line">        <span class="comment"># 对 labels 进行填充</span></span><br><span class="line">        labels = pad_sequence(labels, batch_first=<span class="literal">True</span>, padding_value=<span class="number">-100</span>)  <span class="comment"># .to(device)</span></span><br><span class="line"></span><br><span class="line">        batch = &#123;</span><br><span class="line">            <span class="string">"input_ids"</span>: input_ids,</span><br><span class="line">            <span class="string">"attention_mask"</span>: attention_mask,</span><br><span class="line">            <span class="string">"labels"</span>: labels</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> batch</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 创建Trainer</span></span><br><span class="line">    trainer = Trainer(</span><br><span class="line">        model=model,</span><br><span class="line">        args=training_args,</span><br><span class="line">        train_dataset=dataset,</span><br><span class="line">        data_collator=data_collator,</span><br><span class="line">        callbacks=[loss_callback]</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 开始训练</span></span><br><span class="line">    print(<span class="string">"开始训练..."</span>)</span><br><span class="line">    <span class="comment"># 修改 Trainer 的模型、优化器和数据加载器</span></span><br><span class="line"></span><br><span class="line">    trainer.train()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 保存最终模型</span></span><br><span class="line">    trainer.model.save_pretrained(output_path)</span><br><span class="line">    print(<span class="string">f"模型已保存至：<span class="subst">&#123;output_path&#125;</span>"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 绘制训练集损失Loss曲线</span></span><br><span class="line">    plt.figure(figsize=(<span class="number">10</span>, <span class="number">6</span>))</span><br><span class="line">    plt.plot(loss_callback.losses)</span><br><span class="line">    plt.title(<span class="string">"Training Loss Curve"</span>)</span><br><span class="line">    plt.xlabel(<span class="string">"Steps"</span>)</span><br><span class="line">    plt.ylabel(<span class="string">"Loss"</span>)</span><br><span class="line">    plt.savefig(os.path.join(output_path, <span class="string">"loss_curve.png"</span>))</span><br><span class="line">    print(<span class="string">"Loss曲线已保存"</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure></p>
+<p>然后直接使用<code>torchrun</code>命令启动即可：<br><figure class="highlight plain"><figcaption><span>--nproc_per_node</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">同样的也可以使用accelerate实现DDP、FSDP策略训练</span><br><span class="line">```python</span><br><span class="line">def main():</span><br><span class="line">    os.makedirs(output_path, exist_ok=True)</span><br><span class="line">    tokenizer = AutoTokenizer.from_pretrained(model_path)</span><br><span class="line">    tokenizer.pad_token = tokenizer.eos_token</span><br><span class="line"></span><br><span class="line">    # 初始化 Accelerator</span><br><span class="line">    accelerator = Accelerator()</span><br><span class="line"></span><br><span class="line">    # 加载模型</span><br><span class="line">    model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.bfloat16)</span><br><span class="line">    model = get_peft_model(model, peft_config)</span><br><span class="line">    model.print_trainable_parameters()</span><br><span class="line">    # model = model.to(device)</span><br><span class="line"></span><br><span class="line">    # 准备数据</span><br><span class="line">    dataset = process_data(tokenizer)</span><br><span class="line">    # 训练回调</span><br><span class="line">    loss_callback = LossCallback()</span><br><span class="line"></span><br><span class="line">    # 数据加载器</span><br><span class="line">    def data_collator(data):</span><br><span class="line">        # batch = &#123;</span><br><span class="line">        #     &quot;input_ids&quot;: torch.stack([torch.tensor(d[&quot;input_ids&quot;]) for d in data]).to(device),</span><br><span class="line">        #     &quot;attention_mask&quot;: torch.stack([torch.tensor(d[&quot;attention_mask&quot;]) for d in data]).to(device),</span><br><span class="line">        #     &quot;labels&quot;: torch.stack([torch.tensor(d[&quot;labels&quot;]) for d in data]).to(device)  # 使用input_ids作为labels</span><br><span class="line">        # &#125;</span><br><span class="line">        # return batch</span><br><span class="line">        # 当设置batch_size &gt; 1，防止每条数据的长度不一致</span><br><span class="line">        input_ids = [torch.tensor(d[&quot;input_ids&quot;]) for d in data]</span><br><span class="line">        attention_mask = [torch.tensor(d[&quot;attention_mask&quot;]) for d in data]</span><br><span class="line">        labels = [torch.tensor(d[&quot;labels&quot;]) for d in data]</span><br><span class="line"></span><br><span class="line">        # 对 input_ids 进行填充</span><br><span class="line">        input_ids = pad_sequence(input_ids, batch_first=True, padding_value=tokenizer.pad_token_id)  # .to(device)</span><br><span class="line">        # 对 attention_mask 进行填充</span><br><span class="line">        attention_mask = pad_sequence(attention_mask, batch_first=True, padding_value=0)  # .to(device)</span><br><span class="line">        # 对 labels 进行填充</span><br><span class="line">        labels = pad_sequence(labels, batch_first=True, padding_value=-100)  # .to(device)</span><br><span class="line"></span><br><span class="line">        batch = &#123;</span><br><span class="line">            &quot;input_ids&quot;: input_ids,</span><br><span class="line">            &quot;attention_mask&quot;: attention_mask,</span><br><span class="line">            &quot;labels&quot;: labels</span><br><span class="line">        &#125;</span><br><span class="line">        return batch</span><br><span class="line"></span><br><span class="line">    # 创建Trainer</span><br><span class="line">    trainer = Trainer(</span><br><span class="line">        model=model,</span><br><span class="line">        args=training_args,</span><br><span class="line">        train_dataset=dataset,</span><br><span class="line">        data_collator=data_collator,</span><br><span class="line">        callbacks=[loss_callback]</span><br><span class="line">    )</span><br><span class="line">    # 使用 Accelerator 准备模型、优化器和数据加载器</span><br><span class="line">    model, optimizer, train_dataloader = accelerator.prepare(</span><br><span class="line">        trainer.model,</span><br><span class="line">        trainer.optimizer,</span><br><span class="line">        trainer.get_train_dataloader()</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    # 开始训练</span><br><span class="line">    print(&quot;开始训练...&quot;)</span><br><span class="line">    # 修改 Trainer 的模型、优化器和数据加载器</span><br><span class="line">    trainer.model = model</span><br><span class="line">    trainer.optimizer = optimizer</span><br><span class="line">    trainer.get_train_dataloader = lambda: train_dataloader</span><br><span class="line">    trainer.train()</span><br><span class="line"></span><br><span class="line">    # 保存最终模型</span><br><span class="line">    trainer.model.save_pretrained(output_path)</span><br><span class="line">    print(f&quot;模型已保存至：&#123;output_path&#125;&quot;)</span><br><span class="line"></span><br><span class="line">    # 绘制训练集损失Loss曲线</span><br><span class="line">    plt.figure(figsize=(10, 6))</span><br><span class="line">    plt.plot(loss_callback.losses)</span><br><span class="line">    plt.title(&quot;Training Loss Curve&quot;)</span><br><span class="line">    plt.xlabel(&quot;Steps&quot;)</span><br><span class="line">    plt.ylabel(&quot;Loss&quot;)</span><br><span class="line">    plt.savefig(os.path.join(output_path, &quot;loss_curve.png&quot;))</span><br><span class="line">    print(&quot;Loss曲线已保存&quot;)</span><br></pre></td></tr></table></figure></p>
+<p>DDP，<code>accelerate launch --config_file ddp_config.yaml model_parallelism.py</code></p>
+<p>FSDP，<code>accelerate launch --config_file fsdp_config.yaml model_parallelism.py</code></p>
+<p>同样为了测试DDP、FSDP策略确实生效，进行了以下对比测试</p>
+<p>1.5B模型，上下文长度-1k，精度bf16</p>
+<p><code>torchrun</code>  训练需要20分钟，单卡占用显存11G+</p>
+<p><code>ddp</code>训练需要20分钟，单卡占用显存11G+</p>
+<p><code>fsdp</code> 训练需要6小时+，单卡占用显存11G+</p>
+<p>7B模型 上下文长度-1k，精度bf16<br><code>torchrun</code> 显存不够<br><code>ddp</code> 显存不够<br><code>fsdp</code> 显存也不够</p>
+<p>7B模型 上下文长度-512，精度bf16<br><code>torchrun</code> 显存不够<br><code>ddp</code> 显存不够<br><code>fsdp</code> 训练需要28小时+，单卡占用显存23G+</p>
+<p>FSDP训练速度太慢了，除非单卡显存无法满足的情况下，否则不要使用<code>fsdp</code>。</p>
+<h2 id="One-More-Thing"><a href="#One-More-Thing" class="headerlink" title="One More Thing"></a>One More Thing</h2><p>除了使用上一篇和这一篇的代码进行大模型Lora微调，还可以使用更为成熟和完善的<code>LLamaFactory</code>进行大模型微调，其也全面支持分布式训练：</p>
+<p><a href="https://llamafactory.readthedocs.io/zh-cn/latest/advanced/distributed.html" target="_blank" rel="noopener">https://llamafactory.readthedocs.io/zh-cn/latest/advanced/distributed.html</a></p>
+<p>而关于模型的部署和推理优化可以学习以下两个库：<br>vLLM：<a href="https://www.llamafactory.cn/vllm/" target="_blank" rel="noopener">https://www.llamafactory.cn/vllm/</a></p>
+<p>SGLang：<a href="https://www.llamafactory.cn/sglang/" target="_blank" rel="noopener">https://www.llamafactory.cn/sglang/</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/LLMs/" rel="tag"># LLMs</a>
+          
+            <a href="/tags/LoRA/" rel="tag"># LoRA</a>
+          
+            <a href="/tags/DDP/" rel="tag"># DDP</a>
+          
+            <a href="/tags/FSDP/" rel="tag"># FSDP</a>
+          
+            <a href="/tags/Cot/" rel="tag"># Cot</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2025/03/29/llm-lora-ft/" rel="next" title="大模型LoRA微调实践">
+                <i class="fa fa-chevron-left"></i> 大模型LoRA微调实践
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2025/05/18/mcp-test/" rel="prev" title="MCP初步探索">
+                MCP初步探索 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">120</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">224</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#大模型Lora微调实践（思维链版）"><span class="nav-text">大模型Lora微调实践（思维链版）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#准备工作"><span class="nav-text">准备工作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据预处理"><span class="nav-text">数据预处理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模型训练"><span class="nav-text">模型训练</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#One-More-Thing"><span class="nav-text">One More Thing</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

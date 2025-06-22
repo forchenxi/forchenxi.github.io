@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="LLMs,MCP,play wright,cursor,Dify,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="MCP初步探索MCP服务指南MCP服务：https://mcpservers.org/ MCP 终极指南：https://guangzhengli.com/blog/zh/model-context-protocol MCP与Function call的区别？目前的理解就是，MCP是一堆方法调用声明放到一个MCP服务中，不同应用的方法可以分别定义在不同的MCP服务中，然后大模型根据需要自己去取；而">
+<meta name="keywords" content="LLMs,MCP,play wright,cursor,Dify">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MCP初步探索">
+<meta property="og:url" content="http://yoursite.com/2025/05/18/mcp-test/index.html">
+<meta property="og:site_name" content="Sunrise">
+<meta property="og:description" content="MCP初步探索MCP服务指南MCP服务：https://mcpservers.org/ MCP 终极指南：https://guangzhengli.com/blog/zh/model-context-protocol MCP与Function call的区别？目前的理解就是，MCP是一堆方法调用声明放到一个MCP服务中，不同应用的方法可以分别定义在不同的MCP服务中，然后大模型根据需要自己去取；而">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2025/05/18/mcp-test/no_sandbox_error.png">
+<meta property="og:updated_time" content="2025-06-22T04:03:30.894Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MCP初步探索">
+<meta name="twitter:description" content="MCP初步探索MCP服务指南MCP服务：https://mcpservers.org/ MCP 终极指南：https://guangzhengli.com/blog/zh/model-context-protocol MCP与Function call的区别？目前的理解就是，MCP是一堆方法调用声明放到一个MCP服务中，不同应用的方法可以分别定义在不同的MCP服务中，然后大模型根据需要自己去取；而">
+<meta name="twitter:image" content="http://yoursite.com/2025/05/18/mcp-test/no_sandbox_error.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2025/05/18/mcp-test/">
+
+
+
+
+
+  <title>MCP初步探索 | Sunrise</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sunrise</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">`长路漫漫，唯剑作伴`</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2025/05/18/mcp-test/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="chenxi">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sunrise">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">MCP初步探索</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2025-05-18T19:35:04+08:00">
+                2025-05-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/大语言模型/" itemprop="url" rel="index">
+                    <span itemprop="name">大语言模型</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="MCP初步探索"><a href="#MCP初步探索" class="headerlink" title="MCP初步探索"></a>MCP初步探索</h1><h2 id="MCP服务指南"><a href="#MCP服务指南" class="headerlink" title="MCP服务指南"></a>MCP服务指南</h2><p>MCP服务：<a href="https://mcpservers.org/" target="_blank" rel="noopener">https://mcpservers.org/</a></p>
+<p>MCP 终极指南：<a href="https://guangzhengli.com/blog/zh/model-context-protocol" target="_blank" rel="noopener">https://guangzhengli.com/blog/zh/model-context-protocol</a></p>
+<p>MCP与Function call的区别？<br>目前的理解就是，MCP是一堆方法调用声明放到一个MCP服务中，不同应用的方法可以分别定义在不同的MCP服务中，然后大模型根据需要自己去取；<br>而Function call就是把方法声明和大模型放在一起直接调。</p>
+<p>MCP是一种客户端-服务器架构的通信协议，需要特定的客户端环境来接入。<br>单独的大模型本质上只是一个推理引擎，缺乏处理MCP协议所需的架构组件。</p>
+<p>所以MCP的使用方式是搭配一些客户端如cursor使用，然后像cursor里面还可以选择驱动MCP服务的大模型（大脑）<br>而如果仅仅想给一个大模型赋予“行动”的能力，可以通过function call的形式。</p>
+<p>但是这两种方式的共同前提是：需要大模型支持function call，因为大语言模型只具备文本生成能力，如果支持function call的大模型可以通过传参和返回特定参数明确告知用户此步骤是否调用工具，而如果不支持的大语言模型在这方面能力就有所缺失，不过依然可以通过控制大模型输出的格式，如果使用工具调用则返回特定格式，来达到这一目的，但是效果可能不如直接支持function call的大模型。</p>
+<a id="more"></a>
+<h2 id="MCP服务配置"><a href="#MCP服务配置" class="headerlink" title="MCP服务配置"></a>MCP服务配置</h2><p>萌新指南｜手把手教你Cherry Studio配置MCP，10分钟让大模型学会上网截图！ <a href="https://mp.weixin.qq.com/s/a8XlAw4wrdJpKGVUWneaqg" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/a8XlAw4wrdJpKGVUWneaqg</a></p>
+<p>萌新靠MCP实现RPA、爬虫自由？playwright-mcp实操案例分享！：<a href="https://mp.weixin.qq.com/s/8kh1bxotWDqIRRb0oz8RJQ" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/8kh1bxotWDqIRRb0oz8RJQ</a></p>
+<h3 id="cursor配置MCP服务"><a href="#cursor配置MCP服务" class="headerlink" title="cursor配置MCP服务"></a>cursor配置MCP服务</h3><p>第三方 playwright mcp服务：<a href="https://github.com/executeautomation/mcp-playwright" target="_blank" rel="noopener">https://github.com/executeautomation/mcp-playwright</a></p>
+<p>微软官方 playwright mcp服务：<a href="https://github.com/microsoft/playwright-mcp" target="_blank" rel="noopener">https://github.com/microsoft/playwright-mcp</a>  </p>
+<p>cursor增加使用playwrite MCP服务</p>
+<ol>
+<li>安装：npm install -g @executeautomation/playwright-mcp-server  </li>
+<li>在cursor中增加MCP服务：<br>配置：<br>{<br> “mcpServers”: {<br> “playwright”: {<br>   “command”: “npx”,<br>   “args”: [“-y”, “@executeautomation/playwright-mcp-server”]<br> }<br> }<br>}</li>
+<li>Ctrl+L打开 chat模型，在对话中输入任务（需开启MCP服务）</li>
+</ol>
+<p>在cursor中配置play wright mcp服务，使用Claude系列的模型调用，用来执行与浏览器进行交互的任务效果特别好（比在TRAE中使用豆包大模型+mcp服务效果好很多）。<br>但是目前的缺陷有：</p>
+<ol>
+<li>一般可以配置的mcp方法不能超过40个，超过40个会对大模型使用工具的性能造成影响；</li>
+<li>单次agent任务最多只能执行25次工具调用，达到次数限制任务就会终止，所以对于数据采集类任务需要大量的网页打开操作是不适用的。</li>
+</ol>
+<p>其实不执行安装也可以，配置文件中配置的启动命令也会进行安装。</p>
+<p>这种方式与我们自己驱动playwright的区别是什么？</p>
+<p>大模型+MCP服务是大模型全面自动驱动，优势是，根据任务自行驱动，不需要写比较多的代码；劣势是：慢，费token，而且目前他很依赖于我们给他的任务描述粒度，且目前受限于上下文长度限制，可执行步骤有限。<br>所以想要速度快+省钱，最好某些步骤用大模型，某些步骤自行写代码驱动playwright。</p>
+<h3 id="cursor配置File-System-MCP服务"><a href="#cursor配置File-System-MCP服务" class="headerlink" title="cursor配置File System MCP服务"></a>cursor配置File System MCP服务</h3><ol>
+<li>安装：npm install -g @modelcontextprotocol/server-filesystem</li>
+<li>在cursor中增加MCP服务,配置：<br>“filesystem”: {<br>   “command”: “npx”,<br>   “args”: [<pre><code>&quot;-y&quot;,
+&quot;@modelcontextprotocol/server-filesystem&quot;,
+&quot;E:/mcp_file_system&quot;
+</code></pre>   ]<br> }</li>
+</ol>
+<p>E:/mcp_file_system表示允许模型通过MCP服务可以操作的目录，不能包含空格（亲自踩坑）</p>
+<h3 id="配置firecrawl-mcp"><a href="#配置firecrawl-mcp" class="headerlink" title="配置firecrawl mcp"></a>配置firecrawl mcp</h3><p>在cursor的mcp配置文件中增加如下配置即可：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"mcpServers"</span>: &#123;</span><br><span class="line">    <span class="attr">"firecrawl-mcp"</span>: &#123;</span><br><span class="line">      <span class="attr">"command"</span>: <span class="string">"npx"</span>,</span><br><span class="line">      <span class="attr">"args"</span>: [<span class="string">"-y"</span>, <span class="string">"firecrawl-mcp"</span>],</span><br><span class="line">      <span class="attr">"env"</span>: &#123;</span><br><span class="line">        <span class="attr">"FIRECRAWL_API_KEY"</span>: <span class="string">"YOUR-API-KEY"</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>api key需要在官网注册账号开通，会赠送免费额度：</p>
+<p><a href="https://www.firecrawl.dev/app?spm=5176.28197581.content.3.f5205a9eSod5cL" target="_blank" rel="noopener">https://www.firecrawl.dev/app?spm=5176.28197581.content.3.f5205a9eSod5cL</a></p>
+<p>其支持哪些方法可以参考GitHub项目：<br><a href="https://github.com/mendableai/firecrawl-mcp-server" target="_blank" rel="noopener">https://github.com/mendableai/firecrawl-mcp-server</a></p>
+<h3 id="Dify平台"><a href="#Dify平台" class="headerlink" title="Dify平台"></a>Dify平台</h3><p>本地化部署dify平台之后，可以自行在服务器部署mcp服务，然后通过dify平台的<strong>通过SSE发现和调用MCP工具</strong>来调用。<br>注意：dify平台上有一个<strong>play wright插件</strong>：<a href="https://marketplace.dify.ai/plugins/hjlarry/playwright" target="_blank" rel="noopener">https://marketplace.dify.ai/plugins/hjlarry/playwright</a><br>通过仔细看说明可以发现，这个是指将play wright工具部署成一个服务，给大模型调用，应该与常规理解的mcp服务有所区别。</p>
+<p>在服务器上自行部署一个play wright mcp服务</p>
+<ol>
+<li>使用node安装playwright<br><code>npm install playwright</code></li>
+<li>执行以下命令安装mcp服务：<br><code>npm install @playwright/mcp@latest</code></li>
+<li>以sse协议调用，增加启动端口<br><code>npx @playwright/mcp@latest --port 8931</code><br>可以使用nohup进行后台运行</li>
+</ol>
+<p>在Linux服务器上启动mcp 服务的命令：<br><code>npx @playwright/mcp@latest --port 8931 --executable-path /ms-playwright/chromium-1172/chrome-linux/chrome --headless --browser chromium --no-sandbox</code><br>–executable-path参数可以不加</p>
+<p>关于具体有哪些参数在github项目上有详细说明（不过在此mcp刚发布时没有，导致我在调用mcp服务报错时不知道该如何解决）<br>例如 </p>
+<ul>
+<li>–no-sandbox：禁用浏览器沙箱，仅建议在开发环境使用，生产环境存在安全风险。（这个参数不加，调用时会一直报错）</li>
+<li>–headless：以无头模式运行浏览器（无图形界面）。默认启用图形界面。在Linux环境下使用headless模式更优。</li>
+<li>–vision：使用截图而非默认的 Aria 快照，用于视觉测试或需要精确渲染的场景。</li>
+</ul>
+<p>–no-sandbox 报错示例：<br><img src="/2025/05/18/mcp-test/no_sandbox_error.png" alt></p>
+<p>关于vision参数，官网给出以下解释，所有的工具有两种模式：</p>
+<ol>
+<li>Snapshot Mode (default): Uses accessibility snapshots for better performance and reliability<br>快照模式 （默认）：使用辅助功能快照以获得更好的性能和可靠性</li>
+<li>Vision Mode: Uses screenshots for visual-based interactions<br>视觉模式 ：使用屏幕截图进行基于视觉的交互<br>要使用 Vision 模式，请在启动服务器时添加 –vision 标志：<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"mcpServers"</span>: &#123;</span><br><span class="line">    <span class="attr">"playwright"</span>: &#123;</span><br><span class="line">      <span class="attr">"command"</span>: <span class="string">"npx"</span>,</span><br><span class="line">      <span class="attr">"args"</span>: [</span><br><span class="line">        <span class="string">"@playwright/mcp@latest"</span>,</span><br><span class="line">        <span class="string">"--vision"</span></span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>这是我在非vision模式启动play wright mcp服务遇到的调用报错：</p>
+<p>请求：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="attr">"mcp_sse_call_tool"</span>: &#123;<span class="attr">"tool_name"</span>: <span class="string">"browser_click"</span>, <span class="attr">"arguments"</span>: <span class="string">"&#123;\"element\": \"MENU button\", \"ref\": \"e7\"&#125;"</span>&#125;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>响应：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="attr">"mcp_sse_call_tool"</span>: <span class="string">"Tool execution result: [&#123;'type': 'text', 'text': 'Error: No current snapshot available. Capture a snapshot of navigate to a new location first.'&#125;]"</span>&#125;</span><br></pre></td></tr></table></figure></p>
+<p>改为vision模式依然有这个问题，但是发现有所变化，能够截图了，但是截图的base64编码是空白页</p>
+<p>然后大模型会认为是页面未完全加载，会执行等待的方法，等待结束之后还会报这个错误<br>请求：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="attr">"mcp_sse_call_tool"</span>: &#123;<span class="attr">"tool_name"</span>: <span class="string">"browser_wait_for"</span>, <span class="attr">"arguments"</span>: <span class="string">"&#123;\"time\": 5&#125;"</span>&#125;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>响应：<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="attr">"mcp_sse_call_tool"</span>: <span class="string">"Tool execution result: [&#123;'type': 'text', 'text': 'Error: No current snapshot available. Capture a snapshot of navigate to a new location first.'&#125;]"</span>&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在Windows平台测试，无论是否使用有头模式还是无头模式，大模型均不需要截图轻松完成获取企业简介的工作，如果使用vision模式，则会使用截图，产生截图不全的问题。<br>将服务器上的服务改为非vision模式，目前在dify平台经过各种调试，依然面临的问题是点击操作或者截图操作无法正常进行，<br>点击需要依赖于snapshot（快照）和引用，总感觉大模型无法把它们串起来，包括上面执行wait操作也会报错，也是类似的道理。<br>想要通过Nginx转发在本地使用cursor调用服务器上的服务进行测试，但是在cursor中无法连通。</p>
+<h3 id="百炼平台"><a href="#百炼平台" class="headerlink" title="百炼平台"></a>百炼平台</h3><p>百炼平台也支持通过sse调用自己部署的mcp服务，或者将服务部署在他们的服务器给智能体调用<br>也有一个play wright服务：<a href="https://bailian.console.aliyun.com/?spm=5176.12818093_47.resourceCenter.2.57ea2cc988EIjt&amp;tab=mcp#/mcp-market/detail/Playwright" target="_blank" rel="noopener">https://bailian.console.aliyun.com/?spm=5176.12818093_47.resourceCenter.2.57ea2cc988EIjt&amp;tab=mcp#/mcp-market/detail/Playwright</a><br>查看文档可以发现虽然这个图标与dify平台的图标一致，但是这里是真正的mcp服务。</p>
+<h2 id="MCP进阶"><a href="#MCP进阶" class="headerlink" title="MCP进阶"></a>MCP进阶</h2><p>可以学习一下MCP服务的源代码，自己写MCP服务<br><a href="https://github.com/liaokongVFX/MCP-Chinese-Getting-Started-Guide" target="_blank" rel="noopener">https://github.com/liaokongVFX/MCP-Chinese-Getting-Started-Guide</a></p>
+<p>场景：例如目前的playwright方法会被部分检测严格的网站判断为自动化工具，然后无法打开网页；<br>这时候就需要编写一个自定义的方法，先进行一些预处理操作，再打开浏览器，就可以正常打开网页</p>
+<p>与客户端+MCP+大模型可以实现类似能力的业内方案有：</p>
+<ol>
+<li>智谱 autoGLM</li>
+<li>火山引擎上面 OS Agent解决方案：Browser-use Playground、Computer Use Agent等,推测其也是依赖于<code>doubao-1.5-ui-tars</code>模型；</li>
+<li>字节的 UI-TARS-desktop（桌面应用程序(<a href="https://github.com/bytedance/UI-TARS-desktop)），之前需要自己部署UI_TARS各种尺寸的模型，现在火山方舟平台上线了最新的`doubao-1.5-ui-tars`模型，可以直接作为后端模型；" target="_blank" rel="noopener">https://github.com/bytedance/UI-TARS-desktop)），之前需要自己部署UI_TARS各种尺寸的模型，现在火山方舟平台上线了最新的`doubao-1.5-ui-tars`模型，可以直接作为后端模型；</a></li>
+<li>百炼智能体应用，直接支持增加MCP服务，可以支持百炼云端部署的MCP，或者第三方MCP服务部署到阿里云的服务器，或者自己部署的MCP服务（将服务调用接口配置到上面，但是要注意外部可访问）</li>
+<li>dify平台构建工作流或智能体。</li>
+</ol>
+<p>但是这些方案比较适合于不太会写代码的小白使用，去执行一些不太复杂的任务，当需要比较灵活的去控制大模型和方法调用时，可能需要使用类似langchain的框架去开发大模型应用。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/LLMs/" rel="tag"># LLMs</a>
+          
+            <a href="/tags/MCP/" rel="tag"># MCP</a>
+          
+            <a href="/tags/play-wright/" rel="tag"># play wright</a>
+          
+            <a href="/tags/cursor/" rel="tag"># cursor</a>
+          
+            <a href="/tags/Dify/" rel="tag"># Dify</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2025/04/14/llm-lora-cot_ft/" rel="next" title="大模型Lora微调实践（思维链版）">
+                <i class="fa fa-chevron-left"></i> 大模型Lora微调实践（思维链版）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2025/06/22/mcp-fastmcp-demo/" rel="prev" title="使用FastMCP开发MCP服务简单尝试">
+                使用FastMCP开发MCP服务简单尝试 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/uploads/avatar.png" alt="chenxi">
+            
+              <p class="site-author-name" itemprop="name">chenxi</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">120</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">224</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://docle.github.io/" title="Docle" target="_blank">Docle</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://transformerswsz.github.io/" title="Swift" target="_blank">Swift</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MCP初步探索"><span class="nav-text">MCP初步探索</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MCP服务指南"><span class="nav-text">MCP服务指南</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MCP服务配置"><span class="nav-text">MCP服务配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#cursor配置MCP服务"><span class="nav-text">cursor配置MCP服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cursor配置File-System-MCP服务"><span class="nav-text">cursor配置File System MCP服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置firecrawl-mcp"><span class="nav-text">配置firecrawl mcp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dify平台"><span class="nav-text">Dify平台</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#百炼平台"><span class="nav-text">百炼平台</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MCP进阶"><span class="nav-text">MCP进阶</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">chenxi</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
